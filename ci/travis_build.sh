@@ -57,4 +57,5 @@ function run_coverage() {
 
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then build || travis_terminate 1; fi
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then run_test || travis_terminate 1; fi
+if [[ "${CODE_COVERAGE}" == "ON" ]]; then run_coverage || travis_terminate 1; fi
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then upload_test || travis_terminate 1; fi
