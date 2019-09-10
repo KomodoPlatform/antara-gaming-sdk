@@ -38,6 +38,14 @@ target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/O2 -DNDEBUG /MP>
         )
 
+## Cross filesystem
+add_library(antara_cross_filesystem INTERFACE)
+add_library(antara::cross_filesystem ALIAS antara_cross_filesystem)
+target_link_libraries(antara_cross_filesystem INTERFACE
+        $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
+        $<$<PLATFORM_ID:Darwin>:c++fs>)
+
 add_library(antara_default_settings INTERFACE)
 add_library(antara::default_settings ALIAS antara_default_settings)
-target_link_libraries(antara_default_settings INTERFACE antara::error_settings antara::optimize_settings antara::defaults_features)
+target_link_libraries(antara_default_settings INTERFACE antara::error_settings antara::optimize_settings antara::defaults_features antara::cross_filesystem)
+
