@@ -18,7 +18,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-include(compiler_targets)
+include(antara)
 
 add_subdirectory(modules)
 add_subdirectory(examples)
