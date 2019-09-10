@@ -35,7 +35,7 @@ before_build:
 
 build_script:
   - cmake --build . --config %BUILD_TYPE%
-  - cd bin && cd %BUILD_TYPE% && ls
+  - cd bin/unit_tests && cd %BUILD_TYPE% && ls
   - ps: |
       $filePattern = '*_tests.exe'
       foreach ($file in get-ChildItem $filePattern)
