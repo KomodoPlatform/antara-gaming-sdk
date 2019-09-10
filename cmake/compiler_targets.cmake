@@ -34,8 +34,8 @@ target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Linux>>:-O2 -march=native>
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Darwin>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Darwin>>:-O2 -march=native>
-        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/Zi /FS /DEBUG /Od /MP /MDd /Oy->
-        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/O2 -DNDEBUG /MP>
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/Zi /FS /DEBUG /Od /MDd /Oy->
+        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/O2 -DNDEBUG>
         )
 
 ## Cross filesystem
