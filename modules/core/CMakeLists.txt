@@ -11,7 +11,8 @@ add_library(antara::core ALIAS antara_core)
 ##! antara core tests
 add_executable(antara_core_tests)
 target_sources(antara_core_tests PUBLIC
-        antara/gaming/core/antara.core.tests.cpp)
+        antara/gaming/core/antara.core.tests.cpp
+        antara/gaming/core/antara.core.version.tests.cpp)
 target_link_libraries(antara_core_tests PRIVATE doctest PUBLIC antara::core_shared_sources)
 set_target_properties(antara_core_tests
         PROPERTIES
