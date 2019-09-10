@@ -45,6 +45,16 @@ function upload_test() {
     curl https://report.ci/upload.py --output upload.py && python upload.py -n "${doctest_upload_name}" --merge ".*"
 }
 
+function run_coverage() {
+     cd ${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}
+     lcov -d . -c -o coverage.info
+     lcov -r coverage.info "/usr*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/*.test.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/_deps/*" -o coverage.info
+     lcov -l coverage.info
+     bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+}
+
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then build || travis_terminate 1; fi
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then run_test || travis_terminate 1; fi
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then upload_test || travis_terminate 1; fi

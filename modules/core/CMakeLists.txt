@@ -1,6 +1,7 @@
 ##! shared sources between the module and his unit tests
 add_library(antara_core_shared_sources INTERFACE)
 target_include_directories(antara_core_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_core_shared_sources INTERFACE antara::default_settings)
 add_library(antara::core_shared_sources ALIAS antara_core_shared_sources)
 
 ##! module definition
@@ -18,3 +19,4 @@ set_target_properties(antara_core_tests
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
         )
+target_enable_coverage(antara_core_tests)
