@@ -2,6 +2,7 @@
 add_library(antara_ecs_shared_sources INTERFACE)
 target_sources(antara_ecs_shared_sources INTERFACE antara/gaming/ecs/base.system.cpp)
 target_include_directories(antara_ecs_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_ecs_shared_sources INTERFACE EnTT)
 add_library(antara::ecs_shared_sources ALIAS antara_ecs_shared_sources)
 
 

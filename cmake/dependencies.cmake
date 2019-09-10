@@ -7,4 +7,9 @@ FetchContent_Declare(
         URL https://github.com/onqtam/doctest/archive/2.3.3.tar.gz
 )
 
-FetchContent_MakeAvailable(doctest)
+FetchContent_Declare(
+        entt
+        URL https://github.com/skypjack/entt/archive/master.zip
+)
+
+FetchContent_MakeAvailable(doctest entt)

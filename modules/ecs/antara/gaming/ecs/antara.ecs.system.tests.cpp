@@ -15,8 +15,58 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/ecs/base.system.hpp"
 
-TEST_CASE("foo case")
+TEST_CASE ("base system abstract object tests")
 {
-    CHECK_EQ(42, 42);
+    struct concrete_system : antara::gaming::ecs::base_system
+    {
+        concrete_system(entt::registry registry, entt::dispatcher dispatcher) : base_system(registry, dispatcher)
+        {
+
+        }
+
+        void update() noexcept final
+        {
+            //!
+        }
+
+        ~concrete_system() noexcept final = default;
+    };
+    concrete_system dummy_system{entt::registry{}, entt::dispatcher{}};
+    SUBCASE("mark/unmark a system")
+    {
+        dummy_system.mark();
+        CHECK(dummy_system.is_marked());
+        dummy_system.unmark();
+        CHECK_FALSE(dummy_system.is_marked());
+    }
+
+    SUBCASE("enable/disable a system")
+    {
+        dummy_system.enable();
+        CHECK(dummy_system.is_enabled());
+        dummy_system.disable();
+        CHECK_FALSE(dummy_system.is_enabled());
+    }
+
+    SUBCASE("dummy update")
+    {
+        dummy_system.update();
+    }
+
+    SUBCASE("im a plugin / im not a plugin system")
+    {
+        CHECK_FALSE(dummy_system.is_a_plugin());
+        dummy_system.im_a_plugin();
+        CHECK(dummy_system.is_a_plugin());
+    }
+
+    SUBCASE("set_user_data")
+    {
+        int dummy_value = 42;
+        dummy_system.set_user_data(&dummy_value);
+        auto data = dummy_system.get_user_data();
+        CHECK_EQ(*static_cast<int *>(data), 42);
+    }
 }
