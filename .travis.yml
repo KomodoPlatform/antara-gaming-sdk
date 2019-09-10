@@ -1,0 +1,117 @@
+matrix:
+  include:
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8 main
+            - sourceline: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: [clang-8, libstdc++-8-dev]
+      env: [CXX=clang++-8, CC=clang-8, BUILD_TYPE=Release, DEFAULT_COMPILER=clang, WILL_COMPILE_CODE=ON, DEPLOY=ON, PIP=pip]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8 main
+            - sourceline: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: [clang-8, libstdc++-8-dev]
+      env: [CXX=clang++-8, CC=clang-8, BUILD_TYPE=Debug, DEFAULT_COMPILER=clang, WILL_COMPILE_CODE=ON, DEPLOY=ON, PIP=pip]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8 main
+            - sourceline: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: [clang-8, libstdc++-8-dev]
+      env: [CXX=clang++-8, CC=clang-8, BUILD_TYPE=Debug, DEFAULT_COMPILER=clang, WILL_COMPILE_CODE=ON, DEPLOY=ON, PIP=pip, ASAN=ON]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8 main
+            - sourceline: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: [clang-8, libstdc++-8-dev]
+      env: [CXX=clang++-8, CC=clang-8, BUILD_TYPE=Debug, DEFAULT_COMPILER=clang, WILL_COMPILE_CODE=ON, DEPLOY=ON, PIP=pip, TSAN=ON]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8 main
+            - sourceline: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: [clang-8, libstdc++-8-dev]
+      env: [CXX=clang++-8, CC=clang-8, BUILD_TYPE=Debug, DEFAULT_COMPILER=clang, WILL_COMPILE_CODE=ON, DEPLOY=ON, PIP=pip, UBSAN=ON]
+    - os: osx
+      osx_image: xcode10.2
+      sudo: true
+      env: [BUILD_TYPE=Release,
+            CLANG_VERSION=clang-8,
+            CC=clang,
+            CXX=clang++,
+            LD=ld.lld,
+            AR=llvm-ar,
+            RANLIB=llvm-ranlib,
+            LDFLAGS=-L/usr/local/opt/llvm/lib,
+            CPPFLAGS=-I/usr/local/opt/llvm/include,
+            PIP=pip3,
+            WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
+      addons:
+        homebrew:
+          packages: [cmake,ninja,llvm,python3]
+          update: true
+    - os: osx
+      osx_image: xcode10.2
+      sudo: true
+      env: [BUILD_TYPE=Debug,
+            CLANG_VERSION=clang-8,
+            CC=clang,
+            CXX=clang++,
+            LD=ld.lld,
+            AR=llvm-ar,
+            RANLIB=llvm-ranlib,
+            LDFLAGS=-L/usr/local/opt/llvm/lib,
+            CPPFLAGS=-I/usr/local/opt/llvm/include,
+            PIP=pip3,
+            WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
+      addons:
+        homebrew:
+          packages: [cmake,ninja,llvm,python3]
+          update: true
+
+
+install:
+  - |
+    source ${TRAVIS_BUILD_DIR}/ci/travis_install.sh
+
+script:
+  - |
+    source ${TRAVIS_BUILD_DIR}/ci/travis_build.sh
