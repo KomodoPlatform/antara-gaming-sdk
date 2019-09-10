@@ -28,6 +28,7 @@ option(USE_ASAN "Use address sanitizer" OFF)
 option(USE_TSAN "Use thread sanitizer" OFF)
 option(USE_UBSAN "Use thread sanitizer" OFF)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
+option(COVERAGE_CLION_TOOLS "Enable Clion internal coverage tools" OFF)
 
 add_subdirectory(modules)
 add_subdirectory(examples)
