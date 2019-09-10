@@ -17,4 +17,8 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
 endif()
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+include(compiler_targets)
+
 add_subdirectory(modules)
+add_subdirectory(examples)
