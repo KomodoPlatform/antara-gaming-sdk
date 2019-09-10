@@ -20,5 +20,15 @@ endif()
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(antara)
 
+if (NOT EXISTS ${PROJECT_SOURCE_DIR}/modules/core/antara/gaming/core/version.hpp)
+    configure_file(${CMAKE_MODULE_PATH}/version.hpp.in  ${PROJECT_SOURCE_DIR}/modules/core/antara/gaming/core/version.hpp @ONLY)
+endif()
+
+option(USE_ASAN "Use address sanitizer" OFF)
+option(USE_TSAN "Use thread sanitizer" OFF)
+option(USE_UBSAN "Use thread sanitizer" OFF)
+option(ENABLE_COVERAGE "Enable coverage" OFF)
+option(COVERAGE_CLION_TOOLS "Enable Clion internal coverage tools" OFF)
+
 add_subdirectory(modules)
 add_subdirectory(examples)
