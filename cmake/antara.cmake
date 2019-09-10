@@ -3,3 +3,4 @@
  endif ()
 
  include(compiler_targets)
+ include(dependencies)
