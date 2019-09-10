@@ -12,7 +12,6 @@ function last_cmake_linux() {
 }
 
 function coverage_setup() {
-    gem install coveralls-lcov
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
        sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/${COVERAGE_TOOL} 100
        cd /tmp
