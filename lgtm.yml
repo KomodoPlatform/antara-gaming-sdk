@@ -1,0 +1,24 @@
+extraction:
+  cpp:
+    prepare:    # Customizable step used by all languages.
+      packages:
+        - python-pip
+        - pkg-config
+        - libcurl4-gnutls-dev
+        - wget
+        - clang-8
+        - llvm-8
+        - clang++-8
+    after_prepare:    # Customizable step used by all languages.
+      - DEPS_DIR="$HOME/deps"
+      - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+      - CMAKE_URL="https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz"
+      - mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      - cd -
+      - cmake --version
+      - mkdir $LGTM_SRC/_lgtm_build_dir
+      - cd $LGTM_SRC/_lgtm_build_dir
+      - cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=Release ../
+      - cmake --build . --config Release
+      - cd -
