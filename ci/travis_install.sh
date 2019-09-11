@@ -29,16 +29,24 @@ function setup_osx() {
 }
 
 function install_emscripten() {
+    cd ${HOME}
+    pwd
     git clone https://github.com/emscripten-core/emsdk.git
-    cd emsdk
+    cd -
+    pwd
+    cd ${HOME}/emsdk
+    pwd
     git pull
     ./emsdk install latest-upstream
     ./emsdk activate latest-upstream
     source ./emsdk_env.sh
     cd -
+    pwd
     cd ${HOME}
+    pwd
     git clone https://github.com/emscripten-core/emscripten.git
     cd -
+    pwd
 }
 
 #if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then setup_osx || travis_terminate 1; fi
