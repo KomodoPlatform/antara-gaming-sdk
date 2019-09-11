@@ -6,8 +6,6 @@ extraction:
         - pkg-config
         - libcurl4-gnutls-dev
         - wget
-        - clang
-        - clang++
     after_prepare:    # Customizable step used by all languages.
       - DEPS_DIR="$HOME/deps"
       - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
