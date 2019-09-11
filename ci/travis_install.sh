@@ -47,6 +47,8 @@ function install_emscripten() {
     git clone https://github.com/emscripten-core/emscripten.git
     cd -
     pwd
+    cd ${TRAVIS_BUILD_DIR}
+    pwd
 }
 
 #if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then setup_osx || travis_terminate 1; fi
