@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <st/st.hpp>
+#include <st/type.hpp>
 
 namespace antara::gaming::ecs
 {

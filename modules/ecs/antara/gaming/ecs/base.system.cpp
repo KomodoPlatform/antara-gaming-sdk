@@ -23,7 +23,7 @@ namespace antara::gaming::ecs
                              bool im_a_plugin_system) noexcept :
             entity_registry_(entity_registry),
             dispatcher_(dispatcher),
-            is_plugin{im_a_plugin_system}
+            is_plugin_{im_a_plugin_system}
     {
 
     }
@@ -60,12 +60,12 @@ namespace antara::gaming::ecs
 
     void base_system::im_a_plugin() noexcept
     {
-        is_plugin = true;
+        is_plugin_ = true;
     }
 
     bool base_system::is_a_plugin() const noexcept
     {
-        return is_plugin;
+        return is_plugin_;
     }
 
     void *base_system::get_user_data() noexcept

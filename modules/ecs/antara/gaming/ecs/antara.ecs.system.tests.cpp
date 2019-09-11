@@ -16,62 +16,131 @@
 
 #include <doctest/doctest.h>
 #include "antara/gaming/ecs/base.system.hpp"
+#include "antara/gaming/ecs/system.hpp"
 
-TEST_CASE ("base system abstract object tests")
+namespace antara::gaming::ecs::tests
 {
-    struct concrete_system : antara::gaming::ecs::base_system
-    {
-        concrete_system(entt::registry registry, entt::dispatcher dispatcher) : base_system(registry, dispatcher)
-        {
+	TEST_CASE("base system abstract object tests")
+	{
+		struct concrete_system : base_system
+		{
+			concrete_system(entt::registry registry, entt::dispatcher dispatcher) : base_system(registry, dispatcher)
+			{
 
-        }
+			}
 
-        [[nodiscard]] antara::gaming::ecs::system_type get_system_type_RTTI() const noexcept final
-        {
-            return antara::gaming::ecs::system_type::logic_update;
-        }
+			[[nodiscard]] system_type get_system_type_rtti() const noexcept final
+			{
+				return logic_update;
+			}
 
-        void update() noexcept final
-        {
-            //!
-        }
+			void update() noexcept final
+			{
+				//!
+			}
 
-        ~concrete_system() noexcept final = default;
-    };
-    concrete_system dummy_system{entt::registry{}, entt::dispatcher{}};
-    SUBCASE("mark/unmark a system")
-    {
-        dummy_system.mark();
-        CHECK(dummy_system.is_marked());
-        dummy_system.unmark();
-        CHECK_FALSE(dummy_system.is_marked());
-    }
+			~concrete_system() noexcept final = default;
+		};
+		concrete_system dummy_system{ entt::registry{}, entt::dispatcher{} };
+		SUBCASE("mark/unmark a system")
+		{
+			dummy_system.mark();
+			CHECK(dummy_system.is_marked());
+			dummy_system.unmark();
+			CHECK_FALSE(dummy_system.is_marked());
+		}
 
-    SUBCASE("enable/disable a system")
-    {
-        dummy_system.enable();
-        CHECK(dummy_system.is_enabled());
-        dummy_system.disable();
-        CHECK_FALSE(dummy_system.is_enabled());
-    }
+		SUBCASE("enable/disable a system")
+		{
+			dummy_system.enable();
+			CHECK(dummy_system.is_enabled());
+			dummy_system.disable();
+			CHECK_FALSE(dummy_system.is_enabled());
+		}
 
-    SUBCASE("dummy update")
-    {
-        dummy_system.update();
-    }
+		SUBCASE("dummy update")
+		{
+			dummy_system.update();
+		}
 
-    SUBCASE("im a plugin / im not a plugin system")
-    {
-        CHECK_FALSE(dummy_system.is_a_plugin());
-        dummy_system.im_a_plugin();
-        CHECK(dummy_system.is_a_plugin());
-    }
+		SUBCASE("im a plugin / im not a plugin system")
+		{
+			CHECK_FALSE(dummy_system.is_a_plugin());
+			dummy_system.im_a_plugin();
+			CHECK(dummy_system.is_a_plugin());
+		}
 
-    SUBCASE("set_user_data")
-    {
-        int dummy_value = 42;
-        dummy_system.set_user_data(&dummy_value);
-        auto data = dummy_system.get_user_data();
-        CHECK_EQ(*static_cast<int *>(data), 42);
-    }
+		SUBCASE("set_user_data")
+		{
+			auto dummy_value = 42;
+			dummy_system.set_user_data(&dummy_value);
+			auto data = dummy_system.get_user_data();
+			CHECK_EQ(*static_cast<int*>(data), 42);
+		}
+	}
+
+	TEST_CASE("system tests")
+	{
+		class concrete_system : public logic_update_system<concrete_system>
+		{
+		public:
+			concrete_system(entt::registry& registry, entt::dispatcher& dispatcher) : system(registry, dispatcher)
+			{
+
+			}
+			void update() noexcept final
+			{
+
+			}
+
+			~concrete_system() noexcept final = default;
+		};
+
+		entt::registry registry;
+		entt::dispatcher dispatcher;
+		concrete_system dummy_system{ registry, dispatcher };
+
+		SUBCASE("mark/unmark a system")
+		{
+			dummy_system.mark();
+			CHECK(dummy_system.is_marked());
+			dummy_system.unmark();
+			CHECK_FALSE(dummy_system.is_marked());
+		}
+
+		SUBCASE("enable/disable a system")
+		{
+			dummy_system.enable();
+			CHECK(dummy_system.is_enabled());
+			dummy_system.disable();
+			CHECK_FALSE(dummy_system.is_enabled());
+		}
+
+		SUBCASE("dummy update")
+		{
+			dummy_system.update();
+		}
+
+		SUBCASE("im a plugin / im not a plugin system")
+		{
+			CHECK_FALSE(dummy_system.is_a_plugin());
+			dummy_system.im_a_plugin();
+			CHECK(dummy_system.is_a_plugin());
+		}
+
+		SUBCASE("set_user_data")
+		{
+			auto dummy_value = 42;
+			dummy_system.set_user_data(&dummy_value);
+			auto data = dummy_system.get_user_data();
+			CHECK_EQ(*static_cast<int*>(data), 42);
+		}
+
+		SUBCASE("get system type compile time or runtime")
+		{
+			CHECK_EQ(dummy_system.get_system_type(), logic_update);
+			CHECK_EQ(dummy_system.get_system_type_rtti(), logic_update);
+			CHECK_EQ(concrete_system::get_system_type(), logic_update);
+		}
+	}
 }
