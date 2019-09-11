@@ -14,67 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/ecs/base.system.hpp"
+#pragma once
+
+#include <st/type.hpp>
 
 namespace antara::gaming::ecs
 {
-    base_system::base_system(entt::registry &entity_registry,
-                             entt::dispatcher &dispatcher,
-                             bool im_a_plugin_system) noexcept :
-            entity_registry_(entity_registry),
-            dispatcher_(dispatcher),
-            is_plugin_{im_a_plugin_system}
+    enum system_type
     {
+        pre_update,
+        logic_update,
+        post_update,
+        size
+    };
 
-    }
-
-    void base_system::mark() noexcept
-    {
-        marked_ = true;
-    }
-
-    void base_system::unmark() noexcept
-    {
-        marked_ = false;
-    }
-
-    bool base_system::is_marked() const noexcept
-    {
-        return marked_;
-    }
-
-    void base_system::enable() noexcept
-    {
-        enabled_ = true;
-    }
-
-    void base_system::disable() noexcept
-    {
-        enabled_ = false;
-    }
-
-    bool base_system::is_enabled() const noexcept
-    {
-        return enabled_;
-    }
-
-    void base_system::im_a_plugin() noexcept
-    {
-        is_plugin_ = true;
-    }
-
-    bool base_system::is_a_plugin() const noexcept
-    {
-        return is_plugin_;
-    }
-
-    void *base_system::get_user_data() noexcept
-    {
-        return user_data_;
-    }
-
-    void base_system::set_user_data(void *data) noexcept
-    {
-        user_data_ = data;
-    }
+    using st_system_pre_update = st::type<system_type, struct system_pre_update_tag>;
+    using st_system_logic_update = st::type<system_type, struct system_logic_update_tag>;
+    using st_system_post_update = st::type<system_type, struct system_post_update_tag>;
 }

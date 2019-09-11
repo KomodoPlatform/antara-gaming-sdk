@@ -12,4 +12,9 @@ FetchContent_Declare(
         URL https://github.com/skypjack/entt/archive/master.zip
 )
 
-FetchContent_MakeAvailable(doctest entt)
+FetchContent_Declare(
+        doom_st
+        URL https://github.com/doom/strong_type/archive/1.0.2.tar.gz
+)
+
+FetchContent_MakeAvailable(doctest entt doom_st)

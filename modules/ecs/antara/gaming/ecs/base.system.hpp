@@ -18,7 +18,7 @@
 
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/base.system.hpp"
+#include "antara/gaming/ecs/system.type.hpp"
 
 namespace antara::gaming::ecs
 {
@@ -33,6 +33,8 @@ namespace antara::gaming::ecs
 
         //! Pure virtual functions
         virtual void update() noexcept = 0;
+        [[nodiscard]] virtual system_type get_system_type_rtti() const noexcept = 0;
+
 
         /**
         * \note This function marks the system, it will be destroyed in the next turn of the game loop by the system_manager.
@@ -101,7 +103,7 @@ namespace antara::gaming::ecs
 
     private:
         //! Private data members
-        bool is_plugin{false};
+        bool is_plugin_{false};
         bool marked_{false};
         bool enabled_{true};
     };
