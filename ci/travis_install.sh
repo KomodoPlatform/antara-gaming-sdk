@@ -28,7 +28,21 @@ function setup_osx() {
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 }
 
+function install_emscripten() {
+    git clone https://github.com/emscripten-core/emsdk.git
+    cd emsdk
+    git pull
+    ./emsdk install latest-upstream
+    ./emsdk activate latest-upstream
+    source ./emsdk_env.sh
+    cd -
+    cd ${HOME}
+    git clone https://github.com/emscripten-core/emscripten.git
+    cd -
+}
+
 #if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then setup_osx || travis_terminate 1; fi
+if [[ "${EMSCRIPTEN_WEB}" == "ON" ]]; then install_emscripten; fi
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]] && [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${DEFAULT_COMPILER}" == "gcc" ]] ; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/${CXX} 100; fi
 if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then last_cmake_linux; fi
 if [[ -n "${CODE_COVERAGE}" ]]; then coverage_setup || travis_terminate 1; fi

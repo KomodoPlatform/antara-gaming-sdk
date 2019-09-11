@@ -5,6 +5,12 @@ matrix:
       python: 3.7
       sudo: true
       dist: xenial
+      env: [CXX=em++, CC=emcc, DEFAULT_COMPILER=emcc, WILL_COMPILE_CODE=ON, PIP=pip, EMSCRIPTEN_WEB=ON]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
       addons:
         apt:
           sources:
