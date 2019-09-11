@@ -24,7 +24,7 @@ namespace antara::gaming::ecs::tests
     {
         TEST_CASE ("base system abstract object tests")
         {
-            struct concrete_system : base_system
+            struct concrete_system final : base_system
             {
                 concrete_system(entt::registry registry, entt::dispatcher dispatcher) : base_system(registry,
                                                                                                     dispatcher)
