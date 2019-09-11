@@ -82,7 +82,7 @@ namespace antara::gaming::ecs::tests
 
         TEST_CASE ("system tests")
         {
-            class logic_concrete_system : public logic_update_system<logic_concrete_system>
+            class logic_concrete_system final : public logic_update_system<logic_concrete_system>
             {
             public:
                 logic_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
@@ -98,7 +98,7 @@ namespace antara::gaming::ecs::tests
                 ~logic_concrete_system() noexcept final = default;
             };
 
-            class pre_concrete_system : public pre_update_system<pre_concrete_system>
+            class pre_concrete_system final : public pre_update_system<pre_concrete_system>
             {
             public:
                 pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
@@ -114,7 +114,7 @@ namespace antara::gaming::ecs::tests
                 ~pre_concrete_system() noexcept final = default;
             };
 
-            class post_concrete_system : public post_update_system<post_concrete_system>
+            class post_concrete_system final : public post_update_system<post_concrete_system>
             {
             public:
                 post_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)

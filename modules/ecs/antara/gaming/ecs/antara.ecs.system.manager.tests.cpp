@@ -18,7 +18,7 @@
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.manager.hpp"
 
-class logic_concrete_system : public antara::gaming::ecs::logic_update_system<logic_concrete_system>
+class logic_concrete_system final : public antara::gaming::ecs::logic_update_system<logic_concrete_system>
 {
 public:
     logic_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
