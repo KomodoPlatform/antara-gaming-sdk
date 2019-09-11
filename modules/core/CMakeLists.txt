@@ -20,3 +20,15 @@ set_target_properties(antara_core_tests
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
         )
 target_enable_coverage(antara_core_tests)
+
+if (EMSCRIPTEN)
+    message(STATUS "Emscripten detected")
+    if (ENABLE_HTML_COMPILATION)
+        message(STATUS "Html compilation enabled")
+        set_target_properties(antara_core_tests PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s EXIT_RUNTIME=1"
+                SUFFIX ".html")
+    else ()
+        message(STATUS "Local js compilation")
+        set_target_properties(antara_core_tests PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s NODERAWFS=1 -s EXIT_RUNTIME=1")
+    endif ()
+endif ()

@@ -7,6 +7,9 @@ function build() {
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then cmd="cmake"; fi
     options="-DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC}"
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then options="-DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/${CXX} -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/${CC}"; fi
+    if [[ "${EMSCRIPTEN_WEB}" == "ON" ]]; then
+      options+=" -DCMAKE_TOOLCHAIN_FILE=${HOME}/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+    fi
     if [[ "${CODE_COVERAGE}" == "ON" ]] && [[ "${BUILD_TYPE}" == "Debug" ]]; then
         options+=' -DENABLE_COVERAGE=ON'
     elif [[ "${ASAN}" == "ON" ]] && [[ "${BUILD_TYPE}" == "Debug" ]]; then
@@ -32,7 +35,11 @@ function build() {
 
 function run_test() {
     cd ${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/bin/unit_tests
-    for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+    if [[ "${EMSCRIPTEN_WEB}" == "ON" ]]; then
+      for i in *_tests*.js; do node ${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+    else
+      for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+    fi
 }
 
 doctest_upload_name="Doctest [travis-ci ${TRAVIS_OS_NAME}-${CC}-${BUILD_TYPE}"
