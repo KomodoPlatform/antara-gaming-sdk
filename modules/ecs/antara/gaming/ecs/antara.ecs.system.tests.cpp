@@ -26,6 +26,11 @@ TEST_CASE ("base system abstract object tests")
 
         }
 
+        [[nodiscard]] antara::gaming::ecs::system_type get_system_type_RTTI() const noexcept final
+        {
+            return antara::gaming::ecs::system_type::logic_update;
+        }
+
         void update() noexcept final
         {
             //!
