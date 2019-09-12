@@ -40,4 +40,26 @@ namespace antara::gaming::ecs
     {
         return *systems_[sys_type].emplace_back(std::move(system));
     }
+
+    void system_manager::sweep_systems_() noexcept
+    {
+        ranges::for_each(systems_, [](auto &&vec_system) -> void {
+            ranges::actions::remove_if(vec_system, &base_system::is_marked);
+        });
+
+        this->need_to_sweep_systems_ = false;
+    }
+
+    std::size_t system_manager::update() noexcept
+    {
+        if (need_to_sweep_systems_) {
+            sweep_systems_();
+        }
+        return 0;
+    }
+
+    std::size_t system_manager::update_systems(system_type system_type_to_update) noexcept
+    {
+        return 0;
+    }
 }

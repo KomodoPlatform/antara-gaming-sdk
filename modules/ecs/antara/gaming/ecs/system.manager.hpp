@@ -44,6 +44,18 @@ namespace antara::gaming::ecs
         explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
 
         /**
+         * \return number of systems successfully updated
+         * \note This is the function that update your systems.
+         * \note Based on the logic of the different kinds of shiva systems,
+         * this function take care of updating your systems in the right order.
+         * \warning If you have not loaded any system into the system_manager the function return 0.
+         * \warning If you decide to mark a system, it's automatically deleted at the next loop tick through this function.
+         */
+        std::size_t update() noexcept;
+
+        std::size_t update_systems(system_type system_type_to_update) noexcept;
+
+        /**
          * \note This function allow you to get a system through a template parameter.
          * \tparam TSystem represents the system to get.
          * \return A reference to the system obtained.
@@ -92,6 +104,60 @@ namespace antara::gaming::ecs
         bool has_systems() const noexcept;
 
         /**
+        * \note This function marks a system that will be destroyed at the next tick of the game loop.
+        * \tparam TSystem Represents the system that needs to be marked
+        * \return true if the system has been marked, false otherwise
+        */
+        template <typename TSystem>
+        bool mark_system() noexcept;
+
+        /**
+         * \note This function marks a list of systems, marked systems will be destroyed at the next tick of the game loop.
+         * \tparam TSystems Represents a list of systems that needs to be marked
+         * \return true if  the list of systems has been marked, false otherwise
+         * \details This function recursively calls the mark_system function
+         * \see mark_system
+         */
+        template <typename ... TSystems>
+        bool mark_systems() noexcept;
+
+        /**
+        * \note This function enable a system
+        * \tparam TSystem Represents the system that needs to be enabled.
+        * \return true if the system has been enabled, false otherwise
+        */
+        template <typename TSystem>
+        bool enable_system() noexcept;
+
+        /**
+         * \note This function enable a list of systems
+         * \tparam TSystems Represents a list of systems that needs to be enabled
+         * \return true if the list of systems has been enabled, false otherwise
+         * \details This function recursively calls the enable_system function
+         * \see enable_system
+         */
+        template <typename ... TSystems>
+        bool enable_systems() noexcept;
+
+        /**
+         * \note This function disable a system
+         * \tparam TSystem Represents the system that needs to be disabled
+         * \return true if the the system has been disabled, false otherwise
+         * \attention If you deactivate a system, it will not be destroyed but simply ignore during the game loop
+         */
+        template <typename TSystem>
+        bool disable_system() noexcept;
+
+        /**
+         * \note This function disable a list of systems
+         * \tparam TSystems  Represents a list of systems that needs to be disabled
+         * \return true if the list of systems has been disabled, false otherwise
+         * \details This function recursively calls the disable_system function
+         */
+        template <typename ... TSystems>
+        bool disable_systems() noexcept;
+
+        /**
          * \return number of systems
          */
         [[nodiscard]] std::size_t nb_systems() const noexcept;
@@ -124,6 +190,8 @@ namespace antara::gaming::ecs
         //! Private member functions
         base_system &add_system_(system_ptr &&system, system_type sys_type) noexcept;
 
+        void sweep_systems_() noexcept;
+
         template<typename TSystem>
         tl::expected<std::reference_wrapper<TSystem>, std::error_code> get_system_() noexcept;
 
@@ -134,6 +202,7 @@ namespace antara::gaming::ecs
         entt::registry &entity_registry_;
         entt::dispatcher &dispatcher_;
         system_registry systems_{{}};
+        bool need_to_sweep_systems_{false};
     };
 }
 
@@ -206,6 +275,56 @@ namespace antara::gaming::ecs
     bool system_manager::has_systems() const noexcept
     {
         return (has_system<TSystems>() && ...);
+    }
+
+    template <typename TSystem>
+    bool system_manager::mark_system() noexcept
+    {
+        if (has_system<TSystem>()) {
+            get_system<TSystem>().mark();
+            need_to_sweep_systems_ = true;
+            return true;
+        }
+        need_to_sweep_systems_ = false;
+        return false;
+    }
+
+    template <typename... TSystems>
+    bool system_manager::mark_systems() noexcept
+    {
+        return (mark_system<TSystems>() && ...);
+    }
+
+    template <typename TSystem>
+    bool system_manager::enable_system() noexcept
+    {
+        if (has_system<TSystem>()) {
+            get_system<TSystem>().enable();
+            return true;
+        }
+        return false;
+    }
+
+    template <typename... TSystems>
+    bool system_manager::enable_systems() noexcept
+    {
+        return (enable_system<TSystems>() && ...);
+    }
+
+    template <typename TSystem>
+    bool system_manager::disable_system() noexcept
+    {
+        if (has_system<TSystem>()) {
+            get_system<TSystem>().disable();
+            return true;
+        }
+        return false;
+    }
+
+    template <typename... TSystems>
+    bool system_manager::disable_systems() noexcept
+    {
+        return (disable_system<TSystems>() && ...);
     }
 
     template<typename TSystem>

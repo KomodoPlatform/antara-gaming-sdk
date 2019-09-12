@@ -74,6 +74,15 @@ namespace antara::gaming::ecs::tests
             CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
         }
 
+        TEST_CASE("remove system")
+        {
+            CHECK_EQ(manager.nb_systems(), 1u);
+            CHECK(manager.mark_system<logic_concrete_system>());
+            manager.update();
+            CHECK_FALSE(manager.has_system<logic_concrete_system>());
+            CHECK_EQ(manager.nb_systems(), 0u);
+        }
+
         TEST_CASE("add multiple systems")
         {
             manager.load_systems<logic_concrete_system, pre_concrete_system>();
@@ -99,6 +108,14 @@ namespace antara::gaming::ecs::tests
             auto&& [c_lgc_sys, c_pre_sys] = c_mgr.get_systems<logic_concrete_system, pre_concrete_system>();
             CHECK_EQ(c_lgc_sys.get_name(), "logic_concrete_system");
             CHECK_EQ(c_pre_sys.get_name(), "pre_concrete_system");
+        }
+
+        TEST_CASE("marked multiple systems")
+        {
+            CHECK(manager.has_systems<logic_concrete_system, pre_concrete_system>());
+            CHECK(manager.mark_systems<logic_concrete_system, pre_concrete_system>());
+            manager.update();
+            CHECK_FALSE(manager.has_systems<logic_concrete_system, pre_concrete_system>());
         }
     }
 }
