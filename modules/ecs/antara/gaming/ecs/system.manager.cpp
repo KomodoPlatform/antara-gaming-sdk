@@ -16,6 +16,7 @@
 
 #include <range/v3/numeric.hpp>
 #include <range/v3/action/remove_if.hpp>
+#include <range/v3/view/filter.hpp>
 #include "antara/gaming/ecs/system.manager.hpp"
 
 namespace antara::gaming::ecs
@@ -64,12 +65,10 @@ namespace antara::gaming::ecs
     std::size_t system_manager::update_systems(system_type system_type_to_update) noexcept
     {
         std::size_t nb_systems_updated = 0ull;
-        ranges::for_each(systems_[system_type_to_update], [&nb_systems_updated](auto &&sys) {
-            if (sys->is_enabled()) {
-                sys->update();
-                nb_systems_updated += 1;
-            }
-        });
+        for (auto &&current_sys : systems_[system_type_to_update] | ranges::views::filter(&base_system::is_enabled)) {
+            current_sys->update();
+            nb_systems_updated += 1;
+        }
         return nb_systems_updated;
     }
 }
