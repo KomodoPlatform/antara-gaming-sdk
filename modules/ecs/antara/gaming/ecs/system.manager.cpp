@@ -31,10 +31,9 @@ namespace antara::gaming::ecs
 
     std::size_t system_manager::nb_systems() const noexcept
     {
-        return std::accumulate(begin(systems_), end(systems_), static_cast<size_t>(0u),
-                               [](size_t accumulator, auto &&vec) {
-                                   return accumulator + vec.size();
-                               });
+        return ranges::accumulate(systems_, size_t{0u}, [](size_t accumulator, auto &&vec) {
+            return accumulator + vec.size();
+        });
     }
 
     base_system &system_manager::add_system_(system_manager::system_ptr &&system, system_type sys_type) noexcept
