@@ -14,6 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <range/v3/numeric.hpp>
+#include <range/v3/action/remove_if.hpp>
 #include "antara/gaming/ecs/system.manager.hpp"
 
 namespace antara::gaming::ecs
@@ -36,7 +38,7 @@ namespace antara::gaming::ecs
         });
     }
 
-    base_system &system_manager::add_system_(system_manager::system_ptr &&system, system_type sys_type) noexcept
+    base_system &system_manager::add_system_(system_manager::system_ptr &&system, antara::gaming::ecs::system_type sys_type) noexcept
     {
         return *systems_[sys_type].emplace_back(std::move(system));
     }

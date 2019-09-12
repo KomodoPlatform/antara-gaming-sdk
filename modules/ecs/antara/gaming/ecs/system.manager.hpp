@@ -19,10 +19,13 @@
 #include <memory>
 #include <system_error>
 #include <tl/expected.hpp>
-#include <range/v3/all.hpp>
-#include <entt/entity/entity.hpp>
+#include <range/v3/algorithm/for_each.hpp>
+#include <range/v3/algorithm/find_if.hpp>
+#include <range/v3/algorithm/any_of.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include "antara/gaming/ecs/base.system.hpp"
+#include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/ecs/system.type.hpp"
 
 namespace antara::gaming::ecs
 {
@@ -91,7 +94,7 @@ namespace antara::gaming::ecs
          * \return true if the system has been loaded, false otherwise
          */
         template<typename TSystem>
-        bool has_system() const noexcept;
+        [[nodiscard]] bool has_system() const noexcept;
 
         /**
          * \note This function allow you to verify if a list of systems is already registered in the system_manager.
@@ -101,7 +104,7 @@ namespace antara::gaming::ecs
          * \see has_system
          */
         template<typename ... TSystems>
-        bool has_systems() const noexcept;
+        [[nodiscard]] bool has_systems() const noexcept;
 
         /**
         * \note This function marks a system that will be destroyed at the next tick of the game loop.
@@ -199,8 +202,8 @@ namespace antara::gaming::ecs
         [[nodiscard]] tl::expected<std::reference_wrapper<const TSystem>, std::error_code> get_system_() const noexcept;
 
         //! Private data members
-        entt::registry &entity_registry_;
-        entt::dispatcher &dispatcher_;
+        [[maybe_unused]] entt::registry &entity_registry_;
+		[[maybe_unused]] entt::dispatcher &dispatcher_;
         system_registry systems_{{}};
         bool need_to_sweep_systems_{false};
     };
