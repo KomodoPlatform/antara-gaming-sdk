@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
 #include <type_traits>
 #include <refl.hpp>
 #include "antara/gaming/ecs/base.system.hpp"
