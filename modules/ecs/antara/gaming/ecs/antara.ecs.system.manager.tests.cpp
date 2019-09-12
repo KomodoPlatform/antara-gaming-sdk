@@ -72,6 +72,9 @@ namespace antara::gaming::ecs::tests
             CHECK(manager.has_system<logic_concrete_system>());
             CHECK_EQ(manager.nb_systems(), 1u);
             CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
+            manager.create_system<logic_concrete_system>();
+            CHECK_EQ(manager.nb_systems(), 1u);
+            CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
         }
 
         TEST_CASE("remove system")
@@ -81,6 +84,7 @@ namespace antara::gaming::ecs::tests
             manager.update();
             CHECK_FALSE(manager.has_system<logic_concrete_system>());
             CHECK_EQ(manager.nb_systems(), 0u);
+            CHECK_FALSE(manager.mark_system<logic_concrete_system>());
         }
 
         TEST_CASE("add multiple systems")
