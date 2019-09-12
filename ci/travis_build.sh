@@ -57,6 +57,7 @@ function run_coverage() {
      lcov -d . -c -o coverage.info
      lcov -r coverage.info "/usr*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/*.test.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/_deps/*" -o coverage.info
      lcov -l coverage.info
      bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"

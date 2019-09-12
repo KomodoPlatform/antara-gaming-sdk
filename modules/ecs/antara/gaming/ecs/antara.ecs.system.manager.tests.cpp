@@ -36,6 +36,27 @@ public:
     ~logic_concrete_system() noexcept final = default;
 };
 
+class pre_concrete_system final : public antara::gaming::ecs::pre_update_system<pre_concrete_system>
+{
+public:
+    pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+    {
+
+    }
+
+    pre_concrete_system() = default;
+
+    void update() noexcept final
+    {
+
+    }
+
+    ~pre_concrete_system() noexcept final = default;
+};
+
+REFL_AUTO(type(logic_concrete_system))
+REFL_AUTO(type(pre_concrete_system))
+
 namespace antara::gaming::ecs::tests
 {
     TEST_SUITE ("system manager test suite")
@@ -43,13 +64,41 @@ namespace antara::gaming::ecs::tests
         entt::registry registry;
         entt::dispatcher dispatcher;
         system_manager manager{registry, dispatcher};
-
+        const system_manager &c_mgr = manager;
         TEST_CASE ("add system")
         {
             CHECK_EQ(manager.nb_systems(), 0u);
             manager.create_system<logic_concrete_system>();
+            CHECK(manager.has_system<logic_concrete_system>());
             CHECK_EQ(manager.nb_systems(), 1u);
             CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
+        }
+
+        TEST_CASE("add multiple systems")
+        {
+            manager.load_systems<logic_concrete_system, pre_concrete_system>();
+            CHECK_EQ(manager.nb_systems(), 2u);
+            CHECK(manager.has_systems<logic_concrete_system, pre_concrete_system>());
+        }
+
+        TEST_CASE("get single system")
+        {
+            auto &logic_system = manager.get_system<logic_concrete_system>();
+
+            const auto& c_logic_system = c_mgr.get_system<logic_concrete_system>();
+            CHECK_EQ(logic_system.get_name(), "logic_concrete_system");
+            CHECK_EQ(c_logic_system.get_name(), "logic_concrete_system");
+        }
+
+        TEST_CASE("get multiple systems")
+        {
+            auto&& [lgc_sys, pre_sys] = manager.get_systems<logic_concrete_system, pre_concrete_system>();
+            CHECK_EQ(lgc_sys.get_name(), "logic_concrete_system");
+            CHECK_EQ(pre_sys.get_name(), "pre_concrete_system");
+
+            auto&& [c_lgc_sys, c_pre_sys] = c_mgr.get_systems<logic_concrete_system, pre_concrete_system>();
+            CHECK_EQ(c_lgc_sys.get_name(), "logic_concrete_system");
+            CHECK_EQ(c_pre_sys.get_name(), "pre_concrete_system");
         }
     }
 }

@@ -16,7 +16,10 @@
 
 #pragma once
 
+#include <iostream>
+#include <string>
 #include <type_traits>
+#include <refl.hpp>
 #include "antara/gaming/ecs/base.system.hpp"
 
 namespace antara::gaming::ecs
@@ -44,12 +47,22 @@ namespace antara::gaming::ecs
          */
         static constexpr system_type get_system_type() noexcept;
 
+
+
         //! Public member functions overriden
         /**
         * \note this function allows you to retrieve the type of a system at runtime.
         * \return ​system_type of the derived system
         */
         [[nodiscard]] system_type get_system_type_rtti() const noexcept final;
+
+        /**
+        * \note this function allow you to get the name of the derived system
+        * \return name of the derived system.
+        */
+        [[nodiscard]] std::string get_name() const noexcept final;
+
+        static std::string get_class_name() noexcept;
     };
 }
 
@@ -79,6 +92,18 @@ namespace antara::gaming::ecs
     system_type system<TSystemDerived, TSystemType>::get_system_type_rtti() const noexcept
     {
         return system::get_system_type();
+    }
+
+    template<typename TSystemDerived, typename TSystemType>
+    std::string system<TSystemDerived, TSystemType>::get_name() const noexcept
+    {
+        return system::get_class_name();
+    }
+
+    template<typename TSystemDerived, typename TSystemType>
+    std::string system<TSystemDerived, TSystemType>::get_class_name() noexcept
+    {
+        return refl::reflect<TSystemDerived>().name.str();
     }
 }
 

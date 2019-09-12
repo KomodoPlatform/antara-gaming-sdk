@@ -14,12 +14,62 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <string>
 #include <doctest/doctest.h>
+#include <refl.hpp>
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::ecs::tests
 {
+    class logic_concrete_system final : public logic_update_system<logic_concrete_system>
+    {
+    public:
+        logic_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        {
+
+        }
+
+        void update() noexcept final
+        {
+
+        }
+
+        ~logic_concrete_system() noexcept final = default;
+    };
+
+    class pre_concrete_system final : public pre_update_system<pre_concrete_system>
+    {
+    public:
+        pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        {
+
+        }
+
+        void update() noexcept final
+        {
+
+        }
+
+        ~pre_concrete_system() noexcept final = default;
+    };
+
+    class post_concrete_system final : public post_update_system<post_concrete_system>
+    {
+    public:
+        post_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        {
+
+        }
+
+        void update() noexcept final
+        {
+
+        }
+
+        ~post_concrete_system() noexcept final = default;
+    };
+
     TEST_SUITE ("antara-gaming ecs test suite")
     {
         TEST_CASE ("base system abstract object tests")
@@ -40,6 +90,11 @@ namespace antara::gaming::ecs::tests
                 void update() noexcept final
                 {
                     //!
+                }
+
+                [[nodiscard]] std::string get_name() const noexcept final
+                {
+                    return "concrete_system";
                 }
 
                 ~concrete_system() noexcept final = default;
@@ -78,57 +133,15 @@ namespace antara::gaming::ecs::tests
                 auto data = dummy_system.get_user_data();
                         CHECK_EQ(*static_cast<int *>(data), 42);
             }
+
+            SUBCASE("check class name") {
+                        CHECK_EQ("concrete_system", dummy_system.get_name());
+                    }
         }
 
         TEST_CASE ("system tests")
         {
-            class logic_concrete_system final : public logic_update_system<logic_concrete_system>
-            {
-            public:
-                logic_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
-                {
 
-                }
-
-                void update() noexcept final
-                {
-
-                }
-
-                ~logic_concrete_system() noexcept final = default;
-            };
-
-            class pre_concrete_system final : public pre_update_system<pre_concrete_system>
-            {
-            public:
-                pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
-                {
-
-                }
-
-                void update() noexcept final
-                {
-
-                }
-
-                ~pre_concrete_system() noexcept final = default;
-            };
-
-            class post_concrete_system final : public post_update_system<post_concrete_system>
-            {
-            public:
-                post_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
-                {
-
-                }
-
-                void update() noexcept final
-                {
-
-                }
-
-                ~post_concrete_system() noexcept final = default;
-            };
             entt::registry registry;
             entt::dispatcher dispatcher;
             logic_concrete_system dummy_system{registry, dispatcher};
@@ -187,6 +200,14 @@ namespace antara::gaming::ecs::tests
                         pre_dummy_system.update();
                         post_dummy_system.update();
                     }
+
+                    SUBCASE ("system name") {
+                        CHECK_EQ(dummy_system.get_name(), "antara::gaming::ecs::tests::logic_concrete_system");
+                    }
         }
     }
 }
+
+REFL_AUTO(type(antara::gaming::ecs::tests::logic_concrete_system))
+REFL_AUTO(type(antara::gaming::ecs::tests::post_concrete_system))
+REFL_AUTO(type(antara::gaming::ecs::tests::pre_concrete_system))
