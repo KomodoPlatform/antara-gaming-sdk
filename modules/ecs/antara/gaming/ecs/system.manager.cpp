@@ -38,7 +38,8 @@ namespace antara::gaming::ecs
         });
     }
 
-    base_system &system_manager::add_system_(system_manager::system_ptr &&system, antara::gaming::ecs::system_type sys_type) noexcept
+    base_system &
+    system_manager::add_system_(system_manager::system_ptr &&system, antara::gaming::ecs::system_type sys_type) noexcept
     {
         return *systems_[sys_type].emplace_back(std::move(system));
     }
@@ -62,6 +63,13 @@ namespace antara::gaming::ecs
 
     std::size_t system_manager::update_systems(system_type system_type_to_update) noexcept
     {
-        return 0;
+        std::size_t nb_systems_updated = 0ull;
+        ranges::for_each(systems_[system_type_to_update], [&nb_systems_updated](auto &&sys) {
+            if (sys->is_enabled()) {
+                sys->update();
+                nb_systems_updated += 1;
+            }
+        });
+        return nb_systems_updated;
     }
 }

@@ -90,6 +90,17 @@ namespace antara::gaming::ecs::tests
             CHECK(manager.has_systems<logic_concrete_system, pre_concrete_system>());
         }
 
+        TEST_CASE("update/enable/disable systems from specific type")
+        {
+            CHECK_EQ(manager.update_systems(pre_update), 1ull);
+            CHECK(manager.disable_system<pre_concrete_system>());
+            CHECK_EQ(manager.update_systems(pre_update), 0ull);
+            CHECK(manager.enable_system<pre_concrete_system>());
+
+            CHECK(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
+            CHECK(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
+        }
+
         TEST_CASE("get single system")
         {
             auto &logic_system = manager.get_system<logic_concrete_system>();
