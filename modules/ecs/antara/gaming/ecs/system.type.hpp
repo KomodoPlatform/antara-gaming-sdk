@@ -28,7 +28,7 @@ namespace antara::gaming::ecs
         size
     };
 
-    using st_system_pre_update = st::type<system_type, struct system_pre_update_tag>;
+    using st_system_pre_update = st::type<ecs::system_type, struct system_pre_update_tag>;
     using st_system_logic_update = st::type<system_type, struct system_logic_update_tag>;
     using st_system_post_update = st::type<system_type, struct system_post_update_tag>;
 }

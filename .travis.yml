@@ -78,7 +78,7 @@ matrix:
           packages: [clang-8, libstdc++-8-dev]
       env: [CXX=clang++-8, CC=clang-8, BUILD_TYPE=Debug, DEFAULT_COMPILER=clang, WILL_COMPILE_CODE=ON, DEPLOY=ON, PIP=pip, UBSAN=ON]
     - os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11
       sudo: true
       env: [BUILD_TYPE=Release,
             CLANG_VERSION=clang-8,
@@ -89,14 +89,12 @@ matrix:
             RANLIB=llvm-ranlib,
             LDFLAGS=-L/usr/local/opt/llvm/lib,
             CPPFLAGS=-I/usr/local/opt/llvm/include,
-            PIP=pip3,
             WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
       addons:
         homebrew:
-          packages: [cmake,ninja,llvm,python3]
-          update: true
+          packages: [cmake,ninja,llvm]
     - os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11
       sudo: true
       env: [BUILD_TYPE=Debug,
             CODE_COVERAGE=ON,
@@ -108,12 +106,10 @@ matrix:
             RANLIB=llvm-ranlib,
             LDFLAGS=-L/usr/local/opt/llvm/lib,
             CPPFLAGS=-I/usr/local/opt/llvm/include,
-            PIP=pip3,
             WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
       addons:
         homebrew:
-          packages: [cmake,ninja,llvm,python3]
-          update: true
+          packages: [cmake,ninja,llvm]
 
 
 install:
