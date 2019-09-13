@@ -21,7 +21,7 @@ namespace antara::gaming::event::tests
 {
     TEST_SUITE("fatal error")
     {
-        TEST_CASE("construct from an eror code")
+        TEST_CASE("construct from an error code")
         {
             fatal_error fatal_error_event{std::make_error_code(std::errc::result_out_of_range)};
             CHECK_EQ(fatal_error_event.ec_, std::errc::result_out_of_range);
