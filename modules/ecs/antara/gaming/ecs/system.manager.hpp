@@ -27,6 +27,7 @@
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.type.hpp"
+#include "antara/gaming/timer/time.step.hpp"
 
 namespace antara::gaming::ecs
 {
@@ -203,6 +204,9 @@ namespace antara::gaming::ecs
         [[nodiscard]] tl::expected<std::reference_wrapper<const TSystem>, std::error_code> get_system_() const noexcept;
 
         //! Private data members
+        using clock = std::chrono::steady_clock;
+        clock::time_point start_{clock::now()};
+        timer::time_step timestep_;
         [[maybe_unused]] entt::registry &entity_registry_;
 		[[maybe_unused]] entt::dispatcher &dispatcher_;
         system_registry systems_{{}};
@@ -216,8 +220,9 @@ namespace antara::gaming::ecs
     template<typename TSystem>
     const TSystem &system_manager::get_system() const noexcept
     {
-        const auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
+        const auto ret = get_system_<TSystem>().or_else([](const std::error_code &ec) {
             //! TODO: error handling for get_system (const and non const)
+            static_cast<void>(ec);
             //this->dispatcher_.trigger<event::fatal_error_occured>(ec);
         });
         return (*ret).get();
@@ -226,7 +231,8 @@ namespace antara::gaming::ecs
     template<typename TSystem>
     TSystem &system_manager::get_system() noexcept
     {
-        auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
+        auto ret = get_system_<TSystem>().or_else([](const std::error_code &ec) {
+            static_cast<void>(ec);
             //this->dispatcher_.trigger<event::fatal_error_occured>(ec);
         });
         return (*ret).get();
