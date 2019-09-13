@@ -137,6 +137,8 @@ namespace antara::gaming::ecs::tests
             CHECK_FALSE(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
             CHECK_EQ(0ull, manager.update());
             CHECK_EQ(0ull, manager.nb_systems());
+            manager.get_systems<logic_concrete_system, pre_concrete_system>();
+            c_mgr.get_systems<logic_concrete_system, pre_concrete_system>();
         }
     }
 }

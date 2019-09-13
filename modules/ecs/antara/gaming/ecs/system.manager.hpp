@@ -28,6 +28,7 @@
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.type.hpp"
 #include "antara/gaming/timer/time.step.hpp"
+#include "antara/gaming/event/fatal.error.event.hpp"
 
 namespace antara::gaming::ecs
 {
@@ -113,7 +114,7 @@ namespace antara::gaming::ecs
         * \tparam TSystem Represents the system that needs to be marked
         * \return true if the system has been marked, false otherwise
         */
-        template <typename TSystem>
+        template<typename TSystem>
         bool mark_system() noexcept;
 
         /**
@@ -123,7 +124,7 @@ namespace antara::gaming::ecs
          * \details This function recursively calls the mark_system function
          * \see mark_system
          */
-        template <typename ... TSystems>
+        template<typename ... TSystems>
         bool mark_systems() noexcept;
 
         /**
@@ -131,7 +132,7 @@ namespace antara::gaming::ecs
         * \tparam TSystem Represents the system that needs to be enabled.
         * \return true if the system has been enabled, false otherwise
         */
-        template <typename TSystem>
+        template<typename TSystem>
         bool enable_system() noexcept;
 
         /**
@@ -141,7 +142,7 @@ namespace antara::gaming::ecs
          * \details This function recursively calls the enable_system function
          * \see enable_system
          */
-        template <typename ... TSystems>
+        template<typename ... TSystems>
         bool enable_systems() noexcept;
 
         /**
@@ -150,7 +151,7 @@ namespace antara::gaming::ecs
          * \return true if the the system has been disabled, false otherwise
          * \attention If you deactivate a system, it will not be destroyed but simply ignore during the game loop
          */
-        template <typename TSystem>
+        template<typename TSystem>
         bool disable_system() noexcept;
 
         /**
@@ -159,7 +160,7 @@ namespace antara::gaming::ecs
          * \return true if the list of systems has been disabled, false otherwise
          * \details This function recursively calls the disable_system function
          */
-        template <typename ... TSystems>
+        template<typename ... TSystems>
         bool disable_systems() noexcept;
 
         /**
@@ -208,7 +209,7 @@ namespace antara::gaming::ecs
         clock::time_point start_{clock::now()};
         timer::time_step timestep_;
         [[maybe_unused]] entt::registry &entity_registry_;
-		[[maybe_unused]] entt::dispatcher &dispatcher_;
+        [[maybe_unused]] entt::dispatcher &dispatcher_;
         system_registry systems_{{}};
         bool need_to_sweep_systems_{false};
     };
@@ -220,10 +221,8 @@ namespace antara::gaming::ecs
     template<typename TSystem>
     const TSystem &system_manager::get_system() const noexcept
     {
-        const auto ret = get_system_<TSystem>().or_else([](const std::error_code &ec) {
-            //! TODO: error handling for get_system (const and non const)
-            static_cast<void>(ec);
-            //this->dispatcher_.trigger<event::fatal_error_occured>(ec);
+        const auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
+            this->dispatcher_.trigger<event::fatal_error>(ec);
         });
         return (*ret).get();
     }
@@ -231,9 +230,8 @@ namespace antara::gaming::ecs
     template<typename TSystem>
     TSystem &system_manager::get_system() noexcept
     {
-        auto ret = get_system_<TSystem>().or_else([](const std::error_code &ec) {
-            static_cast<void>(ec);
-            //this->dispatcher_.trigger<event::fatal_error_occured>(ec);
+        auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
+            this->dispatcher_.trigger<event::fatal_error>(ec);
         });
         return (*ret).get();
     }
@@ -287,7 +285,7 @@ namespace antara::gaming::ecs
         return (has_system<TSystems>() && ...);
     }
 
-    template <typename TSystem>
+    template<typename TSystem>
     bool system_manager::mark_system() noexcept
     {
         if (has_system<TSystem>()) {
@@ -299,13 +297,13 @@ namespace antara::gaming::ecs
         return false;
     }
 
-    template <typename... TSystems>
+    template<typename... TSystems>
     bool system_manager::mark_systems() noexcept
     {
         return (mark_system<TSystems>() && ...);
     }
 
-    template <typename TSystem>
+    template<typename TSystem>
     bool system_manager::enable_system() noexcept
     {
         if (has_system<TSystem>()) {
@@ -315,13 +313,13 @@ namespace antara::gaming::ecs
         return false;
     }
 
-    template <typename... TSystems>
+    template<typename... TSystems>
     bool system_manager::enable_systems() noexcept
     {
         return (enable_system<TSystems>() && ...);
     }
 
-    template <typename TSystem>
+    template<typename TSystem>
     bool system_manager::disable_system() noexcept
     {
         if (has_system<TSystem>()) {
@@ -331,7 +329,7 @@ namespace antara::gaming::ecs
         return false;
     }
 
-    template <typename... TSystems>
+    template<typename... TSystems>
     bool system_manager::disable_systems() noexcept
     {
         return (disable_system<TSystems>() && ...);

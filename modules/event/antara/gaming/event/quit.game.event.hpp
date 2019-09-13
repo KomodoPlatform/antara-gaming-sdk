@@ -20,7 +20,7 @@ namespace antara::gaming::event
 {
     struct quit_game
     {
-        explicit quit_game(int return_value = 0) noexcept;
+        quit_game(int return_value = 0) noexcept;
         int return_value_;
     };
 }
