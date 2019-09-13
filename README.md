@@ -71,7 +71,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 -   **Roman Sztergbaum** - _Co-Creator_ & _Lead Dev_ - [Milerius](https://github.com/Milerius)
--   **Tolga Ay** - _Co-Creator_ - [Naezith](https://github.com/Naezith)
+-   **Tolga Ay** - _Co-Creator_ - [naezith](https://github.com/Naezith)
 
 See also the list of [contributors](./CONTRIBUTORS.md) who participated in this project.
 
