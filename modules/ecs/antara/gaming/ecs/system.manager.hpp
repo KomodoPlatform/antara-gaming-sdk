@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <exception>
 #include <memory>
 #include <system_error>
 #include <tl/expected.hpp>
@@ -217,7 +218,7 @@ namespace antara::gaming::ecs
     {
         const auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
             //! TODO: error handling for get_system (const and non const)
-            //this->dispatcher_.trigger<shiva::event::fatal_error_occured>(ec);
+            //this->dispatcher_.trigger<event::fatal_error_occured>(ec);
         });
         return (*ret).get();
     }
@@ -226,7 +227,7 @@ namespace antara::gaming::ecs
     TSystem &system_manager::get_system() noexcept
     {
         auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
-            //this->dispatcher_.trigger<shiva::event::fatal_error_occured>(ec);
+            //this->dispatcher_.trigger<event::fatal_error_occured>(ec);
         });
         return (*ret).get();
     }
@@ -334,7 +335,7 @@ namespace antara::gaming::ecs
     tl::expected<std::reference_wrapper<TSystem>, std::error_code> system_manager::get_system_() noexcept
     {
         if (!nb_systems(TSystem::get_system_type())) {
-            return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range));
+            return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
         }
 
         constexpr const auto sys_type = TSystem::get_system_type();
@@ -346,14 +347,14 @@ namespace antara::gaming::ecs
             auto &system = static_cast<TSystem &>(*(*it));
             return std::reference_wrapper<TSystem>(system);
         }
-        return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range));
+        return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
     }
 
     template<typename TSystem>
     tl::expected<std::reference_wrapper<const TSystem>, std::error_code> system_manager::get_system_() const noexcept
     {
         if (!nb_systems(TSystem::get_system_type())) {
-            return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range));
+            return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
         }
 
         constexpr const auto sys_type = TSystem::get_system_type();
@@ -364,6 +365,6 @@ namespace antara::gaming::ecs
             const auto &system = static_cast<const TSystem &>(*(*it));
             return std::reference_wrapper<const TSystem>(system);
         }
-        return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range));
+        return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
     }
 }
