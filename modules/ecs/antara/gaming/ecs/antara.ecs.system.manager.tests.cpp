@@ -102,7 +102,9 @@ namespace antara::gaming::ecs::tests
             CHECK(manager.enable_system<pre_concrete_system>());
 
             CHECK(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
+            CHECK_EQ(manager.update(), 0ull);
             CHECK(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
+            CHECK_GE(manager.update(), 1ull);
         }
 
         TEST_CASE("get single system")
@@ -133,6 +135,8 @@ namespace antara::gaming::ecs::tests
             CHECK_FALSE(manager.has_systems<logic_concrete_system, pre_concrete_system>());
             CHECK_FALSE(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
             CHECK_FALSE(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
+            CHECK_EQ(0ull, manager.update());
+            CHECK_EQ(0ull, manager.nb_systems());
         }
     }
 }

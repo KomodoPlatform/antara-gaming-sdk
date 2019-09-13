@@ -2,7 +2,7 @@
 add_library(antara_ecs_shared_sources INTERFACE)
 target_sources(antara_ecs_shared_sources INTERFACE antara/gaming/ecs/base.system.cpp antara/gaming/ecs/system.manager.cpp)
 target_include_directories(antara_ecs_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_ecs_shared_sources INTERFACE EnTT strong_type expected range-v3 antara::refl-cpp)
+target_link_libraries(antara_ecs_shared_sources INTERFACE EnTT strong_type expected range-v3 antara::refl-cpp antara::default_settings antara::timer)
 add_library(antara::ecs_shared_sources ALIAS antara_ecs_shared_sources)
 
 

@@ -56,10 +56,26 @@ namespace antara::gaming::ecs
 
     std::size_t system_manager::update() noexcept
     {
+        if (!nb_systems())
+            return 0u;
+
+        size_t nb_systems_updated = 0u;
+        timestep_.start_frame();
+        nb_systems_updated += update_systems(system_type::pre_update);
+
+        //LCOV_EXCL_START
+        while (timestep_.is_update_required()) {
+            nb_systems_updated += update_systems(system_type::logic_update);
+            timestep_.perform_update();
+        }
+        //LCOV_EXCL_STOP
+
+        nb_systems_updated += update_systems(system_type::post_update);
+
         if (need_to_sweep_systems_) {
             sweep_systems_();
         }
-        return 0;
+        return nb_systems_updated;
     }
 
     std::size_t system_manager::update_systems(system_type system_type_to_update) noexcept
