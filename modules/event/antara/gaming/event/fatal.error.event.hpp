@@ -23,7 +23,7 @@ namespace antara::gaming::event
 {
     struct fatal_error
     {
-        explicit fatal_error(std::error_code ec);
+        fatal_error(std::error_code ec);
         std::error_code ec_;
     };
 }
