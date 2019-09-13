@@ -1,0 +1,36 @@
+/******************************************************************************
+ * Copyright © 2013-2019 The Komodo Platform Developers.                      *
+ *                                                                            *
+ * See the AUTHORS, DEVELOPER-AGREEMENT and LICENSE files at                  *
+ * the top-level directory of this distribution for the individual copyright  *
+ * holder information and the developer policies on copyright and licensing.  *
+ *                                                                            *
+ * Unless otherwise agreed in a custom licensing agreement, no part of the    *
+ * Komodo Platform software, including this file may be copied, modified,     *
+ * propagated or distributed except according to the terms contained in the   *
+ * LICENSE file                                                               *
+ *                                                                            *
+ * Removal or modification of this copyright notice is prohibited.            *
+ *                                                                            *
+ ******************************************************************************/
+
+#include <doctest/doctest.h>
+#include "antara/gaming/event/quit.game.event.hpp"
+
+namespace antara::gaming::event::tests
+{
+    TEST_SUITE("quit game event")
+    {
+        TEST_CASE("default constructible")
+        {
+            quit_game q_event{};
+            CHECK_EQ(q_event.return_value_, 0);
+        }
+
+        TEST_CASE("constructible with a value")
+        {
+            quit_game q_event{-1};
+            CHECK_EQ(q_event.return_value_, -1);
+        }
+    }
+}
