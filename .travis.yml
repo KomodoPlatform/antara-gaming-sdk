@@ -89,7 +89,8 @@ matrix:
             RANLIB=llvm-ranlib,
             LDFLAGS=-L/usr/local/opt/llvm/lib,
             CPPFLAGS=-I/usr/local/opt/llvm/include,
-            WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
+            WILL_COMPILE_CODE=ON,
+            DEFAULT_COMPILER=clang]
       addons:
         homebrew:
           packages: [cmake,ninja,llvm]
@@ -106,7 +107,8 @@ matrix:
             RANLIB=llvm-ranlib,
             LDFLAGS=-L/usr/local/opt/llvm/lib,
             CPPFLAGS=-I/usr/local/opt/llvm/include,
-            WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
+            WILL_COMPILE_CODE=ON,
+            DEFAULT_COMPILER=clang]
       addons:
         homebrew:
           packages: [cmake,ninja,llvm]
