@@ -21,7 +21,7 @@ FetchContent_Declare(
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)
 FetchContent_Declare(
         expected
-        URL https://github.com/TartanLlama/expected/archive/master.zip
+        URL https://github.com/Milerius/expected/archive/patch-1.zip
 )
 
 FetchContent_Declare(
