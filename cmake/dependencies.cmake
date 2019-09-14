@@ -37,7 +37,7 @@ FetchContent_Declare(
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_Declare(
             SFML
-            URL https://github.com/SFML/SFML/archive/master.zip
+            URL https://github.com/Milerius/SFML/archive/patch-1.zip
     )
 endif()
 
