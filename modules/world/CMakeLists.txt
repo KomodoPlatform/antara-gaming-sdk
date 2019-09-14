@@ -1,27 +1,21 @@
 ## shared sources between the module and his unit tests
-add_library(antara_world_shared_sources INTERFACE)
-target_sources(antara_world_shared_sources INTERFACE antara/gaming/world/world.app.cpp)
-target_include_directories(antara_world_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_world_shared_sources INTERFACE antara::ecs)
+add_library(antara_world_shared_sources STATIC)
+target_sources(antara_world_shared_sources PRIVATE antara/gaming/world/world.app.cpp)
+target_include_directories(antara_world_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_world_shared_sources PUBLIC antara::ecs)
 if (EMSCRIPTEN)
     if (ENABLE_HTML_COMPILATION)
-        target_compile_definitions(antara_world_shared_sources INTERFACE EMSCRIPTEN_ONLY_WEB)
+        target_compile_definitions(antara_world_shared_sources PUBLIC EMSCRIPTEN_ONLY_WEB)
     endif ()
 endif ()
-add_library(antara::world_shared_sources ALIAS antara_world_shared_sources)
-
-
-##! module definition
-add_library(antara_world OBJECT)
-target_link_libraries(antara_world PUBLIC antara::world_shared_sources)
-add_library(antara::world ALIAS antara_world)
+add_library(antara::world ALIAS antara_world_shared_sources)
 
 ##! antara world tests
 add_executable(antara_world_tests)
 target_sources(antara_world_tests PUBLIC
         antara/gaming/world/antara.world.tests.cpp
         antara/gaming/world/antara.world.app.tests.cpp)
-target_link_libraries(antara_world_tests PRIVATE doctest PUBLIC antara::world_shared_sources)
+target_link_libraries(antara_world_tests PRIVATE doctest PUBLIC antara::world)
 set_target_properties(antara_world_tests
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
