@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include "antara/gaming/event/fatal.error.event.hpp"
+#include "antara/gaming/event/fatal.error.hpp"
 
 namespace antara::gaming::event::tests
 {

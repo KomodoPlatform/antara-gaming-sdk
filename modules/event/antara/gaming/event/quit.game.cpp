@@ -14,12 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utility>
-#include "antara/gaming/event/fatal.error.event.hpp"
+#include "antara/gaming/event/quit.game.hpp"
 
 namespace antara::gaming::event
 {
-    fatal_error::fatal_error(std::error_code ec) : ec_(ec)
+    quit_game::quit_game(int return_value) noexcept : return_value_(return_value)
     {
+
     }
 }
