@@ -16,7 +16,8 @@ add_executable(antara_event_tests)
 target_sources(antara_event_tests PUBLIC
         antara/gaming/event/antara.event.tests.cpp
         antara/gaming/event/antara.event.quit.game.tests.cpp
-        antara/gaming/event/antara.event.fatal.error.tests.cpp)
+        antara/gaming/event/antara.event.fatal.error.tests.cpp
+        antara/gaming/event/antara.event.key.pressed.tests.cpp)
 target_link_libraries(antara_event_tests PRIVATE doctest PUBLIC antara::event_shared_sources)
 set_target_properties(antara_event_tests
         PROPERTIES
