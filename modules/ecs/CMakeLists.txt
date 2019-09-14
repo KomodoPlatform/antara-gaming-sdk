@@ -1,6 +1,6 @@
 ## shared sources between the module and his unit tests
 add_library(antara_ecs_shared_sources STATIC)
-target_sources(antara_ecs_shared_sources PUBLIC antara/gaming/ecs/base.system.cpp antara/gaming/ecs/system.manager.cpp)
+target_sources(antara_ecs_shared_sources PRIVATE antara/gaming/ecs/base.system.cpp antara/gaming/ecs/system.manager.cpp)
 target_include_directories(antara_ecs_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_ecs_shared_sources PUBLIC EnTT strong_type expected range-v3 antara::refl-cpp antara::default_settings antara::timer antara::event)
 add_library(antara::ecs ALIAS antara_ecs_shared_sources)

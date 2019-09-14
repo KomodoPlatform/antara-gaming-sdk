@@ -12,3 +12,8 @@ if (EMSCRIPTEN)
         set_target_properties(antara-sfml-example PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s NODERAWFS=1 -s EXIT_RUNTIME=1")
     endif ()
 endif ()
+
+set_target_properties(antara-sfml-example
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
+        )
