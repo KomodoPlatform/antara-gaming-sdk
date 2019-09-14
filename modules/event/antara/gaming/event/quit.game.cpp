@@ -14,17 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/event/fatal.error.hpp"
+#include "antara/gaming/event/quit.game.hpp"
 
-namespace antara::gaming::event::tests
+namespace antara::gaming::event
 {
-    TEST_SUITE("fatal error")
+    quit_game::quit_game(int return_value) noexcept : return_value_(return_value)
     {
-        TEST_CASE("construct from an error code")
-        {
-            fatal_error fatal_error_event{std::make_error_code(std::errc::result_out_of_range)};
-            CHECK_EQ(fatal_error_event.ec_.value(), static_cast<int>(std::errc::result_out_of_range));
-        }
+
     }
 }

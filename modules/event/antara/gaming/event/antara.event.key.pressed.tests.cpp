@@ -15,16 +15,16 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include "antara/gaming/event/fatal.error.hpp"
+#include "antara/gaming/event/key.pressed.hpp"
 
 namespace antara::gaming::event::tests
 {
-    TEST_SUITE("fatal error")
+    TEST_SUITE("key pressed test suite")
     {
-        TEST_CASE("construct from an error code")
+        TEST_CASE("can construct from a key")
         {
-            fatal_error fatal_error_event{std::make_error_code(std::errc::result_out_of_range)};
-            CHECK_EQ(fatal_error_event.ec_.value(), static_cast<int>(std::errc::result_out_of_range));
+            event::key_pressed key_pressed_event{input::key::a};
+            CHECK_EQ(key_pressed_event.key_, input::key::a);
         }
     }
 }

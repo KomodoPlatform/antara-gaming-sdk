@@ -14,11 +14,11 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/event/quit.game.event.hpp"
+#include "antara/gaming/event/key.pressed.hpp"
 
 namespace antara::gaming::event
 {
-    quit_game::quit_game(int return_value) noexcept : return_value_(return_value)
+    key_pressed::key_pressed(input::key key) noexcept : key_(key)
     {
 
     }

@@ -14,12 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utility>
-#include "antara/gaming/event/fatal.error.event.hpp"
+#pragma once
+
+#include "antara/gaming/input/keyboard.hpp"
 
 namespace antara::gaming::event
 {
-    fatal_error::fatal_error(std::error_code ec) : ec_(ec)
+    struct key_pressed
     {
-    }
+        key_pressed(input::key key) noexcept;
+
+        antara::gaming::input::key key_;
+    };
 }

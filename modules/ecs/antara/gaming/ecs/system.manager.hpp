@@ -28,7 +28,7 @@
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.type.hpp"
 #include "antara/gaming/timer/time.step.hpp"
-#include "antara/gaming/event/fatal.error.event.hpp"
+#include "antara/gaming/event/fatal.error.hpp"
 
 namespace antara::gaming::ecs
 {

@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include "antara/gaming/event/quit.game.event.hpp"
+#include "antara/gaming/event/quit.game.hpp"
 
 namespace antara::gaming::event::tests
 {
