@@ -26,7 +26,7 @@ mkdir build ## bash or powershell
 cd build ## bash or powershell
 
 ## Release or Debug are available
-cmake -DCMAKE_BUILD_TYPE=Debug ../ #Linux / Osx
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=your_path_to_your_clang++ ../ #Linux / Osx 
 cmake -DCMAKE_BUILD_TYPE=Debug -G "Visual Studio 16 2019" -A x64 -T "ClangCl" -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang-cl.exe" ../ #Windows
 
 ## Build (Debug / Release available)
@@ -55,6 +55,7 @@ They are located in the `bin/unit_tests` (Linux/Osx) or `bin/unit_tests/%CMAKE_B
 -   [refl-cpp](https://github.com/veselink1/refl-cpp) A compile-time reflection library for modern C++ 🔥
 -   [range-v3](https://github.com/ericniebler/range-v3) Range library for C++14/17/20, basis for C++20's std::ranges
 -   [expected](https://github.com/TartanLlama/expected) C++11/14/17 std::expected with functional-style extensions https://tl.tartanllama.xyz
+-   (optional)[SFML](https://github.com/SFML/SFML) Simple and Fast Multimedia Library http://www.sfml-dev.org/
 
 ## Code of Conduct
 
