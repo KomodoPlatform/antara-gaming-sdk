@@ -7,7 +7,7 @@ add_library(antara::event_shared_sources ALIAS antara_event_shared_sources)
 
 
 ##! module definition
-add_library(antara_event OBJECT)
+add_library(antara_event STATIC)
 target_link_libraries(antara_event PUBLIC antara::event_shared_sources)
 add_library(antara::event ALIAS antara_event)
 

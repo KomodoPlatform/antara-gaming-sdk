@@ -34,7 +34,17 @@ FetchContent_Declare(
         URL https://github.com/veselink1/refl-cpp/archive/master.zip
 )
 
+if (USE_SFML_ANTARA_WRAPPER)
+    FetchContent_Declare(
+            SFML
+            URL https://github.com/SFML/SFML/archive/master.zip
+    )
+endif()
+
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp)
+if (USE_SFML_ANTARA_WRAPPER)
+    FetchContent_MakeAvailable(SFML)
+endif()
 
 add_library(refl-cpp INTERFACE)
 target_include_directories(refl-cpp INTERFACE ${refl-cpp_SOURCE_DIR})

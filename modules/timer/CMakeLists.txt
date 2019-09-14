@@ -7,7 +7,7 @@ add_library(antara::timer_shared_sources ALIAS antara_timer_shared_sources)
 
 
 ##! module definition
-add_library(antara_timer OBJECT)
+add_library(antara_timer STATIC)
 target_link_libraries(antara_timer PUBLIC antara::timer_shared_sources)
 add_library(antara::timer ALIAS antara_timer)
 

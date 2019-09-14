@@ -7,7 +7,7 @@ add_library(antara::ecs_shared_sources ALIAS antara_ecs_shared_sources)
 
 
 ##! module definition
-add_library(antara_ecs OBJECT)
+add_library(antara_ecs STATIC)
 target_link_libraries(antara_ecs PUBLIC antara::ecs_shared_sources)
 add_library(antara::ecs ALIAS antara_ecs)
 

@@ -12,7 +12,7 @@ add_library(antara::world_shared_sources ALIAS antara_world_shared_sources)
 
 
 ##! module definition
-add_library(antara_world OBJECT)
+add_library(antara_world STATIC)
 target_link_libraries(antara_world PUBLIC antara::world_shared_sources)
 add_library(antara::world ALIAS antara_world)
 
