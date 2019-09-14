@@ -17,3 +17,11 @@ set_target_properties(antara-sfml-example
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
         )
+
+if (WIN32)
+    ADD_CUSTOM_COMMAND( TARGET antara-sfml-example POST_BUILD
+            COMMAND  ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib"  "${CMAKE_BINARY_DIR}/bin/"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:antara-sfml-example>
+            )
+endif ()
