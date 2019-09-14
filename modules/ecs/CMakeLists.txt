@@ -1,15 +1,9 @@
 ## shared sources between the module and his unit tests
-add_library(antara_ecs_shared_sources INTERFACE)
-target_sources(antara_ecs_shared_sources INTERFACE antara/gaming/ecs/base.system.cpp antara/gaming/ecs/system.manager.cpp)
-target_include_directories(antara_ecs_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_ecs_shared_sources INTERFACE EnTT strong_type expected range-v3 antara::refl-cpp antara::default_settings antara::timer antara::event)
-add_library(antara::ecs_shared_sources ALIAS antara_ecs_shared_sources)
-
-
-##! module definition
-add_library(antara_ecs STATIC)
-target_link_libraries(antara_ecs PUBLIC antara::ecs_shared_sources)
-add_library(antara::ecs ALIAS antara_ecs)
+add_library(antara_ecs_shared_sources STATIC)
+target_sources(antara_ecs_shared_sources PUBLIC antara/gaming/ecs/base.system.cpp antara/gaming/ecs/system.manager.cpp)
+target_include_directories(antara_ecs_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_ecs_shared_sources PUBLIC EnTT strong_type expected range-v3 antara::refl-cpp antara::default_settings antara::timer antara::event)
+add_library(antara::ecs ALIAS antara_ecs_shared_sources)
 
 ##! antara ecs tests
 add_executable(antara_ecs_tests)
@@ -17,7 +11,7 @@ target_sources(antara_ecs_tests PUBLIC
         antara/gaming/ecs/antara.ecs.tests.cpp
         antara/gaming/ecs/antara.ecs.system.tests.cpp
         antara/gaming/ecs/antara.ecs.system.manager.tests.cpp)
-target_link_libraries(antara_ecs_tests PRIVATE doctest PUBLIC antara::ecs_shared_sources)
+target_link_libraries(antara_ecs_tests PRIVATE doctest PUBLIC antara::ecs)
 set_target_properties(antara_ecs_tests
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
