@@ -34,6 +34,14 @@ namespace antara::gaming::scenes
         return false;
     }
 
+    void manager::clear()
+    {
+		while (!scenes_.empty())
+		{
+			scenes_.pop();
+		}
+    }
+
     void manager::change_scene(manager::scene_ptr &&scene, bool just_push_scene) noexcept
     {
         if (not just_push_scene) {

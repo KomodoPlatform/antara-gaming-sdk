@@ -33,12 +33,12 @@ namespace antara::gaming::scenes::tests
         {
         }
 
-        bool on_key_pressed(const event::key_pressed &evt) noexcept final
+        bool on_key_pressed([[maybe_unused]] const event::key_pressed &evt) noexcept final
         {
             return true;
         }
 
-        bool on_key_released(const event::key_released &evt) noexcept final
+        bool on_key_released([[maybe_unused]] const event::key_released &evt) noexcept final
         {
             return true;
         }
@@ -76,7 +76,7 @@ namespace antara::gaming::scenes::tests
             return true;
         }
 
-        bool on_key_released(const event::key_released &evt) noexcept final
+        bool on_key_released([[maybe_unused]] const event::key_released &evt) noexcept final
         {
             return true;
         }
@@ -96,43 +96,49 @@ namespace antara::gaming::scenes::tests
 
 namespace antara::gaming::scenes::tests
 {
-    entt::dispatcher dispatcher;
-    entt::registry registry;
-    manager scene_mgr{registry, dispatcher};
+    
+    
     SCENARIO("scene manager scenario")
     {
         GIVEN("a fresh scene manager")
         {
+			entt::dispatcher dispatcher;
+			entt::registry registry;
+			manager scene_mgr{ registry, dispatcher };
             auto scene_ptr = std::make_unique<intro_scene>(registry, dispatcher);
             WHEN("i push my first scene") {
                 scene_mgr.change_scene(std::move(scene_ptr), true);
                 CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
-            }
-            AND_THEN("i change scene to go to the game scene") {
-                auto game_scene_ptr = std::make_unique<my_game_scene>(registry, dispatcher);
-                scene_mgr.change_scene(std::move(game_scene_ptr), true);
-                CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
-                AND_THEN("i go back to the intro") {
-                    CHECK(scene_mgr.previous_scene());
-                    CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
-                }
-            }
-            AND_WHEN("i change scene without keeping the old one") {
-                auto game_scene_ptr = std::make_unique<my_game_scene>(registry, dispatcher);
-                scene_mgr.change_scene(std::move(game_scene_ptr));
-                CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
+
+				AND_THEN("i change scene to go to the game scene") {
+					auto game_scene_ptr = std::make_unique<my_game_scene>(registry, dispatcher);
+					scene_mgr.change_scene(std::move(game_scene_ptr), true);
+					CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
+					AND_THEN("i go back to the intro") {
+						CHECK(scene_mgr.previous_scene());
+						CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
+						AND_WHEN("i change scene without keeping the old one") {
+							auto other_game_scene_ptr = std::make_unique<my_game_scene>(registry, dispatcher);
+							scene_mgr.change_scene(std::move(other_game_scene_ptr));
+							CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
+						}
+					}
+				}
             }
         }
 
+		entt::dispatcher dispatcher;
+		entt::registry registry;
+		manager another_scene_mgr{ registry, dispatcher };
         GIVEN("another fresh scene manager") {
             auto scene_ptr = std::make_unique<intro_scene>(registry, dispatcher);
             WHEN("i push my first scene") {
-                scene_mgr.change_scene(std::move(scene_ptr), true);
-                CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
+                another_scene_mgr.change_scene(std::move(scene_ptr), true);
+                CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "intro_scene");
                 AND_THEN("i simulate spacebar pressed") {
                     dispatcher.trigger<event::key_pressed>(input::key::space);
                     AND_THEN("i expect the current scene to be the game scene") {
-                                CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
+                                CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "my_game_scene");
                     }
                 }
             }
