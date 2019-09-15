@@ -3,6 +3,7 @@ add_subdirectory(input)
 add_subdirectory(event)
 add_subdirectory(timer)
 add_subdirectory(ecs)
+add_subdirectory(scenes)
 add_subdirectory(world)
 
 if (USE_SFML_ANTARA_WRAPPER)

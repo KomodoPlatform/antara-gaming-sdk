@@ -1,6 +1,10 @@
 ## shared sources between the module and his unit tests
 add_library(antara_event_shared_sources STATIC)
-target_sources(antara_event_shared_sources PRIVATE antara/gaming/event/quit.game.cpp antara/gaming/event/fatal.error.cpp antara/gaming/event/key.pressed.cpp)
+target_sources(antara_event_shared_sources PRIVATE
+        antara/gaming/event/quit.game.cpp
+        antara/gaming/event/fatal.error.cpp
+        antara/gaming/event/key.pressed.cpp
+        antara/gaming/event/key.released.cpp)
 target_include_directories(antara_event_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_event_shared_sources PUBLIC antara::default_settings antara::input)
 add_library(antara::event ALIAS antara_event_shared_sources)
@@ -11,7 +15,8 @@ target_sources(antara_event_tests PUBLIC
         antara/gaming/event/antara.event.tests.cpp
         antara/gaming/event/antara.event.quit.game.tests.cpp
         antara/gaming/event/antara.event.fatal.error.tests.cpp
-        antara/gaming/event/antara.event.key.pressed.tests.cpp)
+        antara/gaming/event/antara.event.key.pressed.tests.cpp
+        antara/gaming/event/antara.event.key.released.tests.cpp)
 target_link_libraries(antara_event_tests PRIVATE doctest PUBLIC antara::event)
 set_target_properties(antara_event_tests
         PROPERTIES
