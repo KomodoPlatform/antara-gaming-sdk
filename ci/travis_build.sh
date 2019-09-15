@@ -60,6 +60,9 @@ function run_coverage() {
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/core/antara/gaming/core/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/ecs/antara/gaming/ecs/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/timer/*.tests.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/world/*.tests.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/event/*.tests.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/scenes/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/_deps/*" -o coverage.info
      lcov -l coverage.info
      bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
