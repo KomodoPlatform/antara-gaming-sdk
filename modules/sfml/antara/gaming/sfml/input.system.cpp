@@ -14,7 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iostream>
 #include <SFML/Window/Event.hpp>
+#include "antara/gaming/ecs/component.window.infos.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
@@ -36,7 +38,11 @@ namespace antara::gaming::sfml
                 case sf::Event::Closed:
                     this->dispatcher_.trigger<event::quit_game>(0);
                     break;
-                case sf::Event::Resized:
+                case sf::Event::Resized: {
+                    auto &window_component = this->entity_registry_.ctx<ecs::component_window>();
+                    window_component.width = evt.size.width;
+                    window_component.height = evt.size.height;
+                }
                     break;
                 case sf::Event::LostFocus:
                     break;

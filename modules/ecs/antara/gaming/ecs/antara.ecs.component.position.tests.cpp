@@ -14,33 +14,25 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <antara/gaming/ecs/component.layer.hpp>
-#include "antara/gaming/world/world.app.hpp"
+#include <doctest/doctest.h>
 #include "antara/gaming/ecs/component.position.hpp"
-#include "antara/gaming/sfml/component.drawable.hpp"
-#include "antara/gaming/sfml/graphic.system.hpp"
-#include "antara/gaming/sfml/input.system.hpp"
 
-class my_world : public antara::gaming::world::app
+namespace antara::gaming::ecs::tests
 {
-public:
-    my_world() noexcept
+    TEST_SUITE("test component position")
     {
-        auto& graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
-        this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
+        TEST_CASE("component position is default constructible")
+        {
+            component_position c_pos{};
+            CHECK_EQ(c_pos.pos_x, 0.0f);
+            CHECK_EQ(c_pos.pos_y, 0.0f);
+        }
 
-        //! Construct dummy entity
-        auto& window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
-        auto dummy_entity = entity_registry_.create();
-        auto& circle_cmp = entity_registry_.assign<antara::gaming::sfml::circle>(dummy_entity, sf::CircleShape(50.f));
-        entity_registry_.assign<antara::gaming::ecs::layer<1>>(dummy_entity);
-        circle_cmp.drawable.setFillColor(sf::Color(100, 250, 50));
-        entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity, window_info.width / 2, window_info.height / 2);
+        TEST_CASE("component position constructor with value")
+        {
+            component_position c_pos{42.0f, 27.0f};
+            CHECK_EQ(c_pos.pos_x, 42.0f);
+            CHECK_EQ(c_pos.pos_y, 27.0f);
+        }
     }
-};
-
-int main()
-{
-    my_world game_app;
-    return game_app.run();
 }

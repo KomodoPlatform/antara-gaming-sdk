@@ -16,40 +16,14 @@
 
 #pragma once
 
-#include <refl.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "meta/sequence/list.hpp"
-#include "antara/gaming/ecs/component.window.infos.hpp"
-#include "antara/gaming/ecs/system.hpp"
+#include <cstddef>
 
-namespace antara::gaming::sfml
+namespace antara::gaming::ecs
 {
-    class graphic_system final : public ecs::post_update_system<graphic_system>
+    inline constexpr std::size_t max_layer = 12ull;
+
+    template<std::size_t N>
+    struct layer
     {
-    public:
-        graphic_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
-
-        void update() noexcept final;
-
-        template <size_t Layer, typename DrawableType>
-        void draw() noexcept;
-
-        template <size_t Layer, typename... DrawableType>
-        void draw(doom::meta::list<DrawableType...>) noexcept;
-
-        template <size_t...Is>
-        void draw_each_layers(std::index_sequence<Is...>) noexcept;
-
-        void draw_each_layers() noexcept;
-
-        //! Public getter
-        sf::RenderWindow &get_window() noexcept;
-
-    private:
-        ecs::component_window &window_component_{entity_registry_.ctx<ecs::component_window>()};
-        sf::RenderWindow window_{sf::VideoMode(window_component_.width, window_component_.height),
-                                 window_component_.title};
     };
 }
-
-REFL_AUTO(type(antara::gaming::sfml::graphic_system));

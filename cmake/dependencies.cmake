@@ -17,6 +17,11 @@ FetchContent_Declare(
         URL https://github.com/doom/strong_type/archive/1.0.2.tar.gz
 )
 
+FetchContent_Declare(
+        doom_meta
+        URL https://github.com/Milerius/meta/archive/master.zip
+)
+
 
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)
 FetchContent_Declare(
@@ -41,7 +46,7 @@ if (USE_SFML_ANTARA_WRAPPER)
     )
 endif()
 
-FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp)
+FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif()
