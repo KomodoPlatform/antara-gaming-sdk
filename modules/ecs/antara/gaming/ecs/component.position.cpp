@@ -14,42 +14,18 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "antara/gaming/ecs/component.position.hpp"
 
-#include <refl.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "meta/sequence/list.hpp"
-#include "antara/gaming/ecs/component.window.infos.hpp"
-#include "antara/gaming/ecs/system.hpp"
-
-namespace antara::gaming::sfml
+namespace antara::gaming::ecs
 {
-    class graphic_system final : public ecs::post_update_system<graphic_system>
+    component_position::component_position(float pos_x_, float pos_y_) noexcept : pos_x(pos_x_), pos_y(pos_y_)
     {
-    public:
-        graphic_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
 
-        void update() noexcept final;
+    }
 
-        template <size_t Layer, typename DrawableType>
-        void draw() noexcept;
+    component_position::component_position() noexcept : pos_x(0.f), pos_y(0.f)
+    {
 
-        template <size_t Layer, typename... DrawableType>
-        void draw(doom::meta::list<DrawableType...>) noexcept;
-
-        template <size_t...Is>
-        void draw_each_layers(std::index_sequence<Is...>) noexcept;
-
-        void draw_each_layers() noexcept;
-
-        //! Public getter
-        sf::RenderWindow &get_window() noexcept;
-
-    private:
-        ecs::component_window &window_component_{entity_registry_.ctx<ecs::component_window>()};
-        sf::RenderWindow window_{sf::VideoMode(window_component_.width, window_component_.height),
-                                 window_component_.title};
-    };
+    }
 }
 
-REFL_AUTO(type(antara::gaming::sfml::graphic_system));

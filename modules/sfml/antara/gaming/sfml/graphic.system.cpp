@@ -14,24 +14,61 @@
  *                                                                            *
  ******************************************************************************/
 
+#include "antara/gaming/ecs/component.position.hpp"
+#include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
+#include "antara/gaming/sfml/component.drawable.hpp"
 
 namespace antara::gaming::sfml
 {
-    graphic_system::graphic_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry, dispatcher)
+    graphic_system::graphic_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry,
+                                                                                                             dispatcher)
     {
-
     }
 
     void graphic_system::update() noexcept
     {
         window_.clear();
-        //TODO: Write draw components and think about logic to draw correctly
+        draw_each_layers();
         window_.display();
     }
 
     sf::RenderWindow &graphic_system::get_window() noexcept
     {
         return window_;
+    }
+
+    template<size_t Layer, typename DrawableType>
+    void graphic_system::draw() noexcept
+    {
+        this->entity_registry_.view<DrawableType, ecs::layer<Layer>>().each(
+                [this](auto entity,
+                       auto &&drawable,
+                       [[maybe_unused]] auto &&) {
+                    if constexpr (std::is_base_of_v<sf::Transformable, decltype(DrawableType::drawable)>) {
+                        if (auto cmp_position = this->entity_registry_.try_get<ecs::component_position>(entity);
+                                cmp_position != nullptr) {
+                            drawable.drawable.setPosition(cmp_position->pos_x, cmp_position->pos_y);
+                        }
+                    }
+                    this->window_.draw(drawable.drawable);
+                });
+    }
+
+    template<size_t Layer, typename... DrawableType>
+    void graphic_system::draw(doom::meta::list<DrawableType...>) noexcept
+    {
+        (draw<Layer, DrawableType>(), ...);
+    }
+
+    template<size_t... Is>
+    void graphic_system::draw_each_layers(std::index_sequence<Is...>) noexcept
+    {
+        (draw<Is>(drawable_list{}), ...);
+    }
+
+    void graphic_system::draw_each_layers() noexcept
+    {
+        draw_each_layers(std::make_index_sequence<ecs::max_layer>{});
     }
 }

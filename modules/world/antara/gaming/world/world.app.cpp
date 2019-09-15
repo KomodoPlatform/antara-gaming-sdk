@@ -18,6 +18,7 @@
 #include <emscripten.h>
 #endif
 
+#include "antara/gaming/ecs/component.window.infos.hpp"
 #include "antara/gaming/event/start.game.hpp"
 #include "antara/gaming/world/world.app.hpp"
 
@@ -32,6 +33,7 @@ namespace antara::gaming::world
     //! Constructor
     app::app() noexcept
     {
+        this->entity_registry_.set<ecs::component_window>(); //! default window with default value, (use config latter)
         dispatcher_.sink<event::quit_game>().connect<&app::receive_quit_game>(*this);
     }
 
