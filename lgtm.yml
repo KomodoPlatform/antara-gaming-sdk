@@ -4,6 +4,7 @@ extraction:
       packages:
         - python-pip
         - pkg-config
+        - ninja-build
         - libcurl4-gnutls-dev
         - wget
     after_prepare:    # Customizable step used by all languages.
@@ -16,6 +17,6 @@ extraction:
       - cmake --version
       - mkdir $LGTM_SRC/_lgtm_build_dir
       - cd $LGTM_SRC/_lgtm_build_dir
-      - cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_BUILD_TYPE=Release ../
-      - make -j3
+      - cmake -GNinja -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_BUILD_TYPE=Release ../
+      - cmake --build . --config Release
       - cd -
