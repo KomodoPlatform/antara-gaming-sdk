@@ -20,7 +20,7 @@
 #include <filesystem>
 #include <string>
 
-namespace nephtys::resources::details
+namespace antara::gaming::core::details
 {
     std::filesystem::path binary_real_path() noexcept
     {
