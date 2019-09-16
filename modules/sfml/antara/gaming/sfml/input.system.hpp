@@ -16,7 +16,12 @@
 
 #pragma once
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
 #include <refl.hpp>
+
+#pragma clang diagnostic pop
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "antara/gaming/ecs/system.hpp"
 
