@@ -1,5 +1,5 @@
 add_executable(antara-sfml-example main.cpp)
-target_link_libraries(antara-sfml-example PUBLIC antara::world antara::sfml_graphic antara::sfml_input)
+target_link_libraries(antara-sfml-example PUBLIC antara::world antara::scenes antara::sfml_graphic antara::sfml_input)
 
 if (EMSCRIPTEN)
     message(STATUS "Emscripten detected")
