@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <windows.h> //! HMODULE, GetModuleHandleW, GetModuleFileNameW
 #include <filesystem>
 #include <string>

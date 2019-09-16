@@ -17,6 +17,7 @@
 #pragma once
 
 #include <mach-o/dyld.h>
+#include <cassert>
 #include <climits>
 #include <string>
 #include <filesystem>
