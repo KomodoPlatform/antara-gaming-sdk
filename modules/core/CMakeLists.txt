@@ -1,14 +1,16 @@
 ##! shared sources between the module and his unit tests
-add_library(antara_core_shared_sources INTERFACE)
-target_include_directories(antara_core_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_core_shared_sources INTERFACE antara::default_settings)
+add_library(antara_core_shared_sources STATIC)
+target_sources(antara_core_shared_sources PRIVATE antara/gaming/core/real.path.cpp)
+target_include_directories(antara_core_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_core_shared_sources PUBLIC antara::default_settings)
 add_library(antara::core ALIAS antara_core_shared_sources)
 
 ##! antara core tests
 add_executable(antara_core_tests)
 target_sources(antara_core_tests PUBLIC
         antara/gaming/core/antara.core.tests.cpp
-        antara/gaming/core/antara.core.version.tests.cpp)
+        antara/gaming/core/antara.core.version.tests.cpp
+        antara/gaming/core/antara.core.real.path.tests.cpp)
 target_link_libraries(antara_core_tests PRIVATE doctest PUBLIC antara::core)
 set_target_properties(antara_core_tests
         PROPERTIES

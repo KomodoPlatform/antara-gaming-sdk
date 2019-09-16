@@ -23,6 +23,7 @@
 #include "antara/gaming/sfml/input.system.hpp"
 #include "antara/gaming/scenes/scene.manager.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
+#include "antara/gaming/sfml/resources.loader.hpp"
 
 
 class intro_scene;

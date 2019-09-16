@@ -12,3 +12,8 @@ add_library(antara_sfml_graphic STATIC)
 target_sources(antara_sfml_graphic PRIVATE antara/gaming/sfml/graphic.system.cpp)
 target_link_libraries(antara_sfml_graphic PUBLIC antara::sfml_shared_resources sfml-graphics)
 add_library(antara::sfml_graphic ALIAS antara_sfml_graphic)
+
+add_library(antara_sfml_resources STATIC)
+target_sources(antara_sfml_resources PRIVATE antara/gaming/sfml/resources.system.cpp)
+target_link_libraries(antara_sfml_resources PUBLIC sfml-graphics sfml-audio antara::sfml_shared_resources antara::core)
+add_library(antara::sfml_resources ALIAS antara_sfml_resources)
