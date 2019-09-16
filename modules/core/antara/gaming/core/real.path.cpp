@@ -26,7 +26,7 @@
 
 #elif __linux__
 
-#include "nephtys/resources/details/linux/real.path.hpp"
+#include "antara/gaming/core/details/linux/real.path.hpp"
 
 #elif EMSCRIPTEN
 #include "antara/gaming/core/details/emscripten/real.path.hpp"
