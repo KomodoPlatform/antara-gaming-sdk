@@ -21,4 +21,4 @@ extraction:
       - cmake -GNinja -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_BUILD_TYPE=Release ../
     index:
       build_command:
-        cmake --build . --config Release
+        - cmake --build . --config Release
