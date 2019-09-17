@@ -13,5 +13,42 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#include "antara/gaming/scenes/change.scene.event.hpp"
+#include "game.scene.hpp"
+#include "intro.scene.hpp"
 
-#include "antara/gaming/sfml/resources.system.hpp"
+intro_scene::intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(
+        entity_registry,
+        dispatcher_)
+{
+}
+
+void intro_scene::update() noexcept
+{
+
+}
+
+bool intro_scene::on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept
+{
+    if (evt.key_ == antara::gaming::input::key::space) {
+        this->dispatcher_.trigger<antara::gaming::event::change_scene>(
+                std::make_unique<game_scene>(this->entity_registry_, this->dispatcher_), false);
+    }
+    return true;
+}
+
+bool intro_scene::on_key_released(const antara::gaming::event::key_released &) noexcept
+{
+    return false;
+}
+
+std::string intro_scene::scene_name() noexcept
+{
+    return "intro_scene";
+}
+
+intro_scene::~intro_scene() noexcept
+{
+    auto view = entity_registry_.view<entt::tag<"intro_scene"_hs>>();
+    entity_registry_.destroy(view.begin(), view.end());
+}

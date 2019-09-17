@@ -23,7 +23,7 @@
 #include "antara/gaming/sfml/input.system.hpp"
 #include "antara/gaming/scenes/scene.manager.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
-#include "antara/gaming/sfml/resources.loader.hpp"
+#include "antara/gaming/sfml/resources.manager.hpp"
 
 
 class intro_scene;
@@ -32,16 +32,24 @@ class game_scene final : public antara::gaming::scenes::base_scene
 {
 public:
     game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(entity_registry,
-                                                                                                      dispatcher_)
+                                                                                                     dispatcher_)
     {
+        auto handle = resource_mgr.load_font("sansation.ttf");
         //! Construct dummy entity
-        auto& window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
+        auto &window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
         auto dummy_entity = entity_registry_.create();
-        auto& circle_cmp = entity_registry_.assign<antara::gaming::sfml::circle>(dummy_entity, sf::CircleShape(50.f));
+        auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
+                                                                            sf::Text("Game Scene", *handle, 30));
+        sf::Text &txt = txt_cmp.drawable;
+        txt.setFillColor(sf::Color::Blue);
+        txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
+        this->entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity,
+                                                                               static_cast<float>(window_info.width) /
+                                                                               2.f,
+                                                                               static_cast<float>(window_info.height) /
+                                                                               2.f);
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::layer<1>>(dummy_entity);
-        circle_cmp.drawable.setFillColor(sf::Color::Blue);
-        this->entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity, window_info.width / 2, window_info.height / 2);
+        this->entity_registry_.assign<antara::gaming::ecs::layer<0>>(dummy_entity);
     }
 
     void update() noexcept final
@@ -68,11 +76,16 @@ public:
         return "game_scene";
     }
 
-    ~game_scene() noexcept final {
+    ~game_scene() noexcept final
+    {
         auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
         entity_registry_.destroy(view.begin(), view.end());
     }
+
+private:
+    antara::gaming::sfml::resources_manager resource_mgr;
 };
+
 
 class intro_scene final : public antara::gaming::scenes::base_scene
 {
@@ -80,21 +93,29 @@ public:
     intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(entity_registry,
                                                                                                       dispatcher_)
     {
+        auto handle = resource_mgr.load_font("sansation.ttf");
         //! Construct dummy entity
-        auto& window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
+        auto &window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
         auto dummy_entity = entity_registry_.create();
-        auto& circle_cmp = entity_registry_.assign<antara::gaming::sfml::circle>(dummy_entity, sf::CircleShape(50.f));
+        auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
+                                                                            sf::Text("Intro Scene", *handle, 30));
+        sf::Text &txt = txt_cmp.drawable;
+        txt.setFillColor(sf::Color::Green);
+        txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
+        this->entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity,
+                                                                               static_cast<float>(window_info.width) /
+                                                                               2.f,
+                                                                               static_cast<float>(window_info.height) /
+                                                                               2.f);
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(dummy_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::layer<1>>(dummy_entity);
-        circle_cmp.drawable.setFillColor(sf::Color::Green);
-        this->entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity, window_info.width / 2, window_info.height / 2);
+        this->entity_registry_.assign<antara::gaming::ecs::layer<0>>(dummy_entity);
     }
 
     void update() noexcept final
     {
 
     }
-    
+
     bool on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept final
     {
         if (evt.key_ == antara::gaming::input::key::space) {
@@ -114,10 +135,14 @@ public:
         return "intro_scene";
     }
 
-    ~intro_scene() noexcept final {
+    ~intro_scene() noexcept final
+    {
         auto view = entity_registry_.view<entt::tag<"intro_scene"_hs>>();
         entity_registry_.destroy(view.begin(), view.end());
     }
+
+private:
+    antara::gaming::sfml::resources_manager resource_mgr;
 };
 
 class my_world : public antara::gaming::world::app
