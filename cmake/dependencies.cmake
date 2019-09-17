@@ -22,6 +22,12 @@ FetchContent_Declare(
         URL https://github.com/Milerius/meta/archive/master.zip
 )
 
+SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
+SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
+FetchContent_Declare(
+        nlohmann_json
+        URL https://github.com/nlohmann/json/archive/v3.6.1.tar.gz
+)
 
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)
 FetchContent_Declare(
@@ -46,7 +52,7 @@ if (USE_SFML_ANTARA_WRAPPER)
     )
 endif()
 
-FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta)
+FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif()

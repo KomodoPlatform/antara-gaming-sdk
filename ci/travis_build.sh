@@ -57,6 +57,7 @@ function run_coverage() {
      lcov -d . -c -o coverage.info
      lcov -r coverage.info "/usr*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/*.test.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/config/antara/gaming/config/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/core/antara/gaming/core/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/ecs/antara/gaming/ecs/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/timer/*.tests.*" -o coverage.info
