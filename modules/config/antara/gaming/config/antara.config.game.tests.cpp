@@ -49,8 +49,8 @@ namespace antara::gaming::config::tests
                             REQUIRE_FALSE(std::filesystem::exists("/toto"));
 
 #else
-                    auto res = utils::load_configuration<client::config>(std::filesystem::path("G:\\toto"), "my_game.config.json");
-                                        REQUIRE_EQ(res, config{});
+                    auto res = load_configuration<config::game_cfg>(std::filesystem::path("G:\\toto"), "my_game.config.json");
+                                        REQUIRE_EQ(res, config::game_cfg{});
                                         auto path_exist = std::filesystem::exists("G:\\toto");
                                         REQUIRE_FALSE(path_exist);
 #endif
