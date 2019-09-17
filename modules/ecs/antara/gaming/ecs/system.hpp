@@ -54,7 +54,7 @@ namespace antara::gaming::ecs
 
 
 
-        //! Public member functions overriden
+        //! Public member functions overridden
         /**
         * \note this function allows you to retrieve the type of a system at runtime.
         * \return ​system_type of the derived system
