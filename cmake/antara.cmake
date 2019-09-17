@@ -13,9 +13,9 @@
  include(compiler_targets)
  include(dependencies)
 
- if (NOT APPLE AND UNIX)
+ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
      set(LINUX TRUE)
- endif()
+ endif ()
 
  macro(target_enable_coverage target)
      if (ENABLE_COVERAGE)
