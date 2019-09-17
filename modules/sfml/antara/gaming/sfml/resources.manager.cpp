@@ -14,4 +14,4 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/sfml/resources.system.hpp"
+#include "antara/gaming/sfml/resources.manager.hpp"
