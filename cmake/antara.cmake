@@ -13,6 +13,10 @@
  include(compiler_targets)
  include(dependencies)
 
+ if (NOT APPLE AND UNIX)
+     set(LINUX TRUE)
+ endif()
+
  macro(target_enable_coverage target)
      if (ENABLE_COVERAGE)
          message(STATUS "coverage enaled, configuring...")
