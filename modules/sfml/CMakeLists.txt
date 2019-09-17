@@ -1,6 +1,6 @@
 add_library(sfml_shared_resources INTERFACE)
 target_include_directories(sfml_shared_resources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sfml_shared_resources INTERFACE antara::ecs)
+target_link_libraries(sfml_shared_resources INTERFACE antara::ecs antara::config)
 add_library(antara::sfml_shared_resources ALIAS sfml_shared_resources)
 
 add_library(antara_sfml_input STATIC)

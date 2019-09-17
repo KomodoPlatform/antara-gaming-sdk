@@ -36,7 +36,7 @@ public:
     {
         auto handle = resource_mgr.load_font("sansation.ttf");
         //! Construct dummy entity
-        auto &window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
+        auto &window_info = entity_registry_.ctx<antara::gaming::config::game_cfg>().win_cfg;
         auto dummy_entity = entity_registry_.create();
         auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
                                                                             sf::Text("Game Scene", *handle, 30));
@@ -95,7 +95,7 @@ public:
     {
         auto handle = resource_mgr.load_font("sansation.ttf");
         //! Construct dummy entity
-        auto &window_info = entity_registry_.ctx<antara::gaming::ecs::component_window>();
+        auto &window_info = entity_registry_.ctx<antara::gaming::config::game_cfg>().win_cfg;
         auto dummy_entity = entity_registry_.create();
         auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
                                                                             sf::Text("Intro Scene", *handle, 30));

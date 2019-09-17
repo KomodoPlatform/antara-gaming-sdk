@@ -19,12 +19,14 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #include <refl.hpp>
 
 #pragma clang diagnostic pop
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "meta/sequence/list.hpp"
-#include "antara/gaming/ecs/component.window.infos.hpp"
+#include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::sfml
@@ -36,13 +38,13 @@ namespace antara::gaming::sfml
 
         void update() noexcept final;
 
-        template <size_t Layer, typename DrawableType>
+        template<size_t Layer, typename DrawableType>
         void draw() noexcept;
 
-        template <size_t Layer, typename... DrawableType>
+        template<size_t Layer, typename... DrawableType>
         void draw(doom::meta::list<DrawableType...>) noexcept;
 
-        template <size_t...Is>
+        template<size_t...Is>
         void draw_each_layers(std::index_sequence<Is...>) noexcept;
 
         void draw_each_layers() noexcept;
@@ -51,9 +53,10 @@ namespace antara::gaming::sfml
         sf::RenderWindow &get_window() noexcept;
 
     private:
-        ecs::component_window &window_component_{entity_registry_.ctx<ecs::component_window>()};
-        sf::RenderWindow window_{sf::VideoMode(window_component_.width, window_component_.height),
-                                 window_component_.title};
+        config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};
+        config::window_cfg &window_cfg_{game_cfg_.win_cfg};
+        sf::RenderWindow window_{sf::VideoMode(window_cfg_.width, window_cfg_.height),
+                                 window_cfg_.title};
     };
 }
 

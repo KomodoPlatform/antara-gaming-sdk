@@ -14,16 +14,5 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <string>
-
-namespace antara::gaming::ecs
-{
-    struct component_window
-    {
-        unsigned int width{800};
-        unsigned int height{600};
-        std::string title{"my_window"};
-    };
-}
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
