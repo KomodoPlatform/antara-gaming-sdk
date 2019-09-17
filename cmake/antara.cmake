@@ -13,9 +13,9 @@
  include(compiler_targets)
  include(dependencies)
 
- if (NOT APPLE AND UNIX)
+ if (UNIX AND NOT APPLE)
      set(LINUX TRUE)
- endif()
+ endif ()
 
  macro(target_enable_coverage target)
      if (ENABLE_COVERAGE)
