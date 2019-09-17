@@ -89,7 +89,7 @@ namespace antara::gaming::ecs
 
         /**
          * \note This function set a user data for this system
-         * \note This function is very usefull to transfer (with get_user_data) data between plugins since they are base_class.
+         * \note This function is very useful to transfer (with get_user_data) data between plugins since they are base_class.
          * \note This function will call on_set_user_data callback at the epilogue, by default on_set_user_data is empty and you need
          * to override it if you need it.
          * \note user should be aware here, that's manipulating void pointer is as your own risk.
