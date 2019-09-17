@@ -28,6 +28,7 @@ function build() {
         doctest_upload_name+='-Ninja'
     fi
 
+    options+=' -DANTARA_BUILD_EXAMPLES=ON'
     echo "result -> ${cmd} ${options} ../"
     ${cmd} ${options} ../
     cmake --build . --config ${BUILD_TYPE} || travis_terminate 1
