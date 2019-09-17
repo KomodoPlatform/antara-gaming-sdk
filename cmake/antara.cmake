@@ -13,7 +13,7 @@
  include(compiler_targets)
  include(dependencies)
 
- if (UNIX AND NOT APPLE)
+ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
      set(LINUX TRUE)
  endif ()
 
