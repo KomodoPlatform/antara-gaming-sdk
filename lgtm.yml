@@ -22,4 +22,5 @@ extraction:
         - cmake -GNinja -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_BUILD_TYPE=Release ../
     index:
       build_command:
+        - cd $LGTM_SRC/_lgtm_build_dir
         - cmake --build . --config Release
