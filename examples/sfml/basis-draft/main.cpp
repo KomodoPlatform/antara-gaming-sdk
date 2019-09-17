@@ -74,6 +74,7 @@ public:
     }
 };
 
+
 class intro_scene final : public antara::gaming::scenes::base_scene
 {
 public:
