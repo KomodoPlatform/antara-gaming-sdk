@@ -21,6 +21,9 @@ set_target_properties(antara_ecs_tests
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
         )
 target_enable_coverage(antara_ecs_tests)
+target_enable_tsan(antara_ecs_tests)
+target_enable_asan(antara_ecs_tests)
+target_enable_ubsan(antara_ecs_tests)
 
 if (EMSCRIPTEN)
     message(STATUS "Emscripten detected")
