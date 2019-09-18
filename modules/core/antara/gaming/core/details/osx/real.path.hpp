@@ -28,7 +28,7 @@ namespace antara::gaming::core::details
     static std::string &replace_all_mute(std::string &s,
                                          const std::string &from, const std::string &to) noexcept
     {
-        if (!from.empty())
+        if (not from.empty())
             for (std::size_t pos = 0; (pos = s.find(from, pos) + 1); pos += to.size())
                 s.replace(--pos, from.size(), to);
         return s;

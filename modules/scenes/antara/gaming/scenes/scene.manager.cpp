@@ -20,14 +20,14 @@ namespace antara::gaming::scenes
 {
     void antara::gaming::scenes::manager::update() noexcept
     {
-        if (!scenes_.empty()) {
+        if (not scenes_.empty()) {
             this->scenes_.top()->update();
         }
     }
 
     bool manager::previous_scene()
     {
-        if (!scenes_.empty()) {
+        if (not scenes_.empty()) {
             scenes_.pop();
             return true;
         }
@@ -36,7 +36,7 @@ namespace antara::gaming::scenes
 
     void manager::clear()
     {
-		while (!scenes_.empty())
+		while (not scenes_.empty())
 		{
 			scenes_.pop();
 		}
@@ -45,7 +45,7 @@ namespace antara::gaming::scenes
     void manager::change_scene(manager::scene_ptr &&scene, bool just_push_scene) noexcept
     {
         if (not just_push_scene) {
-            while (!scenes_.empty()) {
+            while (not scenes_.empty()) {
                 scenes_.pop();
             }
         }
@@ -61,20 +61,20 @@ namespace antara::gaming::scenes
 
     base_scene &manager::current_scene() noexcept
     {
-        assert(!scenes_.empty());
+        assert(not scenes_.empty());
         return *scenes_.top();
     }
 
     void manager::receive_key_pressed(const event::key_pressed &evt) noexcept
     {
-        if (!scenes_.empty()) {
+        if (not scenes_.empty()) {
             scenes_.top()->on_key_pressed(evt);
         }
     }
 
     void manager::receive_key_released(const event::key_released &evt) noexcept
     {
-        if (!scenes_.empty()) {
+        if (not scenes_.empty()) {
             scenes_.top()->on_key_released(evt);
         }
     }

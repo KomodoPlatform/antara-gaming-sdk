@@ -53,7 +53,7 @@ namespace antara::gaming::world
 
     int app::run() noexcept
     {
-        if (!system_manager_.nb_systems()) {
+        if (not system_manager_.nb_systems()) {
             return this->game_return_value_;
         }
         this->dispatcher_.trigger<event::start_game>();

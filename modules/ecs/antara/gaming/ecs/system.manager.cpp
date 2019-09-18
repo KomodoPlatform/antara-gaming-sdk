@@ -56,10 +56,10 @@ namespace antara::gaming::ecs
 
     std::size_t system_manager::update() noexcept
     {
-        if (!nb_systems())
+        if (not nb_systems())
             return 0u;
 
-        size_t nb_systems_updated = 0u;
+        std::size_t nb_systems_updated = 0u;
         timestep_.start_frame();
         nb_systems_updated += update_systems(system_type::pre_update);
 
@@ -75,6 +75,7 @@ namespace antara::gaming::ecs
         if (need_to_sweep_systems_) {
             sweep_systems_();
         }
+
         return nb_systems_updated;
     }
 

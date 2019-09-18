@@ -54,7 +54,7 @@ namespace antara::gaming::ecs
 
 
 
-        //! Public member functions overriden
+        //! Public member functions overridden
         /**
         * \note this function allows you to retrieve the type of a system at runtime.
         * \return ​system_type of the derived system
@@ -83,9 +83,9 @@ namespace antara::gaming::ecs
     template<typename TSystemDerived, typename TSystemType>
     constexpr system_type system<TSystemDerived, TSystemType>::get_system_type() noexcept
     {
-        if constexpr (std::is_same_v<TSystemType, st_system_logic_update>) {
+        if constexpr (std::is_same_v<TSystemType, st_system_logic_update>)
             return system_type::logic_update;
-        } else if constexpr (std::is_same_v<TSystemType, st_system_pre_update>)
+        else if constexpr (std::is_same_v<TSystemType, st_system_pre_update>)
             return system_type::pre_update;
         else if constexpr (std::is_same_v<TSystemType, st_system_post_update>)
             return system_type::post_update;
