@@ -50,11 +50,11 @@ namespace antara::gaming::ecs
         explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
 
         /**
-         * \return number of systems successfully updated
+         * \return number of systems which are successfully updated
          * \note This is the function that update your systems.
          * \note Based on the logic of the different kinds of shiva systems,
-         * this function take care of updating your systems in the right order.
-         * \warning If you have not loaded any system into the system_manager the function return 0.
+         * this function takes care of updating your systems in the right order.
+         * \warning If you have not loaded any system into the system_manager the function returns 0.
          * \warning If you decide to mark a system, it's automatically deleted at the next loop tick through this function.
          */
         std::size_t update() noexcept;
@@ -62,7 +62,7 @@ namespace antara::gaming::ecs
         std::size_t update_systems(system_type system_type_to_update) noexcept;
 
         /**
-         * \note This function allow you to get a system through a template parameter.
+         * \note This function allows you to get a system through a template parameter.
          * \tparam TSystem represents the system to get.
          * \return A reference to the system obtained.
          */
