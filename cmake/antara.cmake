@@ -62,4 +62,35 @@
      endif ()
  endmacro()
 
+ macro(target_enable_asan target)
+     if (USE_ASAN AND NOT EMSCRIPTEN)
+         message("-- ASAN Enabled, Configuring...")
+         target_compile_options(${target} PUBLIC
+                 $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address -fno-omit-frame-pointer>)
+         target_link_options(${target} PUBLIC
+                 $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address -fno-omit-frame-pointer>)
+     endif ()
+ endmacro()
+
+
+ macro(target_enable_tsan target)
+     if (USE_TSAN AND NOT ASAN AND NOT EMSCRIPTEN)
+         message("-- TSAN Enabled, Configuring...")
+         target_compile_options(${target} PUBLIC
+                 $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=thread -fno-omit-frame-pointer>)
+         target_link_options(${target} PUBLIC
+                 $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=thread -fno-omit-frame-pointer>)
+     endif ()
+ endmacro()
+
+ macro(target_enable_ubsan target)
+     if (USE_UBSAN AND NOT ASAN AND NOT EMSCRIPTEN)
+         message("-- UBSAN Enabled, Configuring...")
+         target_compile_options(${target} PUBLIC
+                 $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined -fno-omit-frame-pointer>)
+         target_link_options(${target} PUBLIC
+                 $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined -fno-omit-frame-pointer>)
+     endif ()
+ endmacro()
+
  download_app_image()
