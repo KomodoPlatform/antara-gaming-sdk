@@ -36,18 +36,13 @@ namespace antara::gaming::scenes
 
     void manager::clear()
     {
-		while (not scenes_.empty())
-		{
-			scenes_.pop();
-		}
+        scenes_ = {};
     }
 
     void manager::change_scene(manager::scene_ptr &&scene, bool just_push_scene) noexcept
     {
         if (not just_push_scene) {
-            while (not scenes_.empty()) {
-                scenes_.pop();
-            }
+            clear();
         }
         scenes_.push(std::move(scene));
     }
