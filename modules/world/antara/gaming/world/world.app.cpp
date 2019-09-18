@@ -18,6 +18,7 @@
 #include <emscripten.h>
 #endif
 
+#include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/event/start.game.hpp"
 #include "antara/gaming/world/world.app.hpp"
@@ -31,9 +32,10 @@ void emscripten_antara_loop(void *world)
 namespace antara::gaming::world
 {
     //! Constructor
-    app::app() noexcept
+    app::app(std::string config_name) noexcept
     {
-        this->entity_registry_.set<config::game_cfg>();
+        auto cfg = config::load_configuration<config::game_cfg>(core::assets_real_path() / "config", std::move(config_name));
+        this->entity_registry_.set<config::game_cfg>(cfg);
         dispatcher_.sink<event::quit_game>().connect<&app::receive_quit_game>(*this);
     }
 
