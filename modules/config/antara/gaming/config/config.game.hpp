@@ -58,6 +58,10 @@ namespace antara::gaming::config
             return !(rhs_config == *this);
         }
 
+        game_cfg() = default;
+
+        game_cfg(const game_cfg& other) = default;
+
         window_cfg win_cfg;
     };
 
@@ -119,7 +123,7 @@ namespace antara::gaming::config
     TConfig load_configuration(std::filesystem::path &&config_path, std::string filename) noexcept
     {
         const auto &full_path = config_path / std::move(filename);
-        if (!std::filesystem::exists(config_path)) {
+        if (!std::filesystem::exists(config_path) || !std::filesystem::exists(full_path)) {
             return details::create_configuration<TConfig>(config_path, full_path);
         }
         return details::load_config<TConfig>(full_path);

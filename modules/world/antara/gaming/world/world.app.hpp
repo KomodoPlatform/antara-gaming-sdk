@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <string>
 #include <entt/core/utility.hpp>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -27,7 +28,7 @@ namespace antara::gaming::world
     class app
     {
     public:
-        app() noexcept;
+        app(std::string config_name = "game.config.json") noexcept;
 
         //! Public callbacks
         void receive_quit_game(const event::quit_game &evt) noexcept;
