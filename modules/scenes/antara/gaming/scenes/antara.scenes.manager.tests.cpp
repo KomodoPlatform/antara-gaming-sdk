@@ -26,7 +26,7 @@ namespace antara::gaming::scenes::tests
         my_game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(
                 entity_registry, dispatcher_)
         {
-                    MESSAGE("game_scene enter");
+            MESSAGE("game_scene enter");
         }
 
         void update() noexcept final
@@ -50,7 +50,7 @@ namespace antara::gaming::scenes::tests
 
         ~my_game_scene() noexcept final
         {
-                    MESSAGE("game_scene leave");
+            MESSAGE("game_scene leave");
         }
     };
 
