@@ -56,7 +56,7 @@ namespace antara::gaming::ecs
 
     std::size_t system_manager::update() noexcept
     {
-        if (!nb_systems())
+        if (not nb_systems())
             return 0u;
 
         std::size_t nb_systems_updated = 0u;

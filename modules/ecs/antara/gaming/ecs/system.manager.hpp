@@ -338,7 +338,7 @@ namespace antara::gaming::ecs
     template<typename TSystem>
     tl::expected<std::reference_wrapper<TSystem>, std::error_code> system_manager::get_system_() noexcept
     {
-        if (!nb_systems(TSystem::get_system_type())) {
+        if (not nb_systems(TSystem::get_system_type())) {
             return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
         }
 
@@ -357,7 +357,7 @@ namespace antara::gaming::ecs
     template<typename TSystem>
     tl::expected<std::reference_wrapper<const TSystem>, std::error_code> system_manager::get_system_() const noexcept
     {
-        if (!nb_systems(TSystem::get_system_type())) {
+        if (not nb_systems(TSystem::get_system_type())) {
             return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
         }
 
