@@ -78,6 +78,11 @@ if (USE_LUA_ANTARA_WRAPPER)
     list(REMOVE_ITEM SRC_FILES "${lua_SOURCE_DIR}/ltests.c")
     message(STATUS "lua_src -> ${SRC_FILES}")
     target_sources(lua_lib PRIVATE ${SRC_FILES})
+
+    target_link_libraries(lua_lib PRIVATE ${CMAKE_DL_LIBS})
+    if (UNIX)
+        target_link_libraries(lua_lib PRIVATE m)
+    endif ()
     add_library(antara::lua_lib ALIAS lua_lib)
 endif ()
 
