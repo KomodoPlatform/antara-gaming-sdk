@@ -34,7 +34,7 @@ namespace antara::gaming::scenes
         return false;
     }
 
-    void manager::clear()
+    void manager::clear() noexcept
     {
         scenes_ = {};
     }
