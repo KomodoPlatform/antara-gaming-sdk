@@ -5,7 +5,7 @@ target_sources(antara_ecs_shared_sources PRIVATE
         antara/gaming/ecs/system.manager.cpp
         antara/gaming/ecs/component.position.cpp)
 target_include_directories(antara_ecs_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_ecs_shared_sources PUBLIC EnTT strong_type expected range-v3 antara::refl-cpp antara::default_settings antara::timer antara::event doom::meta)
+target_link_libraries(antara_ecs_shared_sources PUBLIC antara::core EnTT strong_type expected range-v3 antara::default_settings antara::timer antara::event doom::meta)
 add_library(antara::ecs ALIAS antara_ecs_shared_sources)
 
 ##! antara ecs tests

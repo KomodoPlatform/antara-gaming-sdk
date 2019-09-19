@@ -16,18 +16,9 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#include <refl.hpp>
 
-namespace antara::gaming::ecs
-{
-    struct component_position
-    {
-        component_position(float pos_x_, float pos_y_) noexcept;
-        component_position() noexcept;
-
-        float pos_x;
-        float pos_y;
-    };
-}
-
-REFL_AUTO(type(antara::gaming::ecs::component_position), field(pos_x), field(pos_y))
+#pragma clang diagnostic pop
