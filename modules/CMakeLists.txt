@@ -7,6 +7,10 @@ add_subdirectory(ecs)
 add_subdirectory(scenes)
 add_subdirectory(world)
 
+if (USE_LUA_ANTARA_WRAPPER)
+    add_subdirectory(lua)
+endif()
+
 if (USE_SFML_ANTARA_WRAPPER)
     add_subdirectory(sfml)
 endif()
