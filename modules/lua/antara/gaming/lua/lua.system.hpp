@@ -54,7 +54,7 @@ namespace antara::gaming::lua
                         }, final_table);
             }
             catch(const std::exception& error) {
-                std::cerr << error.what() << std::endl;
+                std::cerr << error.what() << std::endl; //! LCOV_EXCL_LINE
             }
         }
 
