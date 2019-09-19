@@ -46,7 +46,7 @@ namespace antara::gaming::scenes
 
         bool previous_scene();
 
-		void clear();
+		void clear() noexcept;
         base_scene &current_scene() noexcept;
 
     private:
