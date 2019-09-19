@@ -24,6 +24,6 @@ namespace antara::gaming::lua
 
     scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher) noexcept : system(entity_registry, dispatcher)
     {
-
+        lua_state_.open_libraries(sol::lib::base);
     }
 }

@@ -17,15 +17,32 @@
 #include <doctest/doctest.h>
 #include "antara/gaming/lua/lua.system.hpp"
 
+struct dummy_cmp
+{
+    float x{0.f};
+    float y{0.f};
+
+    void change_x(float value)
+    {
+        x = value;
+    }
+};
+
+REFL_AUTO(type(dummy_cmp), field(x), field(y), func(change_x));
+
 namespace antara::gaming::tests
 {
     TEST_SUITE ("lua scripting system")
     {
-        TEST_CASE ("can construct the system")
+        entt::registry entity_registry;
+        entt::dispatcher dispatcher;
+        antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher};
+
+        TEST_CASE ("register a type")
         {
-            entt::registry entity_registry;
-            entt::dispatcher dispatcher;
-            antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher};
+            scripting_system.register_type<dummy_cmp>();
+            auto& state = scripting_system.get_state();
+            state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
         }
     }
 }
