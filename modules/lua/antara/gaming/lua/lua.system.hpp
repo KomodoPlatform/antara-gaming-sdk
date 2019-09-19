@@ -33,20 +33,17 @@ namespace antara::gaming::lua
 
         void update() noexcept final;
 
-        sol::state& get_state() noexcept
-        {
-            return lua_state_;
-        }
+        sol::state& get_state() noexcept;
 
         template<typename TypeToRegister>
-        void register_type() noexcept
+        void register_type(const char* replace_name = nullptr) noexcept
         {
             constexpr refl::type_descriptor<TypeToRegister> info = refl::reflect<TypeToRegister>();
             auto members_tpl = refl::util::map_to_tuple(refl::type_descriptor<TypeToRegister>::members, [](auto member) {
                 return std::make_tuple(member.name.c_str(), member.pointer);
             });
             const auto table = std::tuple_cat(
-                    std::make_tuple(info.name.str()),
+                    std::make_tuple(replace_name == nullptr ? info.name.str() : replace_name),
                     members_tpl);
 
             const auto final_table = metaprog::merge_tuple(std::move(table));

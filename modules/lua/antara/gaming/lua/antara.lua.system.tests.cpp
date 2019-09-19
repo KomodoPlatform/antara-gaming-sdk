@@ -37,12 +37,25 @@ namespace antara::gaming::tests
         entt::registry entity_registry;
         entt::dispatcher dispatcher;
         antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher};
-
+        auto& state = scripting_system.get_state();
         TEST_CASE ("register a type")
         {
             scripting_system.register_type<dummy_cmp>();
-            auto& state = scripting_system.get_state();
             state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
+        }
+
+        TEST_CASE("create/destroy entities")
+        {
+            const auto& script = R"lua(
+            local entity = antara.entity_registry:create()
+            assert(antara.entity_registry:valid(entity), "should be valid")
+            print(entity)
+            antara.entity_registry:destroy(entity)
+            assert(antara.entity_registry:valid(entity) == false, "should be invalid")
+            return true;
+            )lua";
+            bool res = state.script(script);
+            CHECK(res);
         }
     }
 }

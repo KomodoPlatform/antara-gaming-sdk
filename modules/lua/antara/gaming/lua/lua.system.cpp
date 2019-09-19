@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include "antara/gaming/core/reflection.entity.registry.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 
 namespace antara::gaming::lua
@@ -24,6 +25,25 @@ namespace antara::gaming::lua
 
     scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher) noexcept : system(entity_registry, dispatcher)
     {
-        lua_state_.open_libraries(sol::lib::base);
+        lua_state_.open_libraries();
+        register_type<entt::registry>("entity_registry");
+        lua_state_["entity_registry"]["create"] = [](entt::registry& self) {
+            return self.create();
+        };
+
+        lua_state_["entity_registry"]["destroy"] = [](entt::registry& self, entt::registry::entity_type entity) {
+            self.destroy(entity);
+        };
+
+        lua_state_["entity_registry"]["valid"] = [](entt::registry& self, entt::registry::entity_type entity) {
+            return self.valid(entity);
+        };
+
+        lua_state_["antara"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
+    }
+
+    sol::state &scripting_system::get_state() noexcept
+    {
+        return lua_state_;
     }
 }
