@@ -26,9 +26,19 @@ namespace antara::gaming::lua
     scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher) noexcept : system(entity_registry, dispatcher)
     {
         lua_state_.open_libraries();
+        register_entity_registry();
+        lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
+    }
+
+    void scripting_system::register_entity_registry()
+    {
         register_type<entt::registry>("entity_registry");
         lua_state_["entity_registry"]["create"] = [](entt::registry& self) {
             return self.create();
+        };
+
+        lua_state_["entity_registry"]["alive"] = [](entt::registry& self) {
+            return self.alive();
         };
 
         lua_state_["entity_registry"]["destroy"] = [](entt::registry& self, entt::registry::entity_type entity) {
@@ -38,8 +48,6 @@ namespace antara::gaming::lua
         lua_state_["entity_registry"]["valid"] = [](entt::registry& self, entt::registry::entity_type entity) {
             return self.valid(entity);
         };
-
-        lua_state_["antara"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
     }
 
     sol::state &scripting_system::get_state() noexcept

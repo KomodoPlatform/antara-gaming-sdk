@@ -23,16 +23,6 @@
 
 #pragma clang diagnostic pop
 
-namespace antara::gaming::ecs
-{
-    struct component_position
-    {
-        component_position(float pos_x_, float pos_y_) noexcept;
-        component_position() noexcept;
+#include <entt/entity/registry.hpp>
 
-        float pos_x;
-        float pos_y;
-    };
-}
-
-REFL_AUTO(type(antara::gaming::ecs::component_position), field(pos_x), field(pos_y))
+REFL_AUTO(type(entt::registry));

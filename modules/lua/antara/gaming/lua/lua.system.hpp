@@ -60,6 +60,8 @@ namespace antara::gaming::lua
 
     private:
         sol::state lua_state_;
+
+        void register_entity_registry();
     };
 }
 

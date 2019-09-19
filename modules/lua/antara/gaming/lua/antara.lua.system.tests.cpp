@@ -44,14 +44,16 @@ namespace antara::gaming::tests
             state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
         }
 
-        TEST_CASE("create/destroy entities")
+        TEST_CASE("create/destroy/alive/valid entities")
         {
             const auto& script = R"lua(
-            local entity = antara.entity_registry:create()
-            assert(antara.entity_registry:valid(entity), "should be valid")
+            local entity = entt.entity_registry:create()
+            assert(entt.entity_registry:valid(entity), "should be valid")
             print(entity)
-            antara.entity_registry:destroy(entity)
-            assert(antara.entity_registry:valid(entity) == false, "should be invalid")
+            assert(entt.entity_registry:alive() == 1, "should be one")
+            entt.entity_registry:destroy(entity)
+            assert(entt.entity_registry:valid(entity) == false, "should be invalid")
+            assert(entt.entity_registry:alive() == 0, "should be invalid")
             return true;
             )lua";
             bool res = state.script(script);
