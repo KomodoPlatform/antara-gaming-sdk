@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include "antara/gaming/core/version.hpp"
 #include "antara/gaming/core/reflection.entity.registry.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 
@@ -27,6 +28,13 @@ namespace antara::gaming::lua
     {
         lua_state_.open_libraries();
         register_entity_registry();
+        sol::table table = lua_state_.create_table_with("version", gaming::version());
+        table.new_enum<ecs::system_type>("system_type", {
+                {"pre_update", ecs::pre_update},
+                {"post_update", ecs::post_update},
+                {"logic_update", ecs::logic_update}
+        });
+        lua_state_["antara"] = table;
         lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
     }
 

@@ -6,7 +6,7 @@
       "configurationType": "Debug",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "-DUSE_SFML_ANTARA_WRAPPER=ON",
+      "cmakeCommandArgs": "-DUSE_SFML_ANTARA_WRAPPER=ON -DUSE_LUA_ANTARA_WRAPPER=ON",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "clang_cl_x64" ],

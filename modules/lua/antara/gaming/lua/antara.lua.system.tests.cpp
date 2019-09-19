@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/core/version.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 
 struct dummy_cmp
@@ -30,7 +31,7 @@ struct dummy_cmp
 
 REFL_AUTO(type(dummy_cmp), field(x), field(y), func(change_x));
 
-namespace antara::gaming::tests
+namespace antara::gaming::lua::tests
 {
     TEST_SUITE ("lua scripting system")
     {
@@ -44,6 +45,18 @@ namespace antara::gaming::tests
             state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
         }
 
+        TEST_CASE("get version")
+        {
+            std::string res = state.script("local obj = antara.version\n return obj");
+            CHECK_EQ(res, gaming::version());
+        }
+
+        TEST_CASE("system type")
+        {
+            ecs::system_type res = state.script("return antara.system_type.pre_update");
+            CHECK_EQ(res, ecs::pre_update);
+        }
+
         TEST_CASE("create/destroy/alive/valid entities")
         {
             const auto& script = R"lua(
@@ -54,7 +67,7 @@ namespace antara::gaming::tests
             entt.entity_registry:destroy(entity)
             assert(entt.entity_registry:valid(entity) == false, "should be invalid")
             assert(entt.entity_registry:alive() == 0, "should be invalid")
-            return true;
+            return true
             )lua";
             bool res = state.script(script);
             CHECK(res);
