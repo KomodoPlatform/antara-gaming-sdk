@@ -19,6 +19,9 @@ set_target_properties(antara_lua_tests
         )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/bin/unit_tests/)
+if (WIN32)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/bin/unit_tests/${CMAKE_BUILD_TYPE})
+endif ()
 
 target_enable_coverage(antara_lua_tests)
 target_enable_tsan(antara_lua_tests)
