@@ -38,6 +38,8 @@ function build() {
 
 function run_test() {
     cd ${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/bin/unit_tests
+    pwd
+    ls -R .
     if [[ "${EMSCRIPTEN_WEB}" == "ON" ]]; then
       for i in *_tests*.js; do node ${i} --reporters=xml --out=${i}-result.xml -s || true; done;
     else
