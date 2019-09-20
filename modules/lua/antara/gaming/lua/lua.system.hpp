@@ -48,11 +48,10 @@ namespace antara::gaming::lua
         void register_type(const char *replace_name = nullptr) noexcept
         {
             constexpr refl::type_descriptor<TypeToRegister> info = refl::reflect<TypeToRegister>();
-            const char *final_name = info.name.c_str();
+            std::string final_name = info.name.str();
             if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
                 //! Skip namespace
-                auto target_str = info.name.str().substr(found + 1);
-                final_name = target_str.c_str();
+                final_name = info.name.str().substr(found + 1);
             }
             auto members_tpl = refl::util::map_to_tuple(refl::type_descriptor<TypeToRegister>::members,
                                                         [](auto member) {
