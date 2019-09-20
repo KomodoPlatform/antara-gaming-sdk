@@ -16,6 +16,7 @@
 
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/core/reflection.entity.registry.hpp"
+#include "antara/gaming/ecs/all.components.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
@@ -145,6 +146,7 @@ namespace antara::gaming::lua
                 {"pause",         input::key::pause},
         });
         lua_state_["antara"] = table;
+        register_components_list(ecs::components_list{});
         lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
     }
 
@@ -196,7 +198,7 @@ namespace antara::gaming::lua
         return load_script(file_name, this->directory_path_);
     }
 
-    bool scripting_system::load_script_from_entities()
+    bool scripting_system::load_script_from_entities() noexcept
     {
         bool res = true;
         entity_registry_.view<lua::component_script>().each([this, &res](auto entity_id, auto&& comp) {

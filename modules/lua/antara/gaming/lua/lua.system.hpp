@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <iostream> //std::cerr
 #include <sol/state.hpp>
+#include <meta/sequence/list.hpp> //! doom::meta::list
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/lua/lua.helpers.hpp"
@@ -46,19 +47,24 @@ namespace antara::gaming::lua
         void register_type(const char *replace_name = nullptr) noexcept
         {
             constexpr refl::type_descriptor<TypeToRegister> info = refl::reflect<TypeToRegister>();
-            auto members_tpl = refl::util::map_to_tuple(refl::type_descriptor<TypeToRegister>::members, [](auto member)
-            {
-                return std::make_tuple(member.name.c_str(), member.pointer);
-            });
+            const char *final_name = info.name.c_str();
+            if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
+                //! Skip namespace
+                auto target_str = info.name.str().substr(found + 1);
+                final_name = target_str.c_str();
+            }
+            auto members_tpl = refl::util::map_to_tuple(refl::type_descriptor<TypeToRegister>::members,
+                                                        [](auto member) {
+                                                            return std::make_tuple(member.name.c_str(), member.pointer);
+                                                        });
             const auto table = std::tuple_cat(
-                    std::make_tuple(replace_name == nullptr ? info.name.str() : replace_name),
+                    std::make_tuple(replace_name == nullptr ? final_name : replace_name),
                     members_tpl);
 
             const auto final_table = metaprog::merge_tuple(std::move(table));
             try {
                 std::apply(
-                        [this](auto &&...params)
-                        {
+                        [this](auto &&...params) {
                             this->lua_state_.new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
                         }, final_table);
             }
@@ -68,7 +74,8 @@ namespace antara::gaming::lua
         }
 
         template<typename ...Args>
-        sol::unsafe_function_result execute_safe_function(std::string function_name, std::string table_name, Args &&...args)
+        sol::unsafe_function_result
+        execute_safe_function(std::string function_name, std::string table_name, Args &&...args)
         {
             try {
                 if (not table_name.empty()) {
@@ -85,13 +92,33 @@ namespace antara::gaming::lua
                     }
                 }
             }
-            catch(const std::exception& error) {
+            catch (const std::exception &error) {
                 std::cerr << "lua error: " << error.what() << std::endl;
             }
             return sol::unsafe_function_result();
         }
 
-        bool load_script_from_entities();
+        template<typename TComponent>
+        void register_component() noexcept
+        {
+            this->register_type<TComponent>();
+            constexpr auto info = refl::reflect<TComponent>();
+            std::string final_name = info.name.str();
+            if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
+                final_name = info.name.str().substr(found + 1);
+            }
+            lua_state_["entity_registry"][final_name + "_id"] = [](entt::registry &self) {
+                return self.type<TComponent>();
+            };
+        }
+
+        template <typename ... TComponents>
+        void register_components_list(doom::meta::list<TComponents...>) noexcept
+        {
+            (register_component<TComponents>(), ...);
+        }
+
+        bool load_script_from_entities() noexcept;
 
     private:
         sol::state lua_state_;

@@ -80,7 +80,19 @@ namespace antara::gaming::lua::tests
             return true
             )lua";
             bool res = state.script(script);
-                    CHECK(res);
+            CHECK(res);
+        }
+
+        TEST_CASE ("components function with entities")
+        {
+            const auto &script = R"lua(
+            local entity = entt.entity_registry:create()
+            local id = entt.entity_registry:layer_1_id()
+            assert(id ~= 0, "id should not be zero")
+            return true
+            )lua";
+            bool res = state.script(script);
+            CHECK(res);
         }
 
         TEST_CASE ("load script")
