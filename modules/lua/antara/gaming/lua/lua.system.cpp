@@ -146,7 +146,7 @@ namespace antara::gaming::lua
                 {"pause",         input::key::pause},
         });
         lua_state_["antara"] = table;
-        register_components_list(ecs::components_list{});
+        register_components_list(ecs::component::components_list{});
         lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
     }
 

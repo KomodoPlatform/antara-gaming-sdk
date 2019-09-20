@@ -43,13 +43,13 @@ public:
         sf::Text &txt = txt_cmp.drawable;
         txt.setFillColor(sf::Color::Blue);
         txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
-        this->entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity,
+        this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_entity,
                                                                                static_cast<float>(window_info.width) /
                                                                                2.f,
                                                                                static_cast<float>(window_info.height) /
                                                                                2.f);
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::layer<0>>(dummy_entity);
+        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
     }
 
     void update() noexcept final
@@ -102,13 +102,13 @@ public:
         sf::Text &txt = txt_cmp.drawable;
         txt.setFillColor(sf::Color::Green);
         txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
-        this->entity_registry_.assign<antara::gaming::ecs::component_position>(dummy_entity,
+        this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_entity,
                                                                                static_cast<float>(window_info.width) /
                                                                                2.f,
                                                                                static_cast<float>(window_info.height) /
                                                                                2.f);
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(dummy_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::layer<0>>(dummy_entity);
+        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
     }
 
     void update() noexcept final

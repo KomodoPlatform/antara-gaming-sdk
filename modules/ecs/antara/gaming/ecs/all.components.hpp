@@ -20,7 +20,7 @@
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
 
-namespace antara::gaming::ecs
+namespace antara::gaming::ecs::component
 {
     using components_list = doom::meta::list<
             layer_0,
@@ -35,5 +35,5 @@ namespace antara::gaming::ecs
             layer_9,
             layer_10,
             layer_11,
-            component_position>;
+            position>;
 }

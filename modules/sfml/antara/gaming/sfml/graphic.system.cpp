@@ -41,12 +41,12 @@ namespace antara::gaming::sfml
     template<size_t Layer, typename DrawableType>
     void graphic_system::draw() noexcept
     {
-        this->entity_registry_.view<DrawableType, ecs::layer<Layer>>().each(
+        this->entity_registry_.view<DrawableType, ecs::component::layer<Layer>>().each(
                 [this](auto entity,
                        auto &&drawable,
                        [[maybe_unused]] auto &&) {
                     if constexpr (std::is_base_of_v<sf::Transformable, decltype(DrawableType::drawable)>) {
-                        if (auto cmp_position = this->entity_registry_.try_get<ecs::component_position>(entity);
+                        if (auto cmp_position = this->entity_registry_.try_get<ecs::component::position>(entity);
                                 cmp_position != nullptr) {
                             drawable.drawable.setPosition(cmp_position->pos_x, cmp_position->pos_y);
                         }
@@ -69,6 +69,6 @@ namespace antara::gaming::sfml
 
     void graphic_system::draw_each_layers() noexcept
     {
-        draw_each_layers(std::make_index_sequence<ecs::max_layer>{});
+        draw_each_layers(std::make_index_sequence<ecs::component::max_layer>{});
     }
 }

@@ -86,11 +86,39 @@ namespace antara::gaming::lua::tests
         TEST_CASE ("components function with entities")
         {
             const auto &script = R"lua(
-            local entity = entt.entity_registry:create()
-            local id = entt.entity_registry:layer_1_id()
-            assert(id ~= 0, "id should not be zero")
-            entt.entity_registry:add_layer_1_component(entity)
-            assert(entt.entity_registry:has_layer_1_component(entity) == true)
+            function test_basis()
+                local entity = entt.entity_registry:create()
+                local id = entt.entity_registry:layer_1_id()
+                assert(id ~= 0, "id should not be zero")
+                entt.entity_registry:add_layer_1_component(entity)
+                assert(entt.entity_registry:has_layer_1_component(entity) == true)
+                entt.entity_registry:remove_layer_1_component(entity)
+                assert(entt.entity_registry:has_layer_1_component(entity) == false)
+                local pos = entt.entity_registry:add_position_component(entity)
+                print("pos.pos_x: " .. pos.pos_x)
+                pos.pos_x = pos.pos_x + 1
+                print("pos.pos_x: " .. pos.pos_x)
+                local same_pos = entt.entity_registry:get_position_component(entity)
+                assert(same_pos.pos_x == pos.pos_x, "should be equal")
+                entt.entity_registry:destroy(entity)
+            end
+            test_basis()
+            function simple_functor(entity_id)
+                entt.entity_registry:destroy(entity_id)
+            end
+
+            function test_for_each()
+                for i = 1, 10
+                do
+                    local id = entt.entity_registry:create()
+                    entt.entity_registry:add_layer_1_component(id)
+                end
+
+                assert(entt.entity_registry:alive() == 10, "should be 10")
+                entt.entity_registry:for_each_entities_which_have_layer_1_component(simple_functor)
+                assert(entt.entity_registry:alive() == 0, "should be 0")
+                return true
+            end
             return true
             )lua";
             bool res = state.script(script);

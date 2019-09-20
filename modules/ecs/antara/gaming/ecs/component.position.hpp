@@ -18,16 +18,16 @@
 
 #include "antara/gaming/core/safe.refl.hpp"
 
-namespace antara::gaming::ecs
+namespace antara::gaming::ecs::component
 {
-    struct component_position
+    struct position
     {
-        component_position(float pos_x_, float pos_y_) noexcept;
-        component_position() noexcept;
+        position(float pos_x_, float pos_y_) noexcept;
+        position() noexcept;
 
         float pos_x;
         float pos_y;
     };
 }
 
-REFL_AUTO(type(antara::gaming::ecs::component_position), field(pos_x), field(pos_y))
+REFL_AUTO(type(antara::gaming::ecs::component::position), field(pos_x), field(pos_y))

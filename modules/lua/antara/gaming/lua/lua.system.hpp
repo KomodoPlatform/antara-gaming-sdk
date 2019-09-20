@@ -119,6 +119,25 @@ namespace antara::gaming::lua
                 return self.has<TComponent>(entity);
             };
 
+            lua_state_["entity_registry"]["remove_"s + final_name + "_component"s] = [](
+                    entt::registry &self,
+                    entt::registry::entity_type entity) {
+                return self.remove<TComponent>(entity);
+            };
+
+            lua_state_["entity_registry"]["get_"s + final_name + "_component"s] = [](
+                    entt::registry &self,
+                    entt::registry::entity_type entity) {
+                if constexpr (not std::is_empty_v<TComponent>) {
+                    return std::ref(self.get<TComponent>(entity));
+                }
+            };
+
+            lua_state_["entity_registry"]["for_each_entities_which_have_" + final_name +
+                                          "_component"] = [](entt::registry &self, sol::function functor) {
+                return self.view<TComponent>().each(functor);
+            };
+
             if constexpr (std::is_default_constructible_v<TComponent>) {
                 lua_state_["entity_registry"]["add_"s + final_name + "_component"s] = [](
                         entt::registry &self,
