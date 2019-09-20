@@ -18,9 +18,7 @@ set_target_properties(antara_lua_tests
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
         )
 
-add_custom_command(TARGET antara_lua_tests PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/bin/unit_tests/assets)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/bin/unit_tests/)
 
 target_enable_coverage(antara_lua_tests)
 target_enable_tsan(antara_lua_tests)
