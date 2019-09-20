@@ -38,40 +38,40 @@ namespace antara::gaming::lua::tests
     {
         entt::registry entity_registry;
         entt::dispatcher dispatcher;
-        antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher};
-        auto& state = scripting_system.get_state();
+        antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher,
+                                                               std::filesystem::current_path() / "assets/scripts"};
+        auto &state = scripting_system.get_state();
         TEST_CASE ("register a type")
         {
             scripting_system.register_type<dummy_cmp>();
             state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
         }
 
-        TEST_CASE("get version")
+        TEST_CASE ("get version")
         {
             std::string res = state.script("local obj = antara.version\n return obj");
-            CHECK_EQ(res, gaming::version());
+                    CHECK_EQ(res, gaming::version());
         }
 
-        TEST_CASE("system type")
+        TEST_CASE ("system type")
         {
             ecs::system_type res = state.script("return antara.system_type.pre_update");
-            CHECK_EQ(res, ecs::pre_update);
+                    CHECK_EQ(res, ecs::pre_update);
         }
 
-        TEST_CASE("key input")
+        TEST_CASE ("key input")
         {
             input::key res = state.script("return antara.keyboard.f1");
-            CHECK_EQ(res, input::key::f1);
+                    CHECK_EQ(res, input::key::f1);
             res = state.script("return antara.keyboard.return_");
-            CHECK_EQ(res, input::key::return_);
+                    CHECK_EQ(res, input::key::return_);
         }
 
-        TEST_CASE("create/destroy/alive/valid entities")
+        TEST_CASE ("create/destroy/alive/valid entities")
         {
-            const auto& script = R"lua(
+            const auto &script = R"lua(
             local entity = entt.entity_registry:create()
             assert(entt.entity_registry:valid(entity), "should be valid")
-            print(entity)
             assert(entt.entity_registry:alive() == 1, "should be one")
             entt.entity_registry:destroy(entity)
             assert(entt.entity_registry:valid(entity) == false, "should be invalid")
@@ -79,6 +79,13 @@ namespace antara::gaming::lua::tests
             return true
             )lua";
             bool res = state.script(script);
+                    CHECK(res);
+        }
+
+        TEST_CASE ("load script")
+        {
+            CHECK(scripting_system.load_script("antara.tests.lua"));
+            bool res = state["antara_foo"]();
             CHECK(res);
         }
     }
