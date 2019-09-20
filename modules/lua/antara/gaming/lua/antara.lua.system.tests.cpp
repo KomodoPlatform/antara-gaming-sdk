@@ -96,5 +96,14 @@ namespace antara::gaming::lua::tests
             entity_registry.assign<lua::component_script>(entity, "antara.entity.player.lua", "player_table");
             CHECK(scripting_system.load_script_from_entities());
         }
+
+        TEST_CASE("update entities")
+        {
+            bool res = scripting_system.execute_safe_function("my_get_res", "player_table");
+            CHECK_FALSE(res);
+            scripting_system.update();
+            res = scripting_system.execute_safe_function("my_get_res", "player_table");
+            CHECK(res);
+        }
     }
 }

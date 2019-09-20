@@ -6,7 +6,14 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local res = false
+
 function update(entity_id)
+    res = true
+end
+
+function get_res()
+    return res
 end
 
 function init(entity_id)
@@ -16,6 +23,7 @@ end
 
 player_table = {
     on_update = update,
-    on_init = init
+    on_init = init,
+    my_get_res = get_res
 }
 

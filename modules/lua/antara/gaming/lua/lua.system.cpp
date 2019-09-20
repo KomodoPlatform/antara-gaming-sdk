@@ -24,6 +24,9 @@ namespace antara::gaming::lua
 {
     void scripting_system::update() noexcept
     {
+        entity_registry_.view<lua::component_script>().each([this](auto entity_id, auto&& comp) {
+           execute_safe_function("on_update", comp.table_name, entity_id);
+        });
     }
 
     scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
