@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 
@@ -55,6 +56,14 @@ namespace antara::gaming::lua::tests
         {
             ecs::system_type res = state.script("return antara.system_type.pre_update");
             CHECK_EQ(res, ecs::pre_update);
+        }
+
+        TEST_CASE("key input")
+        {
+            input::key res = state.script("return antara.keyboard.f1");
+            CHECK_EQ(res, input::key::f1);
+            res = state.script("return antara.keyboard.return_");
+            CHECK_EQ(res, input::key::return_);
         }
 
         TEST_CASE("create/destroy/alive/valid entities")
