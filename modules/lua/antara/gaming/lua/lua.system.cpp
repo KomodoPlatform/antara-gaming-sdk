@@ -177,7 +177,7 @@ namespace antara::gaming::lua
     scripting_system::load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept
     {
         try {
-            this->lua_state_.script_file(script_directory / file_name);
+            this->lua_state_.script_file((script_directory / file_name).string());
         }
         catch (const std::exception &error) {
             std::cerr << "error when loading script " << file_name << " err: " << error.what() << " script_directory: "
