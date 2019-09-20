@@ -32,7 +32,7 @@ namespace antara::gaming::lua
     {
     public:
         scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
-                         std::filesystem::path script_directory = core::assets_real_path() / "scripts/lua") noexcept;
+                         std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 

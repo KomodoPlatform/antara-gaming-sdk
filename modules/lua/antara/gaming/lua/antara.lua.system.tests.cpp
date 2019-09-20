@@ -40,7 +40,7 @@ namespace antara::gaming::lua::tests
         entt::registry entity_registry;
         entt::dispatcher dispatcher;
         antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher,
-                                                               std::filesystem::current_path() / "assets/scripts"};
+                                                               std::filesystem::current_path() / "assets" / "scripts"};
         auto &state = scripting_system.get_state();
         TEST_CASE ("register a type")
         {
