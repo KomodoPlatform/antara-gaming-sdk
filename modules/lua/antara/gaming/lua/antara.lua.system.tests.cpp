@@ -89,6 +89,8 @@ namespace antara::gaming::lua::tests
             local entity = entt.entity_registry:create()
             local id = entt.entity_registry:layer_1_id()
             assert(id ~= 0, "id should not be zero")
+            entt.entity_registry:add_layer_1_component(entity)
+            assert(entt.entity_registry:has_layer_1_component(entity) == true)
             return true
             )lua";
             bool res = state.script(script);

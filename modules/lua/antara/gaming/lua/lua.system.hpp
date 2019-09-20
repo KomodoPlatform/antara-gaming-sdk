@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <functional> // std::ref
 #include <filesystem>
 #include <iostream> //std::cerr
 #include <sol/state.hpp>
@@ -101,6 +102,7 @@ namespace antara::gaming::lua
         template<typename TComponent>
         void register_component() noexcept
         {
+            using namespace std::literals;
             this->register_type<TComponent>();
             constexpr auto info = refl::reflect<TComponent>();
             std::string final_name = info.name.str();
@@ -110,9 +112,26 @@ namespace antara::gaming::lua
             lua_state_["entity_registry"][final_name + "_id"] = [](entt::registry &self) {
                 return self.type<TComponent>();
             };
+
+            lua_state_["entity_registry"]["has_"s + final_name + "_component"s] = [](
+                    entt::registry &self,
+                    entt::registry::entity_type entity) {
+                return self.has<TComponent>(entity);
+            };
+
+            if constexpr (std::is_default_constructible_v<TComponent>) {
+                lua_state_["entity_registry"]["add_"s + final_name + "_component"s] = [](
+                        entt::registry &self,
+                        entt::registry::entity_type entity) {
+                    if constexpr (std::is_empty_v<TComponent>) {
+                        self.assign<TComponent>(entity);
+                    } else
+                        return std::ref(self.assign<TComponent>(entity));
+                };
+            }
         }
 
-        template <typename ... TComponents>
+        template<typename ... TComponents>
         void register_components_list(doom::meta::list<TComponents...>) noexcept
         {
             (register_component<TComponents>(), ...);
