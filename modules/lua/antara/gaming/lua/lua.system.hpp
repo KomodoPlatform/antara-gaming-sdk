@@ -39,6 +39,7 @@ namespace antara::gaming::lua
         sol::state &get_state() noexcept;
 
         bool load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept;
+
         bool load_script(const std::string &file_name) noexcept;
 
         template<typename TypeToRegister>
@@ -65,6 +66,32 @@ namespace antara::gaming::lua
                 std::cerr << error.what() << std::endl; //! LCOV_EXCL_LINE
             }
         }
+
+        template<typename ...Args>
+        sol::unsafe_function_result execute_safe_function(std::string function_name, std::string table_name, Args &&...args)
+        {
+            try {
+                if (not table_name.empty()) {
+                    //! table call
+                    sol::optional<sol::function> f = this->lua_state_[table_name][function_name];
+                    if (f) {
+                        return f.value()(std::forward<Args>(args)...);
+                    }
+                } else {
+                    //! global call
+                    sol::optional<sol::function> f = this->lua_state_[function_name];
+                    if (f) {
+                        return f.value()(std::forward<Args>(args)...);
+                    }
+                }
+            }
+            catch(const std::exception& error) {
+                std::cerr << "lua error: " << error.what() << std::endl;
+            }
+            return sol::unsafe_function_result();
+        }
+
+        bool load_script_from_entities();
 
     private:
         sol::state lua_state_;

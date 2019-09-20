@@ -18,6 +18,7 @@
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
+#include "antara/gaming/lua/component.lua.hpp"
 
 struct dummy_cmp
 {
@@ -87,6 +88,13 @@ namespace antara::gaming::lua::tests
             CHECK(scripting_system.load_script("antara.tests.lua"));
             bool res = state["antara_foo"]();
             CHECK(res);
+        }
+
+        TEST_CASE("load scripted entities")
+        {
+            auto entity = entity_registry.create();
+            entity_registry.assign<lua::component_script>(entity, "antara.entity.player.lua", "player_table");
+            CHECK(scripting_system.load_script_from_entities());
         }
     }
 }

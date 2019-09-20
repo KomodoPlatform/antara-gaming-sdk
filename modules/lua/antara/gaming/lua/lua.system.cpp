@@ -18,6 +18,7 @@
 #include "antara/gaming/core/reflection.entity.registry.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
+#include "antara/gaming/lua/component.lua.hpp"
 
 namespace antara::gaming::lua
 {
@@ -190,5 +191,17 @@ namespace antara::gaming::lua
     bool scripting_system::load_script(const std::string &file_name) noexcept
     {
         return load_script(file_name, this->directory_path_);
+    }
+
+    bool scripting_system::load_script_from_entities()
+    {
+        bool res = true;
+        entity_registry_.view<lua::component_script>().each([this, &res](auto entity_id, auto&& comp) {
+            res &= this->load_script(comp.script);
+            if (res) {
+                execute_safe_function("on_init", comp.table_name, entity_id);
+            }
+        });
+        return res;
     }
 }

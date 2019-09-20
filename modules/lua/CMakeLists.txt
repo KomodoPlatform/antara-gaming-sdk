@@ -1,7 +1,8 @@
 ## shared sources between the module and his unit tests
 add_library(antara_lua_shared_sources STATIC)
 target_sources(antara_lua_shared_sources PRIVATE
-        antara/gaming/lua/lua.system.cpp)
+        antara/gaming/lua/lua.system.cpp
+        antara/gaming/lua/component.lua.cpp)
 target_include_directories(antara_lua_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_lua_shared_sources PUBLIC antara::lua_lib sol2::sol2 antara::ecs antara::core)
 add_library(antara::lua ALIAS antara_lua_shared_sources)
