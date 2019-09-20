@@ -33,6 +33,7 @@ function build() {
     echo "result -> ${cmd} ${options} ../"
     ${cmd} ${options} ../
     cmake --build . --config ${BUILD_TYPE} || travis_terminate 1
+    ls -R bin/unit_tests
 }
 
 function run_test() {
@@ -62,6 +63,7 @@ function run_coverage() {
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/config/antara/gaming/config/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/core/antara/gaming/core/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/ecs/antara/gaming/ecs/*.tests.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/lua/antara/gaming/lua/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/timer/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/world/antara/gaming/world/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/event/antara/gaming/event/*.tests.*" -o coverage.info
