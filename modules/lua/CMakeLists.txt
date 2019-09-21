@@ -11,7 +11,8 @@ add_library(antara::lua ALIAS antara_lua_shared_sources)
 add_executable(antara_lua_tests)
 target_sources(antara_lua_tests PUBLIC
         antara/gaming/lua/antara.lua.tests.cpp
-        antara/gaming/lua/antara.lua.system.tests.cpp)
+        antara/gaming/lua/antara.lua.system.tests.cpp
+        PRIVATE antara/gaming/lua/details/lua.scripted.system.cpp)
 target_link_libraries(antara_lua_tests PRIVATE doctest PUBLIC antara::lua)
 set_target_properties(antara_lua_tests
         PROPERTIES
