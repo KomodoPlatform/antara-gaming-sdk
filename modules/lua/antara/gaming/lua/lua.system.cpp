@@ -25,8 +25,8 @@ namespace antara::gaming::lua
 {
     void scripting_system::update() noexcept
     {
-        entity_registry_.view<lua::component_script>().each([this](auto entity_id, auto&& comp) {
-           execute_safe_function("on_update", comp.table_name, entity_id);
+        entity_registry_.view<lua::component_script>().each([this](auto entity_id, auto &&comp) {
+            execute_safe_function("on_update", comp.table_name, entity_id);
         });
     }
 
@@ -153,24 +153,29 @@ namespace antara::gaming::lua
     void scripting_system::register_entity_registry()
     {
         register_type<entt::registry>("entity_registry");
-        lua_state_["entity_registry"]["create"] = [](entt::registry &self)
-        {
+        lua_state_["entity_registry"]["create"] = [](entt::registry &self) {
             return self.create();
         };
 
-        lua_state_["entity_registry"]["alive"] = [](entt::registry &self)
-        {
+        lua_state_["entity_registry"]["alive"] = [](entt::registry &self) {
             return self.alive();
         };
 
-        lua_state_["entity_registry"]["destroy"] = [](entt::registry &self, entt::registry::entity_type entity)
-        {
+        lua_state_["entity_registry"]["destroy"] = [](entt::registry &self, entt::registry::entity_type entity) {
             self.destroy(entity);
         };
 
-        lua_state_["entity_registry"]["valid"] = [](entt::registry &self, entt::registry::entity_type entity)
-        {
+        lua_state_["entity_registry"]["valid"] = [](entt::registry &self, entt::registry::entity_type entity) {
             return self.valid(entity);
+        };
+
+        lua_state_["entity_registry"]["for_each_runtime"] = [](entt::registry &self,
+                                                               const std::vector<entt::component>& components,
+                                                               sol::function functor) {
+            return self.runtime_view(std::cbegin(components), std::cend(components)).each(
+                    [func = std::move(functor)](auto entity) {
+                        func(entity);
+                    });
         };
     }
 
@@ -201,7 +206,7 @@ namespace antara::gaming::lua
     bool scripting_system::load_script_from_entities() noexcept
     {
         bool res = true;
-        entity_registry_.view<lua::component_script>().each([this, &res](auto entity_id, auto&& comp) {
+        entity_registry_.view<lua::component_script>().each([this, &res](auto entity_id, auto &&comp) {
             res &= this->load_script(comp.script);
             if (res) {
                 execute_safe_function("on_init", comp.table_name, entity_id);

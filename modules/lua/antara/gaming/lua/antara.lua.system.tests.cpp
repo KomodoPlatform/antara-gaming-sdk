@@ -119,6 +119,28 @@ namespace antara::gaming::lua::tests
                 assert(entt.entity_registry:alive() == 0, "should be 0")
                 return true
             end
+            function test_for_each_runtime()
+                for i = 1, 10
+                do
+                    local id = entt.entity_registry:create()
+                    if i == 4 then
+                        entt.entity_registry:add_layer_3_component(id)
+                    else
+                        entt.entity_registry:add_layer_1_component(id)
+                        entt.entity_registry:add_layer_2_component(id)
+                    end
+                end
+
+                assert(entt.entity_registry:alive() == 10, "should be 10")
+
+                local table_type = {
+                    entt.entity_registry:layer_1_id(),
+                    entt.entity_registry:layer_2_id()
+                }
+                entt.entity_registry:for_each_runtime(table_type, simple_functor)
+                assert(entt.entity_registry:alive() == 1, "should be 1")
+                return true
+            end
             return true
             )lua";
             bool res = state.script(script);
