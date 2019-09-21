@@ -14,9 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/lua/details/lua.scripted.system.hpp"
+#include <doctest/doctest.h>
+#include "antara/gaming/ecs/event.add.base.system.hpp"
 
-namespace antara::gaming::lua::details
+namespace antara::gaming::ecs::tests
 {
-
+    TEST_SUITE ("test event add base system")
+    {
+        TEST_CASE ("default constructible")
+        {
+            antara::gaming::ecs::event::add_base_system evt{};
+        }
+    }
 }

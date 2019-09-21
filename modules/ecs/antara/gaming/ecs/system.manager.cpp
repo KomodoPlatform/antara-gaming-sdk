@@ -24,7 +24,7 @@ namespace antara::gaming::ecs
     system_manager::system_manager(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : entity_registry_(
             registry), dispatcher_(dispatcher)
     {
-
+        this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
     }
 
     std::size_t system_manager::nb_systems(system_type sys_type) const noexcept
@@ -87,5 +87,11 @@ namespace antara::gaming::ecs
             nb_systems_updated += 1;
         }
         return nb_systems_updated;
+    }
+
+    void system_manager::receive_add_base_system(const ecs::event::add_base_system &evt) noexcept
+    {
+        ecs::system_type sys_type = evt.system_ptr->get_system_type_rtti();
+        this->add_system_(std::move(const_cast<event::add_base_system &>(evt).system_ptr), sys_type);
     }
 }

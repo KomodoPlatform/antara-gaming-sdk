@@ -11,18 +11,16 @@ add_library(antara::lua ALIAS antara_lua_shared_sources)
 add_executable(antara_lua_tests)
 target_sources(antara_lua_tests PUBLIC
         antara/gaming/lua/antara.lua.tests.cpp
-        antara/gaming/lua/antara.lua.system.tests.cpp
-        PRIVATE antara/gaming/lua/details/lua.scripted.system.cpp)
+        antara/gaming/lua/antara.lua.system.tests.cpp)
 target_link_libraries(antara_lua_tests PRIVATE doctest PUBLIC antara::lua)
 set_target_properties(antara_lua_tests
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
         )
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lua_assets DESTINATION ${CMAKE_BINARY_DIR}/bin/unit_tests/)
-if (WIN32)
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lua_assets DESTINATION ${CMAKE_BINARY_DIR}/bin/unit_tests/${CMAKE_BUILD_TYPE})
-endif ()
+add_custom_command(TARGET antara_lua_tests PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/lua_assets $<TARGET_FILE_DIR:antara_lua_tests>)
 
 target_enable_coverage(antara_lua_tests)
 target_enable_tsan(antara_lua_tests)

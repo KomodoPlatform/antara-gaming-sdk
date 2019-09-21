@@ -25,12 +25,16 @@
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
-namespace antara::gaming::lua {
-    class scripting_system final : public ecs::logic_update_system<lua::scripting_system> {
+namespace antara::gaming::lua
+{
+    class scripting_system final : public ecs::logic_update_system<lua::scripting_system>
+    {
     public:
         scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
                          std::filesystem::path script_directory = core::assets_real_path() / "scripts" /
-                                                                  "lua") noexcept;
+                                                                  "lua",
+                         std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" /
+                                                                         "systems" / "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 
@@ -43,12 +47,14 @@ namespace antara::gaming::lua {
         bool load_script(const std::string &file_name) noexcept;
 
         template<typename TypeToRegister>
-        void register_type(const char *replace_name = nullptr) noexcept {
+        void register_type(const char *replace_name = nullptr) noexcept
+        {
             register_type_impl<TypeToRegister>(refl::reflect<TypeToRegister>().members, replace_name);
         }
 
         template<typename TypeToRegister, typename ... Members>
-        void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept {
+        void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept
+        {
             std::string current_name = refl::reflect<TypeToRegister>().name.str();
             std::string final_name = current_name;
             if (std::size_t found = current_name.find_last_of(':'); found != std::string::npos) {
@@ -71,7 +77,8 @@ namespace antara::gaming::lua {
 
         template<typename ...Args>
         sol::unsafe_function_result
-        execute_safe_function(std::string function_name, std::string table_name, Args &&...args) {
+        execute_safe_function(std::string function_name, std::string table_name, Args &&...args)
+        {
             try {
                 if (not table_name.empty()) {
                     //! table call
@@ -94,7 +101,8 @@ namespace antara::gaming::lua {
         }
 
         template<typename TComponent>
-        void register_component() noexcept {
+        void register_component() noexcept
+        {
             using namespace std::literals;
             this->register_type<TComponent>();
             constexpr auto info = refl::reflect<TComponent>();
@@ -144,16 +152,18 @@ namespace antara::gaming::lua {
         }
 
         template<typename ... TComponents>
-        void register_components_list(doom::meta::list<TComponents...>) noexcept {
+        void register_components_list(doom::meta::list<TComponents...>) noexcept
+        {
             (register_component<TComponents>(), ...);
         }
 
         bool load_script_from_entities() noexcept;
+        bool load_scripted_system(const std::string &script_name) noexcept;
 
     private:
         sol::state lua_state_;
         std::filesystem::path directory_path_;
-
+        std::filesystem::path systems_directory_path_;
         void register_entity_registry();
     };
 }

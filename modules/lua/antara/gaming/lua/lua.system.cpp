@@ -17,9 +17,11 @@
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/core/reflection.entity.registry.hpp"
 #include "antara/gaming/ecs/all.components.hpp"
+#include "antara/gaming/ecs/event.add.base.system.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
+#include "antara/gaming/lua/details/lua.scripted.system.hpp"
 
 namespace antara::gaming::lua
 {
@@ -31,8 +33,10 @@ namespace antara::gaming::lua
     }
 
     scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
-                                       std::filesystem::path script_directory) noexcept : system(
-            entity_registry, dispatcher), directory_path_(std::move(script_directory))
+                                       std::filesystem::path script_directory,
+                                       std::filesystem::path systems_directory) noexcept : system(
+            entity_registry, dispatcher), directory_path_(std::move(script_directory)), systems_directory_path_(
+            std::move(systems_directory))
     {
         lua_state_.open_libraries();
         register_entity_registry();
@@ -170,7 +174,7 @@ namespace antara::gaming::lua
         };
 
         lua_state_["entity_registry"]["for_each_runtime"] = [](entt::registry &self,
-                                                               const std::vector<entt::component>& components,
+                                                               std::vector<entt::component> components,
                                                                sol::function functor) {
             return self.runtime_view(std::cbegin(components), std::cend(components)).each(
                     [func = std::move(functor)](auto entity) {
@@ -212,6 +216,37 @@ namespace antara::gaming::lua
                 execute_safe_function("on_init", comp.table_name, entity_id);
             }
         });
+        return res;
+    }
+
+    bool scripting_system::load_scripted_system(const std::string &script_name) noexcept
+    {
+        bool res = load_script(script_name, systems_directory_path_);
+        if (not res)
+            return false;
+        auto table_name = std::filesystem::path(script_name).stem().string() + "_table";
+        ecs::system_type sys_type = this->lua_state_[table_name]["system_type"];
+        switch (sys_type) {
+            case ecs::pre_update:
+                this->dispatcher_.trigger<ecs::event::add_base_system>(
+                        std::make_unique<details::lua_pre_scripted_system>(entity_registry_, dispatcher_, table_name,
+                                                                           this->lua_state_));
+                break;
+            case ecs::logic_update:
+                this->dispatcher_.trigger<ecs::event::add_base_system>(
+                        std::make_unique<details::lua_logic_scripted_system>(entity_registry_, dispatcher_,
+                                                                             table_name, this->lua_state_));
+                break;
+            case ecs::post_update:
+                this->dispatcher_.trigger<ecs::event::add_base_system>(
+                        std::make_unique<details::lua_post_scripted_system>(entity_registry_, dispatcher_, table_name,
+                                                                            this->lua_state_));
+                break;
+            case ecs::size:
+                break;
+            default:
+                break;
+        }
         return res;
     }
 }

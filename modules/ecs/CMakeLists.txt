@@ -3,7 +3,8 @@ add_library(antara_ecs_shared_sources STATIC)
 target_sources(antara_ecs_shared_sources PRIVATE
         antara/gaming/ecs/base.system.cpp
         antara/gaming/ecs/system.manager.cpp
-        antara/gaming/ecs/component.position.cpp)
+        antara/gaming/ecs/component.position.cpp
+        antara/gaming/ecs/event.add.base.system.cpp)
 target_include_directories(antara_ecs_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_ecs_shared_sources PUBLIC antara::core EnTT strong_type expected range-v3 antara::default_settings antara::timer antara::event doom::meta)
 add_library(antara::ecs ALIAS antara_ecs_shared_sources)
@@ -14,7 +15,8 @@ target_sources(antara_ecs_tests PUBLIC
         antara/gaming/ecs/antara.ecs.tests.cpp
         antara/gaming/ecs/antara.ecs.system.tests.cpp
         antara/gaming/ecs/antara.ecs.system.manager.tests.cpp
-        antara/gaming/ecs/antara.ecs.component.position.tests.cpp)
+        antara/gaming/ecs/antara.ecs.component.position.tests.cpp
+        antara/gaming/ecs/antara.ecs.event.add.base.system.tests.cpp)
 target_link_libraries(antara_ecs_tests PRIVATE doctest PUBLIC antara::ecs)
 set_target_properties(antara_ecs_tests
         PROPERTIES

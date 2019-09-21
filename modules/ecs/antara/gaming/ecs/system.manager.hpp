@@ -27,6 +27,7 @@
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.type.hpp"
+#include "antara/gaming/ecs/event.add.base.system.hpp"
 #include "antara/gaming/timer/time.step.hpp"
 #include "antara/gaming/event/fatal.error.hpp"
 
@@ -48,6 +49,9 @@ namespace antara::gaming::ecs
          * \param registry The entity_registry is provided to the system when it is created.
          */
         explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
+
+        //! Callback
+        void receive_add_base_system(const ecs::event::add_base_system& evt) noexcept;
 
         /**
          * \return number of systems which are successfully updated
@@ -222,7 +226,7 @@ namespace antara::gaming::ecs
     const TSystem &system_manager::get_system() const noexcept
     {
         const auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
-            this->dispatcher_.trigger<event::fatal_error>(ec);
+            this->dispatcher_.trigger<gaming::event::fatal_error>(ec);
         });
         return (*ret).get();
     }
@@ -231,7 +235,7 @@ namespace antara::gaming::ecs
     TSystem &system_manager::get_system() noexcept
     {
         auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
-            this->dispatcher_.trigger<event::fatal_error>(ec);
+            this->dispatcher_.trigger<gaming::event::fatal_error>(ec);
         });
         return (*ret).get();
     }
