@@ -55,7 +55,7 @@ namespace antara::gaming::lua
         {
             std::string current_name = refl::reflect<TypeToRegister>().name.c_str();
             std::string final_name = current_name;
-            if (std::size_t found = current_name.find_last_of(":"); found != std::string::npos) {
+            if (std::size_t found = current_name.find_last_of(':'); found != std::string::npos) {
                 //! Skip namespace
                 final_name = current_name.substr(found + 1);
             }
