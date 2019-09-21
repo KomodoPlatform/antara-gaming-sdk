@@ -29,13 +29,17 @@ function build() {
     fi
 
     options+=' -DANTARA_BUILD_EXAMPLES=ON'
+    options+=' -DUSE_LUA_ANTARA_WRAPPER=ON'
     echo "result -> ${cmd} ${options} ../"
     ${cmd} ${options} ../
     cmake --build . --config ${BUILD_TYPE} || travis_terminate 1
+    ls -R bin/unit_tests
 }
 
 function run_test() {
     cd ${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/bin/unit_tests
+    pwd
+    ls -R .
     if [[ "${EMSCRIPTEN_WEB}" == "ON" ]]; then
       for i in *_tests*.js; do node ${i} --reporters=xml --out=${i}-result.xml -s || true; done;
     else
@@ -61,6 +65,7 @@ function run_coverage() {
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/config/antara/gaming/config/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/core/antara/gaming/core/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/ecs/antara/gaming/ecs/*.tests.*" -o coverage.info
+     lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/lua/antara/gaming/lua/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/timer/antara/gaming/timer/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/world/antara/gaming/world/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/event/antara/gaming/event/*.tests.*" -o coverage.info

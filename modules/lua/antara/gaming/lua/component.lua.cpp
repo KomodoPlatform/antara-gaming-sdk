@@ -14,20 +14,19 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <utility>
+#include "antara/gaming/lua/component.lua.hpp"
 
-#include "antara/gaming/core/safe.refl.hpp"
-
-namespace antara::gaming::ecs::component
+namespace antara::gaming::lua
 {
-    struct position
+    component_script::component_script(std::string script_, std::string table_name_) noexcept : script(std::move(script_)),
+                                                                                                table_name(std::move(table_name_))
     {
-        position(float pos_x_, float pos_y_) noexcept;
-        position() noexcept;
 
-        float pos_x;
-        float pos_y;
-    };
+    }
+
+    component_script::component_script() noexcept : script(""), table_name("")
+    {
+
+    }
 }
-
-REFL_AUTO(type(antara::gaming::ecs::component::position), field(pos_x), field(pos_y))

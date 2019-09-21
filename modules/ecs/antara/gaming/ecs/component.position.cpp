@@ -16,14 +16,14 @@
 
 #include "antara/gaming/ecs/component.position.hpp"
 
-namespace antara::gaming::ecs
+namespace antara::gaming::ecs::component
 {
-    component_position::component_position(float pos_x_, float pos_y_) noexcept : pos_x(pos_x_), pos_y(pos_y_)
+    position::position(float pos_x_, float pos_y_) noexcept : pos_x(pos_x_), pos_y(pos_y_)
     {
 
     }
 
-    component_position::component_position() noexcept : pos_x(0.f), pos_y(0.f)
+    position::position() noexcept : pos_x(0.f), pos_y(0.f)
     {
 
     }

@@ -45,17 +45,46 @@ FetchContent_Declare(
         URL https://github.com/veselink1/refl-cpp/archive/master.zip
 )
 
+if (USE_LUA_ANTARA_WRAPPER)
+    FetchContent_Declare(
+            lua
+            URL https://github.com/lua/lua/archive/master.zip
+    )
+
+    FetchContent_Declare(
+            sol2
+            URL https://github.com/ThePhD/sol2/archive/develop.zip
+    )
+endif ()
+
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_Declare(
             SFML
             URL https://github.com/Milerius/SFML/archive/patch-1.zip
     )
-endif()
+endif ()
 
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
-endif()
+endif ()
+
+if (USE_LUA_ANTARA_WRAPPER)
+    FetchContent_MakeAvailable(lua sol2)
+    add_library(lua_lib STATIC)
+    target_include_directories(lua_lib PUBLIC ${lua_SOURCE_DIR})
+    file(GLOB SRC_FILES ${lua_SOURCE_DIR}/*.c)
+    list(REMOVE_ITEM SRC_FILES "${lua_SOURCE_DIR}/onelua.c")
+    list(REMOVE_ITEM SRC_FILES "${lua_SOURCE_DIR}/ltests.c")
+    message(STATUS "lua_src -> ${SRC_FILES}")
+    target_sources(lua_lib PRIVATE ${SRC_FILES})
+
+    target_link_libraries(lua_lib PRIVATE ${CMAKE_DL_LIBS})
+    if (UNIX)
+        target_link_libraries(lua_lib PRIVATE m)
+    endif ()
+    add_library(antara::lua_lib ALIAS lua_lib)
+endif ()
 
 add_library(refl-cpp INTERFACE)
 target_include_directories(refl-cpp INTERFACE ${refl-cpp_SOURCE_DIR})

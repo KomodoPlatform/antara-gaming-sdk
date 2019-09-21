@@ -2,7 +2,7 @@
 add_library(antara_core_shared_sources STATIC)
 target_sources(antara_core_shared_sources PRIVATE antara/gaming/core/real.path.cpp)
 target_include_directories(antara_core_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_core_shared_sources PUBLIC antara::default_settings)
+target_link_libraries(antara_core_shared_sources PUBLIC antara::default_settings EnTT antara::refl-cpp)
 add_library(antara::core ALIAS antara_core_shared_sources)
 
 ##! antara core tests

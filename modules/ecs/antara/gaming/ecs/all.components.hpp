@@ -16,18 +16,24 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
+#include <meta/sequence/list.hpp>
+#include "antara/gaming/ecs/component.layer.hpp"
+#include "antara/gaming/ecs/component.position.hpp"
 
 namespace antara::gaming::ecs::component
 {
-    struct position
-    {
-        position(float pos_x_, float pos_y_) noexcept;
-        position() noexcept;
-
-        float pos_x;
-        float pos_y;
-    };
+    using components_list = doom::meta::list<
+            layer_0,
+            layer_1,
+            layer_2,
+            layer_3,
+            layer_4,
+            layer_5,
+            layer_6,
+            layer_7,
+            layer_8,
+            layer_9,
+            layer_10,
+            layer_11,
+            position>;
 }
-
-REFL_AUTO(type(antara::gaming::ecs::component::position), field(pos_x), field(pos_y))

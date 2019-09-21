@@ -31,7 +31,7 @@ init:
 before_build:
   - mkdir build
   - cd build
-  - cmake ../ -G "%GENERATOR%" -A %platform% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin" -T "ClangCl" -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang-cl.exe" -DANTARA_BUILD_EXAMPLES=ON -DUSE_SFML_ANTARA_WRAPPER=ON
+  - cmake ../ -G "%GENERATOR%" -A %platform% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin" -T "ClangCl" -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang-cl.exe" -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_EXAMPLES=ON -DUSE_SFML_ANTARA_WRAPPER=ON
 
 build_script:
   - cmake --build . --config %BUILD_TYPE%

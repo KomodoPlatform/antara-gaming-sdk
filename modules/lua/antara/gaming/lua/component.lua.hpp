@@ -16,18 +16,16 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
+#include <string>
 
-namespace antara::gaming::ecs::component
+namespace antara::gaming::lua
 {
-    struct position
+    struct component_script
     {
-        position(float pos_x_, float pos_y_) noexcept;
-        position() noexcept;
+        component_script(std::string script_, std::string table_name_) noexcept;
+        component_script() noexcept;
 
-        float pos_x;
-        float pos_y;
+        std::string script;
+        std::string table_name;
     };
 }
-
-REFL_AUTO(type(antara::gaming::ecs::component::position), field(pos_x), field(pos_y))

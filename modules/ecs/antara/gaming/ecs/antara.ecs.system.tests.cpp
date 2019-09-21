@@ -17,11 +17,7 @@
 #include <string>
 #include <doctest/doctest.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#include <refl.hpp>
-#pragma clang diagnostic pop
-
+#include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
 

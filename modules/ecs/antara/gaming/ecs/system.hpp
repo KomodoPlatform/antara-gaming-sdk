@@ -18,13 +18,7 @@
 
 #include <type_traits>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#include <refl.hpp>
-
-#pragma clang diagnostic pop
-
+#include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/base.system.hpp"
 
 namespace antara::gaming::ecs

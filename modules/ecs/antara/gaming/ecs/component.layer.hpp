@@ -18,7 +18,7 @@
 
 #include <cstddef>
 
-namespace antara::gaming::ecs
+namespace antara::gaming::ecs::component
 {
     inline constexpr std::size_t max_layer = 12ull;
 
@@ -26,4 +26,30 @@ namespace antara::gaming::ecs
     struct layer
     {
     };
+
+    using layer_0 = layer<0>;
+    using layer_1 = layer<1>;
+    using layer_2 = layer<2>;
+    using layer_3 = layer<3>;
+    using layer_4 = layer<4>;
+    using layer_5 = layer<5>;
+    using layer_6 = layer<6>;
+    using layer_7 = layer<7>;
+    using layer_8 = layer<8>;
+    using layer_9 = layer<9>;
+    using layer_10 = layer<10>;
+    using layer_11 = layer<11>;
 }
+
+REFL_AUTO(type(antara::gaming::ecs::component::layer_0))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_1))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_2))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_3))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_4))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_5))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_6))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_7))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_8))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_9))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_10))
+REFL_AUTO(type(antara::gaming::ecs::component::layer_11))

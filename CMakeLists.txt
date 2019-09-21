@@ -4,6 +4,7 @@ endif ()
 
 cmake_minimum_required(VERSION 3.14)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -11,14 +12,14 @@ file(STRINGS "VERSION.md" VERSION_NB)
 
 project(antara-gaming-sdk
         VERSION ${VERSION_NB}
-        DESCRIPTION "Blockchain gaming sdk"
-        LANGUAGES CXX)
+        DESCRIPTION "Blockchain gaming sdk")
 
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
 endif ()
 
 option(USE_SFML_ANTARA_WRAPPER "Use SFML antara wrapper" OFF)
+option(USE_LUA_ANTARA_WRAPPER "Use LUA antara wrapper" OFF)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(antara)
 
