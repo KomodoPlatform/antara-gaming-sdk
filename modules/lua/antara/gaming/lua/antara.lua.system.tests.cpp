@@ -164,10 +164,10 @@ namespace antara::gaming::lua::tests
 
         TEST_CASE("update entities")
         {
-            bool res = scripting_system.execute_safe_function("my_get_res", "player_table");
+            bool res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
             CHECK_FALSE(res);
             scripting_system.update();
-            res = scripting_system.execute_safe_function("my_get_res", "player_table");
+            res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
             CHECK(res);
             entity_registry.reset();
         }
@@ -175,6 +175,14 @@ namespace antara::gaming::lua::tests
         TEST_CASE("load scripted system")
         {
             CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+        }
+
+        TEST_CASE("call function")
+        {
+            scripting_system.execute_safe_function("print", "");
+            scripting_system.execute_safe_function("nonexistent", "");
+            scripting_system.execute_safe_function("foo", "entity_registry");
+            scripting_system.execute_safe_function("my_get_res", "player_table", 1);
         }
     }
 }
