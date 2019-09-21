@@ -40,7 +40,8 @@ namespace antara::gaming::lua::tests
         entt::registry entity_registry;
         entt::dispatcher dispatcher;
         antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher,
-                                                               std::filesystem::current_path() / "lua_assets" / "scripts"};
+                                                               std::filesystem::current_path() / "lua_assets" / "scripts",
+                                                               std::filesystem::current_path() / "lua_assets" / "scripts" / "systems"};
         auto &state = scripting_system.get_state();
         TEST_CASE ("register a type")
         {
@@ -163,11 +164,25 @@ namespace antara::gaming::lua::tests
 
         TEST_CASE("update entities")
         {
-            bool res = scripting_system.execute_safe_function("my_get_res", "player_table");
+            bool res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
             CHECK_FALSE(res);
             scripting_system.update();
-            res = scripting_system.execute_safe_function("my_get_res", "player_table");
+            res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
             CHECK(res);
+            entity_registry.reset();
+        }
+
+        TEST_CASE("load scripted system")
+        {
+            CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+        }
+
+        TEST_CASE("call function")
+        {
+            scripting_system.execute_safe_function("print", "");
+            scripting_system.execute_safe_function("nonexistent", "");
+            scripting_system.execute_safe_function("foo", "entity_registry");
+            scripting_system.execute_safe_function("my_get_res", "player_table", 1);
         }
     }
 }

@@ -75,6 +75,14 @@ namespace antara::gaming::ecs::tests
             manager.create_system<logic_concrete_system>();
             CHECK_EQ(manager.nb_systems(), 1u);
             CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
+
+            //! evt
+            ecs::event::add_base_system evt(std::make_unique<pre_concrete_system>(registry, dispatcher));
+            manager.receive_add_base_system(evt);
+            CHECK_EQ(manager.nb_systems(), 2u);
+            CHECK(manager.mark_system<pre_concrete_system>());
+            manager.update();
+            CHECK_EQ(manager.nb_systems(), 1u);
         }
 
         TEST_CASE("remove system")

@@ -32,7 +32,9 @@ namespace antara::gaming::lua
     public:
         scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
                          std::filesystem::path script_directory = core::assets_real_path() / "scripts" /
-                                                                  "lua") noexcept;
+                                                                  "lua",
+                         std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" /
+                                                                         "systems" / "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 
@@ -53,11 +55,11 @@ namespace antara::gaming::lua
         template<typename TypeToRegister, typename ... Members>
         void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept
         {
-			std::string current_name = refl::reflect<TypeToRegister>().name.str();
+            std::string current_name = refl::reflect<TypeToRegister>().name.str();
             std::string final_name = current_name;
             if (std::size_t found = current_name.find_last_of(':'); found != std::string::npos) {
                 //! Skip namespace
-                final_name = current_name.substr(found + 1);
+                final_name = current_name.substr(found + 1); //! LCOV_EXCL_LINE
             }
             auto final_table = std::tuple_cat(
                     std::make_tuple(replace_name == nullptr ? final_name : replace_name),
@@ -74,7 +76,7 @@ namespace antara::gaming::lua
         }
 
         template<typename ...Args>
-        sol::unsafe_function_result
+        std::optional<sol::unsafe_function_result>
         execute_safe_function(std::string function_name, std::string table_name, Args &&...args)
         {
             try {
@@ -88,14 +90,14 @@ namespace antara::gaming::lua
                     //! global call
                     sol::optional<sol::function> f = this->lua_state_[function_name];
                     if (f) {
-                        return f.value()(std::forward<Args>(args)...);
+                        return f.value()(std::forward<Args>(args)...); //! LCOV_EXCL_LINE
                     }
                 }
             }
             catch (const std::exception &error) {
-                std::cerr << "lua error: " << error.what() << std::endl;
+                std::cerr << "lua error: " << error.what() << std::endl; //! LCOV_EXCL_LINE
             }
-            return sol::unsafe_function_result();
+            return std::nullopt;
         }
 
         template<typename TComponent>
@@ -156,11 +158,12 @@ namespace antara::gaming::lua
         }
 
         bool load_script_from_entities() noexcept;
+        bool load_scripted_system(const std::string &script_name) noexcept;
 
     private:
         sol::state lua_state_;
         std::filesystem::path directory_path_;
-
+        std::filesystem::path systems_directory_path_;
         void register_entity_registry();
     };
 }
