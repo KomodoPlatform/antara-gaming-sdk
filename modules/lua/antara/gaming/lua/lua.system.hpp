@@ -53,7 +53,7 @@ namespace antara::gaming::lua
         template<typename TypeToRegister, typename ... Members>
         void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept
         {
-            std::string current_name = refl::reflect<TypeToRegister>().name.str();
+            std::string current_name = refl::reflect<TypeToRegister>().name.c_str();
             std::string final_name = current_name;
             if (std::size_t found = current_name.find_last_of(":"); found != std::string::npos) {
                 //! Skip namespace
