@@ -24,7 +24,6 @@
 #include <meta/sequence/list.hpp> //! doom::meta::list
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/lua/lua.helpers.hpp"
 
 namespace antara::gaming::lua
 {
@@ -32,7 +31,8 @@ namespace antara::gaming::lua
     {
     public:
         scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
-                         std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua") noexcept;
+                         std::filesystem::path script_directory = core::assets_real_path() / "scripts" /
+                                                                  "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 
@@ -47,21 +47,21 @@ namespace antara::gaming::lua
         template<typename TypeToRegister>
         void register_type(const char *replace_name = nullptr) noexcept
         {
-            constexpr refl::type_descriptor<TypeToRegister> info = refl::reflect<TypeToRegister>();
-            std::string final_name = info.name.str();
-            if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
-                //! Skip namespace
-                final_name = info.name.str().substr(found + 1);
-            }
-            auto members_tpl = refl::util::map_to_tuple(refl::type_descriptor<TypeToRegister>::members,
-                                                        [](auto member) {
-                                                            return std::make_tuple(member.name.c_str(), member.pointer);
-                                                        });
-            const auto table = std::tuple_cat(
-                    std::make_tuple(replace_name == nullptr ? final_name : replace_name),
-                    members_tpl);
+            register_type_impl<TypeToRegister>(refl::reflect<TypeToRegister>().members, replace_name);
+        }
 
-            const auto final_table = metaprog::merge_tuple(std::move(table));
+        template<typename TypeToRegister, typename ... Members>
+        void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept
+        {
+            std::string current_name = refl::reflect<TypeToRegister>().name.str();
+            std::string final_name = current_name;
+            if (std::size_t found = current_name.find_last_of(":"); found != std::string::npos) {
+                //! Skip namespace
+                final_name = current_name.substr(found + 1);
+            }
+            auto final_table = std::tuple_cat(
+                    std::make_tuple(replace_name == nullptr ? final_name : replace_name),
+                    std::make_tuple(Members::name.c_str(), Members::pointer)...);
             try {
                 std::apply(
                         [this](auto &&...params) {
