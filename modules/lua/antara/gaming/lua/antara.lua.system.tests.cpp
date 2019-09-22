@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include <antara/gaming/event/key.pressed.hpp>
 #include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
@@ -205,7 +206,8 @@ namespace antara::gaming::lua::tests
         TEST_CASE ("load scripted system")
         {
             ecs::system_manager mgr{entity_registry, dispatcher};
-                    CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
             mgr.update_systems(ecs::system_type::pre_update);
         }
 
