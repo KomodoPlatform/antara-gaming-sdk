@@ -23,8 +23,8 @@ namespace antara::gaming::event::tests
     {
         TEST_CASE("can construct from a key")
         {
-            event::key_pressed key_pressed_event{input::key::a};
-            CHECK_EQ(key_pressed_event.key_, input::key::a);
+            event::key_pressed key_pressed_event{input::key::a, false, false, false, false};
+            CHECK_EQ(key_pressed_event.key, input::key::a);
         }
     }
 }
