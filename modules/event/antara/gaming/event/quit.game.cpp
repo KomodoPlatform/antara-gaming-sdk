@@ -22,4 +22,9 @@ namespace antara::gaming::event
     {
 
     }
+
+    quit_game::quit_game() : return_value_{0}
+    {
+
+    }
 }

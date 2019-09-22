@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * Copyright © 2013-2019 The Komodo Platform Developers.                      *
  *                                                                            *
@@ -16,20 +17,19 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/event/event.invoker.hpp"
+#include <utility>
+#include <entt/signal/dispatcher.hpp>
 
 namespace antara::gaming::event
 {
-    struct quit_game
+    template<typename Event, typename ...Arguments>
+    struct invoker_dispatcher
     {
-        static constexpr const event::invoker_dispatcher<quit_game, int> invoker{};
-        quit_game(int return_value) noexcept;
+        constexpr invoker_dispatcher() noexcept = default;
 
-        quit_game();
-
-        int return_value_;
+        void operator()(entt::dispatcher &self, Arguments &&...args)
+        {
+            self.trigger<Event>(std::forward<Arguments>(args)...);
+        }
     };
 }
-
-REFL_AUTO(type(antara::gaming::event::quit_game));

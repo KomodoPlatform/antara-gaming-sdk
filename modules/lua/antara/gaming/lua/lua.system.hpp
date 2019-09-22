@@ -22,6 +22,7 @@
 #include <iostream> //std::cerr
 #include <sol/state.hpp>
 #include <meta/sequence/list.hpp> //! doom::meta::list
+#include <antara/gaming/event/type.traits.hpp>
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
@@ -100,6 +101,28 @@ namespace antara::gaming::lua
             return std::nullopt;
         }
 
+        template<typename TEvent>
+        void register_event() noexcept
+        {
+            using namespace std::string_literals;
+            this->register_type<TEvent>();
+            if constexpr (std::is_default_constructible_v<TEvent>) {
+                constexpr auto info = refl::reflect<TEvent>();
+                std::string final_name = info.name.str();
+                if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
+                    final_name = info.name.str().substr(found + 1);
+                }
+                if constexpr (event::has_constructor_arg_type_v<TEvent>) {
+                    this->lua_state_["dispatcher"]["trigger_"s + final_name + "_event"s] = TEvent::invoker;
+                } else {
+                    this->lua_state_["dispatcher"]["trigger_"s + final_name + "_event"s] = [](
+                            entt::dispatcher &self) {
+                        return self.trigger<TEvent>();
+                    };
+                }
+            }
+        }
+
         template<typename TComponent>
         void register_component() noexcept
         {
@@ -160,13 +183,21 @@ namespace antara::gaming::lua
             (register_component<TComponents>(), ...);
         }
 
+        template<typename ... TEvents>
+        void register_events_list(doom::meta::list<TEvents...>) noexcept
+        {
+            (register_event<TEvents>(), ...);
+        }
+
         bool load_script_from_entities() noexcept;
+
         bool load_scripted_system(const std::string &script_name) noexcept;
 
     private:
         sol::state lua_state_;
         std::filesystem::path directory_path_;
         std::filesystem::path systems_directory_path_;
+
         void register_entity_registry();
     };
 }

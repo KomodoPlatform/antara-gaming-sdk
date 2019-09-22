@@ -16,20 +16,14 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/event/event.invoker.hpp"
+#include <utility>
+#include <meta/detection/detection.hpp>
 
 namespace antara::gaming::event
 {
-    struct quit_game
-    {
-        static constexpr const event::invoker_dispatcher<quit_game, int> invoker{};
-        quit_game(int return_value) noexcept;
+    template<typename T>
+    using constructor_arg_t = decltype(std::declval<T &>().invoker);
 
-        quit_game();
-
-        int return_value_;
-    };
+    template<typename T>
+    inline constexpr bool has_constructor_arg_type_v = doom::meta::is_detected_v<constructor_arg_t, T>;
 }
-
-REFL_AUTO(type(antara::gaming::event::quit_game));

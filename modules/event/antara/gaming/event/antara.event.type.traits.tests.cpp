@@ -14,22 +14,19 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include "antara/gaming/event/type.traits.hpp"
+#include "antara/gaming/event/quit.game.hpp"
+#include "antara/gaming/event/start.game.hpp"
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/event/event.invoker.hpp"
-
-namespace antara::gaming::event
+namespace antara::gaming::event::tests
 {
-    struct quit_game
+    TEST_SUITE("event type traits")
     {
-        static constexpr const event::invoker_dispatcher<quit_game, int> invoker{};
-        quit_game(int return_value) noexcept;
-
-        quit_game();
-
-        int return_value_;
-    };
+        TEST_CASE("invoker")
+        {
+            static_assert(has_constructor_arg_type_v<event::quit_game>);
+            static_assert(!has_constructor_arg_type_v<event::start_game>);
+        }
+    }
 }
-
-REFL_AUTO(type(antara::gaming::event::quit_game));

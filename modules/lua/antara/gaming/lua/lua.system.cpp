@@ -18,6 +18,7 @@
 #include "antara/gaming/core/reflection.entity.registry.hpp"
 #include "antara/gaming/ecs/all.components.hpp"
 #include "antara/gaming/ecs/event.add.base.system.hpp"
+#include "antara/gaming/event/all.events.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
@@ -40,6 +41,7 @@ namespace antara::gaming::lua
     {
         lua_state_.open_libraries();
         register_entity_registry();
+        lua_state_.new_usertype<entt::dispatcher>("dispatcher");
         sol::table table = lua_state_.create_table_with("version", gaming::version());
         table.new_enum<ecs::system_type>("system_type", {
                 {"pre_update",   ecs::pre_update},
@@ -151,6 +153,7 @@ namespace antara::gaming::lua
         });
         lua_state_["antara"] = table;
         register_components_list(ecs::component::components_list{});
+        register_events_list(event::events_list{});
         lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
     }
 

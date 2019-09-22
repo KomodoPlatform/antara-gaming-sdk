@@ -6,7 +6,7 @@ target_sources(antara_event_shared_sources PRIVATE
         antara/gaming/event/key.pressed.cpp
         antara/gaming/event/key.released.cpp)
 target_include_directories(antara_event_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_event_shared_sources PUBLIC antara::default_settings antara::input)
+target_link_libraries(antara_event_shared_sources PUBLIC antara::default_settings antara::input doom::meta EnTT antara::refl-cpp antara::core)
 add_library(antara::event ALIAS antara_event_shared_sources)
 
 ##! antara event tests
@@ -16,7 +16,8 @@ target_sources(antara_event_tests PUBLIC
         antara/gaming/event/antara.event.quit.game.tests.cpp
         antara/gaming/event/antara.event.fatal.error.tests.cpp
         antara/gaming/event/antara.event.key.pressed.tests.cpp
-        antara/gaming/event/antara.event.key.released.tests.cpp)
+        antara/gaming/event/antara.event.key.released.tests.cpp
+        antara/gaming/event/antara.event.type.traits.tests.cpp)
 target_link_libraries(antara_event_tests PRIVATE doctest PUBLIC antara::event)
 set_target_properties(antara_event_tests
         PROPERTIES
