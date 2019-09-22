@@ -21,10 +21,13 @@
 
 namespace antara::gaming::ecs
 {
-    system_manager::system_manager(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : entity_registry_(
+    system_manager::system_manager(entt::registry &registry, entt::dispatcher &dispatcher,
+                                   bool susbscribe_to_internal_events) noexcept : entity_registry_(
             registry), dispatcher_(dispatcher)
     {
-        this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
+        if (susbscribe_to_internal_events) {
+            this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
+        }
     }
 
     std::size_t system_manager::nb_systems(system_type sys_type) const noexcept

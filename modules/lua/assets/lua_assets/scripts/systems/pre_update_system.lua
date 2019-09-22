@@ -22,7 +22,7 @@ function simple_functor(entity_id)
 end
 
 function internal_update()
-    print("pre_example_system")
+    print("pre_example_system update")
     entt.entity_registry:for_each_entities_which_have_layer_1_component(simple_functor)
 end
 

@@ -41,6 +41,6 @@ namespace antara::gaming::scenes
     protected:
         entt::registry &entity_registry_;
         entt::dispatcher &dispatcher_;
-        ecs::system_manager system_manager_{entity_registry_, dispatcher_};
+        ecs::system_manager system_manager_{entity_registry_, dispatcher_, false};
     };
 }

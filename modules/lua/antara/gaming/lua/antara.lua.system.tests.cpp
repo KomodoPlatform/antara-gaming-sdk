@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
@@ -177,7 +178,9 @@ namespace antara::gaming::lua::tests
 
         TEST_CASE("load scripted system")
         {
+            ecs::system_manager mgr{entity_registry, dispatcher};
             CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            mgr.update_systems(ecs::system_type::pre_update);
         }
 
         TEST_CASE("call function")
