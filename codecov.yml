@@ -1,0 +1,3 @@
+ignore:
+  - "**/_deps"  # ignore folders and all its contents
+  - "tests*.cpp"       # wildcards accepted
