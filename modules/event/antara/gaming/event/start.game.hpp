@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "antara/gaming/core/safe.refl.hpp"
+
 namespace antara::gaming::event
 {
     struct start_game
@@ -23,3 +25,5 @@ namespace antara::gaming::event
         start_game() noexcept = default;
     };
 }
+
+REFL_AUTO(type(antara::gaming::event::start_game));

@@ -154,7 +154,8 @@ namespace antara::gaming::lua
         lua_state_["antara"] = table;
         register_components_list(ecs::component::components_list{});
         register_events_list(event::events_list{});
-        lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_));
+        lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_),
+                                                          "dispatcher", std::ref(this->dispatcher_));
     }
 
     void scripting_system::register_entity_registry()
