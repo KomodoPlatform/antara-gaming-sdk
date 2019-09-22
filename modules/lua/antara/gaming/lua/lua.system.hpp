@@ -136,7 +136,10 @@ namespace antara::gaming::lua
 
             lua_state_["entity_registry"]["for_each_entities_which_have_" + final_name +
                                           "_component"] = [](entt::registry &self, sol::function functor) {
-                return self.view<TComponent>().each(functor);
+                auto view = self.view<TComponent>();
+                for (auto entity: view) {
+                    functor(entity);
+                }
             };
 
             if constexpr (std::is_default_constructible_v<TComponent>) {

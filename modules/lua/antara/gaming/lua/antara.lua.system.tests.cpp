@@ -142,6 +142,9 @@ namespace antara::gaming::lua::tests
                 assert(entt.entity_registry:alive() == 1, "should be 1")
                 return true
             end
+
+            test_for_each()
+            test_for_each_runtime()
             return true
             )lua";
             bool res = state.script(script);
