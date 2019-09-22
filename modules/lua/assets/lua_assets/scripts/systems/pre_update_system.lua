@@ -23,8 +23,8 @@ function on_key_pressed(evt)
     print("system: " .. (evt.system and 'true' or 'false'))
     print("alt: " .. (evt.alt and 'true' or 'false'))
     print("ctrl: " .. (evt.control and 'true' or 'false'))
-    print("evt keycode: " .. evt.keycode)
-    assert(evt.keycode == antara.keyboard.space)
+    print("evt keycode here: " .. evt.key)
+    assert(evt.key == antara.keyboard.space)
 end
 
 function on_key_released(evt)
