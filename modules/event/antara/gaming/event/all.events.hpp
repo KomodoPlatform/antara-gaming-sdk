@@ -18,8 +18,10 @@
 
 #include <meta/sequence/list.hpp>
 #include "antara/gaming/event/quit.game.hpp"
+#include "antara/gaming/event/key.pressed.hpp"
+#include "antara/gaming/event/key.released.hpp"
 
 namespace antara::gaming::event
 {
-    using events_list = doom::meta::list<quit_game>;
+    using events_list = doom::meta::list<quit_game, key_pressed, key_released>;
 }

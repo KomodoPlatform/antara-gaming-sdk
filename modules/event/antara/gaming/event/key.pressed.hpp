@@ -16,14 +16,26 @@
 
 #pragma once
 
+#include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 
 namespace antara::gaming::event
 {
     struct key_pressed
     {
-        key_pressed(input::key key) noexcept;
+        key_pressed(input::key key_, bool alt_,
+                    bool control_,
+                    bool shift_,
+                    bool system_) noexcept;
 
-        antara::gaming::input::key key_;
+        key_pressed() noexcept;
+
+        antara::gaming::input::key key;
+        bool alt{false};
+        bool control{false};
+        bool shift{false};
+        bool system{false};
     };
 }
+
+REFL_AUTO(type(antara::gaming::event::key_pressed), field(key), field(alt), field(control), field(shift), field(system))
