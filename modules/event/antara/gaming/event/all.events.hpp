@@ -14,17 +14,14 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
+#pragma once
+
+#include <meta/sequence/list.hpp>
+#include "antara/gaming/event/quit.game.hpp"
+#include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/event/key.released.hpp"
 
-namespace antara::gaming::event::tests
+namespace antara::gaming::event
 {
-    TEST_SUITE ("key released test suite")
-    {
-        TEST_CASE ("can construct from a key")
-        {
-            event::key_released key_released_event{input::key::a, false, false, false, false};
-            CHECK_EQ(key_released_event.key, input::key::a);
-        }
-    }
+    using events_list = doom::meta::list<quit_game, key_pressed, key_released>;
 }

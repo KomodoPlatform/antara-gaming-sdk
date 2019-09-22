@@ -30,7 +30,7 @@ void intro_scene::update() noexcept
 
 bool intro_scene::on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept
 {
-    if (evt.key_ == antara::gaming::input::key::space) {
+    if (evt.key == antara::gaming::input::key::space) {
         this->dispatcher_.trigger<antara::gaming::event::change_scene>(
                 std::make_unique<game_scene>(this->entity_registry_, this->dispatcher_), false);
     }

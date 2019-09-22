@@ -48,7 +48,7 @@ namespace antara::gaming::ecs
          * \param dispatcher The dispatcher is provided to the system when it is created.
          * \param registry The entity_registry is provided to the system when it is created.
          */
-        explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
+        explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher, bool subscribe_to_internal_events = true) noexcept;
 
         //! Callback
         void receive_add_base_system(const ecs::event::add_base_system& evt) noexcept;

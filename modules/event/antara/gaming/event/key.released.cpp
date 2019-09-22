@@ -19,7 +19,16 @@
 
 namespace antara::gaming::event
 {
-    key_released::key_released(antara::gaming::input::key key) noexcept : key_(key)
+    key_released::key_released(antara::gaming::input::key key_, bool alt_,
+                               bool control_,
+                               bool shift_,
+                               bool system_) noexcept : key(key_), alt(alt_), control(control_), shift(shift_),
+                                                        system(system_)
+    {
+
+    }
+
+    key_released::key_released() noexcept : key(input::key::a), alt(false), control(false), shift(false), system(false)
     {
 
     }

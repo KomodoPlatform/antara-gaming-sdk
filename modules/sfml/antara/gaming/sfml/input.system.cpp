@@ -17,6 +17,7 @@
 #include <SFML/Window/Event.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/event/quit.game.hpp"
+#include "antara/gaming/event/key.released.hpp"
 #include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
 
@@ -50,9 +51,12 @@ namespace antara::gaming::sfml
                 case sf::Event::TextEntered:
                     break;
                 case sf::Event::KeyPressed:
-                    this->dispatcher_.trigger<event::key_pressed>(static_cast<input::key>(evt.key.code));
+                    this->dispatcher_.trigger<event::key_pressed>(static_cast<input::key>(evt.key.code), evt.key.alt,
+                                                                  evt.key.control, evt.key.shift, evt.key.system);
                     break;
                 case sf::Event::KeyReleased:
+                    this->dispatcher_.trigger<event::key_released>(static_cast<input::key>(evt.key.code), evt.key.alt,
+                                                                   evt.key.control, evt.key.shift, evt.key.system);
                     break;
                 case sf::Event::MouseWheelMoved:
                     break;

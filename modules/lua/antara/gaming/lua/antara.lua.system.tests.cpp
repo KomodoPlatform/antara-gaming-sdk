@@ -15,10 +15,12 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
+#include "antara/gaming/event/event.invoker.hpp"
 
 struct dummy_cmp
 {
@@ -31,6 +33,29 @@ struct dummy_cmp
     }
 };
 
+struct default_event_without_args
+{
+    default_event_without_args() = default;
+};
+
+struct default_event_with_args
+{
+    static constexpr const antara::gaming::event::invoker_dispatcher<default_event_with_args, int> invoker{};
+
+    default_event_with_args(int value_) : value(value_)
+    {
+
+    }
+
+    default_event_with_args() : value{0}
+    {};
+
+    int value;
+};
+
+REFL_AUTO(type(default_event_without_args));
+REFL_AUTO(type(default_event_with_args));
+
 REFL_AUTO(type(dummy_cmp), field(x), field(y), func(change_x));
 
 namespace antara::gaming::lua::tests
@@ -40,8 +65,10 @@ namespace antara::gaming::lua::tests
         entt::registry entity_registry;
         entt::dispatcher dispatcher;
         antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher,
-                                                               std::filesystem::current_path() / "lua_assets" / "scripts",
-                                                               std::filesystem::current_path() / "lua_assets" / "scripts" / "systems"};
+                                                               std::filesystem::current_path() / "lua_assets" /
+                                                               "scripts",
+                                                               std::filesystem::current_path() / "lua_assets" /
+                                                               "scripts" / "systems"};
         auto &state = scripting_system.get_state();
         TEST_CASE ("register a type")
         {
@@ -81,7 +108,7 @@ namespace antara::gaming::lua::tests
             return true
             )lua";
             bool res = state.script(script);
-            CHECK(res);
+                    CHECK(res);
         }
 
         TEST_CASE ("components function with entities")
@@ -142,47 +169,58 @@ namespace antara::gaming::lua::tests
                 assert(entt.entity_registry:alive() == 1, "should be 1")
                 return true
             end
+
+            test_for_each()
+            test_for_each_runtime()
             return true
             )lua";
             bool res = state.script(script);
-            CHECK(res);
+                    CHECK(res);
         }
 
         TEST_CASE ("load script")
         {
-            CHECK(scripting_system.load_script("antara.tests.lua"));
+                    CHECK(scripting_system.load_script("antara.tests.lua"));
             bool res = state["antara_foo"]();
-            CHECK(res);
+                    CHECK(res);
         }
 
-        TEST_CASE("load scripted entities")
+        TEST_CASE ("load scripted entities")
         {
             auto entity = entity_registry.create();
             entity_registry.assign<lua::component_script>(entity, "antara.entity.player.lua", "player_table");
-            CHECK(scripting_system.load_script_from_entities());
+                    CHECK(scripting_system.load_script_from_entities());
         }
 
-        TEST_CASE("update entities")
+        TEST_CASE ("update entities")
         {
             bool res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
-            CHECK_FALSE(res);
+                    CHECK_FALSE(res);
             scripting_system.update();
             res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
-            CHECK(res);
+                    CHECK(res);
             entity_registry.reset();
         }
 
-        TEST_CASE("load scripted system")
+        TEST_CASE ("load scripted system")
         {
-            CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            ecs::system_manager mgr{entity_registry, dispatcher};
+                    CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            mgr.update_systems(ecs::system_type::pre_update);
         }
 
-        TEST_CASE("call function")
+        TEST_CASE ("call function")
         {
             scripting_system.execute_safe_function("print", "");
             scripting_system.execute_safe_function("nonexistent", "");
             scripting_system.execute_safe_function("foo", "entity_registry");
             scripting_system.execute_safe_function("my_get_res", "player_table", 1);
+        }
+
+        TEST_CASE ("register events")
+        {
+            scripting_system.register_event<default_event_without_args>();
+            scripting_system.register_event<default_event_with_args>();
         }
     }
 }

@@ -69,7 +69,7 @@ namespace antara::gaming::scenes::tests
 
         bool on_key_pressed(const event::key_pressed &evt) noexcept final
         {
-            if (evt.key_ == input::key::space) {
+            if (evt.key == input::key::space) {
                 this->dispatcher_.trigger<event::change_scene>(
                         std::make_unique<my_game_scene>(this->entity_registry_, this->dispatcher_), false);
             }
@@ -136,7 +136,7 @@ namespace antara::gaming::scenes::tests
                 another_scene_mgr.change_scene(std::move(scene_ptr), true);
                 CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "intro_scene");
                 AND_THEN("i simulate spacebar pressed") {
-                    dispatcher.trigger<event::key_pressed>(input::key::space);
+                    dispatcher.trigger<event::key_pressed>(input::key::space, false, false, false, false);
                     AND_THEN("i expect the current scene to be the game scene") {
                                 CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "my_game_scene");
                     }

@@ -14,17 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/event/key.released.hpp"
+#pragma once
 
-namespace antara::gaming::event::tests
+#include <utility>
+#include <meta/detection/detection.hpp>
+
+namespace antara::gaming::event
 {
-    TEST_SUITE ("key released test suite")
-    {
-        TEST_CASE ("can construct from a key")
-        {
-            event::key_released key_released_event{input::key::a, false, false, false, false};
-            CHECK_EQ(key_released_event.key, input::key::a);
-        }
-    }
+    template<typename T>
+    using constructor_arg_t = decltype(std::declval<T &>().invoker);
+
+    template<typename T>
+    inline constexpr bool has_constructor_arg_type_v = doom::meta::is_detected_v<constructor_arg_t, T>;
 }

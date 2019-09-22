@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * Copyright © 2013-2019 The Komodo Platform Developers.                      *
  *                                                                            *
@@ -14,17 +15,21 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/event/key.released.hpp"
+#pragma once
 
-namespace antara::gaming::event::tests
+#include <utility>
+#include <entt/signal/dispatcher.hpp>
+
+namespace antara::gaming::event
 {
-    TEST_SUITE ("key released test suite")
+    template<typename Event, typename ...Arguments>
+    struct invoker_dispatcher
     {
-        TEST_CASE ("can construct from a key")
+        constexpr invoker_dispatcher() noexcept = default;
+
+        void operator()(entt::dispatcher &self, Arguments &&...args)
         {
-            event::key_released key_released_event{input::key::a, false, false, false, false};
-            CHECK_EQ(key_released_event.key, input::key::a);
+            self.trigger<Event>(std::forward<Arguments>(args)...);
         }
-    }
+    };
 }

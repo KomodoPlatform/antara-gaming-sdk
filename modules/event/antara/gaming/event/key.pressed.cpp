@@ -18,7 +18,16 @@
 
 namespace antara::gaming::event
 {
-    key_pressed::key_pressed(input::key key) noexcept : key_(key)
+    key_pressed::key_pressed(input::key key_, bool alt_,
+                             bool control_,
+                             bool shift_,
+                             bool system_) noexcept : key(key_), alt(alt_), control(control_), shift(shift_),
+                                                      system(system_)
+    {
+
+    }
+
+    key_pressed::key_pressed() noexcept : key(input::key::a), alt(false), control(false), shift(false), system(false)
     {
 
     }

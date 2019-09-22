@@ -16,11 +16,20 @@
 
 #pragma once
 
+#include "antara/gaming/core/safe.refl.hpp"
+#include "antara/gaming/event/event.invoker.hpp"
+
 namespace antara::gaming::event
 {
     struct quit_game
     {
-        quit_game(int return_value = 0) noexcept;
+        static constexpr const event::invoker_dispatcher<quit_game, int> invoker{};
+        quit_game(int return_value) noexcept;
+
+        quit_game();
+
         int return_value_;
     };
 }
+
+REFL_AUTO(type(antara::gaming::event::quit_game));
