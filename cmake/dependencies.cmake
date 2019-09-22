@@ -19,7 +19,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         doom_meta
-        URL https://github.com/Milerius/meta/archive/master.zip
+        URL https://github.com/doom/meta/archive/master.zip
 )
 
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
@@ -42,7 +42,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         refl-cpp
-        URL https://github.com/veselink1/refl-cpp/archive/v0.5.2.zip
+        URL https://github.com/veselink1/refl-cpp/archive/v0.6.1.zip
 )
 
 if (USE_LUA_ANTARA_WRAPPER)
