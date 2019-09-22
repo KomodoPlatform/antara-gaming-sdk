@@ -42,7 +42,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         refl-cpp
-        URL https://github.com/veselink1/refl-cpp/archive/v0.6.1.zip
+        URL https://github.com/veselink1/refl-cpp/archive/v0.5.2.zip
 )
 
 if (USE_LUA_ANTARA_WRAPPER)

@@ -72,7 +72,7 @@ function run_coverage() {
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/modules/scenes/antara/gaming/scenes/*.tests.*" -o coverage.info
      lcov -r coverage.info "${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/_deps/*" -o coverage.info
      lcov -l coverage.info
-     bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+     bash <(curl -s https://codecov.io/bash) -v -g ${TRAVIS_BUILD_DIR}/cmake-build-${BUILD_TYPE}/_deps/* -f coverage.info || echo "Codecov did not collect coverage reports"
 }
 
 if [[ "${WILL_COMPILE_CODE}" == "ON" ]]; then build || travis_terminate 1; fi
