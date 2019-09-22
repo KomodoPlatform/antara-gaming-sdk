@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include <antara/gaming/event/key.pressed.hpp>
 #include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
@@ -202,10 +203,24 @@ namespace antara::gaming::lua::tests
             entity_registry.reset();
         }
 
+        TEST_CASE ("register events")
+        {
+            scripting_system.register_event<default_event_without_args>();
+            scripting_system.register_event<default_event_with_args>();
+            const auto &script = R"lua(
+            entt.dispatcher:trigger_start_game_event()
+            entt.dispatcher:trigger_default_event_with_args_event(1)
+            return true
+            )lua";
+            bool res = state.script(script);
+            CHECK(res);
+        }
+
         TEST_CASE ("load scripted system")
         {
             ecs::system_manager mgr{entity_registry, dispatcher};
-                    CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
+            dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
             mgr.update_systems(ecs::system_type::pre_update);
         }
 
@@ -215,12 +230,6 @@ namespace antara::gaming::lua::tests
             scripting_system.execute_safe_function("nonexistent", "");
             scripting_system.execute_safe_function("foo", "entity_registry");
             scripting_system.execute_safe_function("my_get_res", "player_table", 1);
-        }
-
-        TEST_CASE ("register events")
-        {
-            scripting_system.register_event<default_event_without_args>();
-            scripting_system.register_event<default_event_with_args>();
         }
     }
 }

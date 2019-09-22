@@ -34,6 +34,8 @@ namespace antara::gaming::lua::details
                 entity_registry, dispatcher), table_name_(std::move(table_name)), state_(state)
         {
             safe_function_("on_construct");
+            register_common_events(event::events_list{});
+
         }
 
         ~scripted_system() noexcept final
@@ -45,6 +47,20 @@ namespace antara::gaming::lua::details
         {
             safe_function_("update");
         }
+
+        //! Callbacks
+        template<typename TEvent>
+        void receive(const TEvent &evt)
+        {
+            using namespace std::string_literals;
+            constexpr auto info = refl::reflect<TEvent>();
+            std::string final_name = info.name.str();
+            if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
+                final_name = info.name.str().substr(found + 1);
+            }
+            safe_function_("on_"s + final_name, evt);
+        }
+
 
     private:
         template<typename ... Args>
@@ -61,13 +77,29 @@ namespace antara::gaming::lua::details
             }
         }
 
+        template<typename TEvent>
+        void register_common_event() noexcept
+        {
+            this->dispatcher_.template sink<TEvent>().
+                    template connect<&scripted_system::receive<TEvent>>(*this);
+        }
+
+        template<typename ... TEvents>
+        void register_common_events(doom::meta::list<TEvents...>) noexcept
+        {
+            (register_common_event<TEvents>(), ...);
+        }
+
+
         std::string table_name_;
         sol::state &state_;
     };
+
 
     using lua_post_scripted_system = scripted_system<ecs::st_system_post_update>;
     using lua_pre_scripted_system = scripted_system<ecs::st_system_pre_update>;
     using lua_logic_scripted_system = scripted_system<ecs::st_system_logic_update>;
 }
 
-REFL_AUTO(template((typename SystemType), (antara::gaming::lua::details::scripted_system<SystemType>)))
+REFL_AUTO(template(
+                  (typename SystemType), (antara::gaming::lua::details::scripted_system<SystemType>)))

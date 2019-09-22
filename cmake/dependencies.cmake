@@ -19,7 +19,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         doom_meta
-        URL https://github.com/Milerius/meta/archive/master.zip
+        URL https://github.com/doom/meta/archive/master.zip
 )
 
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)

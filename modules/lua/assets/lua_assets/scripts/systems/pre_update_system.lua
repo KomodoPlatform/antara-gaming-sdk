@@ -17,6 +17,19 @@ function __destructor__()
     print("destructor pre_example_system")
 end
 
+function on_key_pressed(evt)
+    print("we in")
+    print("shift: " .. (evt.shift and 'true' or 'false'))
+    print("system: " .. (evt.system and 'true' or 'false'))
+    print("alt: " .. (evt.alt and 'true' or 'false'))
+    print("ctrl: " .. (evt.control and 'true' or 'false'))
+    print("evt keycode here: " .. evt.key)
+    assert(evt.key == antara.keyboard.space)
+end
+
+function on_key_released(evt)
+end
+
 function simple_functor(entity_id)
     print("entity_id: " .. entity_id)
 end
@@ -30,5 +43,7 @@ pre_update_system_table = {
     update = internal_update,
     on_construct = __constructor__,
     on_destruct = __destructor__,
+    on_key_pressed = on_key_pressed,
+    on_key_released = on_key_released,
     system_type = antara.system_type.pre_update
 }
