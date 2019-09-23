@@ -15,7 +15,8 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include <antara/gaming/event/key.pressed.hpp>
+#include "antara/gaming/event/key.pressed.hpp"
+#include "antara/gaming/lua/details/lua.scripted.system.hpp"
 #include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/core/version.hpp"
@@ -69,7 +70,9 @@ namespace antara::gaming::lua::tests
                                                                std::filesystem::current_path() / "lua_assets" /
                                                                "scripts",
                                                                std::filesystem::current_path() / "lua_assets" /
-                                                               "scripts" / "systems"};
+                                                               "scripts" / "systems",
+                                                               std::filesystem::current_path() / "lua_assets" /
+                                                               "scripts" / "scenes" / "lua"};
         auto &state = scripting_system.get_state();
         TEST_CASE ("register a type")
         {
@@ -213,7 +216,7 @@ namespace antara::gaming::lua::tests
             return true
             )lua";
             bool res = state.script(script);
-            CHECK(res);
+                    CHECK(res);
         }
 
         TEST_CASE ("load scripted system")
@@ -221,6 +224,8 @@ namespace antara::gaming::lua::tests
             ecs::system_manager mgr{entity_registry, dispatcher};
             CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
             dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
+            mgr.update_systems(ecs::system_type::pre_update);
+            mgr.mark_system<details::lua_pre_scripted_system>();
             mgr.update_systems(ecs::system_type::pre_update);
         }
 
@@ -230,6 +235,14 @@ namespace antara::gaming::lua::tests
             scripting_system.execute_safe_function("nonexistent", "");
             scripting_system.execute_safe_function("foo", "entity_registry");
             scripting_system.execute_safe_function("my_get_res", "player_table", 1);
+        }
+
+        TEST_CASE ("scenes system")
+        {
+            ecs::system_manager mgr{entity_registry, dispatcher};
+            CHECK(scripting_system.load_scripted_system("scenes_system.lua"));
+            dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
+            mgr.update_systems(ecs::system_type::logic_update);
         }
     }
 }

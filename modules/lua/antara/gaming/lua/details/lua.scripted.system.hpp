@@ -18,6 +18,8 @@
 
 #include <utility>
 #include <sol/state.hpp>
+#include <meta/sequence/list.hpp>
+#include "antara/gaming/event/all.events.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::lua::details
@@ -35,7 +37,6 @@ namespace antara::gaming::lua::details
         {
             safe_function_("on_construct");
             register_common_events(event::events_list{});
-
         }
 
         ~scripted_system() noexcept final
@@ -66,6 +67,7 @@ namespace antara::gaming::lua::details
         template<typename ... Args>
         void safe_function_(const std::string &function, Args &&... args) noexcept
         {
+            if (not this->is_enabled()) return;
             try {
                 sol::optional<sol::function> f = state_[table_name_][function];
                 if (f && f.value() != sol::lua_nil) {

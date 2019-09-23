@@ -35,9 +35,11 @@ namespace antara::gaming::lua
 
     scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
                                        std::filesystem::path script_directory,
-                                       std::filesystem::path systems_directory) noexcept : system(
+                                       std::filesystem::path systems_directory,
+                                       std::filesystem::path script_scenes_directory) noexcept : system(
             entity_registry, dispatcher), directory_path_(std::move(script_directory)), systems_directory_path_(
-            std::move(systems_directory))
+            std::move(systems_directory)),
+            scenes_directory_path_(std::move(script_scenes_directory))
     {
         lua_state_.open_libraries();
         register_entity_registry();
@@ -151,7 +153,19 @@ namespace antara::gaming::lua
                 {"f15",           input::key::f15},
                 {"pause",         input::key::pause},
         });
+
         lua_state_["antara"] = table;
+        lua_state_["antara"]["get_all_scripts_scenes"] = [this]() {
+            std::vector<std::string> path_scenes_entries;
+            std::vector<std::string> filename_scenes;
+            for (auto &&p: std::filesystem::directory_iterator(scenes_directory_path_)) {
+                    if (p.is_regular_file()) {
+                        path_scenes_entries.push_back(p.path().string());
+                        filename_scenes.push_back(p.path().filename().string());
+                    }
+            }
+            return std::make_tuple(path_scenes_entries, filename_scenes);
+        };
         register_components_list(ecs::component::components_list{});
         register_events_list(event::events_list{});
         lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_),

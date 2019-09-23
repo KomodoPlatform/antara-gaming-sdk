@@ -22,6 +22,9 @@ add_custom_command(TARGET antara_lua_tests PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:antara_lua_tests>)
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/systems/scenes_system.lua)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/antara/gaming/lua/scenes_system.lua ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/systems/scenes_system.lua COPYONLY)
+endif ()
 target_enable_coverage(antara_lua_tests)
 target_enable_tsan(antara_lua_tests)
 target_enable_asan(antara_lua_tests)

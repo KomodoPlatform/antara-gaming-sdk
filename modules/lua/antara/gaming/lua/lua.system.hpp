@@ -22,7 +22,7 @@
 #include <iostream> //std::cerr
 #include <sol/state.hpp>
 #include <meta/sequence/list.hpp> //! doom::meta::list
-#include <antara/gaming/event/type.traits.hpp>
+#include "antara/gaming/event/type.traits.hpp"
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
@@ -35,7 +35,10 @@ namespace antara::gaming::lua
                          std::filesystem::path script_directory = core::assets_real_path() / "scripts" /
                                                                   "lua",
                          std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" /
-                                                                         "systems" / "lua") noexcept;
+                                                                         "systems" / "lua",
+
+                         std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" /
+                                                                         "scenes" / "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 
@@ -117,7 +120,7 @@ namespace antara::gaming::lua
                 } else {
                     this->lua_state_["dispatcher"]["trigger_"s + final_name + "_event"s] = [](
                             entt::dispatcher &self) {
-                        return self.trigger<TEvent>();
+                            self.trigger<TEvent>();
                     };
                 }
             }
@@ -197,6 +200,7 @@ namespace antara::gaming::lua
         sol::state lua_state_;
         std::filesystem::path directory_path_;
         std::filesystem::path systems_directory_path_;
+        std::filesystem::path scenes_directory_path_;
 
         void register_entity_registry();
     };
