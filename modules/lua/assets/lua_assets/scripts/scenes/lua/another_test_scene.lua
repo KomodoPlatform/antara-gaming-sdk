@@ -7,26 +7,23 @@
 --
 
 local function enter()
-    print("enter test scene")
+    print("enter another test scene")
 end
 
 local function leave()
-    print("leave test scene")
+    print("leave another test scene")
 end
 
 local function on_key_released(evt)
-    print("key released: " .. evt.key)
+    print("another key released: " .. evt.key)
 end
 
 local function on_key_pressed(evt)
-    print("key pressed: " .. evt.key)
-    print("assert key pressed is space")
-    assert(evt.key == antara.keyboard.space)
+    print("another key pressed: " .. evt.key)
 end
 
 local function update()
-    print("test scene update")
-    scenes_system_table.on_change_scene("another_test_scene")
+    print("another test scene update")
 end
 
 return {
@@ -35,5 +32,5 @@ return {
     update = update,
     on_key_released = on_key_released,
     on_key_pressed = on_key_pressed,
-    scene_active = true
+    scene_active = false
 }

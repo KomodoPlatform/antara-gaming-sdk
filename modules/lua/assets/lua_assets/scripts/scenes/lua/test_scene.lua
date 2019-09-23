@@ -26,6 +26,7 @@ end
 
 local function update()
     print("test scene update")
+    scenes_system_table.on_change_scene("another_test_scene")
 end
 
 return {
