@@ -55,6 +55,19 @@ struct default_event_with_args
     int value;
 };
 
+struct mini_world
+{
+    entt::registry entity_registry;
+    entt::dispatcher dispatcher;
+    antara::gaming::ecs::system_manager system_mgr{entity_registry, dispatcher};
+    antara::gaming::lua::scripting_system& script_sys{system_mgr.create_system<antara::gaming::lua::scripting_system>(std::filesystem::current_path() / "lua_assets" /
+                                                                                                                      "scripts",
+                                                                                                                      std::filesystem::current_path() / "lua_assets" /
+                                                                                                                      "scripts" / "systems",
+                                                                                                                      std::filesystem::current_path() / "lua_assets" /
+                                                                                                                      "scripts" / "scenes" / "lua")};
+};
+
 REFL_AUTO(type(default_event_without_args));
 REFL_AUTO(type(default_event_with_args));
 
@@ -64,19 +77,20 @@ namespace antara::gaming::lua::tests
 {
     TEST_SUITE ("lua scripting system")
     {
-        entt::registry entity_registry;
+        /*entt::registry my_world.entity_registry;
         entt::dispatcher dispatcher;
-        antara::gaming::lua::scripting_system scripting_system{entity_registry, dispatcher,
+        antara::gaming::lua::scripting_system scripting_system{my_world.entity_registry, dispatcher,
                                                                std::filesystem::current_path() / "lua_assets" /
                                                                "scripts",
                                                                std::filesystem::current_path() / "lua_assets" /
                                                                "scripts" / "systems",
                                                                std::filesystem::current_path() / "lua_assets" /
-                                                               "scripts" / "scenes" / "lua"};
-        auto &state = scripting_system.get_state();
+                                                               "scripts" / "scenes" / "lua"};*/
+        mini_world my_world;
+        auto &state = my_world.script_sys.get_state();
         TEST_CASE ("register a type")
         {
-            scripting_system.register_type<dummy_cmp>();
+            my_world.script_sys.register_type<dummy_cmp>();
             state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
         }
 
@@ -184,32 +198,32 @@ namespace antara::gaming::lua::tests
 
         TEST_CASE ("load script")
         {
-                    CHECK(scripting_system.load_script("antara.tests.lua"));
+                    CHECK(my_world.script_sys.load_script("antara.tests.lua"));
             bool res = state["antara_foo"]();
                     CHECK(res);
         }
 
         TEST_CASE ("load scripted entities")
         {
-            auto entity = entity_registry.create();
-            entity_registry.assign<lua::component_script>(entity, "antara.entity.player.lua", "player_table");
-                    CHECK(scripting_system.load_script_from_entities());
+            auto entity = my_world.entity_registry.create();
+            my_world.entity_registry.assign<lua::component_script>(entity, "antara.entity.player.lua", "player_table");
+                    CHECK(my_world.script_sys.load_script_from_entities());
         }
 
         TEST_CASE ("update entities")
         {
-            bool res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
+            bool res = my_world.script_sys.execute_safe_function("my_get_res", "player_table").value();
                     CHECK_FALSE(res);
-            scripting_system.update();
-            res = scripting_system.execute_safe_function("my_get_res", "player_table").value();
+            my_world.script_sys.update();
+            res = my_world.script_sys.execute_safe_function("my_get_res", "player_table").value();
                     CHECK(res);
-            entity_registry.reset();
+            my_world.entity_registry.reset();
         }
 
         TEST_CASE ("register events")
         {
-            scripting_system.register_event<default_event_without_args>();
-            scripting_system.register_event<default_event_with_args>();
+            my_world.script_sys.register_event<default_event_without_args>();
+            my_world.script_sys.register_event<default_event_with_args>();
             const auto &script = R"lua(
             entt.dispatcher:trigger_start_game_event()
             entt.dispatcher:trigger_default_event_with_args_event(1)
@@ -221,28 +235,30 @@ namespace antara::gaming::lua::tests
 
         TEST_CASE ("load scripted system")
         {
-            ecs::system_manager mgr{entity_registry, dispatcher};
-            CHECK(scripting_system.load_scripted_system("pre_update_system.lua"));
-            dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
-            mgr.update_systems(ecs::system_type::pre_update);
-            mgr.mark_system<details::lua_pre_scripted_system>();
-            mgr.update_systems(ecs::system_type::pre_update);
+            CHECK(not my_world.dispatcher.sink<ecs::event::add_base_system>().empty());
+            CHECK(my_world.script_sys.load_scripted_system("pre_update_system.lua"));
+            CHECK(my_world.system_mgr.nb_systems() == 2);
+            my_world.dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
+            CHECK_EQ(my_world.system_mgr.update_systems(ecs::system_type::pre_update), 1ull);
+            CHECK(my_world.system_mgr.mark_system<details::lua_pre_scripted_system>());
+            my_world.system_mgr.update();
+            CHECK(my_world.system_mgr.nb_systems() == 1u);
         }
 
         TEST_CASE ("call function")
         {
-            scripting_system.execute_safe_function("print", "");
-            scripting_system.execute_safe_function("nonexistent", "");
-            scripting_system.execute_safe_function("foo", "entity_registry");
-            scripting_system.execute_safe_function("my_get_res", "player_table", 1);
+            my_world.script_sys.execute_safe_function("print", "");
+            my_world.script_sys.execute_safe_function("nonexistent", "");
+            my_world.script_sys.execute_safe_function("foo", "entity_registry");
+            my_world.script_sys.execute_safe_function("my_get_res", "player_table", 1);
         }
 
         TEST_CASE ("scenes system")
         {
-            ecs::system_manager mgr{entity_registry, dispatcher};
-            CHECK(scripting_system.load_scripted_system("scenes_system.lua"));
-            dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
-            mgr.update_systems(ecs::system_type::logic_update);
+            CHECK(my_world.script_sys.load_scripted_system("scenes_system.lua"));
+            CHECK(my_world.system_mgr.nb_systems() == 2);
+            my_world.dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
+            CHECK_EQ(2u, my_world.system_mgr.update_systems(ecs::system_type::logic_update));
         }
     }
 }

@@ -27,6 +27,7 @@ namespace antara::gaming::ecs
     {
         if (susbscribe_to_internal_events) {
             this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
+            assert(not dispatcher_.sink<event::add_base_system>().empty());
         }
     }
 

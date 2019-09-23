@@ -43,6 +43,7 @@ namespace antara::gaming::lua::details
         ~scripted_system() noexcept final
         {
             safe_function_("on_destruct");
+            remove_common_events(event::events_list{});
         }
 
         void update() noexcept final
@@ -91,6 +92,18 @@ namespace antara::gaming::lua::details
         void register_common_events(doom::meta::list<TEvents...>) noexcept
         {
             (register_common_event<TEvents>(), ...);
+        }
+
+        template<typename TEvent>
+        void remove_common_event() noexcept
+        {
+            this->dispatcher_.template sink<TEvent>().disconnect(*this);
+        }
+
+        template<typename ... TEvents>
+        void remove_common_events(doom::meta::list<TEvents...>) noexcept
+        {
+            (remove_common_event<TEvents>(), ...);
         }
 
 
