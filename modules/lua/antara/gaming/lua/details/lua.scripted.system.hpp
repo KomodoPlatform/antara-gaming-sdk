@@ -16,8 +16,11 @@
 
 #pragma once
 
+#include <iostream> //! std::cerr
 #include <utility>
 #include <sol/state.hpp>
+#include <meta/sequence/list.hpp>
+#include "antara/gaming/event/all.events.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::lua::details
@@ -29,18 +32,18 @@ namespace antara::gaming::lua::details
         using TSystem = ecs::system<scripted_system<SystemType>, SystemType>;
 
         scripted_system(entt::registry &entity_registry, entt::dispatcher &dispatcher, std::string table_name,
-                        sol::state &state) noexcept
+                        std::shared_ptr<sol::state> state) noexcept
                 : TSystem::system(
                 entity_registry, dispatcher), table_name_(std::move(table_name)), state_(state)
         {
             safe_function_("on_construct");
             register_common_events(event::events_list{});
-
         }
 
         ~scripted_system() noexcept final
         {
             safe_function_("on_destruct");
+            remove_common_events(event::events_list{});
         }
 
         void update() noexcept final
@@ -66,8 +69,9 @@ namespace antara::gaming::lua::details
         template<typename ... Args>
         void safe_function_(const std::string &function, Args &&... args) noexcept
         {
+            if (not this->is_enabled()) return;
             try {
-                sol::optional<sol::function> f = state_[table_name_][function];
+                sol::optional<sol::function> f = (*this->state_)[table_name_][function];
                 if (f && f.value() != sol::lua_nil) {
                     f.value()(std::forward<Args>(args)...);
                 }
@@ -90,9 +94,21 @@ namespace antara::gaming::lua::details
             (register_common_event<TEvents>(), ...);
         }
 
+        template<typename TEvent>
+        void remove_common_event() noexcept
+        {
+            this->dispatcher_.template sink<TEvent>().disconnect(*this);
+        }
+
+        template<typename ... TEvents>
+        void remove_common_events(doom::meta::list<TEvents...>) noexcept
+        {
+            (remove_common_event<TEvents>(), ...);
+        }
+
 
         std::string table_name_;
-        sol::state &state_;
+        std::shared_ptr<sol::state> state_;
     };
 
 

@@ -27,6 +27,7 @@ namespace antara::gaming::ecs
     {
         if (susbscribe_to_internal_events) {
             this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
+            assert(not dispatcher_.sink<event::add_base_system>().empty());
         }
     }
 
@@ -94,6 +95,7 @@ namespace antara::gaming::ecs
 
     void system_manager::receive_add_base_system(const ecs::event::add_base_system &evt) noexcept
     {
+        assert(evt.system_ptr != nullptr);
         ecs::system_type sys_type = evt.system_ptr->get_system_type_rtti();
         this->add_system_(std::move(const_cast<event::add_base_system &>(evt).system_ptr), sys_type);
     }
