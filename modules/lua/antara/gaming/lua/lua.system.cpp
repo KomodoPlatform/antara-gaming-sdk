@@ -43,10 +43,10 @@ namespace antara::gaming::lua
                                                                                                          std::move(
                                                                                                                  script_scenes_directory))
     {
-        lua_state_.open_libraries();
+        lua_state_->open_libraries();
         register_entity_registry();
-        lua_state_.new_usertype<entt::dispatcher>("dispatcher");
-        sol::table table = lua_state_.create_table_with("version", gaming::version());
+        lua_state_->new_usertype<entt::dispatcher>("dispatcher");
+        sol::table table = lua_state_->create_table_with("version", gaming::version());
         table.new_enum<ecs::system_type>("system_type", {
                 {"pre_update",   ecs::pre_update},
                 {"post_update",  ecs::post_update},
@@ -156,8 +156,8 @@ namespace antara::gaming::lua
                 {"pause",         input::key::pause},
         });
 
-        lua_state_["antara"] = table;
-        lua_state_["antara"]["get_all_scripts_scenes"] = [this]() {
+        (*this->lua_state_)["antara"] = table;
+        (*this->lua_state_)["antara"]["get_all_scripts_scenes"] = [this]() {
             std::vector<std::string> path_scenes_entries;
             std::vector<std::string> filename_scenes;
             for (auto &&p: std::filesystem::directory_iterator(scenes_directory_path_)) {
@@ -170,30 +170,30 @@ namespace antara::gaming::lua
         };
         register_components_list(ecs::component::components_list{});
         register_events_list(event::events_list{});
-        lua_state_["entt"] = lua_state_.create_table_with("entity_registry", std::ref(this->entity_registry_),
+        (*this->lua_state_)["entt"] = lua_state_->create_table_with("entity_registry", std::ref(this->entity_registry_),
                                                           "dispatcher", std::ref(this->dispatcher_));
     }
 
     void scripting_system::register_entity_registry()
     {
         register_type<entt::registry>("entity_registry");
-        lua_state_["entity_registry"]["create"] = [](entt::registry &self) {
+        (*this->lua_state_)["entity_registry"]["create"] = [](entt::registry &self) {
             return self.create();
         };
 
-        lua_state_["entity_registry"]["alive"] = [](entt::registry &self) {
+        (*this->lua_state_)["entity_registry"]["alive"] = [](entt::registry &self) {
             return self.alive();
         };
 
-        lua_state_["entity_registry"]["destroy"] = [](entt::registry &self, entt::registry::entity_type entity) {
+        (*this->lua_state_)["entity_registry"]["destroy"] = [](entt::registry &self, entt::registry::entity_type entity) {
             self.destroy(entity);
         };
 
-        lua_state_["entity_registry"]["valid"] = [](entt::registry &self, entt::registry::entity_type entity) {
+        (*this->lua_state_)["entity_registry"]["valid"] = [](entt::registry &self, entt::registry::entity_type entity) {
             return self.valid(entity);
         };
 
-        lua_state_["entity_registry"]["for_each_runtime"] = [](entt::registry &self,
+        (*this->lua_state_)["entity_registry"]["for_each_runtime"] = [](entt::registry &self,
                                                                std::vector<entt::component> components,
                                                                sol::function functor) {
             return self.runtime_view(std::cbegin(components), std::cend(components)).each(
@@ -205,14 +205,14 @@ namespace antara::gaming::lua
 
     sol::state &scripting_system::get_state() noexcept
     {
-        return lua_state_;
+        return (*this->lua_state_);
     }
 
     bool
     scripting_system::load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept
     {
         try {
-            this->lua_state_.script_file((script_directory / file_name).string());
+            this->lua_state_->script_file((script_directory / file_name).string());
         }
         catch (const std::exception &error) {
             std::cerr << "error when loading script " << file_name << " err: " << error.what() << " script_directory: "
@@ -245,7 +245,7 @@ namespace antara::gaming::lua
         if (not res)
             return false;
         auto table_name = std::filesystem::path(script_name).stem().string() + "_table";
-        ecs::system_type sys_type = this->lua_state_[table_name]["system_type"];
+        ecs::system_type sys_type = (*this->lua_state_)[table_name]["system_type"];
         switch (sys_type) {
             case ecs::pre_update:
                 this->dispatcher_.trigger<ecs::event::add_base_system>(

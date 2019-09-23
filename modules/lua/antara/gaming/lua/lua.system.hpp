@@ -71,7 +71,7 @@ namespace antara::gaming::lua
             try {
                 std::apply(
                         [this](auto &&...params) {
-                            this->lua_state_.new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
+                            this->lua_state_->new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
                         }, final_table);
             }
             catch (const std::exception &error) {
@@ -86,13 +86,13 @@ namespace antara::gaming::lua
             try {
                 if (not table_name.empty()) {
                     //! table call
-                    sol::optional<sol::function> f = this->lua_state_[table_name][function_name];
+                    sol::optional<sol::function> f = (*this->lua_state_)[table_name][function_name];
                     if (f) {
                         return f.value()(std::forward<Args>(args)...);
                     }
                 } else {
                     //! global call
-                    sol::optional<sol::function> f = this->lua_state_[function_name];
+                    sol::optional<sol::function> f = (*this->lua_state_)[function_name];
                     if (f) {
                         return f.value()(std::forward<Args>(args)...); //! LCOV_EXCL_LINE
                     }
@@ -116,9 +116,9 @@ namespace antara::gaming::lua
                     final_name = info.name.str().substr(found + 1);
                 }
                 if constexpr (event::has_constructor_arg_type_v<TEvent>) {
-                    this->lua_state_["dispatcher"]["trigger_"s + final_name + "_event"s] = TEvent::invoker;
+                    (*this->lua_state_)["dispatcher"]["trigger_"s + final_name + "_event"s] = TEvent::invoker;
                 } else {
-                    this->lua_state_["dispatcher"]["trigger_"s + final_name + "_event"s] = [](
+                    (*this->lua_state_)["dispatcher"]["trigger_"s + final_name + "_event"s] = [](
                             entt::dispatcher &self) {
                             self.trigger<TEvent>();
                     };
@@ -136,23 +136,23 @@ namespace antara::gaming::lua
             if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
                 final_name = info.name.str().substr(found + 1);
             }
-            lua_state_["entity_registry"][final_name + "_id"] = [](entt::registry &self) {
+            (*this->lua_state_)["entity_registry"][final_name + "_id"] = [](entt::registry &self) {
                 return self.type<TComponent>();
             };
 
-            lua_state_["entity_registry"]["has_"s + final_name + "_component"s] = [](
+            (*this->lua_state_)["entity_registry"]["has_"s + final_name + "_component"s] = [](
                     entt::registry &self,
                     entt::registry::entity_type entity) {
                 return self.has<TComponent>(entity);
             };
 
-            lua_state_["entity_registry"]["remove_"s + final_name + "_component"s] = [](
+            (*this->lua_state_)["entity_registry"]["remove_"s + final_name + "_component"s] = [](
                     entt::registry &self,
                     entt::registry::entity_type entity) {
                 return self.remove<TComponent>(entity);
             };
 
-            lua_state_["entity_registry"]["get_"s + final_name + "_component"s] = [](
+            (*this->lua_state_)["entity_registry"]["get_"s + final_name + "_component"s] = [](
                     entt::registry &self,
                     entt::registry::entity_type entity) {
                 if constexpr (not std::is_empty_v<TComponent>) {
@@ -160,7 +160,7 @@ namespace antara::gaming::lua
                 }
             };
 
-            lua_state_["entity_registry"]["for_each_entities_which_have_" + final_name +
+            (*this->lua_state_)["entity_registry"]["for_each_entities_which_have_" + final_name +
                                           "_component"] = [](entt::registry &self, sol::function functor) {
                 auto view = self.view<TComponent>();
                 for (auto entity: view) {
@@ -169,7 +169,7 @@ namespace antara::gaming::lua
             };
 
             if constexpr (std::is_default_constructible_v<TComponent>) {
-                lua_state_["entity_registry"]["add_"s + final_name + "_component"s] = [](
+                (*this->lua_state_)["entity_registry"]["add_"s + final_name + "_component"s] = [](
                         entt::registry &self,
                         entt::registry::entity_type entity) {
                     if constexpr (std::is_empty_v<TComponent>) {
@@ -197,7 +197,7 @@ namespace antara::gaming::lua
         bool load_scripted_system(const std::string &script_name) noexcept;
 
     private:
-        sol::state lua_state_;
+        std::shared_ptr<sol::state> lua_state_{std::make_shared<sol::state>()};
         std::filesystem::path directory_path_;
         std::filesystem::path systems_directory_path_;
         std::filesystem::path scenes_directory_path_;

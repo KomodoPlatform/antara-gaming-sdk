@@ -32,7 +32,7 @@ namespace antara::gaming::lua::details
         using TSystem = ecs::system<scripted_system<SystemType>, SystemType>;
 
         scripted_system(entt::registry &entity_registry, entt::dispatcher &dispatcher, std::string table_name,
-                        sol::state &state) noexcept
+                        std::shared_ptr<sol::state> state) noexcept
                 : TSystem::system(
                 entity_registry, dispatcher), table_name_(std::move(table_name)), state_(state)
         {
@@ -71,7 +71,7 @@ namespace antara::gaming::lua::details
         {
             if (not this->is_enabled()) return;
             try {
-                sol::optional<sol::function> f = state_[table_name_][function];
+                sol::optional<sol::function> f = (*this->state_)[table_name_][function];
                 if (f && f.value() != sol::lua_nil) {
                     f.value()(std::forward<Args>(args)...);
                 }
@@ -108,7 +108,7 @@ namespace antara::gaming::lua::details
 
 
         std::string table_name_;
-        sol::state &state_;
+        std::shared_ptr<sol::state> state_;
     };
 
 
