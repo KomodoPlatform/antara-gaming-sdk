@@ -255,10 +255,12 @@ namespace antara::gaming::lua::tests
 
         TEST_CASE ("scenes system")
         {
+#ifndef EMSCRIPTEN
             CHECK(my_world.script_sys.load_scripted_system("scenes_system.lua"));
             CHECK(my_world.system_mgr.nb_systems() == 2);
             my_world.dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
             CHECK_EQ(2u, my_world.system_mgr.update_systems(ecs::system_type::logic_update));
+#endif
         }
     }
 }

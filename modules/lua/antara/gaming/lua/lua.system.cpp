@@ -39,7 +39,9 @@ namespace antara::gaming::lua
                                        std::filesystem::path script_scenes_directory) noexcept : system(
             entity_registry, dispatcher), directory_path_(std::move(script_directory)), systems_directory_path_(
             std::move(systems_directory)),
-            scenes_directory_path_(std::move(script_scenes_directory))
+                                                                                                 scenes_directory_path_(
+                                                                                                         std::move(
+                                                                                                                 script_scenes_directory))
     {
         lua_state_.open_libraries();
         register_entity_registry();
@@ -159,10 +161,10 @@ namespace antara::gaming::lua
             std::vector<std::string> path_scenes_entries;
             std::vector<std::string> filename_scenes;
             for (auto &&p: std::filesystem::directory_iterator(scenes_directory_path_)) {
-                    if (p.is_regular_file()) {
-                        path_scenes_entries.push_back(p.path().string());
-                        filename_scenes.push_back(p.path().filename().string());
-                    }
+                if (p.is_regular_file()) {
+                    path_scenes_entries.push_back(p.path().string());
+                    filename_scenes.push_back(p.path().filename().string());
+                }
             }
             return std::make_tuple(path_scenes_entries, filename_scenes);
         };
