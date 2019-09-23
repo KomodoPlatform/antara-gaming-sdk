@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <iostream> //! std::cerr
 #include <utility>
 #include <sol/state.hpp>
 #include <meta/sequence/list.hpp>
