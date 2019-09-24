@@ -1,4 +1,4 @@
-name: C++ CI Ubuntu build clang-8 Debug
+name: C++ CI Ubuntu build clang-8 Release
 
 on: [push, pull_request]
 
