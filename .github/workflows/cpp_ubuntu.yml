@@ -11,7 +11,9 @@ jobs:
     - name: configure
       run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-          sudo apt-get install clang-8 libc++-8-dev libc++abi-8-dev -y
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install clang-8 libc++-8-dev libc++abi-8-dev gcc-8 g++-8 -y
           mkdir deps_dir
           DEPS_DIR="$PWD/deps_dir"
           cd ${DEPS_DIR}
