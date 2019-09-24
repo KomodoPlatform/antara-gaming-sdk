@@ -10,29 +10,31 @@ if (EMSCRIPTEN)
 endif ()
 add_library(antara::world ALIAS antara_world_shared_sources)
 
-##! antara world tests
-add_executable(antara_world_tests)
-target_sources(antara_world_tests PUBLIC
-        antara/gaming/world/antara.world.tests.cpp
-        antara/gaming/world/antara.world.app.tests.cpp)
-target_link_libraries(antara_world_tests PRIVATE doctest PUBLIC antara::world)
-set_target_properties(antara_world_tests
-        PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
-        )
-target_enable_coverage(antara_world_tests)
-target_enable_tsan(antara_world_tests)
-target_enable_asan(antara_world_tests)
-target_enable_ubsan(antara_world_tests)
+if (ANTARA_BUILD_UNIT_TESTS)
+    ##! antara world tests
+    add_executable(antara_world_tests)
+    target_sources(antara_world_tests PUBLIC
+            antara/gaming/world/antara.world.tests.cpp
+            antara/gaming/world/antara.world.app.tests.cpp)
+    target_link_libraries(antara_world_tests PRIVATE doctest PUBLIC antara::world)
+    set_target_properties(antara_world_tests
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
+            )
+    target_enable_coverage(antara_world_tests)
+    target_enable_tsan(antara_world_tests)
+    target_enable_asan(antara_world_tests)
+    target_enable_ubsan(antara_world_tests)
 
-if (EMSCRIPTEN)
-    message(STATUS "Emscripten detected")
-    if (ENABLE_HTML_COMPILATION)
-        message(STATUS "Html compilation enabled")
-        set_target_properties(antara_world_tests PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s EXIT_RUNTIME=1"
-                SUFFIX ".html")
-    else ()
-        message(STATUS "Local js compilation")
-        set_target_properties(antara_world_tests PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s NODERAWFS=1 -s EXIT_RUNTIME=1")
+    if (EMSCRIPTEN)
+        message(STATUS "Emscripten detected")
+        if (ENABLE_HTML_COMPILATION)
+            message(STATUS "Html compilation enabled")
+            set_target_properties(antara_world_tests PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s EXIT_RUNTIME=1"
+                    SUFFIX ".html")
+        else ()
+            message(STATUS "Local js compilation")
+            set_target_properties(antara_world_tests PROPERTIES LINK_FLAGS "-s FORCE_FILESYSTEM=1 -s NODERAWFS=1 -s EXIT_RUNTIME=1")
+        endif ()
     endif ()
 endif ()
