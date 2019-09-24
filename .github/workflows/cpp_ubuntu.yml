@@ -20,5 +20,4 @@ jobs:
           export PATH=${DEPS_DIR}/cmake/bin:${PATH}
           cd -
           mkdir build && cd build
-   - name: make
-     run: cmake --build . --config Debug
+          cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/bin/clang -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
