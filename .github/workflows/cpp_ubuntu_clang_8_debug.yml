@@ -33,3 +33,8 @@ jobs:
       run: |
           cd build/bin/unit_tests
           for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+   
+    - name: upload tests
+      run: |
+          cd build/bin/unit_tests
+          curl https://report.ci/upload.py --output upload.py && python upload.py -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
