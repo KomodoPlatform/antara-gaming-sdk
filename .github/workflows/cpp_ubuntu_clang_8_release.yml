@@ -33,3 +33,11 @@ jobs:
       run: |
           cd build/bin/unit_tests
           for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+    
+    - name: upload tests
+      env: # Or as an environment variable
+        REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
+      run: |
+          cd build/bin/unit_tests
+          echo $GITHUB_SHA
+          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-release]" --merge ".*"
