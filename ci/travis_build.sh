@@ -30,6 +30,7 @@ function build() {
 
     options+=' -DANTARA_BUILD_EXAMPLES=ON'
     options+=' -DUSE_LUA_ANTARA_WRAPPER=ON'
+    options+=' -DANTARA_BUILD_UNIT_TESTS=ON'
     echo "result -> ${cmd} ${options} ../"
     ${cmd} ${options} ../
     cmake --build . --config ${BUILD_TYPE} || travis_terminate 1
