@@ -23,4 +23,6 @@ jobs:
           cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/bin/clang -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
     
     - name: make
-      run: make
+      run: |
+          cd build
+          cmake --build . --config Debug
