@@ -39,5 +39,5 @@ jobs:
         REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
       run: |
           cd build/bin/unit_tests
-          cat *.xml
-          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
+          echo $GITHUB_SHA
+          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
