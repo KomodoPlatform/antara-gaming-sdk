@@ -12,4 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: ls
+      if: matrix.os == 'ubuntu-latest'
+      run: echo "ubuntu latest"
+      if: matrix.os == 'windows-latest'
+      run: echo "windows-latest"
+      if: matrix.os == 'macOS-latest'
+      run: echo "macOS-latest"
