@@ -1,4 +1,4 @@
-name: C++ CI Ubuntu build
+name: C++ CI Ubuntu build clang-8 Debug
 
 on: [push, pull_request]
 
@@ -28,3 +28,8 @@ jobs:
       run: |
           cd build
           cmake --build . --config Debug
+    
+    - name: tests
+      run: |
+          cd build/bin/unit_tests
+          for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
