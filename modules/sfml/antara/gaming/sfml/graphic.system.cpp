@@ -29,7 +29,7 @@ namespace antara::gaming::sfml
     void graphic_system::update() noexcept
     {
         window_.clear();
-        draw_each_layers();
+        draw_all_layers();
         window_.display();
     }
 
@@ -62,13 +62,13 @@ namespace antara::gaming::sfml
     }
 
     template<size_t... Is>
-    void graphic_system::draw_each_layers(std::index_sequence<Is...>) noexcept
+    void graphic_system::draw_all_layers(std::index_sequence<Is...>) noexcept
     {
         (draw<Is>(drawable_list{}), ...);
     }
 
-    void graphic_system::draw_each_layers() noexcept
+    void graphic_system::draw_all_layers() noexcept
     {
-        draw_each_layers(std::make_index_sequence<ecs::component::max_layer>{});
+        draw_all_layers(std::make_index_sequence<ecs::component::max_layer>{});
     }
 }
