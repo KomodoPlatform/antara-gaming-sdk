@@ -81,7 +81,7 @@ jobs:
           #  os: windows-2019
           #  compiler: clang
 
-          - name: macos-10.14-clang-8-release
+          - name: macos-10-14-clang-8-release
             cmake_build_type: Release
             os: macOS-10.14
             compiler: clang
