@@ -25,18 +25,22 @@ jobs:
           CMAKE_URL="https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz"
           mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
           export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+          cmake -v
           cd -
 
       - name: prepare build folder
         env:
           ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
+          PATH: "${PWD}/deps_dir/cmake/bin:${PATH}"
         run: |
+          cmake -v
           mkdir cmake-build-${ANTARA_CMAKE_BUILD_TYPE} && cd cmake-build-${ANTARA_CMAKE_BUILD_TYPE}
           cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=${ANTARA_CMAKE_BUILD_TYPE} -DCMAKE_C_COMPILER=/usr/bin/clang-8 -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
 
       - name: build
         env:
           ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
+          PATH: "deps_dir/cmake/bin:${PATH}"
         working-directory: cmake-build-${{matrix.build_type}}
         run: |
           cmake --build . --config ${ANTARA_CMAKE_BUILD_TYPE}
