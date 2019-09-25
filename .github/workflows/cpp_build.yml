@@ -15,6 +15,7 @@ jobs:
           ubuntu-18-04-clang-8-debug-tsan,
           ubuntu-18-04-clang-8-debug-asan,
           ubuntu-18-04-clang-8-debug-ubsan,
+          ubuntu-18-04-emcc-latest-debug,
           windows-2019-clang-cl-debug,
           #windows-2019-clang-debug,
           macos-10-14-clang-8-debug,
@@ -25,6 +26,10 @@ jobs:
         ]
 
         include:
+          - name: ubuntu-18-04-emcc-latest-debug
+            os: ubuntu-18.04
+            cmake_build_type: Debug
+
           - name: ubuntu-18-04-clang-8-debug
             os: ubuntu-18.04
             cmake_build_type: Debug
@@ -96,16 +101,27 @@ jobs:
         run: |
           curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
-
-          # LLVM 9 is not yet in bionic's repositories.
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-          sudo apt-get update
-
-          sudo apt-get install -y clang-${{ matrix.version }} lld-${{ matrix.version }} libstdc++-${{ matrix.version }}-dev gcc-8 g++-8 libc++-${{ matrix.version }}-dev libc++abi-${{ matrix.version }}-dev
           sudo apt-get install ninja-build
-          echo "::set-env name=CC::clang-${{ matrix.version }}"
-          echo "::set-env name=CXX::clang++-${{ matrix.version }}"
+          if [[ "${{matrix.name}}" == "ubuntu-18-04-emcc-latest-debug" ]]; then
+            git clone https://github.com/emscripten-core/emsdk.git
+            cd emsdk
+            git pull
+            ./emsdk install latest-upstream
+            ./emsdk activate latest-upstream
+            source ./emsdk_env.sh
+            cd ..
+            git clone https://github.com/emscripten-core/emscripten.git
+            echo "::set-env name=CC::emcc"
+            echo "::set-env name=CXX::em++"
+          else
+            # LLVM 9 is not yet in bionic's repositories.
+            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+            sudo apt-get update
+            sudo apt-get install -y clang-${{ matrix.version }} lld-${{ matrix.version }} libstdc++-${{ matrix.version }}-dev gcc-8 g++-8 libc++-${{ matrix.version }}-dev libc++abi-${{ matrix.version }}-dev
+            echo "::set-env name=CC::clang-${{ matrix.version }}"
+            echo "::set-env name=CXX::clang++-${{ matrix.version }}"
+          fi
 
       - name: Install (macOS)
         if: runner.os == 'macOS'
@@ -164,7 +180,12 @@ jobs:
       - name: Run Tests (Linux and OSX)
         working-directory: build/bin/unit_tests
         if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+        run: |
+          if [[ "${{matrix.name}}" == "ubuntu-18-04-emcc-latest-debug" ]]; then
+            for i in *_tests*.js; do node ${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+          else
+            for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+          fi
 
       - name: Run Tests (Windows)
         working-directory: build/bin/unit_tests
