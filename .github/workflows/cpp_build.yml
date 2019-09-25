@@ -113,12 +113,6 @@ jobs:
 
           & .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
 
-      # We build reproc as a shared library to verify all the necessary symbols
-      # are exported.
-
-      # YAML folded multiline strings ('>') require the same indentation for all
-      # lines in order to turn newlines into spaces.
-
       - name: Configure
         env:
           ANTARA_BUILD_TYPE: ${{matrix.cmake_build_type}}
