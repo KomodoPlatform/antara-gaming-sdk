@@ -1,62 +1,134 @@
-name: C++ CI build
+name: CI
 
-on: [push, pull_request]
+on: push
 
 jobs:
-  linux:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        build_type: [Debug, Release]
-
+  ci:
+    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Github Actions requires a single row to be added to the build matrix.
+        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
+        name: [
+          ubuntu-18.04-clang-8-debug,
+          windows-2019-clang-cl-debug,
+          windows-2019-clang-debug,
+          macOS-10.14-clang-8-debug,
+          ubuntu-18.04-clang-8-release,
+          windows-2019-clang-cl-release,
+          windows-2019-clang-release,
+          macOS-10.14-clang-8-release,
+        ]
+
+        include:
+          - name: ubuntu-18.04-clang-8-debug
+            os: ubuntu-18.04
+            cmake_build_type: Debug
+            compiler: clang
+            version: "8"
+
+          - name: windows-2019-clang-cl-debug
+            cmake_build_type: Debug
+            os: windows-2019
+            compiler: clang-cl
+
+          - name: windows-2019-clang-debug
+            cmake_build_type: Debug
+            os: windows-2019
+            compiler: clang
+
+          - name: macOS-10.14-clang-8-debug
+            cmake_build_type: Debug
+            os: macOS-10.14
+            compiler: clang
+            version: "8"
+
+          - name: ubuntu-18.04-clang-8-release
+            os: ubuntu-18.04
+            cmake_build_type: Release
+            compiler: clang
+            version: "8"
+
+          - name: windows-2019-clang-cl-release
+            cmake_build_type: Release
+            os: windows-2019
+            compiler: clang-cl
+
+          - name: windows-2019-clang-release
+            cmake_build_type: Release
+            os: windows-2019
+            compiler: clang
+
+          - name: macOS-10.14-clang-8-release
+            cmake_build_type: Release
+            os: macOS-10.14
+            compiler: clang
+            version: "8"
+
 
     steps:
       - uses: actions/checkout@v1
-      - name: install dependencies
-        run: |
-          #! CMake
-          mkdir deps_dir && cd deps_dir
-          curl -sL https://cmake.org/files/v3.15/cmake-3.15.0-Linux-x86_64.tar.gz | tar zxvf - --strip-components=1
-          export PATH="${PWD}/cmake-3.15.0-Linux-x86_64/bin:${PATH}"
-          cmake --version
-          cd -
 
-          #! dependencies
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      - name: Install (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz -o cmake.tar.gz
+          sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
+
+          # LLVM 9 is not yet in bionic's repositories.
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
           sudo apt-get update
-          sudo apt-get install clang-8 libc++-8-dev libc++abi-8-dev gcc-8 g++-8 -y
 
-      - name: prepare build folder
+          sudo apt-get install -y ninja-build clang-tidy-9
+          sudo ln -s /usr/bin/clang-tidy-9 /usr/local/bin/clang-tidy
+
+          sudo apt-get install -y clang-${{ matrix.version }}
+          echo "::set-env name=CC::clang-${{ matrix.version }}"
+          echo "::set-env name=CXX::clang++-${{ matrix.version }}"
+
+      - name: Install (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install ninja llvm
+          sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+          echo "::set-env name=CC::/usr/local/opt/llvm/bin/clang"
+          echo "::set-env name=CXX::/usr/local/opt/llvm/bin/clang++"
+
+      - name: Install (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+          scoop install ninja llvm --global
+
+          if ("${{ matrix.compiler }}" -eq "clang") {
+            echo "::set-env name=CC::clang"
+            echo "::set-env name=CXX::clang++"
+          } else {
+            echo "::set-env name=CC::${{ matrix.compiler }}"
+            echo "::set-env name=CXX::${{ matrix.compiler }}"
+          }
+
+          & .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+
+      # We build reproc as a shared library to verify all the necessary symbols
+      # are exported.
+
+      # YAML folded multiline strings ('>') require the same indentation for all
+      # lines in order to turn newlines into spaces.
+
+      - name: Configure
         env:
-          ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
-        run: |
-          cmake --version
-          mkdir cmake-build-${ANTARA_CMAKE_BUILD_TYPE} && cd cmake-build-${ANTARA_CMAKE_BUILD_TYPE}
-          cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=${ANTARA_CMAKE_BUILD_TYPE} -DCMAKE_C_COMPILER=/usr/bin/clang-8 -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
+          ANTARA_BUILD_TYPE: ${{matrix.cmake_build_type}}
+        run: >
+          cmake
+          -B build
+          -S .
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE}
 
-      - name: build
-        env:
-          ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
-          PATH: "deps_dir/cmake/bin:${PATH}"
-        working-directory: cmake-build-${{matrix.build_type}}
-        run: |
-          cmake --build . --config ${ANTARA_CMAKE_BUILD_TYPE}
-
-
-      - name: run unit tests
-        working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
-        run: |
-          for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
-
-
-      - name: upload unit tests
-        working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
-        env:
-          REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
-          ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
-        run: |
-          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-{ANTARA_CMAKE_BUILD_TYPE}]" --merge ".*"
-
-
+      - name: Build
+        run: cmake --build build --config ${{matrix.cmake_build_type}}
