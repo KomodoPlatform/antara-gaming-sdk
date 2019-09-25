@@ -128,6 +128,9 @@ jobs:
           -S .
           -G Ninja
           -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE}
+          -DANTARA_BUILD_EXAMPLES=ON
+          -DUSE_LUA_ANTARA_WRAPPER=ON
+          -DANTARA_BUILD_UNIT_TESTS=ON
 
       - name: Build
         run: cmake --build build --config ${{matrix.cmake_build_type}}
