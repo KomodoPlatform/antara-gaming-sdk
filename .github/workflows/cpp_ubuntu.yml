@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: install dependencies
-        working-directory: deps
         run: |
+          mkdir deps && cd deps
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
@@ -27,8 +27,8 @@ jobs:
       - name: prepare build folder
         env:
           ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
-        working-directory: cmake-build-${{matrix.build_type}}
         run: |
+          mkdir cmake-build-${ANTARA_CMAKE_BUILD_TYPE} && cd cmake-build-${ANTARA_CMAKE_BUILD_TYPE}
           cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=${ANTARA_CMAKE_BUILD_TYPE} -DCMAKE_C_COMPILER=/usr/bin/clang-8 -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
 
       - name: build
