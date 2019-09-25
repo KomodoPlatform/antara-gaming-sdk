@@ -163,7 +163,7 @@ jobs:
             cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON
           fi
 
-      - name: Configure (Windows
+      - name: Configure (Windows)
         env:
           ANTARA_BUILD_TYPE: ${{matrix.cmake_build_type}}
         if: runner.os == 'Windows'
@@ -183,7 +183,7 @@ jobs:
         run: cmake build -DUSE_UBSAN=ON -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld-${{ matrix.version }}
 
       - name: Coverage (OSX)
-        if: runner.os == 'macOS' && matrix.build_type == 'Debug'
+        if: runner.os == 'macOS' && matrix.cmake_build_type == 'Debug'
         run: cmake build -DENABLE_COVERAGE=ON
 
       - name: Build
@@ -211,9 +211,9 @@ jobs:
             & cmd /c "$var --reporters=xml --out=$var-result.xml -s 2>&1"
           }
 
-      - name: Upload coverage
+      - name: Upload coverage (OSX)
         working-directory: build
-        if: runner.os == 'macOS' && matrix.build_type == 'Debug'
+        if: runner.os == 'macOS' && matrix.cmake_build_type == 'Debug'
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
