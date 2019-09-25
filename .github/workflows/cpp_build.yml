@@ -248,4 +248,4 @@ jobs:
         shell: powershell
         run: |
           Invoke-WebRequest -Uri https://report.ci/upload.py -OutFile upload.py
-          python upload.py --sha $env:GITHUB_SHA -n "Doctest [appveyor ${{ matrix.name }}]" --include='*.xml' --framework=doctest --merge .*
+          python upload.py --sha $env:GITHUB_SHA -n "[Doctest ${{ matrix.name }}]" --include='*.xml' --framework=doctest --merge .*
