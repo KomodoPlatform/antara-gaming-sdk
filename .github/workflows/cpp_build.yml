@@ -13,39 +13,39 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          ubuntu-18.04-clang-8-debug,
-          ubuntu-18.04-clang-8-debug-tsan,
-          ubuntu-18.04-clang-8-debug-asan,
-          ubuntu-18.04-clang-8-debug-ubsan,
+          ubuntu-18-04-clang-8-debug,
+          ubuntu-18-04-clang-8-debug-tsan,
+          ubuntu-18-04-clang-8-debug-asan,
+          ubuntu-18-04-clang-8-debug-ubsan,
           windows-2019-clang-cl-debug,
           #windows-2019-clang-debug,
-          macOS-10.14-clang-8-debug,
-          ubuntu-18.04-clang-8-release,
+          macos-10-14-clang-8-debug,
+          ubuntu-18-04-clang-8-release,
           windows-2019-clang-cl-release,
           #windows-2019-clang-release,
-          macOS-10.14-clang-8-release,
+          macos-10-14-clang-8-release,
         ]
 
         include:
-          - name: ubuntu-18.04-clang-8-debug
+          - name: ubuntu-18-04-clang-8-debug
             os: ubuntu-18.04
             cmake_build_type: Debug
             compiler: clang
             version: "8"
 
-          - name: ubuntu-18.04-clang-8-debug-tsan
+          - name: ubuntu-18-04-clang-8-debug-tsan
             os: ubuntu-18.04
             cmake_build_type: Debug
             compiler: clang
             version: "8"
 
-          - name: ubuntu-18.04-clang-8-debug-ubsan
+          - name: ubuntu-18-04-clang-8-debug-ubsan
             os: ubuntu-18.04
             cmake_build_type: Debug
             compiler: clang
             version: "8"
 
-          - name: ubuntu-18.04-clang-8-debug-asan
+          - name: ubuntu-18-04-clang-8-debug-asan
             os: ubuntu-18.04
             cmake_build_type: Debug
             compiler: clang
@@ -61,13 +61,13 @@ jobs:
           #  os: windows-2019
           #  compiler: clang
 
-          - name: macOS-10.14-clang-8-debug
+          - name: macos-10-14-clang-8-debug
             cmake_build_type: Debug
             os: macOS-10.14
             compiler: clang
             version: "8"
 
-          - name: ubuntu-18.04-clang-8-release
+          - name: ubuntu-18-04-clang-8-release
             os: ubuntu-18.04
             cmake_build_type: Release
             compiler: clang
@@ -83,7 +83,7 @@ jobs:
           #  os: windows-2019
           #  compiler: clang
 
-          - name: macOS-10.14-clang-8-release
+          - name: macos-10.14-clang-8-release
             cmake_build_type: Release
             os: macOS-10.14
             compiler: clang
@@ -149,15 +149,15 @@ jobs:
 
 
       - name: TSan (Linux)
-        if: matrix.name == 'ubuntu-18.04-clang-8-debug-tsan'
+        if: matrix.name == 'ubuntu-18-04-clang-8-debug-tsan'
         run: cmake build -DUSE_TSAN=ON
 
       - name: ASan (Linux)
-        if: matrix.name == 'ubuntu-18.04-clang-8-debug-asan'
+        if: matrix.name == 'ubuntu-18-04-clang-8-debug-asan'
         run: cmake build -DUSE_ASAN=ON
 
       - name: UBSan (Linux)
-        if: matrix.name == 'ubuntu-18.04-clang-8-debug-ubsan'
+        if: matrix.name == 'ubuntu-18-04-clang-8-debug-ubsan'
         run: cmake build -DUSE_UBSAN=ON -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld-${{ matrix.version }}
 
       - name: Build
