@@ -1,4 +1,4 @@
-name: C++ CI Ubuntu build
+name: C++ CI build
 
 on: [push, pull_request]
 
