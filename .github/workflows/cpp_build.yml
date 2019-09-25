@@ -162,3 +162,20 @@ jobs:
 
       - name: Build
         run: cmake --build build --config ${{matrix.cmake_build_type}}
+
+      - name: Run Tests (Linux and OSX)
+        working_directory: build/bin/unit_tests
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+
+      - name: Run Tests (Linux and OSX)
+        working_directory: build/bin/unit_tests
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $filePattern = '*_tests.exe'
+          foreach ($file in get-ChildItem $filePattern)
+          {
+            $var = $file.name
+            & cmd /c "$var --reporters=xml --out=$var-result.xml -s 2>&1"
+          }
