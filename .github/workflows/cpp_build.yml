@@ -164,6 +164,9 @@ jobs:
           -DUSE_LUA_ANTARA_WRAPPER=ON
           -DANTARA_BUILD_UNIT_TESTS=ON
 
+      - name: Emscripten (Linux)
+        if: matrix.name == 'ubuntu-18-04-emcc-latest-debug'
+        run: cmake build -DCMAKE_TOOLCHAIN_FILE=emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC
 
       - name: TSan (Linux)
         if: matrix.name == 'ubuntu-18-04-clang-8-debug-tsan'
