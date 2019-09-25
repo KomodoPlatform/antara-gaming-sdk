@@ -111,8 +111,11 @@ jobs:
             source ./emsdk_env.sh
             cd ..
             git clone https://github.com/emscripten-core/emscripten.git
-            echo "::set-env name=CC::emcc"
-            echo "::set-env name=CXX::em++"
+            echo "::set-env name=CC::$PWD/emsdk/upstream/emscripten/emcc"
+            echo "::set-env name=CXX::$PWD/emsdk/upstream/emscripten/em++"
+            echo "::set-env name=NODE_EXE::$PWD/emsdk/node/12.9.1_64bit/bin/node"
+            emcc -v
+            em++ -v
           else
             # LLVM 9 is not yet in bionic's repositories.
             sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
