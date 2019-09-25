@@ -18,10 +18,11 @@ jobs:
           #! CMake
           mkdir deps_dir && cd deps_dir
           CMAKE_URL="https://cmake.org/files/v3.15/cmake-3.15.0-Linux-x86_64.tar.gz"
-          mkdir cmake
+          mkdir -p cmake
           wget ${CMAKE_URL}
-          ls
-          tar -xvf cmake-3.15.0-Linux-x86_64.tar.gz -C cmake --strip-components=1
+          echo "Listing directories"
+          ls -R .
+          tar -xvf cmake-3.15.0-Linux-x86_64.tar.gz -C cmake
           export PATH="${PWD}/cmake/bin:${PATH}"
           cmake -v
           cd -
