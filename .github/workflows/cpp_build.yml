@@ -168,7 +168,7 @@ jobs:
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
 
-      - name: Run Tests (Linux and OSX)
+      - name: Run Tests (Windows)
         working-directory: build/bin/unit_tests
         if: runner.os == 'Windows'
         shell: powershell
@@ -179,3 +179,15 @@ jobs:
             $var = $file.name
             & cmd /c "$var --reporters=xml --out=$var-result.xml -s 2>&1"
           }
+
+      - name: Upload Test (Unix)
+        working-directory: build/bin/unit_tests
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: curl https://report.ci/upload.py --output upload.py && python upload.py -n "[Doctest ${{ matrix.name }}]" --merge ".*"
+
+      - name: Upload Test (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri https://report.ci/upload.py -OutFile upload.py
+          python upload.py -n "Doctest [appveyor ${{ matrix.name }}]" --include='*.xml' --framework=doctest --merge .*
