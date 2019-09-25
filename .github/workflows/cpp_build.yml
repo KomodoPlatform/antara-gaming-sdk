@@ -15,19 +15,19 @@ jobs:
       - uses: actions/checkout@v1
       - name: install dependencies
         run: |
+          #! CMake
+          mkdir deps_dir && cd deps_dir
+          CMAKE_URL="https://cmake.org/files/v3.15/cmake-3.15.0-Linux-x86_64.tar.gz"
+          mkdir cmake && wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+          export PATH="${PWD}/cmake/bin:${PATH}"
+          cmake -v
+          cd -
+
           #! dependencies
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install clang-8 libc++-8-dev libc++abi-8-dev gcc-8 g++-8 -y
-
-          #! CMake
-          mkdir deps_dir && cd deps_dir
-          CMAKE_URL="https://cmake.org/files/v3.15/cmake-3.15.0-Linux-x86_64.tar.gz"
-          mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-          export PATH="${PWD}/cmake/bin:${PATH}"
-          cmake -v
-          cd -
 
       - name: prepare build folder
         env:
