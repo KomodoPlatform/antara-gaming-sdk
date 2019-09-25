@@ -2,49 +2,50 @@ name: C++ CI Ubuntu build
 
 on: [push, pull_request]
 
-linux:
-  strategy:
-    matrix:
-      os: [ubuntu-latest]
-      build_type: [Debug, Release]
+jobs:
+  linux:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug, Release]
 
-  runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-  steps:
-    - uses: actions/checkout@v1
-    - name: install dependencies
-      env:
-        ANTARA_CMAKE_BUILD_TYPE=${{matrix.build_type}}
-      working-directory: deps
-      run: |
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
-        sudo apt-get install clang-8 libc++-8-dev libc++abi-8-dev gcc-8 g++-8 -y
-        CMAKE_URL="https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz"
-        mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-        export PATH=$PWD/cmake/bin:${PATH}
-
-    - name: prepare build folder
-      working-directory: cmake-build-${{matrix.build_type}}
-      run: |
-        cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=${ANTARA_CMAKE_BUILD_TYPE} -DCMAKE_C_COMPILER=/usr/bin/clang-8 -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
-
-    - name: build
-      working-directory: cmake-build-${{matrix.build_type}}
-      run: |
-        cmake --build . --config ${ANTARA_CMAKE_BUILD_TYPE}
-
-    - name: run unit tests
-      working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
-      run: |
-        for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
-
-    - name: upload unit tests
-      working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
-      env:
-        REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: install dependencies
+        env:
+          ANTARA_CMAKE_BUILD_TYPE=${{matrix.build_type}}
+        working-directory: deps
         run: |
-          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install clang-8 libc++-8-dev libc++abi-8-dev gcc-8 g++-8 -y
+          CMAKE_URL="https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz"
+          mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+          export PATH=$PWD/cmake/bin:${PATH}
+
+      - name: prepare build folder
+        working-directory: cmake-build-${{matrix.build_type}}
+        run: |
+          cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=${ANTARA_CMAKE_BUILD_TYPE} -DCMAKE_C_COMPILER=/usr/bin/clang-8 -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
+
+      - name: build
+        working-directory: cmake-build-${{matrix.build_type}}
+        run: |
+          cmake --build . --config ${ANTARA_CMAKE_BUILD_TYPE}
+
+      - name: run unit tests
+        working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
+        run: |
+          for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
+
+      - name: upload unit tests
+        working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
+        env:
+          REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
+          run: |
+            curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
 
 
