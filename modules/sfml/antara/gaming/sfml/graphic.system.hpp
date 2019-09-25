@@ -38,9 +38,9 @@ namespace antara::gaming::sfml
         void draw(doom::meta::list<DrawableType...>) noexcept;
 
         template<size_t...Is>
-        void draw_each_layers(std::index_sequence<Is...>) noexcept;
+        void draw_all_layers(std::index_sequence<Is...>) noexcept;
 
-        void draw_each_layers() noexcept;
+        void draw_all_layers() noexcept;
 
         //! Public getter
         sf::RenderWindow &get_window() noexcept;
