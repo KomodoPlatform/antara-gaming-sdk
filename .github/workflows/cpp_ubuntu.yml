@@ -41,11 +41,12 @@ jobs:
         run: |
           for i in *_tests; do ./${i} --reporters=xml --out=${i}-result.xml -s || true; done;
 
+
       - name: upload unit tests
         working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
         env:
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
-          run: |
-            curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
+        run: |
+          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
 
 
