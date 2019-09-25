@@ -14,8 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: install dependencies
-        env:
-          ANTARA_CMAKE_BUILD_TYPE=${{matrix.build_type}}
         working-directory: deps
         run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
@@ -27,14 +25,19 @@ jobs:
           export PATH=$PWD/cmake/bin:${PATH}
 
       - name: prepare build folder
+        env:
+          ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
         working-directory: cmake-build-${{matrix.build_type}}
         run: |
           cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -DCMAKE_BUILD_TYPE=${ANTARA_CMAKE_BUILD_TYPE} -DCMAKE_C_COMPILER=/usr/bin/clang-8 -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON ../
 
       - name: build
+        env:
+          ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
         working-directory: cmake-build-${{matrix.build_type}}
         run: |
           cmake --build . --config ${ANTARA_CMAKE_BUILD_TYPE}
+
 
       - name: run unit tests
         working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
@@ -46,7 +49,8 @@ jobs:
         working-directory: cmake-build-${{matrix.build_type}}/bin/unit_tests
         env:
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN }}
+          ANTARA_CMAKE_BUILD_TYPE: ${{matrix.build_type}}
         run: |
-          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-debug]" --merge ".*"
+          curl https://report.ci/upload.py --output upload.py && python upload.py --include='*.xml' --sha $GITHUB_SHA -n "Doctest [github-actions ubuntu-latest-clang8-{ANTARA_CMAKE_BUILD_TYPE}]" --merge ".*"
 
 
