@@ -183,7 +183,7 @@ jobs:
       - name: Upload Test (Unix)
         working-directory: build/bin/unit_tests
         if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: curl https://report.ci/upload.py --sha $GITHUB_SHA --output upload.py && python upload.py -n "[Doctest ${{ matrix.name }}]" --merge ".*"
+        run: curl https://report.ci/upload.py --sha --output upload.py && python upload.py --sha $GITHUB_SHA -n "[Doctest ${{ matrix.name }}]" --merge ".*"
 
       - name: Upload Test (Windows)
         if: runner.os == 'Windows'
