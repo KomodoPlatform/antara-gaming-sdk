@@ -183,11 +183,11 @@ jobs:
       - name: Upload Test (Unix)
         working-directory: build/bin/unit_tests
         if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: curl https://report.ci/upload.py --output upload.py && python upload.py -n "[Doctest ${{ matrix.name }}]" --merge ".*"
+        run: curl https://report.ci/upload.py --sha $GITHUB_SHA --output upload.py && python upload.py -n "[Doctest ${{ matrix.name }}]" --merge ".*"
 
       - name: Upload Test (Windows)
         if: runner.os == 'Windows'
         shell: powershell
         run: |
           Invoke-WebRequest -Uri https://report.ci/upload.py -OutFile upload.py
-          python upload.py -n "Doctest [appveyor ${{ matrix.name }}]" --include='*.xml' --framework=doctest --merge .*
+          python upload.py --sha %GITHUB_SHA% -n "Doctest [appveyor ${{ matrix.name }}]" --include='*.xml' --framework=doctest --merge .*
