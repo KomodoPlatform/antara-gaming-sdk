@@ -80,10 +80,8 @@ jobs:
 
           # LLVM 9 is not yet in bionic's repositories.
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo apt-get update
-
-          sudo apt-get install -y ninja-build clang-tidy-9
-          sudo ln -s /usr/bin/clang-tidy-9 /usr/local/bin/clang-tidy
 
           sudo apt-get install -y clang-${{ matrix.version }}
           echo "::set-env name=CC::clang-${{ matrix.version }}"
