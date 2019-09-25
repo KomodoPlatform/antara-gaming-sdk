@@ -123,6 +123,7 @@ jobs:
             wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
             sudo apt-get update
             sudo apt-get install -y clang-${{ matrix.version }} lld-${{ matrix.version }} libstdc++-${{ matrix.version }}-dev gcc-8 g++-8 libc++-${{ matrix.version }}-dev libc++abi-${{ matrix.version }}-dev
+            sudo apt-get install -y libx11-dev libgl1-mesa-dev libudev-dev libfreetype6-dev libopenal-dev libflac-dev libvorbis-dev libxinerama-dev libxrandr-dev libxi-dev libxcursor-dev
             echo "::set-env name=CC::clang-${{ matrix.version }}"
             echo "::set-env name=CXX::clang++-${{ matrix.version }}"
           fi
@@ -160,7 +161,7 @@ jobs:
           if [[ "${{matrix.name}}" == "ubuntu-18-04-emcc-latest-debug" ]]; then
             cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DCMAKE_TOOLCHAIN_FILE=emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC
           else
-            cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON
+            cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DUSE_SFML_ANTARA_WRAPPER=ON
           fi
 
       - name: Configure (Windows)
@@ -168,7 +169,7 @@ jobs:
           ANTARA_BUILD_TYPE: ${{matrix.cmake_build_type}}
         if: runner.os == 'Windows'
         run: |
-          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON
+          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DUSE_SFML_ANTARA_WRAPPER=ON
 
       - name: TSan (Linux)
         if: matrix.name == 'ubuntu-18-04-clang-8-debug-tsan'
