@@ -93,4 +93,27 @@
      endif ()
  endmacro()
 
+ macro(magic_game_app_image_generation from_dir desktop_file appdata_file app_icon target appimage_dirname assets_dir)
+     if (LINUX)
+         get_target_property(exe_runtime_directory ${target} RUNTIME_OUTPUT_DIRECTORY)
+         set(output_dir ${exe_runtime_directory}/${appimage_dirname})
+         set_target_properties(${target} PROPERTIES
+                 RUNTIME_OUTPUT_DIRECTORY ${output_dir}/usr/bin
+                 RUNTIME_OUTPUT_DIRECTORY_DEBUG ${output_dir}/usr/bin
+                 RUNTIME_OUTPUT_DIRECTORY_RELEASE ${output_dir}/usr/bin)
+         file(COPY ${assets_dir} DESTINATION ${output_dir}/usr/share/)
+         if (BUILD_WITH_APPIMAGE)
+             configure_file(${from_dir}/${desktop_file} ${output_dir}/usr/share/applications/${desktop_file} COPYONLY)
+             configure_file(${from_dir}/${appdata_file} ${output_dir}/usr/share/metainfo/${appdata_file} COPYONLY)
+             configure_file(${from_dir}/${app_icon} ${output_dir}/usr/share/icons/hicolor/128x128/apps/${app_icon} COPYONLY)
+             add_custom_command(TARGET ${target}
+                     POST_BUILD COMMAND
+                     bash -c
+                     "VERSION=${PROJECT_VERSION} ${PROJECT_SOURCE_DIR}/tools/linux/linuxdeploy-x86_64.AppImage --appdir ${output_dir} --output appimage"
+                     $<TARGET_FILE:${target}>
+                     WORKING_DIRECTORY ${exe_runtime_directory})
+         endif ()
+     endif ()
+ endmacro()
+
  download_app_image()
