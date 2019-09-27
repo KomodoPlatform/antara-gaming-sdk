@@ -133,10 +133,10 @@ jobs:
         run: |
           brew install pkg-config freetype
           pkg-config --cflags freetype2
-          brew install ninja llvm lcov
+          brew install ninja llvm@${{ matrix.version}} lcov
           sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-          echo "::set-env name=CC::/usr/local/opt/llvm/bin/clang"
-          echo "::set-env name=CXX::/usr/local/opt/llvm/bin/clang++"
+          echo "::set-env name=CC::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang"
+          echo "::set-env name=CXX::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang++"
 
       - name: Install (Windows)
         if: runner.os == 'Windows'
