@@ -15,3 +15,25 @@
  ******************************************************************************/
 
 #include "antara/gaming/sfml/resources.manager.hpp"
+
+namespace antara::gaming::sfml
+{
+
+    texture_handle resources_manager::load_texture(const char *resource_id)
+    {
+        return resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id,
+                                                                        (textures_path_ / resource_id).string());
+    }
+
+    font_handle resources_manager::load_font(const char *resource_id)
+    {
+        return resources_manager::load<fonts_loader, fonts_cache>(fonts_cache_, resource_id,
+                                                                  (fonts_path_ / resource_id).string());
+    }
+
+    sound_handle resources_manager::load_sound(const char *resource_id)
+    {
+        return resources_manager::load<sounds_loader, sounds_cache>(sounds_cache_, resource_id,
+                                                                    (sounds_path / resource_id).string());
+    }
+}

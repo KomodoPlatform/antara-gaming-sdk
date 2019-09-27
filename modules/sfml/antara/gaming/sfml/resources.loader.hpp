@@ -67,6 +67,6 @@ namespace antara::gaming::sfml
 
     using texture_handle = entt::resource_handle<sf::Texture>;
     using music_handle = entt::resource_handle<sf::Music>;
-    using sound_handler = entt::resource_handle<sf::Sound>;
+    using sound_handle = entt::resource_handle<sf::SoundBuffer>;
     using font_handle = entt::resource_handle<sf::Font>;
 }
