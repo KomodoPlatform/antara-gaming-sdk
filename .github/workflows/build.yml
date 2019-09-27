@@ -74,7 +74,7 @@ jobs:
 
           - name: macos-10-14-clang-9-debug
             cmake_build_type: Debug
-            os: macOS-10.14
+            os: macOS-latest
             compiler: clang
             version: "9"
 
@@ -102,7 +102,7 @@ jobs:
 
           - name: macos-10-14-clang-9-release
             cmake_build_type: Release
-            os: macOS-10.14
+            os: macOS-latest
             compiler: clang
             version: "9"
 
@@ -145,6 +145,7 @@ jobs:
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
+          brew update
           brew install pkg-config freetype
           pkg-config --cflags freetype2
           brew install ninja lcov
