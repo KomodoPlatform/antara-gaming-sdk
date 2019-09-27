@@ -19,10 +19,12 @@ jobs:
           windows-2019-clang-cl-debug,
           #windows-2019-clang-debug,
           macos-10-14-clang-8-debug,
+          macos-10-14-clang-9-debug,
           ubuntu-18-04-clang-8-release,
           windows-2019-clang-cl-release,
           #windows-2019-clang-release,
           macos-10-14-clang-8-release,
+          macos-10-14-clang-9-release,
         ]
 
         include:
@@ -70,6 +72,12 @@ jobs:
             compiler: clang
             version: "8"
 
+          - name: macos-10-14-clang-9-debug
+            cmake_build_type: Debug
+            os: macOS-10.14
+            compiler: clang
+            version: "9"
+
           - name: ubuntu-18-04-clang-8-release
             os: ubuntu-18.04
             cmake_build_type: Release
@@ -91,6 +99,12 @@ jobs:
             os: macOS-10.14
             compiler: clang
             version: "8"
+
+          - name: macos-10-14-clang-9-release
+            cmake_build_type: Release
+            os: macOS-10.14
+            compiler: clang
+            version: "9"
 
 
     steps:
