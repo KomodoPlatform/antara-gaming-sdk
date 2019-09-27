@@ -43,3 +43,10 @@ if (ANTARA_BUILD_UNIT_TESTS)
         endif ()
     endif ()
 endif ()
+
+
+set(get_lua_macro_internal_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
+
+macro(get_lua_scenes_system output_dir)
+    configure_file(${get_lua_macro_internal_dir}/antara/gaming/lua/scenes_system.lua ${output_dir}/assets/scripts/systems/lua/scenes_system.lua COPYONLY)
+endmacro()
