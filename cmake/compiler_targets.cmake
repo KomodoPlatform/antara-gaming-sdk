@@ -41,9 +41,10 @@ target_compile_options(antara_optimize_settings INTERFACE
 ## Cross filesystem
 add_library(antara_cross_filesystem INTERFACE)
 add_library(antara::cross_filesystem ALIAS antara_cross_filesystem)
+
 target_link_libraries(antara_cross_filesystem INTERFACE
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
-        $<$<PLATFORM_ID:Darwin>:c++fs>)
+        $<$<AND:$<PLATFORM_ID:Darwin>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:c++fs>)
 target_compile_options(antara_cross_filesystem INTERFACE
         $<$<AND:$<PLATFORM_ID:Darwin>,$<VERSION_GREATER:$<CXX_COMPILER_VERSION>,8.0>>:-mmacosx-version-min=10.15>)
 
