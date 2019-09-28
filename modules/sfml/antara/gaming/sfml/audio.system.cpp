@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
 #include <SFML/Audio.hpp>
+#include "antara/gaming/sfml/component.audio.hpp"
 #include "antara/gaming/sfml/audio.system.hpp"
 
 namespace antara::gaming::sfml
