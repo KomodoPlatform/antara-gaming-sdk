@@ -31,4 +31,9 @@ if (WIN32)
             COMMENT "copying dlls …"
             $<TARGET_FILE_DIR:antara-sfml-example>
             )
+    ADD_CUSTOM_COMMAND(TARGET antara-sfml-example POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_SOURCE_DIR}/extlibs/bin/x64" "${CMAKE_BINARY_DIR}/bin/"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:antara-sfml-example>
+            )
 endif ()
