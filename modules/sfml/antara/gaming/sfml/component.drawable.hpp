@@ -46,7 +46,13 @@ namespace antara::gaming::sfml
 
         sf::Text drawable;
     };
+
+    struct vertex_array
+    {
+        vertex_array() = default;
+        sf::VertexArray drawable;
+    };
     // LCOV_EXCL_STOP
 
-    using drawable_list = doom::meta::list<sprite, circle, text>;
+    using drawable_list = doom::meta::list<sprite, circle, text, vertex_array>;
 }
