@@ -51,6 +51,21 @@ public:
                                                                                 2.f);
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
+
+
+        auto triangle_entity = entity_registry.create();
+        auto& triangle_cmp = entity_registry.assign<antara::gaming::sfml::vertex_array>(triangle_entity, sf::VertexArray(sf::Triangles, 3));
+        sf::VertexArray &triangle = triangle_cmp.drawable;
+        triangle[0].position = sf::Vector2f(10, 10);
+        triangle[1].position = sf::Vector2f(100, 10);
+        triangle[2].position = sf::Vector2f(100, 100);
+        triangle[0].color = sf::Color::Red;
+        triangle[1].color = sf::Color::Blue;
+        triangle[2].color = sf::Color::Green;
+
+        entity_registry_.assign<entt::tag<"game_scene"_hs>>(triangle_entity);
+        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(triangle_entity);
+
     }
 
     void update() noexcept final
