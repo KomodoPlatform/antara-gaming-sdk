@@ -16,39 +16,30 @@
 
 #pragma once
 
-#include <filesystem>
-#include <utility>
-#include <entt/core/hashed_string.hpp>
-#include "antara/gaming/sfml/resources.loader.hpp"
-#include "antara/gaming/core/real.path.hpp"
+#include <SFML/Audio.hpp>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
+#include <refl.hpp>
+
+#pragma clang diagnostic pop
+
+#include "antara/gaming/sfml/event.play.sound.hpp"
+#include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::sfml
 {
-    class resources_manager
+    class audio_system final : public ecs::pre_update_system<audio_system>
     {
     public:
-        template<typename TLoader, typename TCache, typename ... TArgs>
-        static auto load(TCache &cache, const char *id, TArgs &&...args)
-        {
-            const auto identifier = entt::hashed_string::to_value(id);
-            return cache.template load<TLoader>(identifier, std::forward<TArgs>(args)...);
-        }
+        //! Constructors
+        audio_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
 
-        texture_handle load_texture(const char *resource_id);
+        void receive_sound_event(const play_sound_event &evt) noexcept;
 
-        font_handle load_font(const char *resource_id);
-
-        sound_handle load_sound(const char* resource_id);
-
-    private:
-        const std::filesystem::path assets_path_{antara::gaming::core::assets_real_path()};
-        std::filesystem::path musics_path_{assets_path_ / "musics"};
-        std::filesystem::path textures_path_{assets_path_ / "textures"};
-        std::filesystem::path fonts_path_{assets_path_ / "fonts"};
-        std::filesystem::path sounds_path{assets_path_ / "sounds"};
-        textures_cache textures_cache_;
-        musics_cache musics_cache_;
-        sounds_cache sounds_cache_;
-        fonts_cache fonts_cache_;
+        void update() noexcept final;
     };
 }
+
+REFL_AUTO(type(antara::gaming::sfml::audio_system));

@@ -14,26 +14,22 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/sfml/resources.manager.hpp"
+#include "antara/gaming/sfml/event.play.sound.hpp"
 
 namespace antara::gaming::sfml
 {
-
-    texture_handle resources_manager::load_texture(const char *resource_id)
+    play_sound_event::play_sound_event() noexcept : sound_id{nullptr}, resource_mgr{nullptr}, on_finish([](){})
     {
-        return resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id,
-                                                                        (textures_path_ / resource_id).string());
+
     }
 
-    font_handle resources_manager::load_font(const char *resource_id)
+    play_sound_event::play_sound_event(const char *sound_id_, resources_manager *resources_manager_,
+                                       std::function<void()> on_finish) noexcept
+            : sound_id(sound_id_),
+              resource_mgr(
+                      resources_manager_),
+              on_finish(std::move(on_finish))
     {
-        return resources_manager::load<fonts_loader, fonts_cache>(fonts_cache_, resource_id,
-                                                                  (fonts_path_ / resource_id).string());
-    }
 
-    sound_handle resources_manager::load_sound(const char *resource_id)
-    {
-        return resources_manager::load<sounds_loader, sounds_cache>(sounds_cache_, resource_id,
-                                                                    (sounds_path / resource_id).string());
     }
 }

@@ -23,6 +23,7 @@
 #include "antara/gaming/sfml/input.system.hpp"
 #include "antara/gaming/scenes/scene.manager.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
+#include "antara/gaming/sfml/audio.system.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
 
 
@@ -39,15 +40,15 @@ public:
         auto &window_info = entity_registry_.ctx<antara::gaming::config::game_cfg>().win_cfg;
         auto dummy_entity = entity_registry_.create();
         auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
-                                                                            sf::Text("Game Scene", *handle, 30));
+                                                                            sf::Text("Game scene", handle.get()));
         sf::Text &txt = txt_cmp.drawable;
         txt.setFillColor(sf::Color::Blue);
         txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
         this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_entity,
-                                                                               static_cast<float>(window_info.width) /
-                                                                               2.f,
-                                                                               static_cast<float>(window_info.height) /
-                                                                               2.f);
+                                                                                static_cast<float>(window_info.width) /
+                                                                                2.f,
+                                                                                static_cast<float>(window_info.height) /
+                                                                                2.f);
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
     }
@@ -103,10 +104,10 @@ public:
         txt.setFillColor(sf::Color::Green);
         txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
         this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_entity,
-                                                                               static_cast<float>(window_info.width) /
-                                                                               2.f,
-                                                                               static_cast<float>(window_info.height) /
-                                                                               2.f);
+                                                                                static_cast<float>(window_info.width) /
+                                                                                2.f,
+                                                                                static_cast<float>(window_info.height) /
+                                                                                2.f);
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(dummy_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
     }
@@ -119,8 +120,10 @@ public:
     bool on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept final
     {
         if (evt.key == antara::gaming::input::key::space) {
-            this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                    std::make_unique<game_scene>(this->entity_registry_, this->dispatcher_), false);
+            this->dispatcher_.trigger<antara::gaming::sfml::play_sound_event>("service-bell_daniel_simion.wav", &resource_mgr, [this](){
+                this->dispatcher_.trigger<antara::gaming::event::change_scene>(
+                        std::make_unique<game_scene>(this->entity_registry_, this->dispatcher_), false);
+            });
         }
         return true;
     }
@@ -151,6 +154,7 @@ public:
     my_world() noexcept
     {
         auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
+        this->system_manager_.create_system<antara::gaming::sfml::audio_system>();
         this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
         auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
         scene_manager.change_scene(std::make_unique<intro_scene>(entity_registry_, dispatcher_), true);

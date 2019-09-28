@@ -2,7 +2,7 @@ set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
 add_executable(antara-sfml-example MACOSX_BUNDLE ${ICON} main.cpp)
-target_link_libraries(antara-sfml-example PUBLIC antara::world antara::scenes antara::sfml_graphic antara::sfml_input antara::sfml_resources)
+target_link_libraries(antara-sfml-example PUBLIC antara::world antara::scenes antara::sfml_graphic antara::sfml_input antara::sfml_audio antara::sfml_resources)
 
 set_target_properties(antara-sfml-example
         PROPERTIES
@@ -28,6 +28,11 @@ if (WIN32)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/)
     ADD_CUSTOM_COMMAND(TARGET antara-sfml-example POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/bin/"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:antara-sfml-example>
+            )
+    ADD_CUSTOM_COMMAND(TARGET antara-sfml-example POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_SOURCE_DIR}/extlibs/bin/x64" "${CMAKE_BINARY_DIR}/bin/"
             COMMENT "copying dlls …"
             $<TARGET_FILE_DIR:antara-sfml-example>
             )
