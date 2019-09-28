@@ -4,7 +4,7 @@ target_link_libraries(sfml_shared_resources INTERFACE antara::ecs antara::config
 add_library(antara::sfml_shared_resources ALIAS sfml_shared_resources)
 
 add_library(antara_sfml_audio STATIC)
-target_sources(antara_sfml_audio PRIVATE antara/gaming/sfml/audio.system.cpp)
+target_sources(antara_sfml_audio PRIVATE antara/gaming/sfml/audio.system.cpp antara/gaming/sfml/event.play.sound.cpp)
 target_link_libraries(antara_sfml_audio PRIVATE sfml-audio PUBLIC antara::sfml_shared_resources)
 add_library(antara::sfml_audio ALIAS antara_sfml_audio)
 

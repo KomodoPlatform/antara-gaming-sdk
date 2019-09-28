@@ -16,39 +16,19 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
-#include <refl.hpp>
-
-#pragma clang diagnostic pop
-
-#include "antara/gaming/sfml/event.play.sound.hpp"
-#include "antara/gaming/ecs/system.hpp"
+#include <functional>
+#include "antara/gaming/sfml/resources.manager.hpp"
 
 namespace antara::gaming::sfml
 {
-
-
-    struct component_sound
+    struct play_sound_event
     {
-        sf::Sound sound;
-        std::function<void()> on_finish{[]()
-                                        {}};
-    };
+        play_sound_event() noexcept;
 
-    class audio_system final : public ecs::pre_update_system<audio_system>
-    {
-    public:
-        //! Constructors
-        audio_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
+        play_sound_event(const char *sound_id_, resources_manager *resources_manager_, std::function<void()> on_finish = [](){}) noexcept;
 
-        void receive_sound_event(const play_sound_event &evt) noexcept;
-
-        void update() noexcept final;
+        const char *sound_id{nullptr};
+        resources_manager *resource_mgr{nullptr};
+        std::function<void()> on_finish{[](){}};
     };
 }
-
-REFL_AUTO(type(antara::gaming::sfml::audio_system));
