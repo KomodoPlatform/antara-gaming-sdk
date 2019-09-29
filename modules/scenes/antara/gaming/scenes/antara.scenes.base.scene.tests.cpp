@@ -45,6 +45,27 @@ namespace antara::gaming::scenes::tests
             return true;
         }
 
+        bool on_mouse_moved(const event::mouse_moved &moved) noexcept final
+        {
+            bool res = base_scene::on_mouse_moved(moved);
+            CHECK(res);
+            return res;
+        }
+
+        bool on_mouse_button_pressed(const event::mouse_button_pressed &pressed) noexcept final
+        {
+            bool res = base_scene::on_mouse_button_pressed(pressed);
+            CHECK(res);
+            return res;
+        }
+
+        bool on_mouse_button_released(const event::mouse_button_released &released) noexcept final
+        {
+            bool res = base_scene::on_mouse_button_released(released);
+            CHECK(res);
+            return res;
+        }
+
         std::string scene_name() noexcept final
         {
             return "game_scene";
