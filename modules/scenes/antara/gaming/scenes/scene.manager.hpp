@@ -38,6 +38,8 @@ namespace antara::gaming::scenes
         void receive_key_pressed(const event::key_pressed &evt) noexcept;
         void receive_key_released(const event::key_released &evt) noexcept;
         void receive_mouse_moved(const event::mouse_moved &evt) noexcept;
+        void receive_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept;
+        void receive_mouse_button_released(const event::mouse_button_released &evt) noexcept;
         void receive_change_scene(const event::change_scene &evt) noexcept;
         //!
         void update() noexcept final;

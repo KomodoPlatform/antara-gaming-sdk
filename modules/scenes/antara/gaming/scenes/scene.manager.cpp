@@ -52,6 +52,8 @@ namespace antara::gaming::scenes
         this->dispatcher_.sink<event::key_pressed>().connect<&manager::receive_key_pressed>(*this);
         this->dispatcher_.sink<event::key_released>().connect<&manager::receive_key_released>(*this);
         this->dispatcher_.sink<event::mouse_moved>().connect<&manager::receive_mouse_moved>(*this);
+        this->dispatcher_.sink<event::mouse_button_pressed>().connect<&manager::receive_mouse_button_pressed>(*this);
+        this->dispatcher_.sink<event::mouse_button_released>().connect<&manager::receive_mouse_button_released>(*this);
         this->dispatcher_.sink<event::change_scene>().connect<&manager::receive_change_scene>(*this);
     }
 
@@ -79,6 +81,20 @@ namespace antara::gaming::scenes
     {
         if (not scenes_.empty()) {
             scenes_.top()->on_mouse_moved(evt);
+        }
+    }
+
+    void manager::receive_mouse_button_released(const event::mouse_button_released &evt) noexcept
+    {
+        if (not scenes_.empty()) {
+            scenes_.top()->on_mouse_button_released(evt);
+        }
+    }
+
+    void manager::receive_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept
+    {
+        if (not scenes_.empty()) {
+            scenes_.top()->on_mouse_button_pressed(evt);
         }
     }
 

@@ -18,8 +18,10 @@
 
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/event/mouse.moved.hpp"
 #include "antara/gaming/ecs/system.manager.hpp"
+#include "antara/gaming/event/mouse.button.pressed.hpp"
+#include "antara/gaming/event/mouse.button.released.hpp"
+#include "antara/gaming/event/mouse.moved.hpp"
 #include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/event/key.released.hpp"
 
@@ -40,6 +42,12 @@ namespace antara::gaming::scenes
 
         virtual bool on_mouse_moved(const event::mouse_moved &) noexcept
         { return true; };
+
+        virtual bool on_mouse_button_pressed(const event::mouse_button_pressed &) noexcept
+        { return true; }
+
+        virtual bool on_mouse_button_released(const event::mouse_button_released &) noexcept
+        { return true; }
 
         virtual std::string scene_name() noexcept = 0;
 
