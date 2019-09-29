@@ -138,7 +138,7 @@ public:
                                                                                            sf::Mouse::getPosition().y),
                                                                                             *handle,
                                                                                             30));
-        sf::Text &mouse_txt = txt_cmp.drawable;
+        sf::Text &mouse_txt = mouse_text_cmp.drawable;
         mouse_txt.setFillColor(sf::Color::Green);
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(mouse_pos_text_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(mouse_pos_text_entity);
@@ -149,7 +149,7 @@ public:
     {
 
         this->entity_registry_.view<antara::gaming::sfml::text, entt::tag<"mouse_text_entity"_hs>>().each(
-                [&evt](auto &&entity, auto &&text, auto &&) {
+                [&evt](auto &&, auto &&text, auto &&) {
                     sf::Text &txt = text.drawable;
                     txt.setString("Mouse pos: " + std::to_string(evt.x) + " " + std::to_string(evt.y));
                 });
