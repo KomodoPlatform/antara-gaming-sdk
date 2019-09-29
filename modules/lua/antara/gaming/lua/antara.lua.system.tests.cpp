@@ -19,6 +19,7 @@
 #include "antara/gaming/lua/details/lua.scripted.system.hpp"
 #include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/input/keyboard.hpp"
+#include "antara/gaming/input/mouse.hpp"
 #include "antara/gaming/core/version.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
@@ -101,6 +102,15 @@ namespace antara::gaming::lua::tests
 		res = state.script("return antara.keyboard.return_");
 		CHECK_EQ(res, input::key::return_);
 	}
+
+    TEST_CASE_FIXTURE(lua_tests_fixture, "mouse input")
+    {
+        input::mouse_button res = state.script("return antara.mouse_button.right");
+        CHECK_EQ(res, input::mouse_button::right);
+
+        input::mouse_wheel another_res = state.script("return antara.mouse_wheel.vertical_wheel");
+        CHECK_EQ(another_res, input::mouse_wheel::vertical_wheel);
+    }
 
 	TEST_CASE_FIXTURE(lua_tests_fixture, "create/destroy/alive/valid entities")
 	{

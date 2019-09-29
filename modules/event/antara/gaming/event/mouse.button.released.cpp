@@ -14,40 +14,13 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "antara/gaming/event/mouse.button.released.hpp"
 
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/event/mouse.moved.hpp"
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/key.pressed.hpp"
-#include "antara/gaming/event/key.released.hpp"
-
-namespace antara::gaming::scenes
+namespace antara::gaming::event
 {
-    class base_scene
+    mouse_button_released::mouse_button_released(input::mouse_button button_, int x_, int y_) noexcept : button(
+            button_), x(x_), y(y_)
     {
-    public:
-        base_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept;
 
-        virtual void update() noexcept = 0;
-
-        virtual bool on_key_pressed(const event::key_pressed &) noexcept
-        { return true; };
-
-        virtual bool on_key_released(const event::key_released &) noexcept
-        { return true; };
-
-        virtual bool on_mouse_moved(const event::mouse_moved &) noexcept
-        { return true; };
-
-        virtual std::string scene_name() noexcept = 0;
-
-        virtual ~base_scene() noexcept = default;
-
-    protected:
-        entt::registry &entity_registry_;
-        entt::dispatcher &dispatcher_;
-        ecs::system_manager system_manager_{entity_registry_, dispatcher_, false};
-    };
+    }
 }

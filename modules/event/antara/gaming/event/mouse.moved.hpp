@@ -1,4 +1,3 @@
-
 /******************************************************************************
  * Copyright © 2013-2019 The Komodo Platform Developers.                      *
  *                                                                            *
@@ -17,42 +16,18 @@
 
 #pragma once
 
-#include <stack>
-#include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/scenes/base.scene.hpp"
-#include "antara/gaming/scenes/change.scene.event.hpp"
+#include <antara/gaming/core/safe.refl.hpp>
 
-namespace antara::gaming::scenes
+namespace antara::gaming::event
 {
-    class manager final : public ecs::logic_update_system<manager>
+    struct mouse_moved
     {
-    public:
-        using scene_ptr = std::unique_ptr<base_scene>;
+        mouse_moved() noexcept = default;
 
-        manager(entt::registry &entity_registry, entt::dispatcher &dispatcher) noexcept;
+        mouse_moved(int x_, int y_) noexcept;
 
-        //! Destructor
-        ~manager() noexcept final = default;
-
-        //! Public callbacks
-        void receive_key_pressed(const event::key_pressed &evt) noexcept;
-        void receive_key_released(const event::key_released &evt) noexcept;
-        void receive_mouse_moved(const event::mouse_moved &evt) noexcept;
-        void receive_change_scene(const event::change_scene &evt) noexcept;
-        //!
-        void update() noexcept final;
-
-        //! Public member function
-        void change_scene(scene_ptr &&scene, bool just_push_scene = false) noexcept;
-
-        bool previous_scene();
-
-		void clear() noexcept;
-        base_scene &current_scene() noexcept;
-
-    private:
-        std::stack<scene_ptr> scenes_;
+        int x;
+        int y;
     };
 }
-
-REFL_AUTO(type(antara::gaming::scenes::manager))
+REFL_AUTO(type(antara::gaming::event::mouse_moved), field(x), field(y));

@@ -4,7 +4,10 @@ target_sources(antara_event_shared_sources PRIVATE
         antara/gaming/event/quit.game.cpp
         antara/gaming/event/fatal.error.cpp
         antara/gaming/event/key.pressed.cpp
-        antara/gaming/event/key.released.cpp)
+        antara/gaming/event/key.released.cpp
+        antara/gaming/event/mouse.moved.cpp
+        antara/gaming/event/mouse.button.pressed.cpp
+        antara/gaming/event/mouse.button.released.cpp)
 target_include_directories(antara_event_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_event_shared_sources PUBLIC antara::default_settings antara::input doom::meta EnTT antara::refl-cpp antara::core)
 add_library(antara::event ALIAS antara_event_shared_sources)
@@ -18,7 +21,10 @@ if (ANTARA_BUILD_UNIT_TESTS)
             antara/gaming/event/antara.event.fatal.error.tests.cpp
             antara/gaming/event/antara.event.key.pressed.tests.cpp
             antara/gaming/event/antara.event.key.released.tests.cpp
-            antara/gaming/event/antara.event.type.traits.tests.cpp)
+            antara/gaming/event/antara.event.type.traits.tests.cpp
+            antara/gaming/event/antara.event.mouse.moved.tests.cpp
+            antara/gaming/event/antara.event.mouse.button.pressed.tests.cpp
+            antara/gaming/event/antara.event.mouse.button.released.tests.cpp)
     target_link_libraries(antara_event_tests PRIVATE doctest PUBLIC antara::event)
     set_target_properties(antara_event_tests
             PROPERTIES
