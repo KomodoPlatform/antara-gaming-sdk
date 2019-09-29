@@ -36,13 +36,13 @@ namespace antara::gaming::scenes::tests
         bool on_key_pressed(const event::key_pressed &evt) noexcept final
         {
             CHECK_EQ(evt.key, input::key::a);
-            return true;
+            return base_scene::on_key_pressed(evt);
         }
 
         bool on_key_released(const event::key_released &evt) noexcept final
         {
             CHECK_EQ(evt.key, input::key::a);
-            return true;
+            return base_scene::on_key_released(evt);
         }
 
         bool on_mouse_moved(const event::mouse_moved &moved) noexcept final
@@ -95,6 +95,21 @@ namespace antara::gaming::scenes::tests
         {
             event::key_released key{input::key::a, false, false, false, false};
             CHECK(scene_ptr->on_key_released(key));
+        }
+
+        TEST_CASE("on mouse button pressed")
+        {
+            CHECK(scene_ptr->on_mouse_button_pressed({}));
+        }
+
+        TEST_CASE("on mouse button released")
+        {
+            CHECK(scene_ptr->on_mouse_button_released({}));
+        }
+
+        TEST_CASE("on mouse button moved")
+        {
+            CHECK(scene_ptr->on_mouse_moved({}));
         }
 
         TEST_CASE("scene name")
