@@ -17,6 +17,7 @@
 #include <SFML/Window/Event.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/event/quit.game.hpp"
+#include "antara/gaming/event/mouse.moved.hpp"
 #include "antara/gaming/event/key.released.hpp"
 #include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
@@ -67,6 +68,7 @@ namespace antara::gaming::sfml
                 case sf::Event::MouseButtonReleased:
                     break;
                 case sf::Event::MouseMoved:
+                    this->dispatcher_.trigger<event::mouse_moved>(evt.mouseMove.x, evt.mouseMove.y);
                     break;
                 case sf::Event::MouseEntered:
                     break;

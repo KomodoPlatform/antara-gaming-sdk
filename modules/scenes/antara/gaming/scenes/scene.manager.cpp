@@ -51,6 +51,7 @@ namespace antara::gaming::scenes
     {
         this->dispatcher_.sink<event::key_pressed>().connect<&manager::receive_key_pressed>(*this);
         this->dispatcher_.sink<event::key_released>().connect<&manager::receive_key_released>(*this);
+        this->dispatcher_.sink<event::mouse_moved>().connect<&manager::receive_mouse_moved>(*this);
         this->dispatcher_.sink<event::change_scene>().connect<&manager::receive_change_scene>(*this);
     }
 
@@ -74,8 +75,16 @@ namespace antara::gaming::scenes
         }
     }
 
+    void manager::receive_mouse_moved(const event::mouse_moved &evt) noexcept
+    {
+        if (not scenes_.empty()) {
+            scenes_.top()->on_mouse_moved(evt);
+        }
+    }
+
     void manager::receive_change_scene(const event::change_scene &evt) noexcept
     {
         change_scene(std::move(const_cast<event::change_scene&>(evt).scene_ptr), evt.just_push_scene);
     }
+
 }

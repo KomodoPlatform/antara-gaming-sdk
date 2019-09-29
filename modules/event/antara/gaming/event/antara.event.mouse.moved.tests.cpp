@@ -14,40 +14,25 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
+#include <doctest/doctest.h>
 #include "antara/gaming/event/mouse.moved.hpp"
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/key.pressed.hpp"
-#include "antara/gaming/event/key.released.hpp"
 
-namespace antara::gaming::scenes
+namespace antara::gaming::event::tests
 {
-    class base_scene
+    TEST_SUITE ("mouse moved test suite")
     {
-    public:
-        base_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept;
+        TEST_CASE ("default constructible")
+        {
+            event::mouse_moved mouse_moved{};
+            CHECK_EQ(mouse_moved.x, 0);
+            CHECK_EQ(mouse_moved.y, 0);
+        }
 
-        virtual void update() noexcept = 0;
-
-        virtual bool on_key_pressed(const event::key_pressed &) noexcept
-        { return true; };
-
-        virtual bool on_key_released(const event::key_released &) noexcept
-        { return true; };
-
-        virtual bool on_mouse_moved(const event::mouse_moved &) noexcept
-        { return true; };
-
-        virtual std::string scene_name() noexcept = 0;
-
-        virtual ~base_scene() noexcept = default;
-
-    protected:
-        entt::registry &entity_registry_;
-        entt::dispatcher &dispatcher_;
-        ecs::system_manager system_manager_{entity_registry_, dispatcher_, false};
-    };
+        TEST_CASE ("can construct from 2 positions")
+        {
+            event::mouse_moved mouse_moved_event{42, 42};
+            CHECK_EQ(mouse_moved_event.x, 42);
+            CHECK_EQ(mouse_moved_event.y, 42);
+        }
+    }
 }

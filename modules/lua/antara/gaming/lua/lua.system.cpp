@@ -20,6 +20,7 @@
 #include "antara/gaming/ecs/event.add.base.system.hpp"
 #include "antara/gaming/event/all.events.hpp"
 #include "antara/gaming/input/keyboard.hpp"
+#include "antara/gaming/input/mouse.hpp"
 #include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
 #include "antara/gaming/lua/details/lua.scripted.system.hpp"
@@ -156,6 +157,19 @@ namespace antara::gaming::lua
                 {"pause",         input::key::pause},
         });
 
+        table.new_enum<input::mouse_button>("mouse_button", {
+                {"left",       input::mouse_button::left},
+                {"middle",     input::mouse_button::middle},
+                {"right",      input::mouse_button::right},
+                {"x_button_1", input::mouse_button::x_button_1},
+                {"x_button_2", input::mouse_button::x_button_2}
+        });
+
+        table.new_enum<input::mouse_wheel>("mouse_wheel", {
+                {"vertical_wheel", input::mouse_wheel::vertical_wheel},
+                {"horizontal_wheel", input::mouse_wheel::horizontal_wheel}
+        });
+
         (*this->lua_state_)["antara"] = table;
         (*this->lua_state_)["antara"]["get_all_scripts_scenes"] = [this]() {
             std::vector<std::string> path_scenes_entries;
@@ -171,7 +185,7 @@ namespace antara::gaming::lua
         register_components_list(ecs::component::components_list{});
         register_events_list(event::events_list{});
         (*this->lua_state_)["entt"] = lua_state_->create_table_with("entity_registry", std::ref(this->entity_registry_),
-                                                          "dispatcher", std::ref(this->dispatcher_));
+                                                                    "dispatcher", std::ref(this->dispatcher_));
     }
 
     void scripting_system::register_entity_registry()
@@ -185,7 +199,8 @@ namespace antara::gaming::lua
             return self.alive();
         };
 
-        (*this->lua_state_)["entity_registry"]["destroy"] = [](entt::registry &self, entt::registry::entity_type entity) {
+        (*this->lua_state_)["entity_registry"]["destroy"] = [](entt::registry &self,
+                                                               entt::registry::entity_type entity) {
             self.destroy(entity);
         };
 
@@ -194,8 +209,8 @@ namespace antara::gaming::lua
         };
 
         (*this->lua_state_)["entity_registry"]["for_each_runtime"] = [](entt::registry &self,
-                                                               std::vector<entt::component> components,
-                                                               sol::function functor) {
+                                                                        std::vector<entt::component> components,
+                                                                        sol::function functor) {
             return self.runtime_view(std::cbegin(components), std::cend(components)).each(
                     [func = std::move(functor)](auto entity) {
                         func(entity);
