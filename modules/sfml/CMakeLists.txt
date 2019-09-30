@@ -23,6 +23,11 @@ target_sources(antara_sfml_resources PRIVATE antara/gaming/sfml/resources.manage
 target_link_libraries(antara_sfml_resources PUBLIC sfml-graphics sfml-audio antara::sfml_shared_resources antara::core)
 add_library(antara::sfml_resources ALIAS antara_sfml_resources)
 
+add_library(antara_sfml_extras STATIC)
+target_sources(antara_sfml_extras PRIVATE antara/gaming/sfml/komodo.intro.scene.cpp)
+target_link_libraries(antara_sfml_extras PUBLIC antara::sfml_shared_resources antara::scenes)
+add_library(antara::sfml_extras ALIAS antara_sfml_extras)
+
 add_library(antara_sfml INTERFACE)
-target_link_libraries(antara_sfml INTERFACE antara::sfml_resources antara::sfml_graphic antara::sfml_input antara::sfml_shared_resources)
+target_link_libraries(antara_sfml INTERFACE antara::sfml_resources antara::sfml_extras antara::sfml_graphic antara::sfml_input antara::sfml_audio antara::sfml_shared_resources)
 add_library(antara::sfml ALIAS antara_sfml)
