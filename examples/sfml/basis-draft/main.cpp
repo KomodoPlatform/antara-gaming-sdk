@@ -130,6 +130,7 @@ public:
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(dummy_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
 
+        //! mouse text
         auto mouse_pos_text_entity = entity_registry.create();
         auto &mouse_text_cmp = entity_registry_.assign<antara::gaming::sfml::text>(mouse_pos_text_entity,
                                                                                    sf::Text("Mouse pos: " +
@@ -144,6 +145,16 @@ public:
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(mouse_pos_text_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(mouse_pos_text_entity);
         this->entity_registry_.assign<entt::tag<"mouse_text_entity"_hs>>(mouse_pos_text_entity);
+
+        //!Rectangle
+        auto dummy_rectangle_entity = this->entity_registry_.create();
+        this->entity_registry_.assign<antara::gaming::sfml::rectangle>(dummy_rectangle_entity,
+                                                                       sf::RectangleShape(sf::Vector2f(100, 100)));
+        this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_rectangle_entity,
+                                                                                200.f, 200.f);
+        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(dummy_rectangle_entity);
+        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_rectangle_entity);
+
     }
 
     bool on_mouse_moved(const antara::gaming::event::mouse_moved &evt) noexcept final
@@ -203,10 +214,11 @@ public:
         this->system_manager_.create_system<antara::gaming::sfml::audio_system>();
         this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
         auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
-        scene_manager.change_scene(std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, dispatcher_, [this](){
-            this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                    std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
-        }), true);
+        scene_manager.change_scene(
+                std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, dispatcher_, [this]() {
+                    this->dispatcher_.trigger<antara::gaming::event::change_scene>(
+                            std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
+                }), true);
     }
 };
 
