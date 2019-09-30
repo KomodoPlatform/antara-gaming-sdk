@@ -29,6 +29,12 @@ namespace antara::gaming::sfml
         sf::Sprite drawable;
     };
 
+    struct rectangle
+    {
+        rectangle() = default;
+        sf::RectangleShape drawable;
+    };
+
     struct circle
     {
         circle(sf::CircleShape drawable_) : drawable(std::move(drawable_))
@@ -54,5 +60,5 @@ namespace antara::gaming::sfml
     };
     // LCOV_EXCL_STOP
 
-    using drawable_list = doom::meta::list<sprite, circle, text, vertex_array>;
+    using drawable_list = doom::meta::list<sprite, circle, text, vertex_array, rectangle>;
 }
