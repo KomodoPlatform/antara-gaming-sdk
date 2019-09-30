@@ -22,6 +22,7 @@
 #include "antara/gaming/sfml/component.drawable.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
+#include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/scenes/scene.manager.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/audio.system.hpp"
@@ -202,7 +203,10 @@ public:
         this->system_manager_.create_system<antara::gaming::sfml::audio_system>();
         this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
         auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
-        scene_manager.change_scene(std::make_unique<intro_scene>(entity_registry_, dispatcher_), true);
+        scene_manager.change_scene(std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, dispatcher_, [this](){
+            this->dispatcher_.trigger<antara::gaming::event::change_scene>(
+                    std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
+        }), true);
     }
 };
 
