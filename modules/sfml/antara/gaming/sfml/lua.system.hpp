@@ -20,6 +20,7 @@
 #include <sol/state.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/sfml/resources.manager.hpp"
 
 namespace antara::gaming::sfml
 {
@@ -30,6 +31,7 @@ namespace antara::gaming::sfml
         void update() noexcept final;
     private:
         std::shared_ptr<sol::state> state_;
+        antara::gaming::sfml::resources_manager resource_mgr_;
     };
 }
 

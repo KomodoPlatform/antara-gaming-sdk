@@ -31,14 +31,32 @@ namespace antara::gaming::sfml
         static auto load(TCache &cache, const char *id, TArgs &&...args)
         {
             const auto identifier = entt::hashed_string::to_value(id);
+            if (contains<TCache>(cache, id)) {
+                return get<TCache>(cache, id);
+            }
             return cache.template load<TLoader>(identifier, std::forward<TArgs>(args)...);
+        }
+
+        template<typename TCache>
+        static auto get(TCache &cache, const char *id)
+        {
+            const auto identifier = entt::hashed_string::to_value(id);
+            return cache.handle(identifier);
+        }
+
+        template<typename TCache>
+        static auto contains(TCache &cache, const char *id) noexcept
+        {
+            const auto identifier = entt::hashed_string::to_value(id);
+            return cache.contains(identifier);
         }
 
         texture_handle load_texture(const char *resource_id);
 
         font_handle load_font(const char *resource_id);
 
-        sound_handle load_sound(const char* resource_id);
+        sound_handle load_sound(const char *resource_id);
+
 
     private:
         const std::filesystem::path assets_path_{antara::gaming::core::assets_real_path()};
