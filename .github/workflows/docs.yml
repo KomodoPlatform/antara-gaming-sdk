@@ -12,7 +12,7 @@ jobs:
       - name: install dependencies
         run: |
           sudo apt-get install -y doxygen
-          cd docs && pip install -r requirements.txt
+          cd docs && pip3 install -r requirements.txt
           curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
