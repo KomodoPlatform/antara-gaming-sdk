@@ -232,8 +232,10 @@ namespace antara::gaming::lua::tests
 	TEST_CASE_FIXTURE(lua_tests_fixture,"load scripted system")
 	{
 		std::cerr << "DISPATCHER ADDRESS:" << std::addressof(dispatcher) << std::endl;
+		system_mgr.start();
 		CHECK(not dispatcher.sink<ecs::event::add_base_system>().empty());
 		CHECK(script_sys.load_scripted_system("pre_update_system.lua"));
+		system_mgr.update();
 		CHECK(system_mgr.nb_systems() == 2);
 		dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
 		CHECK_EQ(system_mgr.update_systems(ecs::system_type::pre_update), 1ull);
