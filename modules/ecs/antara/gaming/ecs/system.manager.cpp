@@ -60,7 +60,7 @@ namespace antara::gaming::ecs
 
     std::size_t system_manager::update() noexcept
     {
-        if (not nb_systems())
+        if (not nb_systems() || not game_is_running)
             return 0u;
 
         std::size_t nb_systems_updated = 0u;
@@ -80,6 +80,16 @@ namespace antara::gaming::ecs
             sweep_systems_();
         }
 
+        //LCOV_EXCL_START
+        if (not systems_to_add_.empty()) {
+            while (not systems_to_add_.empty()) {
+                auto sys_type = systems_to_add_.front()->get_system_type_rtti();
+                this->add_system_(std::move(systems_to_add_.front()), sys_type);
+                systems_to_add_.pop();
+            }
+        }
+        //LCOV_EXCL_STOP
+
         return nb_systems_updated;
     }
 
@@ -97,6 +107,15 @@ namespace antara::gaming::ecs
     {
         assert(evt.system_ptr != nullptr);
         ecs::system_type sys_type = evt.system_ptr->get_system_type_rtti();
-        this->add_system_(std::move(const_cast<event::add_base_system &>(evt).system_ptr), sys_type);
+        if (not game_is_running) {
+            this->add_system_(std::move(const_cast<event::add_base_system &>(evt).system_ptr), sys_type);
+        } else {
+            this->systems_to_add_.push(std::move(const_cast<event::add_base_system &>(evt).system_ptr));
+        }
+    }
+
+    void system_manager::start() noexcept
+    {
+        game_is_running = true;
     }
 }

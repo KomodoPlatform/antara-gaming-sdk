@@ -65,8 +65,10 @@ namespace antara::gaming::ecs::tests
         entt::dispatcher dispatcher;
         system_manager manager{registry, dispatcher};
         const system_manager &c_mgr = manager;
+
         TEST_CASE ("add system")
         {
+            manager.start();
             CHECK_EQ(manager.nb_systems(), 0u);
             manager.create_system<logic_concrete_system>();
             CHECK(manager.has_system<logic_concrete_system>());
