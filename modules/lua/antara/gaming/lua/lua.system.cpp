@@ -284,4 +284,9 @@ namespace antara::gaming::lua
         }
         return res;
     }
+
+    std::shared_ptr<sol::state> scripting_system::get_state_ptr() noexcept
+    {
+        return lua_state_;
+    }
 }

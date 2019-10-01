@@ -14,25 +14,18 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/sfml/lua.system.hpp"
 
 namespace antara::gaming::sfml
 {
-    class input_system final : public ecs::pre_update_system<input_system>
+    void lua_system::update() noexcept
     {
-    public:
-        //! Constructors
-        input_system(entt::registry &registry, entt::dispatcher &dispatcher, sf::RenderWindow &window) noexcept;
 
-        void update() noexcept final;
+    }
 
-    private:
-        sf::RenderWindow &window_;
-    };
+    lua_system::lua_system(entt::registry &registry, entt::dispatcher &dispatcher,
+                           std::shared_ptr<sol::state> state) noexcept : system(registry, dispatcher), state_(state)
+    {
+        this->disable();
+    }
 }
-
-REFL_AUTO(type(antara::gaming::sfml::input_system));

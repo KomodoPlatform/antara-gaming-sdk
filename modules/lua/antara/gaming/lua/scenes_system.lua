@@ -37,7 +37,7 @@ end
 
 local function __destructor__()
     print("scene manager destructor")
-    if current_scene.leave ~= nil then
+    if current_scene ~= nil and current_scene.leave ~= nil then
         current_scene.leave()
     else
         print("current scene doesn't have leave callback")
@@ -45,7 +45,7 @@ local function __destructor__()
 end
 
 local function on_key_pressed(evt)
-    if current_scene.on_key_pressed ~= nil then
+    if current_scene ~= nil and current_scene.on_key_pressed ~= nil then
         current_scene.on_key_pressed(evt)
     else
         print("current scene doesn't have on_key_pressed callback")
@@ -53,7 +53,7 @@ local function on_key_pressed(evt)
 end
 
 local function on_key_released(evt)
-    if current_scene.on_key_released ~= nil then
+    if current_scene ~= nil and current_scene.on_key_released ~= nil then
         current_scene.on_key_released(evt)
     else
         print("current scene doesn't have on_key_released callback")
@@ -61,7 +61,7 @@ local function on_key_released(evt)
 end
 
 local function update()
-    if (current_scene.update ~= nil) then
+    if current_scene ~= nil and current_scene.update ~= nil then
         current_scene.update()
     end
 end

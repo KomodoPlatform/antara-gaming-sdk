@@ -45,6 +45,7 @@ namespace antara::gaming::lua
         void update() noexcept final;
 
         sol::state &get_state() noexcept;
+        std::shared_ptr<sol::state> get_state_ptr() noexcept;
 
         bool load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept;
 
