@@ -657,18 +657,6 @@ SORT_BY_SCOPE_NAME     = NO
 
 STRICT_PROTO_MATCHING  = NO
 
-# The GENERATE_TODOLIST tag can be used to enable (YES) or disable (NO) the todo
-# list. This list is created by putting \todo commands in the documentation.
-# The default value is: YES.
-
-GENERATE_TODOLIST      = YES
-
-# The GENERATE_TESTLIST tag can be used to enable (YES) or disable (NO) the test
-# list. This list is created by putting \test commands in the documentation.
-# The default value is: YES.
-
-GENERATE_TESTLIST      = YES
-
 # The GENERATE_BUGLIST tag can be used to enable (YES) or disable (NO) the bug
 # list. This list is created by putting \bug commands in the documentation.
 # The default value is: YES.
