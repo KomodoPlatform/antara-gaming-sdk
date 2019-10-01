@@ -31,7 +31,7 @@ add_library(antara::sfml_extras ALIAS antara_sfml_extras)
 if (USE_LUA_ANTARA_WRAPPER)
     add_library(antara_sfml_lua STATIC)
     target_sources(antara_sfml_lua PRIVATE antara/gaming/sfml/lua.system.cpp)
-    target_link_libraries(antara_sfml_lua PUBLIC antara::lua antara::sfml_shared_resources)
+    target_link_libraries(antara_sfml_lua PUBLIC antara::lua antara::sfml_shared_resources antara::sfml_audio antara::sfml_graphic)
     add_library(antara::sfml_lua ALIAS antara_sfml_lua)
 endif()
 
