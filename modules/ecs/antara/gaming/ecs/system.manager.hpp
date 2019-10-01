@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <queue>
 #include <exception>
 #include <memory>
 #include <system_error>
@@ -52,6 +53,8 @@ namespace antara::gaming::ecs
 
         //! Callback
         void receive_add_base_system(const ecs::event::add_base_system& evt) noexcept;
+
+        void start() noexcept;
 
         /**
          * \return number of systems which are successfully updated
@@ -216,6 +219,8 @@ namespace antara::gaming::ecs
         [[maybe_unused]] entt::dispatcher &dispatcher_;
         system_registry systems_{{}};
         bool need_to_sweep_systems_{false};
+        std::queue<system_ptr> systems_to_add_;
+        bool game_is_running{false};
     };
 }
 

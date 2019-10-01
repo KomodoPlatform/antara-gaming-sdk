@@ -14,25 +14,30 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/sfml/lua.system.hpp"
+#include "antara/gaming/sfml/component.drawable.hpp"
 
 namespace antara::gaming::sfml
 {
-    class input_system final : public ecs::pre_update_system<input_system>
+    void lua_system::update() noexcept
     {
-    public:
-        //! Constructors
-        input_system(entt::registry &registry, entt::dispatcher &dispatcher, sf::RenderWindow &window) noexcept;
 
-        void update() noexcept final;
+    }
 
-    private:
-        sf::RenderWindow &window_;
-    };
+    lua_system::lua_system(entt::registry &registry, entt::dispatcher &dispatcher,
+                           std::shared_ptr<sol::state> state) noexcept : system(registry, dispatcher), state_(state)
+    {
+        this->disable();
+        auto text_functor = [this](const char* text, const char *font_id, unsigned int size = 30) {
+            auto entity = this->entity_registry_.create();
+            auto handle = this->resource_mgr_.load_font(font_id);
+            this->entity_registry_.assign<sfml::text>(entity, sf::Text(text, handle.get(), size));
+            return entity;
+        };
+
+        auto overload_set = sol::overload(text_functor, [&text_functor](const char* text, const char *font_id) {
+            return text_functor(text, font_id);
+        });
+        (*this->state_)["antara"]["create_text_entity"] = overload_set;
+    }
 }
-
-REFL_AUTO(type(antara::gaming::sfml::input_system));

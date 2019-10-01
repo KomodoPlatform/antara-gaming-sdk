@@ -58,6 +58,7 @@ namespace antara::gaming::world
         }
         this->dispatcher_.trigger<event::start_game>();
         this->is_running_ = true;
+        this->system_manager_.start();
         //LCOV_EXCL_START
 #if defined(__EMSCRIPTEN__) && defined(EMSCRIPTEN_ONLY_WEB)
         emscripten_set_main_loop_arg(emscripten_antara_loop, this, 0, 1);

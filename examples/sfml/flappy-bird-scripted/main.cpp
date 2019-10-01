@@ -14,25 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "world.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/system.hpp"
-
-namespace antara::gaming::sfml
+int main()
 {
-    class input_system final : public ecs::pre_update_system<input_system>
-    {
-    public:
-        //! Constructors
-        input_system(entt::registry &registry, entt::dispatcher &dispatcher, sf::RenderWindow &window) noexcept;
-
-        void update() noexcept final;
-
-    private:
-        sf::RenderWindow &window_;
-    };
+    flappy_world game_app;
+    return game_app.run();
 }
-
-REFL_AUTO(type(antara::gaming::sfml::input_system));

@@ -65,8 +65,10 @@ namespace antara::gaming::ecs::tests
         entt::dispatcher dispatcher;
         system_manager manager{registry, dispatcher};
         const system_manager &c_mgr = manager;
+
         TEST_CASE ("add system")
         {
+            manager.start();
             CHECK_EQ(manager.nb_systems(), 0u);
             manager.create_system<logic_concrete_system>();
             CHECK(manager.has_system<logic_concrete_system>());
@@ -79,6 +81,7 @@ namespace antara::gaming::ecs::tests
             //! evt
             ecs::event::add_base_system evt(std::make_unique<pre_concrete_system>(registry, dispatcher));
             manager.receive_add_base_system(evt);
+            manager.update();
             CHECK_EQ(manager.nb_systems(), 2u);
             CHECK(manager.mark_system<pre_concrete_system>());
             manager.update();

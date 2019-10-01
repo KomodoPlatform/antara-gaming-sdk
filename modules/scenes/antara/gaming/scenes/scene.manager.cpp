@@ -103,4 +103,14 @@ namespace antara::gaming::scenes
         change_scene(std::move(const_cast<event::change_scene&>(evt).scene_ptr), evt.just_push_scene);
     }
 
+    manager::~manager() noexcept
+    {
+        this->dispatcher_.sink<event::key_pressed>().disconnect<&manager::receive_key_pressed>(*this);
+        this->dispatcher_.sink<event::key_released>().disconnect<&manager::receive_key_released>(*this);
+        this->dispatcher_.sink<event::mouse_moved>().disconnect<&manager::receive_mouse_moved>(*this);
+        this->dispatcher_.sink<event::mouse_button_pressed>().disconnect<&manager::receive_mouse_button_pressed>(*this);
+        this->dispatcher_.sink<event::mouse_button_released>().disconnect<&manager::receive_mouse_button_released>(*this);
+        this->dispatcher_.sink<event::change_scene>().disconnect<&manager::receive_change_scene>(*this);
+    }
+
 }

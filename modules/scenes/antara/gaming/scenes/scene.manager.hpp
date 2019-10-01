@@ -32,7 +32,7 @@ namespace antara::gaming::scenes
         manager(entt::registry &entity_registry, entt::dispatcher &dispatcher) noexcept;
 
         //! Destructor
-        ~manager() noexcept final = default;
+        ~manager() noexcept final;
 
         //! Public callbacks
         void receive_key_pressed(const event::key_pressed &evt) noexcept;
