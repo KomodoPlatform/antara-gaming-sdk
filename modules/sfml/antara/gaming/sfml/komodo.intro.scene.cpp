@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <SFML/Graphics.hpp>
 #include <utility>
 #include <entt/entity/helper.hpp>
 #include <entt/entity/registry.hpp>
@@ -76,6 +77,43 @@ namespace antara::gaming::sfml
         load_sound("intro2");
         load_foreground();
         load_background();
+
+        // This screen size might be different than window size, using sf::RenderTexture etc. so do not modify
+        auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
+        auto screen_size =  sf::Vector2f(window_info.width, window_info.height);
+
+        auto window_center = sf::Vector2f(screen_size.x * 0.5f, screen_size.y * 0.5f);
+
+        // Initialize assets
+        // Sounds
+        auto &intro1 = get_sound("intro1");
+        auto &intro2 = get_sound("intro2");
+        intro2.setVolume(15.0f);
+
+        // Textures
+        const float logo_final_scale = 0.5f;
+        const sf::Vector2f logo_target_position = sf::Vector2f(window_center.x, screen_size.y * 0.4f);
+        auto &logo = get_sprite("logo");
+        logo.setScale(10.0f, 10.0f);
+        logo.setPosition(window_center.x, screen_size.y * 0.8f);
+        logo.setColor(sf::Color(255, 255, 255, 0));
+
+        const float logo_default_angle = 45.0f;
+        const float logo_start_angle = 180.0f - logo_default_angle;
+        logo.setRotation(logo_start_angle);
+
+        auto &name = get_sprite("name");
+        name.setScale(0.6f, 0.6f);
+        const float name_target_position = logo_target_position.y + logo.getTexture()->getSize().y * logo_final_scale * 0.75f;
+        name.setPosition(window_center.x, screen_size.y);
+        name.setColor(sf::Color(255, 255, 255, 0));
+
+        // Black foreground
+        auto &foreground = get_rectangle("foreground");
+        foreground.setFillColor(sf::Color(0, 0, 0, 0));
+        foreground.setSize(sf::Vector2f(screen_size.x, screen_size.y));
+
+        auto &background = get_vertex_array("background");
     }
 
     sf::Sound& intro_scene::get_sound(const std::string &name) {
