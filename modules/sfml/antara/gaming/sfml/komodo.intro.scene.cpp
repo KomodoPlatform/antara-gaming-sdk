@@ -15,7 +15,14 @@
  ******************************************************************************/
 
 #include <utility>
+#include <entt/entity/helper.hpp>
+#include <entt/entity/registry.hpp>
+#include <entt/signal/dispatcher.hpp>
+#include "antara/gaming/config/config.game.hpp"
+#include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
+#include "component.drawable.hpp"
+#include "component.audio.hpp"
 
 namespace antara::gaming::sfml
 {
@@ -25,7 +32,42 @@ namespace antara::gaming::sfml
                                                                                           on_finish_functor_(std::move(
                                                                                                   on_finish_functor))
     {
+        // Load assets
+        load_sprite("logo");
+        load_sprite("name");
+        load_sound("intro1");
+        load_sound("intro2");
+    }
 
+
+    void intro_scene::load_sprite(const std::string &name) {
+        auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
+        texture.get().setSmooth(true);
+
+        auto entity = entity_registry_.create();
+
+        auto &sprite_cmp = entity_registry_.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture));
+        sf::Sprite &sprite = sprite_cmp.drawable;
+        sprite.setOrigin(
+          sprite.getLocalBounds().width * 0.5f,
+          sprite.getLocalBounds().height * 0.5f
+        );
+
+        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(entity);
+    }
+
+    void intro_scene::load_sound(const std::string &name) {
+        auto sound_buffer = resource_mgr.load_sound(std::string(name + ".wav").c_str());
+
+        auto entity = entity_registry_.create();
+
+        auto &sound_cmp = entity_registry_.assign<component_sound>(entity);
+
+        sound_cmp.sound.setBuffer(*sound_buffer);
+
+        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(entity);
     }
 
     void intro_scene::update() noexcept

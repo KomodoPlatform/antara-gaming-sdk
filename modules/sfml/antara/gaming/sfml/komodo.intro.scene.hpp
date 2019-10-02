@@ -19,6 +19,7 @@
 #include <functional>
 #include <entt/signal/dispatcher.hpp>
 #include "antara/gaming/scenes/base.scene.hpp"
+#include "antara/gaming/sfml/resources.manager.hpp"
 
 
 namespace antara::gaming::sfml
@@ -38,7 +39,14 @@ namespace antara::gaming::sfml
         ~intro_scene() noexcept final = default;
 
     private:
+        float global_time{0};
+
+        void load_sprite(const std::string &name);
+        void load_sound(const std::string &name);
+
         on_finish_functor on_finish_functor_;
         bool intro_finished{false};
+
+        antara::gaming::sfml::resources_manager resource_mgr;
     };
 }
