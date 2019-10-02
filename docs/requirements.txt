@@ -1,0 +1,2 @@
+breathe
+sphinx>=2.0

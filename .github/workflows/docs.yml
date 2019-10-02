@@ -1,0 +1,32 @@
+name: Docs
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: install dependencies
+        run: |
+          sudo apt-get install python3-setuptools
+          sudo apt-get install -y doxygen
+          cd docs && sudo pip3 install -r requirements.txt
+          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.tar.gz -o cmake.tar.gz
+          sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y clang-8 libstdc++-8-dev gcc-8 g++-8 libc++-8-dev libc++abi-8-dev
+          echo "::set-env name=CC::clang-8"
+          echo "::set-env name=CXX::clang++-8"
+      - name: generate cmake
+        run: |
+          mkdir build && cd build
+          cmake -DANTARA_BUILD_DOCS=ON ../
+      - name: build docs
+        run: |
+          cd build
+          make Sphinx
