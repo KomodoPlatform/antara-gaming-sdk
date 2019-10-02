@@ -1,3 +1,10 @@
+.. image:: assets/kmd_logo.png
+    :height: 237px
+    :width: 236px
+    :alt: antara-gaming-sdk repository
+    :align: center
+    :target: https://github.com/KomodoPlatform/antara-gaming-sdk
+
 Welcome to antara-gaming-sdk documentation !
 ============================================
 
