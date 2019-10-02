@@ -116,7 +116,7 @@ namespace antara::gaming::config
      *
      *  Example:
      *  @code{.cpp}
-     *   auto cfg = utils::load_configuration<client::config>(std::filesystem::current_path() / "assets/config", "my_game.config.json");
+     *   auto cfg = config::load_configuration<my_game::config>(std::filesystem::current_path() / "assets/config", "my_game.config.json");
      *  @endcode
      */
     template<typename TConfig>

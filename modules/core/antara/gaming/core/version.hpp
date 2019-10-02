@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright © 2013-2019 The Komodo Platform Developers.                      *
+ * Copyright ï¿½ 2013-2019 The Komodo Platform Developers.                      *
  *                                                                            *
  * See the AUTHORS, DEVELOPER-AGREEMENT and LICENSE files at                  *
  * the top-level directory of this distribution for the individual copyright  *
@@ -18,6 +18,30 @@
 
 namespace antara::gaming
 {
+    /**
+     * @fn constexpr const char *version() noexcept
+     * @brief Function that allows us to find the current version of the SDK
+     * @return the current version of the SDK as a `const char *`
+     *
+     *
+     *
+     * Example:
+     * ```cpp
+     *          #include <iostream>
+     *          #include <antara/gaming/core/version.hpp>
+     *
+     *          void print_version() {
+     *              std::cout << antara::gaming::version() << std::endl;
+     *          }
+     * ```
+     *
+     *
+       \verbatim embed:rst
+        .. note::
+
+           The result of this function can be deduced at compile-time.
+       \endverbatim
+    */
     constexpr const char *version() noexcept
     {
         return "0.0.1";
