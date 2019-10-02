@@ -45,6 +45,13 @@ FetchContent_Declare(
         URL https://github.com/veselink1/refl-cpp/archive/v0.5.2.zip
 )
 
+if (USE_BOX2D_ANTARA_WRAPPER)
+    FetchContent_Declare(
+            box2d
+            URL https://github.com/erincatto/Box2D/archive/master.zip
+    )
+endif()
+
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_Declare(
             lua
@@ -68,6 +75,17 @@ FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
+
+if (USE_BOX2D_ANTARA_WRAPPER)
+    FetchContent_MakeAvailable(box2d)
+    add_library(Box2D STATIC)
+    file(GLOB_RECURSE BOX2D_SOURCES ${box2d_SOURCE_DIR}/Box2D/*.cpp)
+    message(STATUS "box2d sources: -> ${BOX2D_SOURCES}")
+    target_sources(Box2D PRIVATE ${BOX2D_SOURCES})
+    target_include_directories(Box2D PUBLIC ${box2d_SOURCE_DIR})
+    target_compile_features(Box2D PRIVATE cxx_std_11)
+    add_library(antara::box2d_wrapper ALIAS Box2D)
+endif()
 
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(lua sol2)

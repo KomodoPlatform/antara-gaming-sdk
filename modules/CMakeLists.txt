@@ -11,6 +11,10 @@ if (USE_LUA_ANTARA_WRAPPER)
     add_subdirectory(lua)
 endif()
 
+if (USE_BOX2D_ANTARA_WRAPPER)
+    add_subdirectory(box2d)
+endif()
+
 if (USE_SFML_ANTARA_WRAPPER)
     add_subdirectory(sfml)
 endif()
