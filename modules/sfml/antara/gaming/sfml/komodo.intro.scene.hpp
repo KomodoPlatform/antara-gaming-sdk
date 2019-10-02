@@ -58,6 +58,7 @@ namespace antara::gaming::sfml
         std::vector<animation> actions;
         float global_time{0};
 
+        void load_background();
         void load_sprite(const std::string &name);
         void load_sound(const std::string &name);
 

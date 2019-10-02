@@ -53,8 +53,8 @@ namespace antara::gaming::sfml
         load_sprite("name");
         load_sound("intro1");
         load_sound("intro2");
+        load_background();
     }
-
 
     void intro_scene::load_sprite(const std::string &name) {
         auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
@@ -83,7 +83,23 @@ namespace antara::gaming::sfml
         sound_cmp.sound.setBuffer(*sound_buffer);
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(entity);
+        entity_registry_.assign<ecs::component::layer<0>>(entity);
+    }
+
+    void intro_scene::load_background() {
+        auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
+
+        auto entity = entity_registry_.create();
+        auto &va_cmp = entity_registry_.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
+
+        sf::VertexArray &background = va_cmp.drawable;
+        background.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
+        background.append(sf::Vertex(sf::Vector2f(window_info.width, 0), sf::Color(0, 217, 184)));
+        background.append(sf::Vertex(sf::Vector2f(window_info.width, window_info.height), sf::Color(0, 176, 163)));
+        background.append(sf::Vertex(sf::Vector2f(0, window_info.height), sf::Color(0, 67, 106)));
+
+        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry_.assign<ecs::component::layer<0>>(entity);
     }
 
     void intro_scene::update() noexcept
