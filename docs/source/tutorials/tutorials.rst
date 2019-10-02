@@ -1,4 +1,4 @@
-Tutorials
+Antara Gaming Tutorials
 ============================================
 
 .. toctree::

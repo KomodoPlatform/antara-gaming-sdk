@@ -24,7 +24,7 @@ public:
     example_system(entt::registry& entity_registry, entt::dispatcher& dispatcher) noexcept : system(entity_registry,
                                                                                                   dispatcher)
     {
-        //! Here you can initialize your systems, adding entities etc
+        //! Here you can initialize your system, adding entities etc
     }
 
     void update() noexcept final
@@ -47,7 +47,7 @@ REFL_AUTO(type(example_system));
 class my_world_example : public antara::gaming::world::app
 {
 public:
-    my_world_example()
+    my_world_example() noexcept
     {
         this->system_manager_.create_system<example_system>(); //! Here we load our system to use it.
     }

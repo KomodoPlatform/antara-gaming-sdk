@@ -1,4 +1,4 @@
-antara-gaming-sdk API documentation
+Antara Gaming API documentation
 ======================================
 
 .. toctree::

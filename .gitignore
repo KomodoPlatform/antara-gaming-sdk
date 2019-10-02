@@ -18,6 +18,15 @@ Icon
 # Thumbnails
 ._*
 
+
+# Extras
+examples/sfml/flappy-bird-scripted/assets/scripts/systems/lua/scenes_system.lua
+modules/lua/assets/lua_assets/scripts/systems/scenes_system.lua
+antara-gaming-sdk.srctrlbm
+antara-gaming-sdk.srctrldb
+antara-gaming-sdk.srctrlprj
+
+
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
