@@ -17,6 +17,7 @@
 #pragma once
 
 #include <functional>
+#include <SFML/Audio/Sound.hpp>
 
 namespace antara::gaming::sfml
 {
