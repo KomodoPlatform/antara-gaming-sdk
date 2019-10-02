@@ -27,8 +27,8 @@
 namespace antara::gaming::sfml
 {
     intro_scene::animation::animation(float start_time, std::function<bool(float)> animation) :
-            done(false),
             start_time(start_time),
+            done(false),
             animate(std::move(animation))
     {
 
@@ -107,7 +107,14 @@ namespace antara::gaming::sfml
         if (intro_finished) {
             on_finish_functor_();
         } else {
-            //! update intro here.
+            auto dt = timer::time_step::get_fixed_delta_time();
+            global_time += dt;
+
+            for(auto&& a : actions) {
+                if(global_time > a.start_time && !a.is_done()) {
+                    a.update(dt);
+                }
+            }
         }
     }
 
