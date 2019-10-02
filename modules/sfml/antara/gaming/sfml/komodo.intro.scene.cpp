@@ -26,6 +26,22 @@
 
 namespace antara::gaming::sfml
 {
+    intro_scene::animation::animation(float start_time, std::function<bool(float)> animation) :
+            done(false),
+            start_time(start_time),
+            animate(std::move(animation))
+    {
+
+    }
+
+    void intro_scene::animation::update(float dt) {
+        done = animate(dt);
+    }
+
+    bool intro_scene::animation::is_done() {
+        return done;
+    }
+
     intro_scene::intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher,
                              intro_scene::on_finish_functor on_finish_functor) noexcept : base_scene(entity_registry,
                                                                                                      dispatcher),

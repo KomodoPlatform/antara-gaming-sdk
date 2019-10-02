@@ -22,6 +22,7 @@
 #include "antara/gaming/sfml/resources.manager.hpp"
 
 
+
 namespace antara::gaming::sfml
 {
     class intro_scene final : public antara::gaming::scenes::base_scene
@@ -39,6 +40,22 @@ namespace antara::gaming::sfml
         ~intro_scene() noexcept final = default;
 
     private:
+        struct animation {
+        public:
+            animation() = delete;
+            explicit animation(float start_time, std::function<bool(float)> animation);
+
+            void update(float dt);
+            bool is_done();
+
+            const float start_time;
+
+        private:
+            std::function<bool(float)> animate;
+            bool done;
+        };
+
+        std::vector<animation> actions;
         float global_time{0};
 
         void load_sprite(const std::string &name);
