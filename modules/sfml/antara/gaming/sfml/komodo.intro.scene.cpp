@@ -61,7 +61,7 @@ namespace antara::gaming::sfml
         auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
         texture.get().setSmooth(true);
 
-        auto entity = entity_registry_.create();
+        auto &entity = sprites[name] = entity_registry_.create();
 
         auto &sprite_cmp = entity_registry_.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture));
         sf::Sprite &sprite = sprite_cmp.drawable;
@@ -77,7 +77,7 @@ namespace antara::gaming::sfml
     void intro_scene::load_sound(const std::string &name) {
         auto sound_buffer = resource_mgr.load_sound(std::string(name + ".wav").c_str());
 
-        auto entity = entity_registry_.create();
+        auto &entity = sounds[name] = entity_registry_.create();
 
         auto &sound_cmp = entity_registry_.assign<component_sound>(entity);
 
@@ -90,11 +90,11 @@ namespace antara::gaming::sfml
     void intro_scene::load_foreground() {
         auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
 
-        auto entity = entity_registry_.create();
+        auto &entity = foreground = entity_registry_.create();
         auto &rectangle_cmp = entity_registry_.assign<rectangle>(entity, sf::RectangleShape(sf::Vector2f(window_info.width, window_info.height)));
 
-        auto &foreground = rectangle_cmp.drawable;
-        foreground.setFillColor(sf::Color(0, 0, 0, 0));
+        auto &rect = rectangle_cmp.drawable;
+        rect.setFillColor(sf::Color(0, 0, 0, 0));
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry_.assign<ecs::component::layer<0>>(entity);
@@ -103,14 +103,14 @@ namespace antara::gaming::sfml
     void intro_scene::load_background() {
         auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
 
-        auto entity = entity_registry_.create();
+        auto &entity = background = entity_registry_.create();
         auto &va_cmp = entity_registry_.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
 
-        sf::VertexArray &background = va_cmp.drawable;
-        background.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
-        background.append(sf::Vertex(sf::Vector2f(window_info.width, 0), sf::Color(0, 217, 184)));
-        background.append(sf::Vertex(sf::Vector2f(window_info.width, window_info.height), sf::Color(0, 176, 163)));
-        background.append(sf::Vertex(sf::Vector2f(0, window_info.height), sf::Color(0, 67, 106)));
+        sf::VertexArray &va = va_cmp.drawable;
+        va.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.width, 0), sf::Color(0, 217, 184)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.width, window_info.height), sf::Color(0, 176, 163)));
+        va.append(sf::Vertex(sf::Vector2f(0, window_info.height), sf::Color(0, 67, 106)));
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry_.assign<ecs::component::layer<0>>(entity);

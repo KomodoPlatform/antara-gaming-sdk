@@ -63,6 +63,11 @@ namespace antara::gaming::sfml
         void load_sprite(const std::string &name);
         void load_sound(const std::string &name);
 
+        std::unordered_map<std::string, entt::entity> sprites;
+        std::unordered_map<std::string, entt::entity> sounds;
+        entt::entity background;
+        entt::entity foreground;
+
         on_finish_functor on_finish_functor_;
         bool intro_finished{false};
 
