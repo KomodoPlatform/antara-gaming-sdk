@@ -27,9 +27,9 @@
 namespace antara::gaming::sfml
 {
     intro_scene::animation::animation(float start_time, std::function<bool(float)> animation) :
-            start_time(start_time),
-            done(false),
-            animate(std::move(animation))
+        start_time(start_time),
+        animate(std::move(animation)),
+        done(false)
     {
 
     }
