@@ -62,12 +62,17 @@ namespace antara::gaming::sfml
         void load_background();
         void load_sprite(const std::string &name);
         void load_sound(const std::string &name);
+
         sf::Sound& get_sound(const std::string &name);
         sf::Sprite& get_sprite(const std::string &name);
+        sf::VertexArray& get_vertex_array(const std::string &name);
+        sf::RectangleShape& get_rectangle(const std::string &name);
 
 
         std::unordered_map<std::string, entt::entity> sprites;
         std::unordered_map<std::string, entt::entity> sounds;
+        std::unordered_map<std::string, entt::entity> vertex_arrays;
+        std::unordered_map<std::string, entt::entity> rectangles;
         entt::entity background;
         entt::entity foreground;
 

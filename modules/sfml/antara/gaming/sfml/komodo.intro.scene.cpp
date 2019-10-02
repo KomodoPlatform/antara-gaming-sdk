@@ -57,14 +57,20 @@ namespace antara::gaming::sfml
         load_background();
     }
 
-
-
     sf::Sound& intro_scene::get_sound(const std::string &name) {
         return entity_registry_.get<component_sound>(sounds[name]).sound;
     }
 
     sf::Sprite& intro_scene::get_sprite(const std::string &name) {
         return entity_registry_.get<sprite>(sprites[name]).drawable;
+    }
+
+    sf::VertexArray& intro_scene::get_vertex_array(const std::string &name) {
+        return entity_registry_.get<vertex_array>(vertex_arrays[name]).drawable;
+    }
+
+    sf::RectangleShape& intro_scene::get_rectangle(const std::string &name) {
+        return entity_registry_.get<rectangle>(rectangles[name]).drawable;
     }
 
     void intro_scene::load_sprite(const std::string &name) {
@@ -100,7 +106,7 @@ namespace antara::gaming::sfml
     void intro_scene::load_foreground() {
         auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
 
-        auto &entity = foreground = entity_registry_.create();
+        auto &entity = rectangles["foreground"] = entity_registry_.create();
         auto &rectangle_cmp = entity_registry_.assign<rectangle>(entity, sf::RectangleShape(sf::Vector2f(window_info.width, window_info.height)));
 
         auto &rect = rectangle_cmp.drawable;
@@ -113,7 +119,7 @@ namespace antara::gaming::sfml
     void intro_scene::load_background() {
         auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
 
-        auto &entity = background = entity_registry_.create();
+        auto &entity = vertex_arrays["background"] = entity_registry_.create();
         auto &va_cmp = entity_registry_.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
 
         sf::VertexArray &va = va_cmp.drawable;
