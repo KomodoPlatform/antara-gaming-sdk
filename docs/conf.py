@@ -36,7 +36,8 @@ source_suffix = ['.rst', '.md']
 html_theme = 'haiku'
 
 extensions = [
-    "breathe"
+    "breathe",
+    "sphinxemoji.sphinxemoji"
 ]
 
 # Breathe Configuration

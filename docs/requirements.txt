@@ -1,3 +1,4 @@
 breathe
 sphinx>=2.0
 m2r
+sphinxemoji
