@@ -57,6 +57,16 @@ namespace antara::gaming::sfml
         load_background();
     }
 
+
+
+    sf::Sound& intro_scene::get_sound(const std::string &name) {
+        return entity_registry_.get<component_sound>(sounds[name]).sound;
+    }
+
+    sf::Sprite& intro_scene::get_sprite(const std::string &name) {
+        return entity_registry_.get<sprite>(sprites[name]).drawable;
+    }
+
     void intro_scene::load_sprite(const std::string &name) {
         auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
         texture.get().setSmooth(true);

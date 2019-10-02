@@ -62,6 +62,9 @@ namespace antara::gaming::sfml
         void load_background();
         void load_sprite(const std::string &name);
         void load_sound(const std::string &name);
+        sf::Sound& get_sound(const std::string &name);
+        sf::Sprite& get_sprite(const std::string &name);
+
 
         std::unordered_map<std::string, entt::entity> sprites;
         std::unordered_map<std::string, entt::entity> sounds;
