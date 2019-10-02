@@ -26,6 +26,27 @@
 
 namespace antara::gaming::sfml
 {
+    // Utility
+    static const float DEG2RAD = 0.0174533f;
+
+    static bool ease(float* val, const float targetVal, const float rate, const float dt) {
+        if(*val == targetVal) return true;
+
+        if(std::abs(*val - targetVal) < 0.0001f){
+            *val = targetVal;
+            return true;
+        }
+
+        float amount = (targetVal - *val) * rate * dt;
+        if((*val < targetVal && *val + amount > targetVal) ||
+           (*val > targetVal && *val + amount < targetVal)) *val = targetVal;
+        else *val += amount;
+
+        return false;
+    }
+
+    ////
+
     intro_scene::animation::animation(float start_time, std::function<bool(float)> animation) :
         start_time(start_time),
         animate(std::move(animation)),
