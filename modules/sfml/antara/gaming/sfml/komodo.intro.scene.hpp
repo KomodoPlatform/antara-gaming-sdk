@@ -73,8 +73,6 @@ namespace antara::gaming::sfml
         std::unordered_map<std::string, entt::entity> sounds;
         std::unordered_map<std::string, entt::entity> vertex_arrays;
         std::unordered_map<std::string, entt::entity> rectangles;
-        entt::entity background;
-        entt::entity foreground;
 
         on_finish_functor on_finish_functor_;
         bool intro_finished{false};
