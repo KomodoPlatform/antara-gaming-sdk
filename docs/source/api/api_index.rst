@@ -6,4 +6,5 @@ antara-gaming-sdk API documentation
    :name: apitoc
    :maxdepth: 2
 
+   config
    core
