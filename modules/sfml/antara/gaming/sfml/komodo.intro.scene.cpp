@@ -53,6 +53,7 @@ namespace antara::gaming::sfml
         load_sprite("name");
         load_sound("intro1");
         load_sound("intro2");
+        load_foreground();
         load_background();
     }
 
@@ -81,6 +82,19 @@ namespace antara::gaming::sfml
         auto &sound_cmp = entity_registry_.assign<component_sound>(entity);
 
         sound_cmp.sound.setBuffer(*sound_buffer);
+
+        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry_.assign<ecs::component::layer<0>>(entity);
+    }
+
+    void intro_scene::load_foreground() {
+        auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
+
+        auto entity = entity_registry_.create();
+        auto &rectangle_cmp = entity_registry_.assign<rectangle>(entity, sf::RectangleShape(sf::Vector2f(window_info.width, window_info.height)));
+
+        auto &foreground = rectangle_cmp.drawable;
+        foreground.setFillColor(sf::Color(0, 0, 0, 0));
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry_.assign<ecs::component::layer<0>>(entity);
