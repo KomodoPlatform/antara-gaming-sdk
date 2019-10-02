@@ -5,6 +5,7 @@ Welcome to antara-gaming-sdk documentation !
    :name: index
 
    source/api/api_index
+   source/tutorials/tutorials
 
 
 Indices and tables
