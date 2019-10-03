@@ -25,29 +25,27 @@
 #include "component.drawable.hpp"
 #include "component.audio.hpp"
 
-namespace antara::gaming::sfml
-{
-    // Utility
-    static const float DEG2RAD = 0.0174533f;
+// Utility
+static const float DEG2RAD = 0.0174533f;
 
-    static bool ease(float* val, const float targetVal, const float rate, const float dt) {
-        if(*val == targetVal) return true;
+static bool ease(float* val, const float targetVal, const float rate, const float dt) {
+    if(*val == targetVal) return true;
 
-        if(std::abs(*val - targetVal) < 0.0001f){
-            *val = targetVal;
-            return true;
-        }
-
-        float amount = (targetVal - *val) * rate * dt;
-        if((*val < targetVal && *val + amount > targetVal) ||
-           (*val > targetVal && *val + amount < targetVal)) *val = targetVal;
-        else *val += amount;
-
-        return false;
+    if(std::abs(*val - targetVal) < 0.0001f){
+        *val = targetVal;
+        return true;
     }
 
-    ////
+    float amount = (targetVal - *val) * rate * dt;
+    if((*val < targetVal && *val + amount > targetVal) ||
+       (*val > targetVal && *val + amount < targetVal)) *val = targetVal;
+    else *val += amount;
 
+    return false;
+}
+
+namespace antara::gaming::sfml
+{
     intro_scene::animation::animation(float start_time, std::function<bool(float)> animation) :
         start_time(start_time),
         animate(std::move(animation)),
@@ -114,6 +112,154 @@ namespace antara::gaming::sfml
         foreground.setSize(sf::Vector2f(screen_size.x, screen_size.y));
 
         auto &background = get_vertex_array("background");
+
+        // Define animations
+        // Shrink Logo
+        actions.emplace_back(0.0f, [&](float dt) {
+            static const auto sin_base = 90.0f * DEG2RAD;
+            static const auto speed = 2.0f;
+            static const auto friction = 0.025f;
+            static const auto base_scale = logo_final_scale;
+            static auto size = 5.0f;
+            static auto total_time = 0.0f;
+
+            // Up and down animation
+            total_time += dt;
+
+            // Slow down
+            size *= powf(friction, dt);
+
+            // Final scale
+            const float scale = base_scale + size * sin(sin_base + speed * total_time);
+
+            // Set the scale
+            logo.setScale(scale, scale);
+
+            // Complete if size is near zero
+            return size < 0.0001f;
+        });
+
+        // Rotate Logo
+        actions.emplace_back(0.0f, [&](float dt) {
+            static const auto sin_base = 90.0f * DEG2RAD;
+            static const auto speed = 2.25f;
+            static const auto friction = 0.15f;
+            static const auto base_angle = 0.0f;
+            static auto size = logo_start_angle;
+            static auto total_time = 0.0f;
+
+            // Up and down animation
+            total_time += dt;
+
+            // Slow down
+            size *= powf(friction, dt);
+
+            // Final rotation
+            const float rotation = base_angle + size * sin(sin_base + speed * total_time);
+
+            // Set the rotation
+            logo.setRotation(rotation);
+
+            // Complete if size is near zero
+            return size < 0.0001f;
+        });
+
+        // Move Logo
+        actions.emplace_back(0.0f, [&, logo_target_position](float dt) {
+            auto& sprite = logo;
+
+            static auto pos = sprite.getPosition();
+
+            // Change pos_y
+            bool done = ease(&pos.y, logo_target_position.y, 1.5f, dt);
+
+            // Set pos_y
+            sprite.setPosition(pos);
+
+            return done;
+        });
+
+        // Move Name
+        actions.emplace_back(1.0f, [&, name_target_position](float dt) {
+            auto& sprite = name;
+
+            static auto pos = sprite.getPosition();
+
+            // Change pos_y
+            bool done = ease(&pos.y, name_target_position, 2.0f, dt);
+
+            // Set pos_y
+            sprite.setPosition(pos);
+
+            return done;
+        });
+
+        // Fade in Transparency
+        auto transparency_func = [&](float dt, float& size, float& total_time,  sf::Sprite& sprite) {
+            static const auto sin_base = 270.0f * DEG2RAD;
+            static const auto speed = 2.25f;
+            static const auto friction = 0.1f;
+            static const auto base_angle = 240.0f;
+
+            // Up and down animation
+            total_time += dt;
+
+            // Slow down
+            size *= powf(friction, dt);
+
+            // Final transparency
+            const float transparency = base_angle + size * sin(sin_base + speed * total_time);
+
+            // Set the transparency
+            sprite.setColor(sf::Color(255, 255, 255, transparency));
+
+            // Complete if size is near zero
+            return size < 0.0001f;
+        };
+
+        // Fade in logo
+        actions.emplace_back(0.0f, [&](float dt) {
+            static auto size = 240.0f;
+            static auto total_time = 0.0f;
+            return transparency_func(dt, size, total_time, logo);
+        });
+
+        // Fade in name
+        actions.emplace_back(1.5f, [&](float dt) {
+            static auto size = 240.0f;
+            static auto total_time = 0.0f;
+            return transparency_func(dt, size, total_time, name);
+        });
+
+        // Black out foreground transparency
+        actions.emplace_back(3.25f, [&](float dt) {
+            static float transparency = foreground.getFillColor().a;
+
+            // Increase transparency
+            bool done = ease(&transparency, 255.0f, 15.0f, dt);
+
+            // Set transparency
+            auto color = foreground.getFillColor();
+            color.a = transparency;
+            foreground.setFillColor(color);
+
+            return done;
+        });
+        // This is the final animation which completes the intro
+        final_animation = &actions.back();
+
+
+        // Sound effects
+        actions.emplace_back(0.0f, [&](float dt) {
+            // TODO: sf::Sound::play() crashes here, might be about &
+            //intro1.play();
+            return true;
+        });
+
+        actions.emplace_back(1.15f, [&](float dt) {
+            //intro2.play();
+            return true;
+        });
     }
 
     sf::Sound& intro_scene::get_sound(const std::string &name) {
@@ -203,6 +349,11 @@ namespace antara::gaming::sfml
                 if(global_time > a.start_time && !a.is_done()) {
                     a.update(dt);
                 }
+            }
+
+            // TODO: Fix this, does not work properly somehow
+            if(final_animation->is_done()) {
+                intro_finished = true;
             }
         }
     }
