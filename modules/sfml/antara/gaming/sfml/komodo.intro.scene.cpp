@@ -291,7 +291,7 @@ namespace antara::gaming::sfml
         );
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(entity);
+        entity_registry_.assign<antara::gaming::ecs::component::layer<1>>(entity);
     }
 
     void intro_scene::load_foreground() {
@@ -304,7 +304,7 @@ namespace antara::gaming::sfml
         rect.setFillColor(sf::Color(0, 0, 0, 0));
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<ecs::component::layer<0>>(entity);
+        entity_registry_.assign<ecs::component::layer<2>>(entity);
     }
 
     void intro_scene::load_background() {
