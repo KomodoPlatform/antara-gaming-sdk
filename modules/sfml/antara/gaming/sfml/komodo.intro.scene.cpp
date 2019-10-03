@@ -87,7 +87,7 @@ namespace antara::gaming::sfml
         // Sounds
         auto &intro1 = get_sound("intro1");
         auto &intro2 = get_sound("intro2");
-        intro2.setVolume(15.0f);
+        intro2.sound.setVolume(15.0f);
 
         // Textures
         const float logo_final_scale = 0.5f;
@@ -258,18 +258,18 @@ namespace antara::gaming::sfml
         // Sound effects
         actions.emplace_back(0.0f, [&](float dt) {
             // TODO: sf::Sound::play() crashes here, might be about &
-            //intro1.play();
+            intro1.sound.play();
             return true;
         });
 
         actions.emplace_back(1.15f, [&](float dt) {
-            //intro2.play();
+            intro2.sound.play();
             return true;
         });
     }
 
-    sf::Sound& intro_scene::get_sound(const std::string &name) {
-        return entity_registry_.get<component_sound>(sounds[name]).sound;
+    component_sound& intro_scene::get_sound(const std::string &name) {
+        return entity_registry_.get<component_sound>(sounds[name]);
     }
 
     sf::Sprite& intro_scene::get_sprite(const std::string &name) {
