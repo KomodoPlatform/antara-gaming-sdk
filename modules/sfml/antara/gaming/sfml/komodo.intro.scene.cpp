@@ -179,7 +179,7 @@ namespace antara::gaming::sfml
 
             // Set pos_y
 //            sprite.setPosition(pos);
-            entity_registry_.assign<ecs::component::position>(sprites["logo"], pos.x, pos.y);
+            entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], pos.x, pos.y);
 
             return done;
         });
@@ -195,7 +195,7 @@ namespace antara::gaming::sfml
 
             // Set pos_y
 //            sprite.setPosition(pos);
-            entity_registry_.assign<ecs::component::position>(sprites["name"], pos.x, pos.y);
+            entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], pos.x, pos.y);
 
             return done;
         });
@@ -288,7 +288,8 @@ namespace antara::gaming::sfml
         auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
         texture.get().setSmooth(true);
 
-        auto &entity = sprites[name] = entity_registry_.create();
+        auto entity =  entity_registry_.create();
+        sprites[name] = entity;
 
         auto &sprite_cmp = entity_registry_.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture));
         sf::Sprite &sprite = sprite_cmp.drawable;
