@@ -90,8 +90,7 @@ namespace antara::gaming::sfml
         const sf::Vector2f logo_target_position = sf::Vector2f(window_center.x, screen_size.y * 0.4f);
         auto &logo = get_sprite("logo");
         logo.setScale(10.0f, 10.0f);
-//        logo.setPosition(window_center.x, screen_size.y * 0.8f);
-        entity_registry_.assign<ecs::component::position>(sprites["logo"], window_center.x, screen_size.y * 0.8f);
+        entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], window_center.x, screen_size.y * 0.8f);
         logo.setColor(sf::Color(255, 255, 255, 0));
 
         const float logo_default_angle = 45.0f;
@@ -101,8 +100,7 @@ namespace antara::gaming::sfml
         auto &name = get_sprite("name");
         name.setScale(0.6f, 0.6f);
         const float name_target_position = logo_target_position.y + logo.getTexture()->getSize().y * logo_final_scale * 0.75f;
-//        name.setPosition(window_center.x, screen_size.y);
-        entity_registry_.assign<ecs::component::position>(sprites["name"], window_center.x, screen_size.y);
+        entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], window_center.x, screen_size.y);
 
         name.setColor(sf::Color(255, 255, 255, 0));
 
@@ -174,7 +172,6 @@ namespace antara::gaming::sfml
             bool done = ease(&pos.y, logo_target_position.y, 1.5f, dt);
 
             // Set pos_y
-//            sprite.setPosition(pos);
             entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], pos.x, pos.y);
 
             return done;
@@ -190,7 +187,6 @@ namespace antara::gaming::sfml
             bool done = ease(&pos.y, name_target_position, 2.0f, dt);
 
             // Set pos_y
-//            sprite.setPosition(pos);
             entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], pos.x, pos.y);
 
             return done;
