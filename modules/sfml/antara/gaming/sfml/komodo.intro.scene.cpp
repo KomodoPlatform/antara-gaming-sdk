@@ -254,8 +254,8 @@ namespace antara::gaming::sfml
         });
 
         actions.emplace_back(1.15f, [&](float dt) {
-            /*this->dispatcher_.trigger<antara::gaming::sfml::play_sound_event>("intro2.wav",
-                                                                              &resource_mgr, [](){}, 15.0f);*/
+            this->dispatcher_.trigger<antara::gaming::sfml::play_sound_event>("intro2.wav",
+                                                                              &resource_mgr, [](){}, 15.0f);
             return true;
         });
     }
