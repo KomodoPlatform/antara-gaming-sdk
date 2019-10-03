@@ -20,7 +20,6 @@
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <antara/gaming/ecs/component.position.hpp>
-#include <iostream>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
