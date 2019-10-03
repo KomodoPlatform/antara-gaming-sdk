@@ -54,3 +54,7 @@ Tutorial Related to Systems
 
 :doc:`Click here to access systems tutorials<../tutorials/ecs>`
 
+API antara::ecs
+-------------------------
+
+:doc:`Click here to access antara::ecs API<../api/ecs>`

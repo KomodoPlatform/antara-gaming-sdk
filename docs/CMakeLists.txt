@@ -63,6 +63,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/api_index.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/core.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/config.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/api/ecs.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/core.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/config.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/modules.rst

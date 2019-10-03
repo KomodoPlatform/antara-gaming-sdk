@@ -34,35 +34,86 @@
 
 namespace antara::gaming::ecs
 {
+    /**
+     * @class system_manager
+     * @brief This class allows the manipulation of systems, the addition, deletion, update of systems, deactivation of a system, etc.
+     */
     class system_manager
     {
     public:
-        //! Public typedefs
+        /// @brief sugar name for a pointer to base_system
         using system_ptr = std::unique_ptr<base_system>;
+
+        /// @brief sugar name for an array of system_ptr
         using system_array = std::vector<system_ptr>;
+
+        /// @brief sugar name for a multidimensional array of system_array (pre_update, logic_update, post_update)
         using system_registry = std::array<system_array, system_type::size>;
 
         //! Constructors
 
         /**
-         * \note Basic constructor
-         * \param dispatcher The dispatcher is provided to the system when it is created.
-         * \param registry The entity_registry is provided to the system when it is created.
+         * @verbatim embed:rst
+                .. note::
+                   Principal Constructor.
+           @endverbatim
+         * @param dispatcher The dispatcher is provided to the system when it is created.
+         * @param registry The entity_registry is provided to the system when it is created.
+         * @param subscribe_to_internal_events Choose whether to subscribe to default system_manager events
+         *
+         * Example:
+         * ```cpp
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager mgr{entity_registry, dispatcher};
+         *          }
+         * ```
          */
         explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher, bool subscribe_to_internal_events = true) noexcept;
 
         //! Callback
+
+        /**
+         * @fn void receive_add_base_system(const ecs::event::add_base_system& evt)
+         * @param evt The event that contains the system to add
+         */
         void receive_add_base_system(const ecs::event::add_base_system& evt) noexcept;
 
+        /**
+         * @fn void start()
+         * @brief This function tells the system manager that you start your game
+         *
+         * @verbatim embed:rst
+                .. note::
+                   This function, which indicates the game is spinning, allows actions to be done at each end of the frame like delete systems or add them while we are going to iterate on
+           @endverbatim
+         */
         void start() noexcept;
 
         /**
-         * \return number of systems which are successfully updated
-         * \note This is the function that update your systems.
-         * \note Based on the logic of the different kinds of shiva systems,
-         * this function takes care of updating your systems in the right order.
-         * \warning If you have not loaded any system into the system_manager the function returns 0.
-         * \warning If you decide to mark a system, it's automatically deleted at the next loop tick through this function.
+         * @fn std::size_t update() noexcept
+         * @return number of systems which are successfully updated
+         * @verbatim embed:rst
+                .. role:: raw-html(raw)
+                    :format: html
+                .. note::
+                   This is the function that update your systems. :raw-html:`<br />`
+                   Based on the logic of the different kinds of antara systems, this function takes care of updating your systems in the right order.
+           @endverbatim
+         * @verbatim embed:rst
+                .. role:: raw-html(raw)
+                    :format: html
+                .. warning::
+                   If you have not loaded any system into the system_manager the function returns 0. :raw-html:`<br />`
+                   If you decide to mark a system, it's automatically deleted at the end of the current loop tick through this function. :raw-html:`<br />`
+                   If you decide to add a system through an `ecs::event::add_base_system event`, it's automatically added at the end of the current loop tick through this function.
+           @endverbatim
          */
         std::size_t update() noexcept;
 
