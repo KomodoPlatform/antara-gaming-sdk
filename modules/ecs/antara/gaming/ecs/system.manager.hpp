@@ -93,6 +93,21 @@ namespace antara::gaming::ecs
                 .. note::
                    This function, which indicates the game is spinning, allows actions to be done at each end of the frame like delete systems or add them while we are going to iterate on
            @endverbatim
+
+         * Example:
+         * ```cpp
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              system_manager.start();
+         *          }
+         * ```
          */
         void start() noexcept;
 
@@ -114,6 +129,26 @@ namespace antara::gaming::ecs
                    If you decide to mark a system, it's automatically deleted at the end of the current loop tick through this function. :raw-html:`<br />`
                    If you decide to add a system through an `ecs::event::add_base_system event`, it's automatically added at the end of the current loop tick through this function.
            @endverbatim
+
+         * Example:
+         * @code{.cpp}
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              system_manager.start();
+         *              // ... added 5 differents systems here
+         *              std::size_t nb_systems_updated = system_manager.update();
+         *              if (nb_systems_updated != 5) {
+         *                 // Oh no, i was expected 5 systems to be executed in this game loop tick
+         *              }
+         *          }
+         * @endcode
          */
         std::size_t update() noexcept;
 
