@@ -29,7 +29,7 @@ namespace antara::gaming::sfml
     void audio_system::update() noexcept
     {
         this->entity_registry_.view<component_sound>().each([this](auto &&entity, component_sound &cmp_sound) {
-            if (cmp_sound.sound.getStatus() == sf::Sound::Stopped) {
+            if (cmp_sound.is_started && cmp_sound.sound.getStatus() == sf::Sound::Stopped) {
                 cmp_sound.on_finish();
                 this->entity_registry_.destroy(entity);
             }

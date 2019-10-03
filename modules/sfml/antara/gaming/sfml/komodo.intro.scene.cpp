@@ -253,12 +253,12 @@ namespace antara::gaming::sfml
 
         // Sound effects
         actions.emplace_back(0.0f, [&](float dt) {
-            intro1.sound.play();
+            intro1.play();
             return true;
         });
 
         actions.emplace_back(1.15f, [&](float dt) {
-            intro2.sound.play();
+            intro2.play();
             return true;
         });
     }
