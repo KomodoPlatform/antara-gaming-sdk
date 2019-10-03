@@ -73,8 +73,8 @@ namespace antara::gaming::sfml
         // Load assets
         load_sprite("logo");
         load_sprite("name");
-        resource_mgr.load_sound("intro1.wav");
-        resource_mgr.load_sound("intro2.wav");
+        load_sound("intro1");
+        load_sound("intro2");
         load_foreground();
         load_background();
 
@@ -84,6 +84,11 @@ namespace antara::gaming::sfml
 
         auto window_center = sf::Vector2f(screen_size.x * 0.5f, screen_size.y * 0.5f);
 
+        // Initialize assets
+        // Sounds
+        auto &intro1 = get_sound("intro1");
+        auto &intro2 = get_sound("intro2");
+        intro2.sound.setVolume(15.0f);
 
         // Textures
         const float logo_final_scale = 0.5f;
@@ -247,17 +252,19 @@ namespace antara::gaming::sfml
         final_animation = &actions.back();
 
         // Sound effects
-        actions.emplace_back(0.0f, [&, this](float dt) {
-            this->dispatcher_.trigger<antara::gaming::sfml::play_sound_event>("intro1.wav",
-                                                                              &resource_mgr, [](){});
+        actions.emplace_back(0.0f, [&](float dt) {
+            intro1.sound.play();
             return true;
         });
 
         actions.emplace_back(1.15f, [&](float dt) {
-            this->dispatcher_.trigger<antara::gaming::sfml::play_sound_event>("intro2.wav",
-                                                                              &resource_mgr, [](){}, 15.0f);
+            intro2.sound.play();
             return true;
         });
+    }
+
+    component_sound& intro_scene::get_sound(const std::string &name) {
+        return entity_registry_.get<component_sound>(sounds[name]);
     }
 
     sf::Sprite& intro_scene::get_sprite(const std::string &name) {
@@ -287,6 +294,19 @@ namespace antara::gaming::sfml
 
         entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry_.assign<antara::gaming::ecs::component::layer<1>>(entity);
+    }
+
+    void intro_scene::load_sound(const std::string &name) {
+        auto sound_buffer = resource_mgr.load_sound(std::string(name + ".wav").c_str());
+
+        auto &entity = sounds[name] = entity_registry_.create();
+
+        auto &sound_cmp = entity_registry_.assign<component_sound>(entity);
+
+        sound_cmp.sound.setBuffer(*sound_buffer);
+
+        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry_.assign<ecs::component::layer<0>>(entity);
     }
 
     void intro_scene::load_foreground() {
