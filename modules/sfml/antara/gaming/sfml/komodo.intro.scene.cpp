@@ -369,4 +369,10 @@ namespace antara::gaming::sfml
         intro_finished = true;
         return true;
     }
+
+    intro_scene::~intro_scene() noexcept
+    {
+        auto view = entity_registry_.view<entt::tag<"intro_scene"_hs>>();
+        entity_registry_.destroy(view.begin(), view.end());
+    }
 }

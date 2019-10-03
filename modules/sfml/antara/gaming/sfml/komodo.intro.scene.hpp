@@ -37,7 +37,7 @@ namespace antara::gaming::sfml
 
         std::string scene_name() noexcept final;
 
-        ~intro_scene() noexcept final = default;
+        ~intro_scene() noexcept final;
 
     private:
         struct animation {
