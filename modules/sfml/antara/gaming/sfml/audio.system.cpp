@@ -43,6 +43,7 @@ namespace antara::gaming::sfml
 
         if (auto resource = const_cast<play_sound_event &>(evt).resource_mgr->load_sound(evt.sound_id); resource) {
             cmp_sound.sound.setBuffer(resource.get());
+            cmp_sound.sound.setVolume(evt.volume);
             cmp_sound.sound.play();
             cmp_sound.on_finish = std::move(evt.on_finish);
         }

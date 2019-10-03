@@ -26,5 +26,6 @@ namespace antara::gaming::sfml
         sf::Sound sound;
         std::function<void()> on_finish{[]()
                                         {}};
+        float volume{100.0f};
     };
 }

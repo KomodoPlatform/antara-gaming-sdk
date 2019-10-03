@@ -20,7 +20,7 @@
 #include <entt/signal/dispatcher.hpp>
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
-#include "component.audio.hpp"
+#include "antara/gaming/sfml/component.audio.hpp"
 
 
 namespace antara::gaming::sfml
@@ -61,9 +61,7 @@ namespace antara::gaming::sfml
         void load_foreground();
         void load_background();
         void load_sprite(const std::string &name);
-        void load_sound(const std::string &name);
 
-        component_sound& get_sound(const std::string &name);
         sf::Sprite& get_sprite(const std::string &name);
         sf::VertexArray& get_vertex_array(const std::string &name);
         sf::RectangleShape& get_rectangle(const std::string &name);
