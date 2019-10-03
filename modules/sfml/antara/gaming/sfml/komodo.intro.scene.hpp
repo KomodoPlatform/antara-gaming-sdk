@@ -76,7 +76,6 @@ namespace antara::gaming::sfml
 
         on_finish_functor on_finish_functor_;
         bool intro_finished{false};
-        animation *final_animation;
 
         antara::gaming::sfml::resources_manager resource_mgr;
     };

@@ -20,6 +20,7 @@
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <antara/gaming/ecs/component.position.hpp>
+#include <iostream>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
@@ -227,12 +228,22 @@ namespace antara::gaming::sfml
             return transparency_func(dt, size, total_time, get_sprite("name"));
         });
 
+        // Sound effects
+        actions.emplace_back(0.0f, [this](float dt) {
+            get_sound("intro1").play();
+            return true;
+        });
+
+        actions.emplace_back(1.15f, [this](float dt) {
+            get_sound("intro2").play();
+            return true;
+        });
+
         // Black out foreground transparency
+        // This is the final animation which completes the intro
         actions.emplace_back(3.25f, [this](float dt) {
             auto& foreground = get_rectangle("foreground");
             static float transparency = foreground.getFillColor().a;
-
-            std::cout << "foreground " << transparency << std::endl;
 
             // Increase transparency
             bool done = ease(&transparency, 255.0f, 15.0f, dt);
@@ -243,19 +254,6 @@ namespace antara::gaming::sfml
             foreground.setFillColor(color);
 
             return done;
-        });
-        // This is the final animation which completes the intro
-        final_animation = &actions.back();
-
-        // Sound effects
-        actions.emplace_back(0.0f, [this](float dt) {
-            get_sound("intro1").play();
-            return true;
-        });
-
-        actions.emplace_back(1.15f, [this](float dt) {
-            get_sound("intro2").play();
-            return true;
         });
     }
 
@@ -348,9 +346,9 @@ namespace antara::gaming::sfml
                 }
             }
 
-            // TODO: Fix this, does not work properly somehow
-            if(final_animation->is_done()) {
-                //intro_finished = true;
+            // When the final animation ends, finish the intro
+            if(actions.back().is_done()) {
+                intro_finished = true;
             }
         }
     }
