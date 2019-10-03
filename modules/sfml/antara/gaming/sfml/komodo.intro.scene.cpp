@@ -276,8 +276,7 @@ namespace antara::gaming::sfml
         auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
         texture.get().setSmooth(true);
 
-        auto entity =  entity_registry_.create();
-        sprites[name] = entity;
+        auto &entity = sprites[name] = entity_registry_.create();
 
         auto &sprite_cmp = entity_registry_.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture));
         sf::Sprite &sprite = sprite_cmp.drawable;
