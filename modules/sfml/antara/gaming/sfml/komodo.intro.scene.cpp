@@ -169,30 +169,26 @@ namespace antara::gaming::sfml
 
         // Move Logo
         actions.emplace_back(0.0f, [&, logo_target_position](float dt) {
-            auto& sprite = logo;
-
-            static auto pos = sprite.getPosition();
+            static auto pos = entity_registry_.get<ecs::component::position>(sprites["logo"]);
 
             // Change pos_y
-            bool done = ease(&pos.y, logo_target_position.y, 1.5f, dt);
+            bool done = ease(&pos.pos_y, logo_target_position.y, 1.5f, dt);
 
             // Set pos_y
-            entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], pos.x, pos.y);
+            entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], pos.pos_x, pos.pos_y);
 
             return done;
         });
 
         // Move Name
         actions.emplace_back(1.0f, [&, name_target_position](float dt) {
-            auto& sprite = name;
-
-            static auto pos = sprite.getPosition();
+            static auto pos = entity_registry_.get<ecs::component::position>(sprites["logo"]);
 
             // Change pos_y
-            bool done = ease(&pos.y, name_target_position, 2.0f, dt);
+            bool done = ease(&pos.pos_y, name_target_position, 2.0f, dt);
 
             // Set pos_y
-            entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], pos.x, pos.y);
+            entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], pos.pos_x, pos.pos_y);
 
             return done;
         });
