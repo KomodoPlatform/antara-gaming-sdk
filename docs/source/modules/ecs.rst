@@ -6,7 +6,7 @@ antara::ecs module documentation
 How do the systems works ?
 --------------------------
 
-In the Antara Gaming SDK has 3 different kinds of systems:
+Antara Gaming SDK has 3 different kinds of systems:
 
 * **PreUpdate**: These systems are the first to be updated in the game loop, they are generally used to retrieve user input, or manage network events for example.
 * **LogicUpdate**: These systems are the second to be updated in the game loop, they are generally used for game logic such as movement or collisions for example.
