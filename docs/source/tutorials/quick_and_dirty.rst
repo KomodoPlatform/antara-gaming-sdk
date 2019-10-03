@@ -1,7 +1,7 @@
 Tutorial: Quick And Dirty
 ============================================
 
-If you have not done the :doc:`getting started<getting_started>` part yet, I invite you to do it now for the rest of this tutorial.
+If you have not read the :doc:`getting started<getting_started>` part yet, I invite you to do it now for the rest of this tutorial.
 
 prerequisites
 -----------------------

@@ -78,6 +78,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/ecs.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/getting_started.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/basic_setup.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/quick_and_dirty.rst
         ${DOXYGEN_INDEX_FILE}
         MAIN_DEPENDENCY ${SPHINX_SOURCE}/conf.py

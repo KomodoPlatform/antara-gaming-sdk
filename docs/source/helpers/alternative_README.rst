@@ -1,7 +1,6 @@
 .. role:: raw-html-m2r(raw)
    :format: html
 
-
 antara-gaming-sdk
 =================
 
