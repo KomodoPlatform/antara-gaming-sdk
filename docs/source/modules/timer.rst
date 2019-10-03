@@ -1,4 +1,4 @@
 :orphan:
 
-antara::scenes module documentation
+antara::timer module documentation
 ===================================

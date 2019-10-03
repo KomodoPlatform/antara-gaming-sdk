@@ -64,6 +64,13 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/core.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/config.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/modules.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/scenes.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/world.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/lua.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/box2d.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/ecs.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/sfml.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/timer.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/quick_and_dirty.rst
         ${DOXYGEN_INDEX_FILE}
