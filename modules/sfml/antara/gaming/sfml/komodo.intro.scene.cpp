@@ -86,7 +86,6 @@ namespace antara::gaming::sfml
 
         // Initialize assets
         // Sounds
-        auto &intro1 = get_sound("intro1");
         auto &intro2 = get_sound("intro2");
         intro2.sound.setVolume(15.0f);
 
@@ -114,11 +113,9 @@ namespace antara::gaming::sfml
         foreground.setFillColor(sf::Color(0, 0, 0, 0));
         foreground.setSize(sf::Vector2f(screen_size.x, screen_size.y));
 
-        auto &background = get_vertex_array("background");
-
         // Define animations
         // Shrink Logo
-        actions.emplace_back(0.0f, [&](float dt) {
+        actions.emplace_back(0.0f, [this, logo_final_scale](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.0f;
             static const auto friction = 0.025f;
@@ -136,14 +133,14 @@ namespace antara::gaming::sfml
             const float scale = base_scale + size * sin(sin_base + speed * total_time);
 
             // Set the scale
-            logo.setScale(scale, scale);
+            get_sprite("logo").setScale(scale, scale);
 
             // Complete if size is near zero
             return size < 0.0001f;
         });
 
         // Rotate Logo
-        actions.emplace_back(0.0f, [&](float dt) {
+        actions.emplace_back(0.0f, [this, logo_start_angle](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.15f;
@@ -161,14 +158,14 @@ namespace antara::gaming::sfml
             const float rotation = base_angle + size * sin(sin_base + speed * total_time);
 
             // Set the rotation
-            logo.setRotation(rotation);
+            get_sprite("logo").setRotation(rotation);
 
             // Complete if size is near zero
             return size < 0.0001f;
         });
 
         // Move Logo
-        actions.emplace_back(0.0f, [&, logo_target_position](float dt) {
+        actions.emplace_back(0.0f, [this, logo_target_position](float dt) {
             static auto pos = entity_registry_.get<ecs::component::position>(sprites["logo"]);
 
             // Change pos_y
@@ -181,7 +178,7 @@ namespace antara::gaming::sfml
         });
 
         // Move Name
-        actions.emplace_back(1.0f, [&, name_target_position](float dt) {
+        actions.emplace_back(1.0f, [this, name_target_position](float dt) {
             static auto pos = entity_registry_.get<ecs::component::position>(sprites["logo"]);
 
             // Change pos_y
@@ -194,7 +191,7 @@ namespace antara::gaming::sfml
         });
 
         // Fade in Transparency
-        auto transparency_func = [&](float dt, float& size, float& total_time,  sf::Sprite& sprite) {
+        auto transparency_func = [](float dt, float& size, float& total_time,  sf::Sprite& sprite) {
             static const auto sin_base = 270.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.1f;
@@ -217,22 +214,25 @@ namespace antara::gaming::sfml
         };
 
         // Fade in logo
-        actions.emplace_back(0.0f, [&](float dt) {
+        actions.emplace_back(0.0f, [this, transparency_func](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
-            return transparency_func(dt, size, total_time, logo);
+            return transparency_func(dt, size, total_time, get_sprite("logo"));
         });
 
         // Fade in name
-        actions.emplace_back(1.5f, [&](float dt) {
+        actions.emplace_back(1.5f, [this, transparency_func](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
-            return transparency_func(dt, size, total_time, name);
+            return transparency_func(dt, size, total_time, get_sprite("name"));
         });
 
         // Black out foreground transparency
-        actions.emplace_back(3.25f, [&](float dt) {
+        actions.emplace_back(3.25f, [this](float dt) {
+            auto& foreground = get_rectangle("foreground");
             static float transparency = foreground.getFillColor().a;
+
+            std::cout << "foreground " << transparency << std::endl;
 
             // Increase transparency
             bool done = ease(&transparency, 255.0f, 15.0f, dt);
@@ -248,13 +248,13 @@ namespace antara::gaming::sfml
         final_animation = &actions.back();
 
         // Sound effects
-        actions.emplace_back(0.0f, [&](float dt) {
-            intro1.play();
+        actions.emplace_back(0.0f, [this](float dt) {
+            get_sound("intro1").play();
             return true;
         });
 
-        actions.emplace_back(1.15f, [&](float dt) {
-            intro2.play();
+        actions.emplace_back(1.15f, [this](float dt) {
+            get_sound("intro2").play();
             return true;
         });
     }
