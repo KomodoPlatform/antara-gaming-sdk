@@ -354,7 +354,7 @@ namespace antara::gaming::sfml
 
             // TODO: Fix this, does not work properly somehow
             if(final_animation->is_done()) {
-                intro_finished = true;
+                //intro_finished = true;
             }
         }
     }
