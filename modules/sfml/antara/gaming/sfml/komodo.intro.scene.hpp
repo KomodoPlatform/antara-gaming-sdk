@@ -18,6 +18,7 @@
 
 #include <functional>
 #include <entt/signal/dispatcher.hpp>
+#include <SFML/Graphics.hpp>
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
 #include "antara/gaming/sfml/component.audio.hpp"

@@ -1,0 +1,10 @@
+{
+  "window": {
+    "fullscreen": false,
+    "size": {
+      "height": 1280,
+      "width": 720
+    },
+    "title": "my game window"
+  }
+}
