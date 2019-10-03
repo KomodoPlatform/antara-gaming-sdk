@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
 #include <entt/entity/helper.hpp>
 #include "antara/gaming/world/world.app.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
@@ -79,10 +78,10 @@ public:
 
     bool on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept final
     {
-        if (evt.key == antara::gaming::input::key::space) {
+        /*if (evt.key == antara::gaming::input::key::space) {
             this->dispatcher_.trigger<antara::gaming::event::change_scene>(
                     std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
-        }
+        }*/
         return false;
     }
 
@@ -217,7 +216,7 @@ public:
         scene_manager.change_scene(
                 std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, dispatcher_, [this]() {
                     this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                            std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
+                            std::make_unique<game_scene>(this->entity_registry_, this->dispatcher_), false);
                 }), true);
     }
 };
