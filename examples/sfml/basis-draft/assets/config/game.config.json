@@ -2,8 +2,8 @@
   "window": {
     "fullscreen": false,
     "size": {
-      "height": 1280,
-      "width": 720
+      "width": 1280,
+      "height": 720
     },
     "title": "my game window"
   }
