@@ -1,0 +1,2 @@
+add_executable(step_basis_world_compiling step_basis_world_compiling.cpp)
+target_link_libraries(step_basis_world_compiling PUBLIC antara::world)

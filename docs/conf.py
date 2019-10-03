@@ -37,7 +37,8 @@ html_theme = 'haiku'
 
 extensions = [
     "breathe",
-    "sphinxemoji.sphinxemoji"
+    "sphinxemoji.sphinxemoji",
+    "m2r"
 ]
 
 # Breathe Configuration
