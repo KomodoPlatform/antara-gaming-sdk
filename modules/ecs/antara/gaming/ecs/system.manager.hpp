@@ -144,7 +144,7 @@ namespace antara::gaming::ecs
          *              // ... added 5 differents systems here
          *              std::size_t nb_systems_updated = system_manager.update();
          *              if (nb_systems_updated != 5) {
-         *                 // Oh no, i was expected 5 systems to be executed in this game loop tick
+         *                 // Oh no, i expected 5 systems to be executed in this game loop tick
          *              }
          *              return 0;
          *          }
@@ -160,7 +160,7 @@ namespace antara::gaming::ecs
                 .. role:: raw-html(raw)
                     :format: html
                 .. note::
-                   This function is called multiple time by update(). :raw-html:`<br />`
+                   This function is called multiple times by update(). :raw-html:`<br />`
                    It is useful if you want to program your own update function without going through the one provided by us.
            @endverbatim
            @see update
