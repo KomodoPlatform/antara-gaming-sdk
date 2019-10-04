@@ -91,7 +91,7 @@ Below all the code of this tutorial:
 .. literalinclude:: ../../../examples/ecs/system.example.cpp
    :language: cpp
 
-**Congratulations, you have managed to create your own system !**
+**Congratulations, you have managed to create your own system and add it to your game world !**
 
 .. _dispatcher: https://github.com/skypjack/entt/wiki/Crash-Course:-events,-signals-and-everything-in-between#event-dispatcher
 
