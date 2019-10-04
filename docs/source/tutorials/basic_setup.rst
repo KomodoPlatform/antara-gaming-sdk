@@ -46,6 +46,9 @@ As the ``CMakeLists.txt`` suggests we also need a **C++** files named ``my_examp
 
 And now we can successfully build the setup project that we just made:
 
+ .. warning::
+        The project is build on OSX in the following video, if you want to build for your platform please refer to the :doc:`getting started<getting_started>` tutorial
+
 .. raw:: html
 
     <embed>
