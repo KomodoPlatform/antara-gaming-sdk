@@ -53,16 +53,15 @@ namespace antara::gaming::ecs
         //! Constructors
 
         /**
-         * @verbatim embed:rst
-                .. note::
-                   Principal Constructor.
-           @endverbatim
          * @param dispatcher The dispatcher is provided to the system when it is created.
          * @param registry The entity_registry is provided to the system when it is created.
          * @param subscribe_to_internal_events Choose whether to subscribe to default system_manager events
-         *
+           @verbatim embed:rst
+                .. note::
+                   Principal Constructor.
+           @endverbatim
          * Example:
-         * ```cpp
+         * @code{cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
          *          #include <antara/gaming/ecs/system.manager.hpp>
@@ -73,7 +72,7 @@ namespace antara::gaming::ecs
          *              entt::dispatcher dispatcher
          *              antara::gaming::ecs::system_manager mgr{entity_registry, dispatcher};
          *          }
-         * ```
+         * @endcode
          */
         explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher,
                                 bool subscribe_to_internal_events = true) noexcept;
@@ -94,9 +93,8 @@ namespace antara::gaming::ecs
                 .. note::
                    This function, which indicates the game is spinning, allows actions to be done at each end of the frame like delete systems or add them while we are going to iterate on
            @endverbatim
-
          * Example:
-         * ```cpp
+         * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
          *          #include <antara/gaming/ecs/system.manager.hpp>
@@ -109,7 +107,7 @@ namespace antara::gaming::ecs
          *              system_manager.start();
          *              return 0;
          *          }
-         * ```
+         * @endcode
          */
         void start() noexcept;
 
@@ -180,6 +178,7 @@ namespace antara::gaming::ecs
 
         /**
          * @overload get_system
+         * Example:
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
@@ -225,28 +224,107 @@ namespace antara::gaming::ecs
          * @see get_systems
          *
            @verbatim embed:rst
-                .. warning::
+                .. note::
                    This function is marked as nodiscard_.
                 .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
            @endverbatim
+         * Example:
+         * @code{.cpp}
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              // ... added differents systems here
+         *              // Called from a const context
+         *              auto &&[system_foo, system_bar] = system_manager.get_systems<system_foo, system_bar>();
+         *
+         *              // Called from a non const context
+         *              auto&&[system_foo_nc, system_bar_nc] = system_manager.get_systems<system_foo, system_bar>();
+         *
+         *              // Get it as a tuple
+         *              auto tuple_systems = system_manager.get_systems<system_foo, system_bar>();
+         *              return 0;
+         *          }
+         * @endcode
          */
         template<typename ...TSystems>
         [[nodiscard]] std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...> get_systems() const noexcept;
 
         /**
-         * \note This function allow you to verify if a system is already registered in the system_manager.
-         * \tparam TSystem Represents the system that needs to be verified
-         * \return true if the system has been loaded, false otherwise
+         * @brief This function allow you to verify if a system is already registered in the system_manager.
+         * @tparam TSystem Represents the system that needs to be verified
+         * @return true if the system has been loaded, false otherwise
+         *
+           @verbatim embed:rst
+                .. note::
+                   This function is marked as nodiscard_.
+                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+           @endverbatim
+
+         * Example:
+         * ```cpp
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *
+         *              bool result = system_manager.has_system<my_game::render_system>();
+         *              if (!result) {
+         *                  // Oh no, i don't have a rendering system.
+         *              }
+         *              return 0;
+         *          }
+         * ```
          */
         template<typename TSystem>
         [[nodiscard]] bool has_system() const noexcept;
 
         /**
-         * \note This function allow you to verify if a list of systems is already registered in the system_manager.
-         * \tparam TSystems represents a list of system that needs to be verified
-         * \return true if the list of systems has been loaded, false otherwise
-         * \details This function recursively calls the has_system function
-         * \see has_system
+         * @brief This function allow you to verify if a list of systems is already registered in the system_manager.
+         * @tparam TSystems represents a list of system that needs to be verified
+         * @return true if the list of systems has been loaded, false otherwise
+         *
+         * @see has_system
+
+           @verbatim embed:rst
+                .. role:: raw-html(raw)
+                    :format: html
+
+                .. note::
+                   This function is marked as nodiscard_. :raw-html:`<br />`
+                   This function recursively calls the has_system function.
+                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+           @endverbatim
+
+         * Example:
+         * ```cpp
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *
+         *              bool result = system_manager.has_systems<my_game::render_system, my_game::input_systems>();
+         *              if (!result) {
+         *                  // Oh no, atleast one of the systems is not present
+         *              }
+         *              return 0;
+         *          }
+         * ```
          */
         template<typename ... TSystems>
         [[nodiscard]] bool has_systems() const noexcept;
