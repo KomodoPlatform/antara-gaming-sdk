@@ -75,7 +75,8 @@ namespace antara::gaming::ecs
          *          }
          * ```
          */
-        explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher, bool subscribe_to_internal_events = true) noexcept;
+        explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher,
+                                bool subscribe_to_internal_events = true) noexcept;
 
         //! Callback
 
@@ -83,7 +84,7 @@ namespace antara::gaming::ecs
          * @fn void receive_add_base_system(const ecs::event::add_base_system& evt)
          * @param evt The event that contains the system to add
          */
-        void receive_add_base_system(const ecs::event::add_base_system& evt) noexcept;
+        void receive_add_base_system(const ecs::event::add_base_system &evt) noexcept;
 
         /**
          * @fn void start()
@@ -106,6 +107,7 @@ namespace antara::gaming::ecs
          *              entt::dispatcher dispatcher
          *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
          *              system_manager.start();
+         *              return 0;
          *          }
          * ```
          */
@@ -129,7 +131,6 @@ namespace antara::gaming::ecs
                    If you decide to mark a system, it's automatically deleted at the end of the current loop tick through this function. :raw-html:`<br />`
                    If you decide to add a system through an `ecs::event::add_base_system event`, it's automatically added at the end of the current loop tick through this function.
            @endverbatim
-
          * Example:
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
@@ -147,42 +148,90 @@ namespace antara::gaming::ecs
          *              if (nb_systems_updated != 5) {
          *                 // Oh no, i was expected 5 systems to be executed in this game loop tick
          *              }
+         *              return 0;
          *          }
          * @endcode
          */
+
         std::size_t update() noexcept;
 
+        /**
+         * @param system_type_to_update kind of systems to update (pre_update, logic_update, post_update)
+         * @return number of systems which are successfully updated
+           @verbatim embed:rst
+                .. role:: raw-html(raw)
+                    :format: html
+                .. note::
+                   This function is called multiple time by update(). :raw-html:`<br />`
+                   It is useful if you want to program your own update function without going through the one provided by us.
+           @endverbatim
+           @see update
+         */
         std::size_t update_systems(system_type system_type_to_update) noexcept;
 
         /**
-         * \note This function allows you to get a system through a template parameter.
-         * \tparam TSystem represents the system to get.
-         * \return A reference to the system obtained.
+         * @brief This function allows you to get a system through a template parameter.
+         * @tparam TSystem represents the system to get.
+         * @return A reference to the system obtained.
+         *
          */
         template<typename TSystem>
         const TSystem &get_system() const noexcept;
 
         /**
-         * \overload get_system
+         * @overload get_system
+         * @code{.cpp}
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher dispatcher
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              system_manager.start();
+         *              // ... added 2 differents systems here (render_system, and a log_system)
+         *              //! Non const version
+         *              auto& render_system = system_manager.get_system<game::render_system>();
+         *
+         *              //! const version
+         *              const auto& log_system = system_manager.get_system<game::log_system>();
+         *              return 0;
+         *          }
+         * @endcode
          */
         template<typename TSystem>
         TSystem &get_system() noexcept;
 
         /**
-         * \note This function allow you to get multiple system through multiple templates parameters.
-         * \tparam TSystems represents a list of systems to get
-         * \return Tuple of systems obtained.
-         * \details This function recursively calls the get_system function
-         * \see get_system
+         * @verbatim embed:rst
+                .. role:: raw-html(raw)
+                    :format: html
+                .. note::
+                   This function recursively calls the get_system function
+                   Based on the logic of the different kinds of antara systems, this function takes care of updating your systems in the right order.
+           @endverbatim
+         * @brief This function allow you to get multiple system through multiple templates parameters.
+         * @tparam TSystems represents a list of systems to get
+         * @return Tuple of systems obtained.
+         * @see get_system
          */
         template<typename ...TSystems>
         std::tuple<std::add_lvalue_reference_t<TSystems>...> get_systems() noexcept;
 
         /**
-         * @overload get_systems
+         * @brief const version overload of get_systems
+         * @see get_systems
+         *
+           @verbatim embed:rst
+                .. warning::
+                   This function is marked as nodiscard_.
+                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+           @endverbatim
          */
         template<typename ...TSystems>
-        std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...> get_systems() const noexcept;
+        [[nodiscard]] std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...> get_systems() const noexcept;
 
         /**
          * \note This function allow you to verify if a system is already registered in the system_manager.
