@@ -16,7 +16,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <utility>
-#include <entt/entity/helper.hpp>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <antara/gaming/ecs/component.position.hpp>

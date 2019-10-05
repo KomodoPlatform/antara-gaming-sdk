@@ -19,6 +19,7 @@
 #include <tuple>
 #include <functional>
 #include <entt/signal/dispatcher.hpp>
+#include <entt/entity/helper.hpp>
 #include <SFML/Graphics.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
