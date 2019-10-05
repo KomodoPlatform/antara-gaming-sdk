@@ -30,17 +30,19 @@
 // Utility
 static const float DEG2RAD = 0.0174533f;
 
-static bool ease(float* val, const float targetVal, const float rate, const float dt) {
-    if(*val == targetVal) return true;
+static bool ease(float *val, const float targetVal, const float rate, const float dt)
+{
+    if (*val == targetVal) return true;
 
-    if(std::abs(*val - targetVal) < 0.0001f){
+    if (std::abs(*val - targetVal) < 0.0001f) {
         *val = targetVal;
         return true;
     }
 
     float amount = (targetVal - *val) * rate * dt;
-    if((*val < targetVal && *val + amount > targetVal) ||
-       (*val > targetVal && *val + amount < targetVal)) *val = targetVal;
+    if ((*val < targetVal && *val + amount > targetVal) ||
+        (*val > targetVal && *val + amount < targetVal))
+        *val = targetVal;
     else *val += amount;
 
     return false;
@@ -49,18 +51,20 @@ static bool ease(float* val, const float targetVal, const float rate, const floa
 namespace antara::gaming::sfml
 {
     intro_scene::animation::animation(float start_time, std::function<bool(float)> animation) :
-        start_time(start_time),
-        animate(std::move(animation)),
-        done(false)
+            start_time(start_time),
+            animate(std::move(animation)),
+            done(false)
     {
 
     }
 
-    void intro_scene::animation::update(float dt) {
+    void intro_scene::animation::update(float dt)
+    {
         done = animate(dt);
     }
 
-    bool intro_scene::animation::is_done() {
+    bool intro_scene::animation::is_done()
+    {
         return done;
     }
 
@@ -70,52 +74,25 @@ namespace antara::gaming::sfml
                                                                                           on_finish_functor_(std::move(
                                                                                                   on_finish_functor))
     {
-        // Load assets
-        load_sprite("logo");
-        load_sprite("name");
-        load_sound("intro1");
-        load_sound("intro2");
-        load_foreground();
-        load_background();
+        auto&&[logo_entity,
+        logo_final_scale,
+        logo_target_position,
+        logo_sprite,
+        logo_start_angle] = intro_scene_factory::create_logo(entity_registry_, resource_mgr);
+        auto &&[name_entity, name_target_position] = intro_scene_factory::create_name(entity_registry_, resource_mgr,
+                                                                                      logo_final_scale,
+                                                                                      logo_target_position,
+                                                                                      logo_sprite);
+        auto intro1_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro1");
+        auto intro2_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro2");
+        entity_registry_.get<sfml::component_sound>(intro2_entity).sound.setVolume(15.f);
 
-        // This screen size might be different than window size, using sf::RenderTexture etc. so do not modify
-        auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
-        auto screen_size =  sf::Vector2f(window_info.width, window_info.height);
-
-        auto window_center = sf::Vector2f(screen_size.x * 0.5f, screen_size.y * 0.5f);
-
-        // Initialize assets
-        // Sounds
-        auto &intro2 = get_sound("intro2");
-        intro2.sound.setVolume(15.0f);
-
-        // Textures
-        const float logo_final_scale = 0.5f;
-        const sf::Vector2f logo_target_position = sf::Vector2f(window_center.x, screen_size.y * 0.4f);
-        auto &logo = get_sprite("logo");
-        logo.setScale(10.0f, 10.0f);
-        entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], window_center.x, screen_size.y * 0.8f);
-        logo.setColor(sf::Color(255, 255, 255, 0));
-
-        const float logo_default_angle = 45.0f;
-        const float logo_start_angle = 180.0f - logo_default_angle;
-        logo.setRotation(logo_start_angle);
-
-        auto &name = get_sprite("name");
-        name.setScale(0.6f, 0.6f);
-        const float name_target_position = logo_target_position.y + logo.getTexture()->getSize().y * logo_final_scale * 0.75f;
-        entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], window_center.x, screen_size.y);
-
-        name.setColor(sf::Color(255, 255, 255, 0));
-
-        // Black foreground
-        auto &foreground = get_rectangle("foreground");
-        foreground.setFillColor(sf::Color(0, 0, 0, 0));
-        foreground.setSize(sf::Vector2f(screen_size.x, screen_size.y));
+        auto foreground_entity = intro_scene_factory::create_foreground(entity_registry);
+        intro_scene_factory::create_background(entity_registry_);
 
         // Define animations
         // Shrink Logo
-        actions.emplace_back(0.0f, [this, logo_final_scale](float dt) {
+        actions.emplace_back(0.0f, [this, logo_final_scale = logo_final_scale, logo_entity = logo_entity](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.0f;
             static const auto friction = 0.025f;
@@ -133,14 +110,14 @@ namespace antara::gaming::sfml
             const float scale = base_scale + size * sin(sin_base + speed * total_time);
 
             // Set the scale
-            get_sprite("logo").setScale(scale, scale);
+            get_underlying_sfml_drawable<sfml::sprite>(logo_entity).setScale(scale, scale);
 
             // Complete if size is near zero
             return size < 0.0001f;
         });
 
         // Rotate Logo
-        actions.emplace_back(0.0f, [this, logo_start_angle](float dt) {
+        actions.emplace_back(0.0f, [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.15f;
@@ -158,40 +135,42 @@ namespace antara::gaming::sfml
             const float rotation = base_angle + size * sin(sin_base + speed * total_time);
 
             // Set the rotation
-            get_sprite("logo").setRotation(rotation);
+            get_underlying_sfml_drawable<sfml::sprite>(logo_entity).setRotation(rotation);
 
             // Complete if size is near zero
             return size < 0.0001f;
         });
 
         // Move Logo
-        actions.emplace_back(0.0f, [this, logo_target_position](float dt) {
-            static auto pos = entity_registry_.get<ecs::component::position>(sprites["logo"]);
+        actions.emplace_back(0.0f, [this, logo_target_position = logo_target_position,
+                logo_entity = logo_entity](float dt) {
+            static auto pos = entity_registry_.get<ecs::component::position>(logo_entity);
 
             // Change pos_y
             bool done = ease(&pos.pos_y, logo_target_position.y, 1.5f, dt);
 
             // Set pos_y
-            entity_registry_.assign_or_replace<ecs::component::position>(sprites["logo"], pos.pos_x, pos.pos_y);
+            entity_registry_.assign_or_replace<ecs::component::position>(logo_entity, pos.pos_x, pos.pos_y);
 
             return done;
         });
 
         // Move Name
-        actions.emplace_back(1.0f, [this, name_target_position](float dt) {
-            static auto pos = entity_registry_.get<ecs::component::position>(sprites["logo"]);
+        actions.emplace_back(1.0f, [this, name_target_position = name_target_position, logo_entity = logo_entity,
+                name_entity = name_entity](float dt) {
+            static auto pos = entity_registry_.get<ecs::component::position>(logo_entity);
 
             // Change pos_y
             bool done = ease(&pos.pos_y, name_target_position, 2.0f, dt);
 
             // Set pos_y
-            entity_registry_.assign_or_replace<ecs::component::position>(sprites["name"], pos.pos_x, pos.pos_y);
+            entity_registry_.assign_or_replace<ecs::component::position>(name_entity, pos.pos_x, pos.pos_y);
 
             return done;
         });
 
         // Fade in Transparency
-        auto transparency_func = [](float dt, float& size, float& total_time,  sf::Sprite& sprite) {
+        auto transparency_func = [](float dt, float &size, float &total_time, sf::Sprite &sprite) {
             static const auto sin_base = 270.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.1f;
@@ -214,34 +193,34 @@ namespace antara::gaming::sfml
         };
 
         // Fade in logo
-        actions.emplace_back(0.0f, [this, transparency_func](float dt) {
+        actions.emplace_back(0.0f, [this, transparency_func, logo_entity = logo_entity](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
-            return transparency_func(dt, size, total_time, get_sprite("logo"));
+            return transparency_func(dt, size, total_time, get_underlying_sfml_drawable<sfml::sprite>(logo_entity));
         });
 
         // Fade in name
-        actions.emplace_back(1.5f, [this, transparency_func](float dt) {
+        actions.emplace_back(1.5f, [this, transparency_func, name_entity = name_entity](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
-            return transparency_func(dt, size, total_time, get_sprite("name"));
+            return transparency_func(dt, size, total_time, get_underlying_sfml_drawable<sfml::sprite>(name_entity));
         });
 
         // Sound effects
-        actions.emplace_back(0.0f, [this](float dt) {
-            get_sound("intro1").play();
+        actions.emplace_back(0.0f, [this, intro1_entity](float dt) {
+            entity_registry_.get<sfml::component_sound>(intro1_entity).play();
             return true;
         });
 
-        actions.emplace_back(1.15f, [this](float dt) {
-            get_sound("intro2").play();
+        actions.emplace_back(1.15f, [this, intro2_entity](float dt) {
+            entity_registry_.get<sfml::component_sound>(intro2_entity).play();
             return true;
         });
 
         // Black out foreground transparency
         // This is the final animation which completes the intro
-        actions.emplace_back(3.25f, [this](float dt) {
-            auto& foreground = get_rectangle("foreground");
+        actions.emplace_back(3.25f, [this, foreground_entity](float dt) {
+            auto &foreground = get_underlying_sfml_drawable<sfml::rectangle>(foreground_entity);
             static float transparency = foreground.getFillColor().a;
 
             // Increase transparency
@@ -256,81 +235,6 @@ namespace antara::gaming::sfml
         });
     }
 
-    component_sound& intro_scene::get_sound(const std::string &name) {
-        return entity_registry_.get<component_sound>(sounds[name]);
-    }
-
-    sf::Sprite& intro_scene::get_sprite(const std::string &name) {
-        return entity_registry_.get<sprite>(sprites[name]).drawable;
-    }
-
-    sf::VertexArray& intro_scene::get_vertex_array(const std::string &name) {
-        return entity_registry_.get<vertex_array>(vertex_arrays[name]).drawable;
-    }
-
-    sf::RectangleShape& intro_scene::get_rectangle(const std::string &name) {
-        return entity_registry_.get<rectangle>(rectangles[name]).drawable;
-    }
-
-    void intro_scene::load_sprite(const std::string &name) {
-        auto texture = resource_mgr.load_texture(std::string(name + ".png").c_str());
-        texture.get().setSmooth(true);
-
-        auto &entity = sprites[name] = entity_registry_.create();
-
-        auto &sprite_cmp = entity_registry_.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture));
-        sf::Sprite &sprite = sprite_cmp.drawable;
-        sprite.setOrigin(
-          sprite.getLocalBounds().width * 0.5f,
-          sprite.getLocalBounds().height * 0.5f
-        );
-
-        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<antara::gaming::ecs::component::layer<1>>(entity);
-    }
-
-    void intro_scene::load_sound(const std::string &name) {
-        auto sound_buffer = resource_mgr.load_sound(std::string(name + ".wav").c_str());
-
-        auto &entity = sounds[name] = entity_registry_.create();
-
-        auto &sound_cmp = entity_registry_.assign<component_sound>(entity);
-
-        sound_cmp.sound.setBuffer(*sound_buffer);
-
-        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<ecs::component::layer<0>>(entity);
-    }
-
-    void intro_scene::load_foreground() {
-        auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
-
-        auto &entity = rectangles["foreground"] = entity_registry_.create();
-        auto &rectangle_cmp = entity_registry_.assign<rectangle>(entity, sf::RectangleShape(sf::Vector2f(window_info.width, window_info.height)));
-
-        auto &rect = rectangle_cmp.drawable;
-        rect.setFillColor(sf::Color(0, 0, 0, 0));
-
-        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<ecs::component::layer<2>>(entity);
-    }
-
-    void intro_scene::load_background() {
-        auto &window_info = entity_registry_.ctx<config::game_cfg>().win_cfg;
-
-        auto &entity = vertex_arrays["background"] = entity_registry_.create();
-        auto &va_cmp = entity_registry_.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
-
-        sf::VertexArray &va = va_cmp.drawable;
-        va.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.width, 0), sf::Color(0, 217, 184)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.width, window_info.height), sf::Color(0, 176, 163)));
-        va.append(sf::Vertex(sf::Vector2f(0, window_info.height), sf::Color(0, 67, 106)));
-
-        entity_registry_.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry_.assign<ecs::component::layer<0>>(entity);
-    }
-
     void intro_scene::update() noexcept
     {
         if (intro_finished) {
@@ -339,14 +243,14 @@ namespace antara::gaming::sfml
             auto dt = timer::time_step::get_fixed_delta_time();
             global_time += dt;
 
-            for(auto&& a : actions) {
-                if(global_time > a.start_time && !a.is_done()) {
+            for (auto &&a : actions) {
+                if (global_time > a.start_time && !a.is_done()) {
                     a.update(dt);
                 }
             }
 
             // When the final animation ends, finish the intro
-            if(actions.back().is_done()) {
+            if (actions.back().is_done()) {
                 intro_finished = true;
             }
         }
