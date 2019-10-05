@@ -35,10 +35,12 @@ namespace antara::gaming::sfml
     struct intro_scene_factory
     {
     private:
-        static auto get_window_and_screen(entt::registry& entity_registry);
+        static auto get_window_and_screen(entt::registry &entity_registry);
+
     public:
         template<std::size_t current_layer>
-        static entt::entity create_sprite(entt::registry& entity_registry, resources_manager& resource_mgr, const std::string& sprite_name)
+        static entt::entity
+        create_sprite(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sprite_name)
         {
             //! Texture loading
             auto texture = resource_mgr.load_texture(std::string(sprite_name + ".png").c_str());
@@ -57,24 +59,28 @@ namespace antara::gaming::sfml
             return entity;
         }
 
-        static entt::entity create_sound(entt::registry& entity_registry, resources_manager& resource_mgr, const std::string& sound_name);
+        static entt::entity
+        create_sound(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sound_name);
 
-        static entt::entity create_foreground(entt::registry& entity_registry);
+        static entt::entity create_foreground(entt::registry &entity_registry);
 
-        static entt::entity create_background(entt::registry& entity_registry);
+        static entt::entity create_background(entt::registry &entity_registry);
 
-        static auto create_logo(entt::registry& entity_registry, resources_manager& resource_mgr);
+        static auto create_logo(entt::registry &entity_registry, resources_manager &resource_mgr);
 
-        static auto create_name(entt::registry& entity_registry,
-                resources_manager& resource_mgr,
-                const float logo_final_scale, const sf::Vector2f logo_target_position, sf::Sprite& logo_sprite);
+        static auto create_name(entt::registry &entity_registry,
+                                resources_manager &resource_mgr,
+                                const float logo_final_scale, const sf::Vector2f logo_target_position,
+                                sf::Sprite &logo_sprite);
     };
 
     class intro_scene final : public antara::gaming::scenes::base_scene
     {
     public:
         using on_finish_functor = std::function<void()>;
-        intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher, on_finish_functor on_finish_functor) noexcept;
+
+        intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher,
+                    on_finish_functor on_finish_functor) noexcept;
 
         void update() noexcept final;
 
@@ -85,12 +91,15 @@ namespace antara::gaming::sfml
         ~intro_scene() noexcept final;
 
     private:
-        struct animation {
+        struct animation
+        {
         public:
             animation() = delete;
+
             explicit animation(float start_time, std::function<bool(float)> animation);
 
             void update(float dt);
+
             bool is_done();
 
             const float start_time;
@@ -104,7 +113,8 @@ namespace antara::gaming::sfml
         float global_time{0.f};
 
         template<typename Component>
-        auto& get_underlying_sfml_drawable(entt::entity entity) {
+        auto &get_underlying_sfml_drawable(entt::entity entity)
+        {
             return entity_registry_.get<Component>(entity).drawable;
         }
 
