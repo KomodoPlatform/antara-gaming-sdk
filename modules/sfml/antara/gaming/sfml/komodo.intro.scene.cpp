@@ -22,8 +22,6 @@
 #include "antara/gaming/sfml/event.play.sound.hpp"
 
 // Utility
-static const float DEG2RAD = 0.0174533f;
-
 static bool ease(float *val, const float targetVal, const float rate, const float dt)
 {
     if (*val == targetVal) return true;
@@ -40,6 +38,114 @@ static bool ease(float *val, const float targetVal, const float rate, const floa
     else *val += amount;
 
     return false;
+}
+
+namespace antara::gaming::sfml
+{
+    //! Factory
+    auto intro_scene_factory::get_window_and_screen(entt::registry &entity_registry)
+    {
+        auto &window_info = entity_registry.ctx<config::game_cfg>().win_cfg;
+        auto screen_size =  sf::Vector2f(window_info.width, window_info.height);
+        auto window_center = sf::Vector2f(screen_size.x * 0.5f, screen_size.y * 0.5f);
+
+        return std::make_tuple(screen_size, window_center);
+    }
+
+    entt::entity intro_scene_factory::create_foreground(entt::registry &entity_registry)
+    {
+        //! Get window information
+        auto &window_info = entity_registry.ctx<config::game_cfg>().win_cfg;
+
+        //! Entity creation
+        auto entity = entity_registry.create();
+
+        //! Entity components
+        auto &rect = entity_registry.assign<rectangle>(entity, sf::RectangleShape(sf::Vector2f(window_info.width, window_info.height))).drawable;
+        rect.setFillColor(sf::Color(0, 0, 0, 0));
+        entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry.assign<ecs::component::layer<2>>(entity);
+
+        rect.setFillColor(sf::Color(0, 0, 0, 0));
+        rect.setSize(sf::Vector2f(window_info.width, window_info.height));
+        //! Give the fresh entity
+        return entity;
+    }
+
+    entt::entity intro_scene_factory::create_background(entt::registry &entity_registry)
+    {
+        //! Get window information
+        auto &window_info = entity_registry.ctx<config::game_cfg>().win_cfg;
+
+        //! Entity creation
+        auto entity = entity_registry.create();
+
+        //! Entity components
+        auto &va_cmp = entity_registry.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
+        sf::VertexArray &va = va_cmp.drawable;
+        va.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.width, 0), sf::Color(0, 217, 184)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.width, window_info.height), sf::Color(0, 176, 163)));
+        va.append(sf::Vertex(sf::Vector2f(0, window_info.height), sf::Color(0, 67, 106)));
+        entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
+        entity_registry.assign<ecs::component::layer<0>>(entity);
+
+        //! Give the fresh entity
+        return entity;
+    }
+
+    auto intro_scene_factory::create_logo(entt::registry &entity_registry, resources_manager &resource_mgr)
+    {
+        auto&& [screen_size, window_center] = intro_scene_factory::get_window_and_screen(entity_registry);
+
+        auto logo_entity = create_sprite<1>(entity_registry, resource_mgr, "logo");
+        const float logo_final_scale = 0.5f;
+        const sf::Vector2f logo_target_position = sf::Vector2f(window_center.x, screen_size.y * 0.4f);
+        auto &logo = entity_registry.get<sfml::sprite>(logo_entity).drawable;
+        logo.setScale(10.0f, 10.0f);
+        entity_registry.assign_or_replace<ecs::component::position>(logo_entity, window_center.x, screen_size.y * 0.8f);
+        logo.setColor(sf::Color(255, 255, 255, 0));
+
+        const float logo_default_angle = 45.0f;
+        const float logo_start_angle = 180.0f - logo_default_angle;
+        logo.setRotation(logo_start_angle);
+        return std::make_tuple(logo_entity, logo_final_scale, logo_target_position, logo, logo_start_angle);
+    }
+
+    auto intro_scene_factory::create_name(entt::registry &entity_registry, resources_manager &resource_mgr,
+                                          const float logo_final_scale, const sf::Vector2f logo_target_position,
+                                          sf::Sprite &logo_sprite)
+    {
+
+        auto&& [screen_size, window_center] = intro_scene_factory::get_window_and_screen(entity_registry);
+
+        auto name_entity = intro_scene_factory::create_sprite<1>(entity_registry, resource_mgr, "name");
+        auto& name = entity_registry.get<sfml::sprite>(name_entity).drawable;
+        name.setScale(0.6f, 0.6f);
+        const float name_target_position = logo_target_position.y + logo_sprite.getTexture()->getSize().y * logo_final_scale * 0.75f;
+        entity_registry.assign_or_replace<ecs::component::position>(name_entity, window_center.x, screen_size.y);
+
+        name.setColor(sf::Color(255, 255, 255, 0));
+        return std::make_tuple(name_entity, name_target_position);
+    }
+
+    entt::entity intro_scene_factory::create_sound(entt::registry &entity_registry, resources_manager &resource_mgr,
+                                                   const std::string &sound_name)
+    {
+        //! Sound loading
+        auto sound_buffer = resource_mgr.load_sound(std::string(sound_name + ".wav").c_str());
+
+        //! Entity creation
+        auto entity = entity_registry.create();
+
+        //! Entity components
+        auto &sound_cmp = entity_registry.assign<component_sound>(entity);
+        sound_cmp.sound.setBuffer(*sound_buffer);
+        entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
+
+        //! Give the fresh entity
+        return entity;
+    }
 }
 
 namespace antara::gaming::sfml
@@ -68,6 +174,7 @@ namespace antara::gaming::sfml
                                                                                           on_finish_functor_(std::move(
                                                                                                   on_finish_functor))
     {
+        static const float DEG2RAD = 0.0174533f;
         auto&&[logo_entity,
         logo_final_scale,
         logo_target_position,
@@ -86,7 +193,7 @@ namespace antara::gaming::sfml
 
         // Define animations
         // Shrink Logo
-        actions.emplace_back(0.0f, [this, logo_final_scale = logo_final_scale, logo_entity = logo_entity](float dt) {
+        actions.emplace_back(0.0f, [this, logo_final_scale = logo_final_scale, logo_entity = logo_entity, DEG2RAD = DEG2RAD](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.0f;
             static const auto friction = 0.025f;
@@ -111,7 +218,7 @@ namespace antara::gaming::sfml
         });
 
         // Rotate Logo
-        actions.emplace_back(0.0f, [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity](float dt) {
+        actions.emplace_back(0.0f, [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity, DEG2RAD = DEG2RAD](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.15f;
@@ -266,4 +373,5 @@ namespace antara::gaming::sfml
         auto view = entity_registry_.view<entt::tag<"intro_scene"_hs>>();
         entity_registry_.destroy(view.begin(), view.end());
     }
+
 }
