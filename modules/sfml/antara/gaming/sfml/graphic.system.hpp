@@ -17,6 +17,8 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include "meta/sequence/list.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/config/config.game.hpp"
@@ -50,6 +52,8 @@ namespace antara::gaming::sfml
         config::window_cfg &window_cfg_{game_cfg_.win_cfg};
         sf::RenderWindow window_{sf::VideoMode(window_cfg_.width, window_cfg_.height),
                                  window_cfg_.title};
+        sf::RenderTexture render_texture_;
+        sf::Sprite render_texture_sprite_;
     };
 }
 

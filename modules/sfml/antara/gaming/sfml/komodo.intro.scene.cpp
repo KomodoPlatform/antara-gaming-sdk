@@ -14,10 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <cstdio>
 #include <SFML/Graphics.hpp>
 #include <utility>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
+#include <iostream>
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
 
