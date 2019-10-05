@@ -205,12 +205,12 @@ namespace antara::gaming::sfml
         });
 
         // Sound effects
-        actions.emplace_back(0.0f, [this, intro1_entity](float dt) {
+        actions.emplace_back(0.0f, [this, intro1_entity](float) {
             entity_registry_.get<sfml::component_sound>(intro1_entity).play();
             return true;
         });
 
-        actions.emplace_back(1.15f, [this, intro2_entity](float dt) {
+        actions.emplace_back(1.15f, [this, intro2_entity](float) {
             entity_registry_.get<sfml::component_sound>(intro2_entity).play();
             return true;
         });
