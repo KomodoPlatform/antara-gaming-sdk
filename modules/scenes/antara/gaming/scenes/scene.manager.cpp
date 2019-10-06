@@ -47,7 +47,7 @@ namespace antara::gaming::scenes
         scenes_.push(std::move(scene));
     }
 
-    manager::manager(entt::registry& entity_registry, entt::dispatcher &dispatcher) noexcept : system(entity_registry, dispatcher)
+    manager::manager(entt::registry& entity_registry) noexcept : system(entity_registry)
     {
         this->dispatcher_.sink<event::key_pressed>().connect<&manager::receive_key_pressed>(*this);
         this->dispatcher_.sink<event::key_released>().connect<&manager::receive_key_released>(*this);

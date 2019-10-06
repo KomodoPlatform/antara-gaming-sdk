@@ -21,7 +21,7 @@ Let's create between the ``using namespace`` statement and the definition of the
     {
     public:
         //! Here the constructor can take other additional arguments but the first two are mandatory
-        pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry, dispatcher)
+        pre_concrete_system(entt::registry &registry) noexcept : system(registry)
         {
 
         }
@@ -61,7 +61,7 @@ To do this we will create a counter as a private field of our system and increme
     {
     public:
         //! Here the constructor can take other additional arguments but the first two are mandatory
-        pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry, dispatcher)
+        pre_concrete_system(entt::registry &registry) noexcept : system(registry)
         {
 
         }

@@ -19,10 +19,9 @@
 namespace antara::gaming::ecs
 {
     base_system::base_system(entt::registry &entity_registry,
-                             entt::dispatcher &dispatcher,
                              bool im_a_plugin_system) noexcept :
             entity_registry_(entity_registry),
-            dispatcher_(dispatcher),
+            dispatcher_(entity_registry_.ctx<entt::dispatcher>()),
             is_plugin_{im_a_plugin_system}
     {
 

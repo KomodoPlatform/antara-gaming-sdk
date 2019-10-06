@@ -18,9 +18,9 @@
 
 namespace antara::gaming::scenes
 {
-    base_scene::base_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept
+    base_scene::base_scene(entt::registry &entity_registry) noexcept
             : entity_registry_(entity_registry),
-              dispatcher_(dispatcher_)
+              dispatcher_(entity_registry_.ctx<entt::dispatcher>())
     {
 
     }

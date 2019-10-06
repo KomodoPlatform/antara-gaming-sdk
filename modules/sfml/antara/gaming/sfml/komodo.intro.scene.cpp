@@ -172,11 +172,10 @@ namespace antara::gaming::sfml
         return done;
     }
 
-    intro_scene::intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher,
-                             intro_scene::on_finish_functor on_finish_functor) noexcept : base_scene(entity_registry,
-                                                                                                     dispatcher),
-                                                                                          on_finish_functor_(std::move(
-                                                                                                  on_finish_functor))
+    intro_scene::intro_scene(entt::registry &entity_registry, intro_scene::on_finish_functor on_finish_functor) noexcept
+            : base_scene(entity_registry),
+              on_finish_functor_(std::move(
+                      on_finish_functor))
     {
         static const float DEG2RAD = 0.0174533f;
         auto&&[logo_entity,
@@ -198,8 +197,7 @@ namespace antara::gaming::sfml
         // Define animations
         // Shrink Logo
         actions.emplace_back(0.0f, [this, logo_final_scale = logo_final_scale,
-                logo_entity = logo_entity, DEG2RAD = DEG2RAD](float dt)
-        {
+                logo_entity = logo_entity, DEG2RAD = DEG2RAD](float dt) {
             static const auto sin_base = 90.0f * DEG2RAD;
             static const auto speed = 2.0f;
             static const auto friction = 0.025f;
@@ -226,8 +224,7 @@ namespace antara::gaming::sfml
         // Rotate Logo
         actions.emplace_back(0.0f,
                              [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity, DEG2RAD = DEG2RAD](
-                                     float dt)
-                             {
+                                     float dt) {
                                  static const auto sin_base = 90.0f * DEG2RAD;
                                  static const auto speed = 2.25f;
                                  static const auto friction = 0.15f;
@@ -253,8 +250,7 @@ namespace antara::gaming::sfml
 
         // Move Logo
         actions.emplace_back(0.0f, [this, logo_target_position = logo_target_position,
-                logo_entity = logo_entity](float dt)
-        {
+                logo_entity = logo_entity](float dt) {
             static auto pos = entity_registry_.get<ecs::component::position>(logo_entity);
 
             // Change pos_y
@@ -268,8 +264,7 @@ namespace antara::gaming::sfml
 
         // Move Name
         actions.emplace_back(1.0f, [this, name_target_position = name_target_position, logo_entity = logo_entity,
-                name_entity = name_entity](float dt)
-        {
+                name_entity = name_entity](float dt) {
             static auto pos = entity_registry_.get<ecs::component::position>(logo_entity);
 
             // Change pos_y
@@ -282,8 +277,7 @@ namespace antara::gaming::sfml
         });
 
         // Fade in Transparency
-        auto transparency_func = [](float dt, float &size, float &total_time, sf::Sprite &sprite)
-        {
+        auto transparency_func = [](float dt, float &size, float &total_time, sf::Sprite &sprite) {
             static const auto sin_base = 270.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.1f;
@@ -306,38 +300,33 @@ namespace antara::gaming::sfml
         };
 
         // Fade in logo
-        actions.emplace_back(0.0f, [this, transparency_func, logo_entity = logo_entity](float dt)
-        {
+        actions.emplace_back(0.0f, [this, transparency_func, logo_entity = logo_entity](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
             return transparency_func(dt, size, total_time, get_underlying_sfml_drawable<sfml::sprite>(logo_entity));
         });
 
         // Fade in name
-        actions.emplace_back(1.5f, [this, transparency_func, name_entity = name_entity](float dt)
-        {
+        actions.emplace_back(1.5f, [this, transparency_func, name_entity = name_entity](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
             return transparency_func(dt, size, total_time, get_underlying_sfml_drawable<sfml::sprite>(name_entity));
         });
 
         // Sound effects
-        actions.emplace_back(0.0f, [this, intro1_entity](float)
-        {
+        actions.emplace_back(0.0f, [this, intro1_entity](float) {
             entity_registry_.get<sfml::component_sound>(intro1_entity).play();
             return true;
         });
 
-        actions.emplace_back(1.15f, [this, intro2_entity](float)
-        {
+        actions.emplace_back(1.15f, [this, intro2_entity](float) {
             entity_registry_.get<sfml::component_sound>(intro2_entity).play();
             return true;
         });
 
         // Black out foreground transparency
         // This is the final animation which completes the intro
-        actions.emplace_back(3.25f, [this, foreground_entity](float dt)
-        {
+        actions.emplace_back(3.25f, [this, foreground_entity](float dt) {
             auto &foreground = get_underlying_sfml_drawable<sfml::rectangle>(foreground_entity);
             static float transparency = foreground.getFillColor().a;
 

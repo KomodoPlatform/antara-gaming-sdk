@@ -34,15 +34,14 @@ namespace antara::gaming::lua
         });
     }
 
-    scripting_system::scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
+    scripting_system::scripting_system(entt::registry &entity_registry,
                                        std::filesystem::path script_directory,
                                        std::filesystem::path systems_directory,
-                                       std::filesystem::path script_scenes_directory) noexcept : system(
-            entity_registry, dispatcher), directory_path_(std::move(script_directory)), systems_directory_path_(
+                                       std::filesystem::path script_scenes_directory) noexcept :
+            system(entity_registry),
+            directory_path_(std::move(script_directory)), systems_directory_path_(
             std::move(systems_directory)),
-                                                                                                 scenes_directory_path_(
-                                                                                                         std::move(
-                                                                                                                 script_scenes_directory))
+            scenes_directory_path_(std::move(script_scenes_directory))
     {
         lua_state_->open_libraries();
         register_entity_registry();
@@ -166,7 +165,7 @@ namespace antara::gaming::lua
         });
 
         table.new_enum<input::mouse_wheel>("mouse_wheel", {
-                {"vertical_wheel", input::mouse_wheel::vertical_wheel},
+                {"vertical_wheel",   input::mouse_wheel::vertical_wheel},
                 {"horizontal_wheel", input::mouse_wheel::horizontal_wheel}
         });
 
@@ -264,17 +263,17 @@ namespace antara::gaming::lua
         switch (sys_type) {
             case ecs::pre_update:
                 this->dispatcher_.trigger<ecs::event::add_base_system>(
-                        std::make_unique<details::lua_pre_scripted_system>(entity_registry_, dispatcher_, table_name,
-                                                                           this->lua_state_));
+                        std::make_unique<details::lua_pre_scripted_system>(entity_registry_,
+                                                                           table_name, this->lua_state_));
                 break;
             case ecs::logic_update:
                 this->dispatcher_.trigger<ecs::event::add_base_system>(
-                        std::make_unique<details::lua_logic_scripted_system>(entity_registry_, dispatcher_,
-                                                                             table_name, this->lua_state_));
+                        std::make_unique<details::lua_logic_scripted_system>(entity_registry_, table_name,
+                                                                             this->lua_state_));
                 break;
             case ecs::post_update:
                 this->dispatcher_.trigger<ecs::event::add_base_system>(
-                        std::make_unique<details::lua_post_scripted_system>(entity_registry_, dispatcher_, table_name,
+                        std::make_unique<details::lua_post_scripted_system>(entity_registry_, table_name,
                                                                             this->lua_state_));
                 break;
             case ecs::size:

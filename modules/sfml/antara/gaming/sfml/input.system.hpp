@@ -26,7 +26,7 @@ namespace antara::gaming::sfml
     {
     public:
         //! Constructors
-        input_system(entt::registry &registry, entt::dispatcher &dispatcher, sf::RenderWindow &window) noexcept;
+        input_system(entt::registry &registry, sf::RenderWindow &window) noexcept;
 
         void update() noexcept final;
 

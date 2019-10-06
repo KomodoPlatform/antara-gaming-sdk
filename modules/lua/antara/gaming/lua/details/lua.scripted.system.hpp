@@ -31,10 +31,9 @@ namespace antara::gaming::lua::details
     public:
         using TSystem = ecs::system<scripted_system<SystemType>, SystemType>;
 
-        scripted_system(entt::registry &entity_registry, entt::dispatcher &dispatcher, std::string table_name,
+        scripted_system(entt::registry &entity_registry, std::string table_name,
                         std::shared_ptr<sol::state> state) noexcept
-                : TSystem::system(
-                entity_registry, dispatcher), table_name_(std::move(table_name)), state_(state)
+                : TSystem::system(entity_registry), table_name_(std::move(table_name)), state_(state)
         {
             safe_function_("on_construct");
             register_common_events(event::events_list{});

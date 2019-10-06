@@ -28,7 +28,7 @@ namespace antara::gaming::box2d
     {
     public:
         //! Constructors
-        box2d_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
+        box2d_system(entt::registry &registry) noexcept;
 
         void update() noexcept final;
 

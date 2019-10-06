@@ -19,7 +19,7 @@
 
 namespace antara::gaming::box2d
 {
-    box2d_system::box2d_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry, dispatcher)
+    box2d_system::box2d_system(entt::registry &registry) noexcept : system(registry)
     {
 
     }

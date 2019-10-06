@@ -29,7 +29,7 @@ flappy_world::flappy_world() noexcept
     auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
     this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
     auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
-    scene_manager.change_scene(std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, dispatcher_, [&lua_scripting_system, this]() {
+    scene_manager.change_scene(std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, [&lua_scripting_system, this]() {
         lua_scripting_system.load_scripted_system("scenes_system.lua");
         this->system_manager_.mark_system<antara::gaming::scenes::manager>();
     }), true);

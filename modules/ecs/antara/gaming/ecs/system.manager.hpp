@@ -53,7 +53,6 @@ namespace antara::gaming::ecs
         //! Constructors
 
         /**
-         * @param dispatcher The dispatcher is provided to the system when it is created.
          * @param registry The entity_registry is provided to the system when it is created.
          * @param subscribe_to_internal_events Choose whether to subscribe to default system_manager events
            @verbatim embed:rst
@@ -69,13 +68,12 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager mgr{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager mgr{entity_registry};
          *          }
          * @endcode
          */
-        explicit system_manager(entt::registry &registry, entt::dispatcher &dispatcher,
-                                bool subscribe_to_internal_events = true) noexcept;
+        explicit system_manager(entt::registry &registry, bool subscribe_to_internal_events = true) noexcept;
 
         //! Callback
 
@@ -478,7 +476,6 @@ namespace antara::gaming::ecs
         }
         auto creator = [this](auto &&... args_) {
             return std::make_unique<TSystem>(this->entity_registry_,
-                                             this->dispatcher_,
                                              std::forward<decltype(args_)>(args_)...);
         };
         system_ptr sys = creator(std::forward<TSystemArgs>(args)...);

@@ -23,8 +23,7 @@ namespace antara::gaming::scenes::tests
     class my_game_scene final : public base_scene
     {
     public:
-        my_game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(
-                entity_registry, dispatcher_)
+        my_game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
         {
             MESSAGE("game_scene enter");
         }
@@ -57,8 +56,7 @@ namespace antara::gaming::scenes::tests
     class intro_scene final : public base_scene
     {
     public:
-        intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(
-                entity_registry, dispatcher_)
+        intro_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
         {
             MESSAGE("intro_scene enter");
         }
@@ -70,8 +68,7 @@ namespace antara::gaming::scenes::tests
         bool on_key_pressed(const event::key_pressed &evt) noexcept final
         {
             if (evt.key == input::key::space) {
-                this->dispatcher_.trigger<event::change_scene>(
-                        std::make_unique<my_game_scene>(this->entity_registry_, this->dispatcher_), false);
+                this->dispatcher_.trigger<event::change_scene>(std::make_unique<my_game_scene>(this->entity_registry_), false);
             }
             return true;
         }
@@ -102,23 +99,24 @@ namespace antara::gaming::scenes::tests
     {
         GIVEN("a fresh scene manager")
         {
-			entt::dispatcher dispatcher;
+			//entt::dispatcher dispatcher;
 			entt::registry registry;
-			manager scene_mgr{ registry, dispatcher };
-            auto scene_ptr = std::make_unique<intro_scene>(registry, dispatcher);
+			registry.set<entt::dispatcher>();
+			manager scene_mgr{ registry };
+            auto scene_ptr = std::make_unique<intro_scene>(registry);
             WHEN("i push my first scene") {
                 scene_mgr.change_scene(std::move(scene_ptr), true);
                 CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
 
 				AND_THEN("i change scene to go to the game scene") {
-					auto game_scene_ptr = std::make_unique<my_game_scene>(registry, dispatcher);
+					auto game_scene_ptr = std::make_unique<my_game_scene>(registry);
 					scene_mgr.change_scene(std::move(game_scene_ptr), true);
 					CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
 					AND_THEN("i go back to the intro") {
 						CHECK(scene_mgr.previous_scene());
 						CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
 						AND_WHEN("i change scene without keeping the old one") {
-							auto other_game_scene_ptr = std::make_unique<my_game_scene>(registry, dispatcher);
+							auto other_game_scene_ptr = std::make_unique<my_game_scene>(registry);
 							scene_mgr.change_scene(std::move(other_game_scene_ptr));
 							CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
 						}
@@ -127,11 +125,11 @@ namespace antara::gaming::scenes::tests
             }
         }
 
-		entt::dispatcher dispatcher;
 		entt::registry registry;
-		manager another_scene_mgr{ registry, dispatcher };
+        entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+        manager another_scene_mgr{ registry };
         GIVEN("another fresh scene manager") {
-            auto scene_ptr = std::make_unique<intro_scene>(registry, dispatcher);
+            auto scene_ptr = std::make_unique<intro_scene>(registry);
             WHEN("i push my first scene") {
                 another_scene_mgr.change_scene(std::move(scene_ptr), true);
                 CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "intro_scene");

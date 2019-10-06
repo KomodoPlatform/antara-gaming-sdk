@@ -24,8 +24,7 @@ namespace antara::gaming::sfml
 
     }
 
-    lua_system::lua_system(entt::registry &registry, entt::dispatcher &dispatcher,
-                           std::shared_ptr<sol::state> state) noexcept : system(registry, dispatcher), state_(state)
+    lua_system::lua_system(entt::registry &registry, std::shared_ptr<sol::state> state) noexcept : system(registry), state_(state)
     {
         this->disable();
         auto text_functor = [this](const char* text, const char *font_id, unsigned int size = 30) {

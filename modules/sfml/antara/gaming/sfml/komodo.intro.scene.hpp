@@ -79,8 +79,7 @@ namespace antara::gaming::sfml
     public:
         using on_finish_functor = std::function<void()>;
 
-        intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher,
-                    on_finish_functor on_finish_functor) noexcept;
+        intro_scene(entt::registry &entity_registry, on_finish_functor on_finish_functor) noexcept;
 
         void update() noexcept final;
 

@@ -26,9 +26,8 @@
 
 namespace antara::gaming::sfml
 {
-    input_system::input_system(entt::registry &registry, entt::dispatcher &dispatcher,
-                               sf::RenderWindow &window) noexcept
-            : system(registry, dispatcher), window_(window)
+    input_system::input_system(entt::registry &registry, sf::RenderWindow &window) noexcept
+            : system(registry), window_(window)
     {
 
     }

@@ -31,14 +31,10 @@ namespace antara::gaming::lua
     class scripting_system final : public ecs::logic_update_system<lua::scripting_system>
     {
     public:
-        scripting_system(entt::registry &entity_registry, entt::dispatcher &dispatcher,
-                         std::filesystem::path script_directory = core::assets_real_path() / "scripts" /
-                                                                  "lua",
-                         std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" /
-                                                                         "systems" / "lua",
-
-                         std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" /
-                                                                         "scenes" / "lua") noexcept;
+        scripting_system(entt::registry &entity_registry,
+                std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua",
+                std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" / "systems" / "lua",
+                std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" / "scenes" / "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 

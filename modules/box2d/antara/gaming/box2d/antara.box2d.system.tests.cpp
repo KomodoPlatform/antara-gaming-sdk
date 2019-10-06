@@ -22,8 +22,8 @@ namespace antara::gaming::box2d::tests
     TEST_SUITE ("box2d system tests suite")
     {
         entt::registry registry;
-        entt::dispatcher dispatcher;
-        box2d_system system{registry, dispatcher};
+        entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+        box2d_system system{registry};
         TEST_CASE ("update system")
         {
             system.update();
