@@ -263,9 +263,9 @@ namespace antara::gaming::sfml
         });
 
         // Move Name
-        actions.emplace_back(1.0f, [this, name_target_position = name_target_position, logo_entity = logo_entity,
+        actions.emplace_back(1.0f, [this, name_target_position = name_target_position,
                 name_entity = name_entity](float dt) {
-            static auto pos = entity_registry_.get<ecs::component::position>(logo_entity);
+            static auto pos = entity_registry_.get<ecs::component::position>(name_entity);
 
             // Change pos_y
             bool done = ease(&pos.pos_y, name_target_position, 2.0f, dt);
