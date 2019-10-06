@@ -37,7 +37,7 @@ public:
     {
         auto handle = resource_mgr.load_font("sansation.ttf");
         //! Construct dummy entity
-        auto &window_info = entity_registry_.ctx<antara::gaming::config::game_cfg>().win_cfg;
+        auto window_info = entity_registry_.ctx<sf::RenderTexture>().getSize();
         auto dummy_entity = entity_registry_.create();
         auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
                                                                             sf::Text("Game scene", handle.get()));
@@ -45,9 +45,9 @@ public:
         txt.setFillColor(sf::Color::Blue);
         txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
         this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_entity,
-                                                                                static_cast<float>(window_info.width) /
+                                                                                static_cast<float>(window_info.x) /
                                                                                 2.f,
-                                                                                static_cast<float>(window_info.height) /
+                                                                                static_cast<float>(window_info.y) /
                                                                                 2.f);
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);

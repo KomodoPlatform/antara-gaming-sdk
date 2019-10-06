@@ -54,7 +54,7 @@ namespace antara::gaming::sfml
                                  window_cfg_.title, game_cfg_.win_cfg.is_fullscreen
                                                     ? static_cast<sf::Uint32>(sf::Style::Fullscreen) :
                                                     static_cast<sf::Uint32>(sf::Style::Default)};
-        sf::RenderTexture render_texture_;
+        sf::RenderTexture& render_texture_{this->entity_registry_.set<sf::RenderTexture>()};
         sf::Sprite render_texture_sprite_;
     };
 }

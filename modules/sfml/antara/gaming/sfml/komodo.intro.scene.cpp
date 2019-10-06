@@ -47,8 +47,8 @@ namespace antara::gaming::sfml
     //! Factory
     auto intro_scene_factory::get_window_and_screen(entt::registry &entity_registry)
     {
-        auto &window_info = entity_registry.ctx<config::game_cfg>().win_cfg;
-        auto screen_size = sf::Vector2f(window_info.width, window_info.height);
+        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
+        auto screen_size = sf::Vector2f(window_info.x, window_info.y);
         auto window_center = sf::Vector2f(screen_size.x * 0.5f, screen_size.y * 0.5f);
 
         return std::make_tuple(screen_size, window_center);
@@ -57,20 +57,20 @@ namespace antara::gaming::sfml
     entt::entity intro_scene_factory::create_foreground(entt::registry &entity_registry)
     {
         //! Get window information
-        auto &window_info = entity_registry.ctx<config::game_cfg>().win_cfg;
+        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
 
         //! Entity creation
         auto entity = entity_registry.create();
 
         //! Entity components
         auto &rect = entity_registry.assign<rectangle>(entity, sf::RectangleShape(
-                sf::Vector2f(window_info.width, window_info.height))).drawable;
+                sf::Vector2f(window_info.x, window_info.y))).drawable;
         rect.setFillColor(sf::Color(0, 0, 0, 0));
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<ecs::component::layer<2>>(entity);
 
         rect.setFillColor(sf::Color(0, 0, 0, 0));
-        rect.setSize(sf::Vector2f(window_info.width, window_info.height));
+        rect.setSize(sf::Vector2f(window_info.x, window_info.y));
         //! Give the fresh entity
         return entity;
     }
@@ -78,7 +78,7 @@ namespace antara::gaming::sfml
     entt::entity intro_scene_factory::create_background(entt::registry &entity_registry)
     {
         //! Get window information
-        auto &window_info = entity_registry.ctx<config::game_cfg>().win_cfg;
+        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
 
         //! Entity creation
         auto entity = entity_registry.create();
@@ -87,9 +87,9 @@ namespace antara::gaming::sfml
         auto &va_cmp = entity_registry.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
         sf::VertexArray &va = va_cmp.drawable;
         va.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.width, 0), sf::Color(0, 217, 184)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.width, window_info.height), sf::Color(0, 176, 163)));
-        va.append(sf::Vertex(sf::Vector2f(0, window_info.height), sf::Color(0, 67, 106)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.x, 0), sf::Color(0, 217, 184)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.x, window_info.y), sf::Color(0, 176, 163)));
+        va.append(sf::Vertex(sf::Vector2f(0, window_info.x), sf::Color(0, 67, 106)));
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<ecs::component::layer<0>>(entity);
 
