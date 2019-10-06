@@ -51,7 +51,7 @@ namespace antara::gaming::sfml
         config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};
         config::window_cfg &window_cfg_{game_cfg_.win_cfg};
         sf::RenderWindow window_{sf::VideoMode(window_cfg_.width, window_cfg_.height),
-                                 window_cfg_.title, game_cfg_.win_cfg.is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default};
+                                 window_cfg_.title, (game_cfg_.win_cfg.is_fullscreen == true) ? sf::Style::Fullscreen : sf::Style::Default};
         sf::RenderTexture render_texture_;
         sf::Sprite render_texture_sprite_;
     };
