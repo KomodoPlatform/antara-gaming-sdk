@@ -226,6 +226,7 @@ namespace antara::gaming::ecs
                    This function is marked as nodiscard_.
                 .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
            @endverbatim
+
          * Example:
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
@@ -264,9 +265,9 @@ namespace antara::gaming::ecs
                    This function is marked as nodiscard_.
                 .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
            @endverbatim
-
-         * Example:
-         * ```cpp
+         *
+         * **Example:**
+         * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
          *          #include <antara/gaming/ecs/system.manager.hpp>
@@ -283,7 +284,7 @@ namespace antara::gaming::ecs
          *              }
          *              return 0;
          *          }
-         * ```
+         * @endcode
          */
         template<typename TSystem>
         [[nodiscard]] bool has_system() const noexcept;
@@ -305,8 +306,8 @@ namespace antara::gaming::ecs
                 .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
            @endverbatim
 
-         * Example:
-         * ```cpp
+         * **Example:**
+         * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
          *          #include <antara/gaming/ecs/system.manager.hpp>
@@ -323,7 +324,7 @@ namespace antara::gaming::ecs
          *              }
          *              return 0;
          *          }
-         * ```
+         * @endcode
          */
         template<typename ... TSystems>
         [[nodiscard]] bool has_systems() const noexcept;
@@ -331,8 +332,10 @@ namespace antara::gaming::ecs
         /**
          * @brief This function marks a system that will be destroyed at the next tick of the game loop.
          * @tparam TSystem Represents the system that needs to be marked
-         * @return true if the system has been marked, false otherwise
-         * Example:
+         * @return true if the system has been marked, false otherwise\n
+
+
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
@@ -346,22 +349,54 @@ namespace antara::gaming::ecs
          *
          *      bool result = system_manager.mark_system<my_game::render>();
          *      if (!result) {
-         *          //! Oh no the system has not been marked.
-         *          //! Did you mark a system that is not present in the system_manager?
+         *          // Oh no the system has not been marked.
+         *          // Did you mark a system that is not present in the system_manager ?
          *      }
          *      return 0;
          *  }
          * @endcode
+         *
          */
         template<typename TSystem>
         bool mark_system() noexcept;
 
         /**
-         * \note This function marks a list of systems, marked systems will be destroyed at the next tick of the game loop.
-         * \tparam TSystems Represents a list of systems that needs to be marked
-         * \return true if  the list of systems has been marked, false otherwise
-         * \details This function recursively calls the mark_system function
-         * \see mark_system
+         * @brief This function marks a list of systems, marked systems will be destroyed at the next tick of the game loop.
+         * @tparam TSystems Represents a list of systems that needs to be marked
+         * @return true if  the list of systems has been marked, false otherwise
+         *
+         * @see mark_system
+
+           @verbatim embed:rst
+                .. role:: raw-html(raw)
+                    :format: html
+
+                .. note::
+                   This function is marked as nodiscard_. :raw-html:`<br />`
+                   This function recursively calls the mark_system function.
+                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+           @endverbatim
+
+         * **Example:**
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *
+         *      bool result = system_manager.mark_systems<my_game::render, my_game::input>();
+         *      if (!result) {
+         *          // Oh no, atleast one of the system has not been marked.
+         *          // Did you mark a system that is not present in the system_manager ?
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
          */
         template<typename ... TSystems>
         bool mark_systems() noexcept;

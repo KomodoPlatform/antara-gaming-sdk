@@ -609,9 +609,9 @@ INLINE_INFO            = YES
 # name. If set to NO, the members will appear in declaration order.
 # The default value is: YES.
 
-SORT_MEMBER_DOCS       = YES
+SORT_MEMBER_DOCS       = NO
 
-# If the SORT_BRIEF_DOCS tag is set to YES then doxygen will sort the brief
+# If the SORT_BRIEF_DOCS tag    is set to YES then doxygen will sort the brief
 # descriptions of file, namespace and class members alphabetically by member
 # name. If set to NO, the members will appear in declaration order. Note that
 # this will also influence the order of the classes in the class list.
