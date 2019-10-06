@@ -26,6 +26,7 @@
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/audio.system.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
+#include "../tic-tac-toe/game.scene.hpp"
 
 
 class intro_scene;
@@ -33,6 +34,7 @@ class intro_scene;
 class game_scene final : public antara::gaming::scenes::base_scene
 {
 public:
+
     game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
         auto handle = resource_mgr.load_font("sansation.ttf");
@@ -68,6 +70,24 @@ public:
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(triangle_entity);
         this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(triangle_entity);
 
+        auto cross_entity = entity_registry.create();
+        auto &cross_cmp = entity_registry.assign<antara::gaming::sfml::vertex_array>(cross_entity,
+                                                                                     sf::VertexArray(sf::Lines, 16));
+        sf::VertexArray &lines = cross_cmp.drawable;
+
+        auto nb_cells = 3u;
+        auto cell_width = window_info.x / nb_cells;
+        auto cell_height = window_info.y / nb_cells;
+
+        for (std::size_t counter = 0, i = 0; i < nb_cells; ++i, counter += 4) {
+            lines[counter].position = sf::Vector2f(i * cell_width, 0);
+            lines[counter + 1].position = sf::Vector2f(i * cell_width, window_info.y);
+            lines[counter + 2].position = sf::Vector2f(0, i * cell_height);
+            lines[counter + 3].position = sf::Vector2f(window_info.x, i * cell_height);
+        }
+
+        entity_registry_.assign<entt::tag<"game_scene"_hs>>(cross_entity);
+        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(cross_entity);
     }
 
     void update() noexcept final

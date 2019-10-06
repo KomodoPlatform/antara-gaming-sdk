@@ -16,13 +16,22 @@
 
 #pragma once
 
-#include "antara/gaming/world/world.app.hpp"
-#include "antara/gaming/scenes/scene.manager.hpp"
-#include "antara/gaming/sfml/graphic.system.hpp"
-#include "antara/gaming/sfml/input.system.hpp"
+#include <cstddef>
+#include <vector>
 
-class game_world : public antara::gaming::world::app
+enum cell_state
 {
-public:
-    game_world() noexcept;
+    empty,
+    player_x = 1,
+    player_y = 2
+};
+
+struct board_component
+{
+    board_component(std::size_t nb_cells) noexcept : board(nb_cells * nb_cells, cell_state::empty)
+    {
+
+    }
+
+    std::vector<cell_state> board;
 };

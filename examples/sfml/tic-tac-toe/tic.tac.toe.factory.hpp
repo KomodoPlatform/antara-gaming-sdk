@@ -16,13 +16,17 @@
 
 #pragma once
 
-#include "antara/gaming/world/world.app.hpp"
-#include "antara/gaming/scenes/scene.manager.hpp"
-#include "antara/gaming/sfml/graphic.system.hpp"
-#include "antara/gaming/sfml/input.system.hpp"
+#include <entt/entity/entity.hpp>
+#include <entt/entity/registry.hpp>
 
-class game_world : public antara::gaming::world::app
+class tic_tac_toe_factory
 {
 public:
-    game_world() noexcept;
+    static entt::entity create_grid_entity(entt::registry &entity_registry) noexcept;
+
+    static entt::entity create_board(entt::registry &entity_registry) noexcept;
+
+    static entt::entity create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
+
+    static entt::entity create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
 };

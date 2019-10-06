@@ -22,7 +22,7 @@
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
 
-flappy_world::flappy_world() noexcept
+game_world::game_world() noexcept
 {
     auto &lua_scripting_system = this->system_manager_.create_system<antara::gaming::lua::scripting_system>();
     this->system_manager_.create_system<antara::gaming::sfml::lua_system>(lua_scripting_system.get_state_ptr());

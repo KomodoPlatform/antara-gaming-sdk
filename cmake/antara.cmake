@@ -119,7 +119,7 @@ macro(magic_game_app_image_generation from_dir desktop_file appdata_file app_ico
             add_custom_command(TARGET ${target}
                     POST_BUILD COMMAND
                     bash -c
-                    "VERSION=${PROJECT_VERSION} ${PROJECT_SOURCE_DIR}/tools/linux/linuxdeploy-x86_64.AppImage --appdir ${output_dir} --output appimage"
+                    "ARCH=x86_64 VERSION=${PROJECT_VERSION} ${PROJECT_SOURCE_DIR}/tools/linux/linuxdeploy-x86_64.AppImage --appdir ${output_dir} --output appimage"
                     $<TARGET_FILE:${target}>
                     WORKING_DIRECTORY ${exe_runtime_directory})
         endif ()

@@ -17,7 +17,7 @@
 #include "world.hpp"
 #include "intro.scene.hpp"
 
-flappy_world::flappy_world() noexcept
+game_world::game_world() noexcept
 {
     auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
     this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());

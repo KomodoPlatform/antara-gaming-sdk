@@ -18,7 +18,7 @@
 
 #include "antara/gaming/world/world.app.hpp"
 
-class flappy_world : public antara::gaming::world::app
+class game_world : public antara::gaming::world::app
 {
 public:
     flappy_world() noexcept;

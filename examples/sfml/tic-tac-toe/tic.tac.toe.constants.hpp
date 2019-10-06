@@ -16,13 +16,17 @@
 
 #pragma once
 
-#include "antara/gaming/world/world.app.hpp"
-#include "antara/gaming/scenes/scene.manager.hpp"
-#include "antara/gaming/sfml/graphic.system.hpp"
-#include "antara/gaming/sfml/input.system.hpp"
-
-class game_world : public antara::gaming::world::app
+struct tic_tac_toe_constants
 {
-public:
-    game_world() noexcept;
+    tic_tac_toe_constants(std::size_t nb_cells_, std::size_t width_, std::size_t height_) noexcept :
+            nb_cells(nb_cells_),
+            cell_width(width_ / nb_cells),
+            cell_height(height_ / nb_cells)
+    {
+
+    }
+
+    const std::size_t nb_cells;
+    const std::size_t cell_width;
+    const std::size_t cell_height;
 };

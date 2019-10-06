@@ -18,6 +18,6 @@
 
 int main()
 {
-    flappy_world game_app;
+    game_world game_app;
     return game_app.run();
 }
