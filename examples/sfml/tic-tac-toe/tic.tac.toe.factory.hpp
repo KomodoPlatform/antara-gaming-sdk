@@ -19,14 +19,17 @@
 #include <entt/entity/entity.hpp>
 #include <entt/entity/registry.hpp>
 
-class tic_tac_toe_factory
+namespace tictactoe::example
 {
-public:
-    static entt::entity create_grid_entity(entt::registry &entity_registry) noexcept;
+    class tic_tac_toe_factory
+    {
+    public:
+        static entt::entity create_grid_entity(entt::registry &entity_registry) noexcept;
 
-    static entt::entity create_board(entt::registry &entity_registry) noexcept;
+        static entt::entity create_board(entt::registry &entity_registry) noexcept;
 
-    static entt::entity create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
+        static entt::entity create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
 
-    static entt::entity create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
-};
+        static entt::entity create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
+    };
+}

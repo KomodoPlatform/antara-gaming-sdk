@@ -18,6 +18,6 @@
 
 int main()
 {
-    tictactoe_world game_app;
+    tictactoe::example::tictactoe_world game_app;
     return game_app.run();
 }

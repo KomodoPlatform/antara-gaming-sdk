@@ -21,8 +21,12 @@
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
 
-class tictactoe_world : public antara::gaming::world::app
+
+namespace tictactoe::example
 {
-public:
-    tictactoe_world() noexcept;
-};
+    class tictactoe_world : public antara::gaming::world::app
+    {
+    public:
+        tictactoe_world() noexcept;
+    };
+}

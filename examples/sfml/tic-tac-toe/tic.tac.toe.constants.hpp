@@ -16,17 +16,20 @@
 
 #pragma once
 
-struct tic_tac_toe_constants
+namespace tictactoe::example
 {
-    tic_tac_toe_constants(std::size_t nb_cells_, std::size_t width_, std::size_t height_) noexcept :
-            nb_cells(nb_cells_),
-            cell_width(width_ / nb_cells),
-            cell_height(height_ / nb_cells)
+    struct tic_tac_toe_constants
     {
+        tic_tac_toe_constants(std::size_t nb_cells_, std::size_t width_, std::size_t height_) noexcept :
+                nb_cells(nb_cells_),
+                cell_width(width_ / nb_cells),
+                cell_height(height_ / nb_cells)
+        {
 
-    }
+        }
 
-    const std::size_t nb_cells;
-    const std::size_t cell_width;
-    const std::size_t cell_height;
-};
+        const std::size_t nb_cells;
+        const std::size_t cell_width;
+        const std::size_t cell_height;
+    };
+}

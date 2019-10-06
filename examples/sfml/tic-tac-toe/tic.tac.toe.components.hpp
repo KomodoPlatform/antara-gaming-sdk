@@ -19,19 +19,22 @@
 #include <cstddef>
 #include <vector>
 
-enum cell_state
+namespace tictactoe::example
 {
-    empty,
-    player_x = 1,
-    player_y = 2
-};
-
-struct board_component
-{
-    board_component(std::size_t nb_cells) noexcept : board(nb_cells * nb_cells, cell_state::empty)
+    enum cell_state
     {
+        empty,
+        player_x = 1,
+        player_y = 2
+    };
 
-    }
+    struct board_component
+    {
+        board_component(std::size_t nb_cells) noexcept : board(nb_cells * nb_cells, cell_state::empty)
+        {
 
-    std::vector<cell_state> board;
-};
+        }
+
+        std::vector<cell_state> board;
+    };
+}
