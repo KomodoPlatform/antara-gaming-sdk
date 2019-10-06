@@ -29,7 +29,7 @@ namespace antara::gaming::sfml
             game_cfg_.win_cfg.height = window_.getSize().y;
         }
         // RenderTexture height will be 1080
-        const float height = window_.getSize().y;
+        const float height = 1080.f;
         const float scale = height / window_.getSize().y;
         render_texture_.create(window_.getSize().x * scale, height);
         render_texture_.setSmooth(true);

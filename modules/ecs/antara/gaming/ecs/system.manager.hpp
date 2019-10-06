@@ -100,8 +100,8 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry};
          *              system_manager.start();
          *              return 0;
          *          }
@@ -136,8 +136,8 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry};
          *              system_manager.start();
          *              // ... added 5 differents systems here
          *              std::size_t nb_systems_updated = system_manager.update();
@@ -185,8 +185,8 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry};
          *              system_manager.start();
          *              // ... added 2 differents systems here (render_system, and a log_system)
          *              //! Non const version
@@ -235,8 +235,8 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry};
          *              // ... added differents systems here
          *              // Called from a const context
          *              auto &&[system_foo, system_bar] = system_manager.get_systems<system_foo, system_bar>();
@@ -251,7 +251,8 @@ namespace antara::gaming::ecs
          * @endcode
          */
         template<typename ...TSystems>
-        [[nodiscard]] std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...> get_systems() const noexcept;
+        [[nodiscard]] std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...>
+        get_systems() const noexcept;
 
         /**
          * @brief This function allow you to verify if a system is already registered in the system_manager.
@@ -273,8 +274,8 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry};
          *
          *              bool result = system_manager.has_system<my_game::render_system>();
          *              if (!result) {
@@ -313,8 +314,8 @@ namespace antara::gaming::ecs
          *          int main()
          *          {
          *              entt::registry entity_registry;
-         *              entt::dispatcher dispatcher
-         *              antara::gaming::ecs::system_manager system_manager{entity_registry, dispatcher};
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              antara::gaming::ecs::system_manager system_manager{entity_registry};
          *
          *              bool result = system_manager.has_systems<my_game::render_system, my_game::input_systems>();
          *              if (!result) {
@@ -328,10 +329,30 @@ namespace antara::gaming::ecs
         [[nodiscard]] bool has_systems() const noexcept;
 
         /**
-        * \note This function marks a system that will be destroyed at the next tick of the game loop.
-        * \tparam TSystem Represents the system that needs to be marked
-        * \return true if the system has been marked, false otherwise
-        */
+         * @brief This function marks a system that will be destroyed at the next tick of the game loop.
+         * @tparam TSystem Represents the system that needs to be marked
+         * @return true if the system has been marked, false otherwise
+         * Example:
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *
+         *      bool result = system_manager.mark_system<my_game::render>();
+         *      if (!result) {
+         *          //! Oh no the system has not been marked.
+         *          //! Did you mark a system that is not present in the system_manager?
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         */
         template<typename TSystem>
         bool mark_system() noexcept;
 
