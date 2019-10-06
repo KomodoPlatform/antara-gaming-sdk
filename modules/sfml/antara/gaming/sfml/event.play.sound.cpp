@@ -24,11 +24,11 @@ namespace antara::gaming::sfml
     }
 
     play_sound_event::play_sound_event(const char *sound_id_, resources_manager *resources_manager_,
-                                       std::function<void()> on_finish) noexcept
+                                       std::function<void()> on_finish, float volume_) noexcept
             : sound_id(sound_id_),
               resource_mgr(
                       resources_manager_),
-              on_finish(std::move(on_finish))
+              on_finish(std::move(on_finish)), volume(volume_)
     {
 
     }

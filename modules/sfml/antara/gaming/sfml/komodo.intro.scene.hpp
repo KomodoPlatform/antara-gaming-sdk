@@ -16,18 +16,71 @@
 
 #pragma once
 
+#include <tuple>
 #include <functional>
 #include <entt/signal/dispatcher.hpp>
+#include <entt/entity/helper.hpp>
+#include <SFML/Graphics.hpp>
+#include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
+#include "antara/gaming/ecs/component.layer.hpp"
+#include <antara/gaming/ecs/component.position.hpp>
+#include "antara/gaming/sfml/resources.manager.hpp"
+#include "antara/gaming/sfml/component.audio.hpp"
+#include "antara/gaming/sfml/component.drawable.hpp"
 
 
 namespace antara::gaming::sfml
 {
+    struct intro_scene_factory
+    {
+    private:
+        static auto get_window_and_screen(entt::registry &entity_registry);
+
+    public:
+        template<std::size_t current_layer>
+        static entt::entity
+        create_sprite(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sprite_name)
+        {
+            //! Texture loading
+            auto texture = resource_mgr.load_texture(std::string(sprite_name + ".png").c_str());
+            texture.get().setSmooth(true);
+
+            //! Entity creation
+            auto entity = entity_registry.create();
+
+            //! Entity components
+            auto &sprite = entity_registry.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture)).drawable;
+            sprite.setOrigin(sprite.getLocalBounds().width * 0.5f, sprite.getLocalBounds().height * 0.5f);
+            entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
+            entity_registry.assign<antara::gaming::ecs::component::layer<current_layer>>(entity);
+
+            //! Give the fresh entity
+            return entity;
+        }
+
+        static entt::entity
+        create_sound(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sound_name);
+
+        static entt::entity create_foreground(entt::registry &entity_registry);
+
+        static entt::entity create_background(entt::registry &entity_registry);
+
+        static auto create_logo(entt::registry &entity_registry, resources_manager &resource_mgr);
+
+        static auto create_name(entt::registry &entity_registry,
+                                resources_manager &resource_mgr,
+                                const float logo_final_scale, const sf::Vector2f logo_target_position,
+                                sf::Sprite &logo_sprite);
+    };
+
     class intro_scene final : public antara::gaming::scenes::base_scene
     {
     public:
         using on_finish_functor = std::function<void()>;
-        intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher, on_finish_functor on_finish_functor) noexcept;
+
+        intro_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher,
+                    on_finish_functor on_finish_functor) noexcept;
 
         void update() noexcept final;
 
@@ -35,10 +88,39 @@ namespace antara::gaming::sfml
 
         std::string scene_name() noexcept final;
 
-        ~intro_scene() noexcept final = default;
+        ~intro_scene() noexcept final;
 
     private:
+        struct animation
+        {
+        public:
+            animation() = delete;
+
+            explicit animation(float start_time, std::function<bool(float)> animation);
+
+            void update(float dt);
+
+            bool is_done();
+
+            const float start_time;
+
+        private:
+            std::function<bool(float)> animate;
+            bool done;
+        };
+
+        std::vector<animation> actions;
+        float global_time{0.f};
+
+        template<typename Component>
+        auto &get_underlying_sfml_drawable(entt::entity entity)
+        {
+            return entity_registry_.get<Component>(entity).drawable;
+        }
+
         on_finish_functor on_finish_functor_;
         bool intro_finished{false};
+
+        antara::gaming::sfml::resources_manager resource_mgr;
     };
 }

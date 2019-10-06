@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cstddef>
+#include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::ecs::component
 {

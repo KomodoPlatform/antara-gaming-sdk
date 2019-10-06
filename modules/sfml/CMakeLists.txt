@@ -25,7 +25,7 @@ add_library(antara::sfml_resources ALIAS antara_sfml_resources)
 
 add_library(antara_sfml_extras STATIC)
 target_sources(antara_sfml_extras PRIVATE antara/gaming/sfml/komodo.intro.scene.cpp)
-target_link_libraries(antara_sfml_extras PUBLIC antara::sfml_shared_resources antara::scenes)
+target_link_libraries(antara_sfml_extras PUBLIC antara::sfml_shared_resources antara::scenes sfml-graphics)
 add_library(antara::sfml_extras ALIAS antara_sfml_extras)
 
 if (USE_LUA_ANTARA_WRAPPER)

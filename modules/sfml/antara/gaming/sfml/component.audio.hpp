@@ -17,13 +17,20 @@
 #pragma once
 
 #include <functional>
+#include <SFML/Audio/Sound.hpp>
 
 namespace antara::gaming::sfml
 {
     struct component_sound
     {
+        void play() {
+            is_started = true;
+            sound.play();
+        }
         sf::Sound sound;
+        bool is_started{false};
         std::function<void()> on_finish{[]()
                                         {}};
+        float volume{100.0f};
     };
 }
