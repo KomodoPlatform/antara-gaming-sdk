@@ -26,7 +26,7 @@ namespace antara::gaming::ecs::tests
     class logic_concrete_system final : public logic_update_system<logic_concrete_system>
     {
     public:
-        logic_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        logic_concrete_system(entt::registry &registry) : system(registry)
         {
 
         }
@@ -42,7 +42,7 @@ namespace antara::gaming::ecs::tests
     class pre_concrete_system final : public pre_update_system<pre_concrete_system>
     {
     public:
-        pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        pre_concrete_system(entt::registry &registry) : system(registry)
         {
 
         }
@@ -58,7 +58,7 @@ namespace antara::gaming::ecs::tests
     class post_concrete_system final : public post_update_system<post_concrete_system>
     {
     public:
-        post_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        post_concrete_system(entt::registry &registry) : system(registry)
         {
 
         }
@@ -77,8 +77,7 @@ namespace antara::gaming::ecs::tests
         {
             struct concrete_system final : base_system
             {
-                concrete_system(entt::registry registry, entt::dispatcher dispatcher) : base_system(registry,
-                                                                                                    dispatcher)
+                concrete_system(entt::registry& registry) : base_system(registry)
                 {
 
                 }
@@ -100,7 +99,10 @@ namespace antara::gaming::ecs::tests
 
                 ~concrete_system() noexcept final = default;
             };
-            concrete_system dummy_system{entt::registry{}, entt::dispatcher{}};
+
+            entt::registry registry{};
+            registry.set<entt::dispatcher>();
+            concrete_system dummy_system{registry};
                     SUBCASE("get system type rtti from a system") {
                         CHECK_EQ(dummy_system.get_system_type_rtti(), logic_update);
             }
@@ -144,10 +146,10 @@ namespace antara::gaming::ecs::tests
         {
 
             entt::registry registry;
-            entt::dispatcher dispatcher;
-            logic_concrete_system dummy_system{registry, dispatcher};
-            pre_concrete_system pre_dummy_system{registry, dispatcher};
-            post_concrete_system post_dummy_system{registry, dispatcher};
+            registry.set<entt::dispatcher>();
+            logic_concrete_system dummy_system{registry};
+            pre_concrete_system pre_dummy_system{registry};
+            post_concrete_system post_dummy_system{registry};
 
                     SUBCASE("mark/unmark a system") {
                 dummy_system.mark();

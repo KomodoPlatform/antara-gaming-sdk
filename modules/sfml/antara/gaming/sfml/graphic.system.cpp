@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iostream>
 #include "antara/gaming/ecs/component.position.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -21,11 +22,14 @@
 
 namespace antara::gaming::sfml
 {
-    graphic_system::graphic_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry,
-                                                                                                             dispatcher)
+    graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
+        if (game_cfg_.win_cfg.is_fullscreen) {
+            game_cfg_.win_cfg.width = window_.getSize().x;
+            game_cfg_.win_cfg.height = window_.getSize().y;
+        }
         // RenderTexture height will be 1080
-        const float height = 1080.0f;
+        const float height = window_.getSize().y;
         const float scale = height / window_.getSize().y;
         render_texture_.create(window_.getSize().x * scale, height);
         render_texture_.setSmooth(true);

@@ -22,5 +22,5 @@ flappy_world::flappy_world() noexcept
     auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
     this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
     auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
-    scene_manager.change_scene(std::make_unique<intro_scene>(entity_registry_, dispatcher_), true);
+    scene_manager.change_scene(std::make_unique<intro_scene>(entity_registry_), true);
 }

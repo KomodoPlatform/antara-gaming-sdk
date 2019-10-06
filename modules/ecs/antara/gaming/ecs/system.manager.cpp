@@ -21,9 +21,8 @@
 
 namespace antara::gaming::ecs
 {
-    system_manager::system_manager(entt::registry &registry, entt::dispatcher &dispatcher,
-                                   bool susbscribe_to_internal_events) noexcept : entity_registry_(
-            registry), dispatcher_(dispatcher)
+    system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept : entity_registry_(
+            registry), dispatcher_(this->entity_registry_.ctx<entt::dispatcher>())
     {
         if (susbscribe_to_internal_events) {
             this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);

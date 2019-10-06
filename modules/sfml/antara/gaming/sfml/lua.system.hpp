@@ -27,7 +27,7 @@ namespace antara::gaming::sfml
     class lua_system final : public ecs::post_update_system<lua_system>
     {
     public:
-        lua_system(entt::registry &registry, entt::dispatcher &dispatcher, std::shared_ptr<sol::state> state) noexcept;
+        lua_system(entt::registry &registry, std::shared_ptr<sol::state> state) noexcept;
         void update() noexcept final;
     private:
         std::shared_ptr<sol::state> state_;

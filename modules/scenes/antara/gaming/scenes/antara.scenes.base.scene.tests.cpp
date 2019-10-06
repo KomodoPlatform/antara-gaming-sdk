@@ -23,8 +23,7 @@ namespace antara::gaming::scenes::tests
     class game_scene final : public base_scene
     {
     public:
-        game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(
-                entity_registry, dispatcher_)
+        game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
         {
 
         }
@@ -78,8 +77,8 @@ namespace antara::gaming::scenes::tests
     TEST_SUITE ("base scene tests suite")
     {
         entt::registry entity_registry;
-        entt::dispatcher dispatcher;
-        std::unique_ptr<base_scene> scene_ptr = std::make_unique<game_scene>(entity_registry, dispatcher);
+        entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        std::unique_ptr<base_scene> scene_ptr = std::make_unique<game_scene>(entity_registry);
         TEST_CASE ("update")
         {
             scene_ptr->update();

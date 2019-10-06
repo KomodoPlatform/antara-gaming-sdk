@@ -21,8 +21,7 @@
 class example_system final : public antara::gaming::ecs::post_update_system<example_system>
 {
 public:
-    example_system(entt::registry& entity_registry, entt::dispatcher& dispatcher) noexcept : system(entity_registry,
-                                                                                                  dispatcher)
+    example_system(entt::registry& entity_registry) noexcept : system(entity_registry)
     {
         //! Here you can initialize your system, adding entities etc
     }

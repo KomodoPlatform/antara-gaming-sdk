@@ -22,7 +22,7 @@
 class game_scene final : public antara::gaming::scenes::base_scene
 {
 public:
-    game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept;
+    game_scene(entt::registry &entity_registry) noexcept;
 
     void update() noexcept final;
 

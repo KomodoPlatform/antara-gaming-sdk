@@ -20,8 +20,7 @@
 
 namespace antara::gaming::sfml
 {
-    audio_system::audio_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry,
-                                                                                                         dispatcher)
+    audio_system::audio_system(entt::registry &registry) noexcept : system(registry)
     {
         this->dispatcher_.sink<play_sound_event>().connect<&audio_system::receive_sound_event>(*this);
     }

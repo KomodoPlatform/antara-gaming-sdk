@@ -7,7 +7,7 @@ class pre_concrete_system final : public ecs::pre_update_system<pre_concrete_sys
 {
 public:
     //! Here the constructor can take other additional arguments but the first two are mandatory
-    pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept : system(registry, dispatcher)
+    pre_concrete_system(entt::registry &registry) noexcept : system(registry)
     {
 
     }

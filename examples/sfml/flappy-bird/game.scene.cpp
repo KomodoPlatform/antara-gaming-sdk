@@ -18,8 +18,7 @@
 #include "game.scene.hpp"
 #include "intro.scene.hpp"
 
-game_scene::game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(entity_registry,
-                                                                                                             dispatcher_)
+game_scene::game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
 {
 }
 
@@ -36,8 +35,7 @@ bool game_scene::on_key_released(const antara::gaming::event::key_released &) no
 bool game_scene::on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept
 {
     if (evt.key == antara::gaming::input::key::space) {
-        this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
+        this->dispatcher_.trigger<antara::gaming::event::change_scene>(std::make_unique<intro_scene>(this->entity_registry_), false);
     }
     return false;
 }

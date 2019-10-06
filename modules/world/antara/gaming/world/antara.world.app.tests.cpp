@@ -29,7 +29,7 @@ namespace antara::gaming::world::tests
     class concrete_pre_system final : public ecs::pre_update_system<concrete_pre_system>
     {
     public:
-        concrete_pre_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+        concrete_pre_system(entt::registry &registry) : system(registry)
         {
         }
 

@@ -21,7 +21,7 @@
 class logic_concrete_system final : public antara::gaming::ecs::logic_update_system<logic_concrete_system>
 {
 public:
-    logic_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+    logic_concrete_system(entt::registry &registry) : system(registry)
     {
 
     }
@@ -39,12 +39,11 @@ public:
 class pre_concrete_system final : public antara::gaming::ecs::pre_update_system<pre_concrete_system>
 {
 public:
-    pre_concrete_system(entt::registry &registry, entt::dispatcher &dispatcher) : system(registry, dispatcher)
+    pre_concrete_system(entt::registry &registry) noexcept : system(registry)
     {
 
     }
 
-    pre_concrete_system() = default;
 
     void update() noexcept final
     {
@@ -62,8 +61,8 @@ namespace antara::gaming::ecs::tests
     TEST_SUITE ("system manager test suite")
     {
         entt::registry registry;
-        entt::dispatcher dispatcher;
-        system_manager manager{registry, dispatcher};
+        entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+        system_manager manager{registry};
         const system_manager &c_mgr = manager;
 
         TEST_CASE ("add system")
@@ -79,7 +78,7 @@ namespace antara::gaming::ecs::tests
             CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
 
             //! evt
-            ecs::event::add_base_system evt(std::make_unique<pre_concrete_system>(registry, dispatcher));
+            ecs::event::add_base_system evt(std::make_unique<pre_concrete_system>(registry));
             manager.receive_add_base_system(evt);
             manager.update();
             CHECK_EQ(manager.nb_systems(), 2u);

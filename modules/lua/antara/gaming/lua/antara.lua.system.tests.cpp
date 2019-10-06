@@ -59,8 +59,8 @@ struct default_event_with_args
 class lua_tests_fixture {
 protected:
 	entt::registry entity_registry;
-	entt::dispatcher dispatcher;
-	antara::gaming::ecs::system_manager system_mgr{ entity_registry, dispatcher, true };
+	entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+	antara::gaming::ecs::system_manager system_mgr{ entity_registry, true};
 	antara::gaming::lua::scripting_system& script_sys{ system_mgr.create_system<antara::gaming::lua::scripting_system>(std::filesystem::current_path() / "lua_assets" /
 																													  "scripts",
 																													  std::filesystem::current_path() / "lua_assets" /

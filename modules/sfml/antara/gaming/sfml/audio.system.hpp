@@ -18,13 +18,7 @@
 
 #include <SFML/Audio.hpp>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
-#include <refl.hpp>
-
-#pragma clang diagnostic pop
-
+#include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
@@ -34,7 +28,7 @@ namespace antara::gaming::sfml
     {
     public:
         //! Constructors
-        audio_system(entt::registry &registry, entt::dispatcher &dispatcher) noexcept;
+        audio_system(entt::registry &registry) noexcept;
 
         void receive_sound_event(const play_sound_event &evt) noexcept;
 

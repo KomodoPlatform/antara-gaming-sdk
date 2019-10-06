@@ -39,7 +39,7 @@ namespace antara::gaming::world
         int game_return_value_{0};
     protected:
         entt::registry entity_registry_;
-        entt::dispatcher dispatcher_;
-        ecs::system_manager system_manager_{entity_registry_, dispatcher_};
+        entt::dispatcher& dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
+        ecs::system_manager system_manager_{entity_registry_};
     };
 }

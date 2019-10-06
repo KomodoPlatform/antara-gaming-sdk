@@ -26,7 +26,7 @@ namespace antara::gaming::ecs
     {
     public:
         //! Constructors
-        base_system(entt::registry &entity_registry, entt::dispatcher &dispatcher, bool im_a_plugin_system = false) noexcept;
+        base_system(entt::registry &entity_registry, bool im_a_plugin_system = false) noexcept;
 
         //! Destructor
         virtual ~base_system() noexcept = default;

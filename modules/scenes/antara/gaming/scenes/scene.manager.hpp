@@ -29,7 +29,7 @@ namespace antara::gaming::scenes
     public:
         using scene_ptr = std::unique_ptr<base_scene>;
 
-        manager(entt::registry &entity_registry, entt::dispatcher &dispatcher) noexcept;
+        manager(entt::registry &entity_registry) noexcept;
 
         //! Destructor
         ~manager() noexcept final;

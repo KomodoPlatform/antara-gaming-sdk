@@ -33,8 +33,7 @@ class intro_scene;
 class game_scene final : public antara::gaming::scenes::base_scene
 {
 public:
-    game_scene(entt::registry &entity_registry, entt::dispatcher &dispatcher_) noexcept : base_scene(entity_registry,
-                                                                                                     dispatcher_)
+    game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
         auto handle = resource_mgr.load_font("sansation.ttf");
         //! Construct dummy entity
@@ -76,12 +75,8 @@ public:
 
     }
 
-    bool on_key_pressed(const antara::gaming::event::key_pressed &evt) noexcept final
+    bool on_key_pressed(const antara::gaming::event::key_pressed &) noexcept final
     {
-        /*if (evt.key == antara::gaming::input::key::space) {
-            this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                    std::make_unique<intro_scene>(this->entity_registry_, this->dispatcher_), false);
-        }*/
         return false;
     }
 
@@ -115,9 +110,9 @@ public:
         this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
         auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
         scene_manager.change_scene(
-                std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, dispatcher_, [this]() {
+                std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, [this]() {
                     this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                            std::make_unique<game_scene>(this->entity_registry_, this->dispatcher_), false);
+                            std::make_unique<game_scene>(this->entity_registry_), false);
                 }), true);
     }
 };
