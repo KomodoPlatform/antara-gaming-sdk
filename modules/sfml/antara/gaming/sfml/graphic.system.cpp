@@ -59,7 +59,7 @@ namespace antara::gaming::sfml
 
         // Create the Render Texture
         render_texture_.create(rt_size.x, rt_size.y);
-        render_texture_sprite_.setTexture(render_texture_.getTexture());
+        render_texture_sprite_.setTexture(render_texture_.getTexture(), true);
         render_texture_.setSmooth(true);
 
         // Set scale
