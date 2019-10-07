@@ -14,7 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
+#include <entt/entity/helper.hpp>
 #include "antara/gaming/ecs/component.position.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -24,6 +24,7 @@ namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
+        this->dispatcher_.sink<entt::tag<"window_resized"_hs>>().connect<&graphic_system::on_window_resized_event>(*this);
         refresh_render_texture();
     }
 
@@ -137,5 +138,10 @@ namespace antara::gaming::sfml
     void graphic_system::draw_all_layers() noexcept
     {
         draw_all_layers(std::make_index_sequence<ecs::component::max_layer>{});
+    }
+
+    void graphic_system::on_window_resized_event(const entt::tag<"window_resized"_hs> &) noexcept
+    {
+        refresh_render_texture();
     }
 }

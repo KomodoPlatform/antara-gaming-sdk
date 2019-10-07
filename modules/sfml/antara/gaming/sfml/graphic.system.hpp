@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <entt/entity/helper.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -48,6 +49,8 @@ namespace antara::gaming::sfml
 
         //! Public getter
         sf::RenderWindow &get_window() noexcept;
+
+        void on_window_resized_event(const entt::tag<"window_resized"_hs> &evt) noexcept;
 
     private:
         config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};

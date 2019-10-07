@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <SFML/Window/Event.hpp>
+#include <entt/entity/helper.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/mouse.button.pressed.hpp"
@@ -44,7 +45,7 @@ namespace antara::gaming::sfml
                     auto &window_component = this->entity_registry_.ctx<config::game_cfg>().win_cfg;
                     window_component.width = evt.size.width;
                     window_component.height = evt.size.height;
-                    this->dispatcher_.trigger<event::window_resized>();
+                    this->dispatcher_.trigger<entt::tag<"window_resized"_hs>>();
                 }
                     break;
                 case sf::Event::LostFocus:
