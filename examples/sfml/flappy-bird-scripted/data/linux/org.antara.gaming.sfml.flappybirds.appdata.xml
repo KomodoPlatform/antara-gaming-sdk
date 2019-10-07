@@ -2,7 +2,7 @@
     <id>org.antara.gaming.sfml.flappybird.desktop</id>
     <metadata_license>MIT</metadata_license>
     <project_license>MIT</project_license>
-    <name>antara-sfml-flappy-birds</name>
+    <name>antara-sfml-flappy-birds-scripted</name>
     <summary>flappy birds example with antara gaming sdk and SFML</summary>
     <description>
         <p>Written in c++17</p>
