@@ -42,7 +42,7 @@ namespace antara::gaming::sfml
         render_texture_.clear();
         draw_all_layers();
         render_texture_.display();
-        window_.draw(*render_texture_sprite_);
+        window_.draw(render_texture_sprite_);
         window_.display();
     }
 
@@ -100,8 +100,7 @@ namespace antara::gaming::sfml
         render_texture_.setSmooth(true);
 
         const float scale_reversed = 1.0f / scale;
-        render_texture_sprite_ = std::make_unique<sf::Sprite>();
-        render_texture_sprite_->setTexture(render_texture_.getTexture());
-        render_texture_sprite_->setScale(scale_reversed, scale_reversed);
+        render_texture_sprite_.setTexture(render_texture_.getTexture(), true);
+        render_texture_sprite_.setScale(scale_reversed, scale_reversed);
     }
 }
