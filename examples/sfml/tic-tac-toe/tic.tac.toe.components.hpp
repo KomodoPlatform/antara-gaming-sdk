@@ -37,4 +37,10 @@ namespace tictactoe::example
 
         std::vector<cell_state> board;
     };
+
+    struct cell_position
+    {
+        std::size_t row;
+        std::size_t column;
+    };
 }

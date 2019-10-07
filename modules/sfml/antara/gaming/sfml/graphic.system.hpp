@@ -20,6 +20,7 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include "meta/sequence/list.hpp"
+#include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/system.hpp"
@@ -47,6 +48,8 @@ namespace antara::gaming::sfml
         //! Public getter
         sf::RenderWindow &get_window() noexcept;
 
+        void on_window_resized_event(const event::window_resized& evt) noexcept;
+
     private:
         config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};
         config::window_cfg &window_cfg_{game_cfg_.win_cfg};
@@ -56,6 +59,8 @@ namespace antara::gaming::sfml
                                                     static_cast<sf::Uint32>(sf::Style::Default)};
         sf::RenderTexture& render_texture_{this->entity_registry_.set<sf::RenderTexture>()};
         sf::Sprite render_texture_sprite_;
+
+        void reset_render_texture() noexcept;
     };
 }
 

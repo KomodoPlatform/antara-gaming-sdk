@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include <iostream>
+#include "antara/gaming/event/window.resized.hpp"
+#include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -24,19 +26,14 @@ namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
+        this->dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
+
         if (game_cfg_.win_cfg.is_fullscreen) {
             game_cfg_.win_cfg.width = window_.getSize().x;
             game_cfg_.win_cfg.height = window_.getSize().y;
         }
-        // RenderTexture height will be 1080
-        const float height = 1080.f;
-        const float scale = height / window_.getSize().y;
-        render_texture_.create(window_.getSize().x * scale, height);
-        render_texture_.setSmooth(true);
 
-        const float scale_reversed = 1.0f / scale;
-        render_texture_sprite_.setTexture(render_texture_.getTexture());
-        render_texture_sprite_.setScale(scale_reversed, scale_reversed);
+        reset_render_texture();
     }
 
     void graphic_system::update() noexcept
@@ -86,5 +83,24 @@ namespace antara::gaming::sfml
     void graphic_system::draw_all_layers() noexcept
     {
         draw_all_layers(std::make_index_sequence<ecs::component::max_layer>{});
+    }
+
+    void graphic_system::on_window_resized_event(const event::window_resized &) noexcept
+    {
+        reset_render_texture();
+        this->dispatcher_.trigger<event::canvas_resized>();
+    }
+
+    void graphic_system::reset_render_texture() noexcept
+    {
+        const float height = 1080.f;
+        const float scale = height /  game_cfg_.win_cfg.height;
+        std::cout << "scale is: " << scale << std::endl;
+        render_texture_.create(game_cfg_.win_cfg.width * scale, height);
+        render_texture_.setSmooth(true);
+
+        const float scale_reversed = 1.0f / scale;
+        render_texture_sprite_.setTexture(render_texture_.getTexture());
+        render_texture_sprite_.setScale(scale_reversed, scale_reversed);
     }
 }
