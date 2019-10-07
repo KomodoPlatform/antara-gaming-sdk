@@ -28,15 +28,39 @@ namespace antara::gaming::sfml
             game_cfg_.win_cfg.width = window_.getSize().x;
             game_cfg_.win_cfg.height = window_.getSize().y;
         }
-        // RenderTexture height will be 1080
-        const float height = 1080.f;
-        const float scale = height / window_.getSize().y;
-        render_texture_.create(window_.getSize().x * scale, height);
+
+        // User config
+        const float canvas_width = 1280.0f;
+        const float canvas_height = 900.0f;
+        const int scale_mode = 0; // 0 - Stretch, 1 - Crop, 2 - Fit, user choice
+
+        render_texture_.create(canvas_width, canvas_height);
         render_texture_.setSmooth(true);
 
-        const float scale_reversed = 1.0f / scale;
         render_texture_sprite_.setTexture(render_texture_.getTexture());
-        render_texture_sprite_.setScale(scale_reversed, scale_reversed);
+
+        // Set scale
+        sf::Vector2f rt_scale;
+
+        // Stretch
+        if(scale_mode == 0) {
+            rt_scale.x = window_.getSize().x / canvas_width;
+            rt_scale.y = window_.getSize().y / canvas_height;
+        }
+        // Crop
+        else if(scale_mode == 1) {
+            rt_scale.x = rt_scale.y = std::max(window_.getSize().x / canvas_width, window_.getSize().y / canvas_height);
+        }
+        // Fit
+        else if(scale_mode == 2) {
+            rt_scale.x = rt_scale.y = std::min(window_.getSize().x / canvas_width, window_.getSize().y / canvas_height);
+        }
+
+        render_texture_sprite_.setScale(rt_scale);
+
+        // Center canvas to the window
+        render_texture_sprite_.setOrigin(render_texture_sprite_.getLocalBounds().width * 0.5f, render_texture_sprite_.getLocalBounds().height * 0.5f);
+        render_texture_sprite_.setPosition(window_.getSize().x * 0.5f, window_.getSize().y * 0.5f);
     }
 
     void graphic_system::update() noexcept
