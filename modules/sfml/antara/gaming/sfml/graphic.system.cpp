@@ -30,30 +30,52 @@ namespace antara::gaming::sfml
         }
 
         // User config
-        const float canvas_width = 1280.0f;
-        const float canvas_height = 900.0f;
-        const int scale_mode = 0; // 0 - Stretch, 1 - Crop, 2 - Fit, user choice
+        const bool custom_canvas_width = true;
+        const bool custom_canvas_height = true;
+        const float canvas_width = 1920.0f;
+        const float canvas_height = 1080.0f;
+        const int scale_mode = 3; // 0 - None, 1 - Stretch, 2 - Crop, 3 - Fit, user choice
 
-        render_texture_.create(canvas_width, canvas_height);
+
+        // Set the Render Texture size
+        sf::Vector2f rt_size;
+        if(custom_canvas_width && custom_canvas_height) {
+            rt_size.x = canvas_width;
+            rt_size.y = canvas_height;
+        }
+        else if(custom_canvas_width) {
+            rt_size.x = canvas_width;
+            rt_size.y = canvas_width * window_.getSize().y  / window_.getSize().x;
+        }
+        else if(custom_canvas_height) {
+            rt_size.x = canvas_height * window_.getSize().x / window_.getSize().y;
+            rt_size.y = canvas_height;
+        }
+        else {
+            rt_size.x = window_.getSize().x;
+            rt_size.y = window_.getSize().y;
+        }
+
+        // Create the Render Texture
+        render_texture_.create(rt_size.x, rt_size.y);
+        render_texture_sprite_.setTexture(render_texture_.getTexture());
         render_texture_.setSmooth(true);
 
-        render_texture_sprite_.setTexture(render_texture_.getTexture());
-
         // Set scale
-        sf::Vector2f rt_scale;
+        sf::Vector2f rt_scale(1.0f, 1.0f);
 
         // Stretch
-        if(scale_mode == 0) {
-            rt_scale.x = window_.getSize().x / canvas_width;
-            rt_scale.y = window_.getSize().y / canvas_height;
+        if(scale_mode == 1) {
+            rt_scale.x = window_.getSize().x / rt_size.x;
+            rt_scale.y = window_.getSize().y / rt_size.y;
         }
         // Crop
-        else if(scale_mode == 1) {
-            rt_scale.x = rt_scale.y = std::max(window_.getSize().x / canvas_width, window_.getSize().y / canvas_height);
+        else if(scale_mode == 2) {
+            rt_scale.x = rt_scale.y = std::max(window_.getSize().x / rt_size.x, window_.getSize().y / rt_size.y);
         }
         // Fit
-        else if(scale_mode == 2) {
-            rt_scale.x = rt_scale.y = std::min(window_.getSize().x / canvas_width, window_.getSize().y / canvas_height);
+        else if(scale_mode == 3) {
+            rt_scale.x = rt_scale.y = std::min(window_.getSize().x / rt_size.x, window_.getSize().y / rt_size.y);
         }
 
         render_texture_sprite_.setScale(rt_scale);
