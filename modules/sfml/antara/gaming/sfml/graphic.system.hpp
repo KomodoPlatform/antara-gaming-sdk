@@ -31,6 +31,8 @@ namespace antara::gaming::sfml
     public:
         graphic_system(entt::registry &registry) noexcept;
 
+        void refresh_render_texture() noexcept;
+
         void update() noexcept final;
 
         template<size_t Layer, typename DrawableType>

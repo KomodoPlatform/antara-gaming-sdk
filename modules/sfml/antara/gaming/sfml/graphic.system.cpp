@@ -24,6 +24,11 @@ namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
+        refresh_render_texture();
+    }
+
+    void graphic_system::refresh_render_texture() noexcept
+    {
         if (game_cfg_.win_cfg.is_fullscreen) {
             game_cfg_.win_cfg.width = window_.getSize().x;
             game_cfg_.win_cfg.height = window_.getSize().y;
