@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/config/config.loading.hpp"
 #include "antara/gaming/config/config.game.hpp"
 
 namespace antara::gaming::config::tests

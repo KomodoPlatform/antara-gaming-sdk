@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
@@ -31,11 +32,11 @@ namespace antara::gaming::sfml
     void graphic_system::refresh_render_texture() noexcept
     {
         // User config
-        const bool custom_canvas_width = true;
-        const bool custom_canvas_height = true;
-        const float canvas_width = 1920.0f;
-        const float canvas_height = 1080.0f;
-        const int scale_mode = 3; // 0 - None, 1 - Stretch, 2 - Crop, 3 - Fit, user choice
+        auto &&[custom_canvas_width,
+                custom_canvas_height,
+                canvas_width,
+                canvas_height,
+                scale_mode] = this->entity_registry_.ctx<config::game_maker_cfg>();
 
 
         // Set the Render Texture size

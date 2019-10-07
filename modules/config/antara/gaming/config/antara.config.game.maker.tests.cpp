@@ -14,32 +14,39 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include "antara/gaming/config/config.loading.hpp"
+#include "antara/gaming/config/config.game.maker.hpp"
 
-#include <string>
-#include <entt/core/utility.hpp>
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/quit.game.hpp"
-
-namespace antara::gaming::world
+namespace antara::gaming::config::tests
 {
-    class app
+    TEST_CASE ("game maker config from json")
     {
-    public:
-        app(std::string config_name = "game.config.json", std::string config_maker_name = "game.config.maker.json") noexcept;
+        auto json_game_cfg = R"(
+        {
+        "custom_canvas_width": true,
+        "custom_canvas_height": true,
+        "canvas_width": 1280.0,
+        "canvas_height": 720.0,
+        "scale_mode": "crop"})"_json;
+        game_maker_cfg game_maker_config{};
+        CHECK_NOTHROW(from_json(json_game_cfg, game_maker_config));
+        CHECK_EQ(game_maker_config, game_maker_cfg{true, true, 1280.f, 720.f, crop});
+        CHECK_NE(game_maker_config, game_maker_cfg{});
+    }
 
-        //! Public callbacks
-        void receive_quit_game(const event::quit_game &evt) noexcept;
-        int run() noexcept;
-        void process_one_frame();
-    private:
-        bool is_running_{false};
-        int game_return_value_{0};
-    protected:
-        entt::registry entity_registry_;
-        entt::dispatcher& dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
-        ecs::system_manager system_manager_{entity_registry_};
-    };
+    TEST_CASE ("game maker config to json")
+    {
+        auto json_game_cfg = R"(
+        {
+        "custom_canvas_width": true,
+        "custom_canvas_height": true,
+        "canvas_width": 1280.0,
+        "canvas_height": 720.0,
+        "scale_mode": "crop"})"_json;
+        game_maker_cfg game_maker_config{true, true, 1280.f, 720.f, crop};
+        nlohmann::json json_data;
+        CHECK_NOTHROW(to_json(json_data, game_maker_config));
+        CHECK_EQ(json_game_cfg, json_data);
+    }
 }

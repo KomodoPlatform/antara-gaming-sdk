@@ -16,30 +16,32 @@
 
 #pragma once
 
-#include <string>
-#include <entt/core/utility.hpp>
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/quit.game.hpp"
+#include <nlohmann/json.hpp>
+#include "config.game.hpp"
 
-namespace antara::gaming::world
+namespace antara::gaming::config
 {
-    class app
+    enum scale_mode
     {
-    public:
-        app(std::string config_name = "game.config.json", std::string config_maker_name = "game.config.maker.json") noexcept;
-
-        //! Public callbacks
-        void receive_quit_game(const event::quit_game &evt) noexcept;
-        int run() noexcept;
-        void process_one_frame();
-    private:
-        bool is_running_{false};
-        int game_return_value_{0};
-    protected:
-        entt::registry entity_registry_;
-        entt::dispatcher& dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
-        ecs::system_manager system_manager_{entity_registry_};
+        none,
+        stretch,
+        crop,
+        fit
     };
+
+    struct game_maker_cfg
+    {
+        bool operator==(const game_maker_cfg &rhs) const;
+
+        bool operator!=(const game_maker_cfg &rhs) const;
+
+        mutable bool custom_canvas_width{true};
+        mutable bool custom_canvas_height{true};
+        mutable float canvas_width{1920.0f};
+        mutable float canvas_height{1080.0f};
+        mutable scale_mode scale_mode{crop};
+    };
+
+    void from_json(const nlohmann::json &json_data, game_maker_cfg &game_maker_cfg);
+    void to_json(nlohmann::json &json_data, const game_maker_cfg &game_maker_cfg);
 }
