@@ -22,7 +22,7 @@ magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
 target_enable_ubsan(antara-sfml-tictactoe)
 if (APPLE)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/antara-sfml-tictactoe.app/Contents/Resources)
-    include(data/osx/sfml_flappy_install.cmake)
+    include(data/osx/sfml_tictactoe_install.cmake)
 endif()
 
 
