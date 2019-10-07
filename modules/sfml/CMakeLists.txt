@@ -33,7 +33,7 @@ if (USE_LUA_ANTARA_WRAPPER)
     target_sources(antara_sfml_lua PRIVATE antara/gaming/sfml/lua.system.cpp)
     target_link_libraries(antara_sfml_lua PUBLIC antara::lua antara::sfml_shared_resources antara::sfml_audio antara::sfml_graphic antara::sfml_resources)
     add_library(antara::sfml_lua ALIAS antara_sfml_lua)
-endif()
+endif ()
 
 add_library(antara_sfml INTERFACE)
 target_link_libraries(antara_sfml INTERFACE
@@ -45,3 +45,13 @@ target_link_libraries(antara_sfml INTERFACE
         antara::sfml_shared_resources
         $<$<BOOL:${USE_LUA_ANTARA_WRAPPER}>:antara::sfml_lua>)
 add_library(antara::sfml ALIAS antara_sfml)
+
+
+set(get_sfml_macro_internal_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
+
+macro(get_sfml_intro_assets output_dir)
+    configure_file(${get_sfml_macro_internal_dir}/assets/sounds/intro1.wav ${output_dir}/assets/sounds/intro1.wav COPYONLY)
+    configure_file(${get_sfml_macro_internal_dir}/assets/sounds/intro1.wav ${output_dir}/assets/sounds/intro2.wav COPYONLY)
+    configure_file(${get_sfml_macro_internal_dir}/assets/textures/name.png ${output_dir}/assets/textures/name.png COPYONLY)
+    configure_file(${get_sfml_macro_internal_dir}/assets/textures/logo.png ${output_dir}/assets/textures/logo.png COPYONLY)
+endmacro()

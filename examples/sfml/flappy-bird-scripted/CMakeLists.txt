@@ -37,3 +37,5 @@ endif ()
 if (USE_LUA_ANTARA_WRAPPER)
     get_lua_scenes_system(${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
+
+get_sfml_intro_assets(${CMAKE_CURRENT_SOURCE_DIR})
