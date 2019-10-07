@@ -89,16 +89,16 @@ namespace tictactoe::example
         };
         if (player_as_win_functor()) {
             this->current_state_ = static_cast<game_state>(this->player_turn_);
-            this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().each(
-                    [this](antara::gaming::sfml::vertex_array &array_cmp, auto &&) {
+            this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().less(
+                    [this](antara::gaming::sfml::vertex_array &array_cmp) {
                         for (std::size_t count = 0; count < array_cmp.drawable.getVertexCount(); ++count) {
                             array_cmp.drawable[count].color =
                                     this->player_turn_ == player::x ? sf::Color::Red : sf::Color::Blue;
                         }
                     });
         } else if (tie_functor()) {
-            this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().each(
-                    [](antara::gaming::sfml::vertex_array &array_cmp, auto &&) {
+            this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().less(
+                    [](antara::gaming::sfml::vertex_array &array_cmp) {
                         for (std::size_t count = 0; count < array_cmp.drawable.getVertexCount(); ++count) {
                             array_cmp.drawable[count].color = sf::Color::Magenta;
                         }
