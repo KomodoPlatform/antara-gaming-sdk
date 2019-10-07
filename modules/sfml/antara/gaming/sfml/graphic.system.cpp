@@ -14,7 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <entt/entity/helper.hpp>
+#include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
 #include "antara/gaming/ecs/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -24,17 +24,12 @@ namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
-        this->dispatcher_.sink<entt::tag<"window_resized"_hs>>().connect<&graphic_system::on_window_resized_event>(*this);
+        this->dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
         refresh_render_texture();
     }
 
     void graphic_system::refresh_render_texture() noexcept
     {
-        if (game_cfg_.win_cfg.is_fullscreen) {
-            game_cfg_.win_cfg.width = window_.getSize().x;
-            game_cfg_.win_cfg.height = window_.getSize().y;
-        }
-
         // User config
         const bool custom_canvas_width = true;
         const bool custom_canvas_height = true;
@@ -140,8 +135,9 @@ namespace antara::gaming::sfml
         draw_all_layers(std::make_index_sequence<ecs::component::max_layer>{});
     }
 
-    void graphic_system::on_window_resized_event(const entt::tag<"window_resized"_hs> &) noexcept
+    void graphic_system::on_window_resized_event(const event::window_resized &) noexcept
     {
         refresh_render_texture();
+        this->dispatcher_.trigger<event::canvas_resized>();
     }
 }

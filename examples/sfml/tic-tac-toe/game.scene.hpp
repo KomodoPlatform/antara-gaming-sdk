@@ -16,9 +16,9 @@
 
 #pragma once
 
-
 #include <antara/gaming/scenes/change.scene.event.hpp>
 #include <antara/gaming/scenes/base.scene.hpp>
+#include <antara/gaming/event/canvas.resized.hpp>
 
 namespace tictactoe::example
 {
@@ -26,6 +26,8 @@ namespace tictactoe::example
     {
     public:
         game_scene(entt::registry &entity_registry) noexcept;
+
+        void on_canvas_resized_event(const antara::gaming::event::canvas_resized& evt) noexcept;
 
         void update() noexcept final;
 
@@ -59,5 +61,7 @@ namespace tictactoe::example
         player player_turn_{player::x};
 
         void check_condition();
+
+        void prepare_constants() noexcept;
     };
 }
