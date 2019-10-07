@@ -14,15 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "world.hpp"
 
-#include "antara/gaming/world/world.app.hpp"
-#include "antara/gaming/scenes/scene.manager.hpp"
-#include "antara/gaming/sfml/graphic.system.hpp"
-#include "antara/gaming/sfml/input.system.hpp"
-
-class game_world : public antara::gaming::world::app
+int main()
 {
-public:
-    game_world() noexcept;
-};
+    tictactoe::example::tictactoe_world game_app;
+    return game_app.run();
+}

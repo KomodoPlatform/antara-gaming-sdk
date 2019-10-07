@@ -14,15 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "world.hpp"
+#include "game.scene.hpp"
+#include "antara/gaming/sfml/komodo.intro.scene.hpp"
 
-#include "antara/gaming/world/world.app.hpp"
-#include "antara/gaming/scenes/scene.manager.hpp"
-#include "antara/gaming/sfml/graphic.system.hpp"
-#include "antara/gaming/sfml/input.system.hpp"
-
-class game_world : public antara::gaming::world::app
+namespace tictactoe::example
 {
-public:
-    game_world() noexcept;
-};
+    tictactoe_world::tictactoe_world() noexcept
+    {
+        auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
+        this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
+        auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
+        scene_manager.change_scene(
+                std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, [this]() {
+                    this->dispatcher_.trigger<antara::gaming::event::change_scene>(
+                            std::make_unique<game_scene>(this->entity_registry_), false);
+                }), true);
+    }
+}

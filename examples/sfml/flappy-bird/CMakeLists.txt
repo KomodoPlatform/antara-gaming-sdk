@@ -33,3 +33,5 @@ if (WIN32)
             $<TARGET_FILE_DIR:antara-sfml-flappy-birds>
             )
 endif ()
+
+get_sfml_intro_assets(${CMAKE_CURRENT_SOURCE_DIR})
