@@ -436,6 +436,25 @@ namespace antara::gaming::ecs
          *         This function recursively calls the enable_system function
          * @endverbatim
          *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *
+         *      bool result = system_manager.enable_systems<my_game::input, my_game::render>();
+         *      if (!result) {
+         *          // Oh no, atleast one of the requested systems cannot be enabled.
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         *
          * @return true if the list of systems has been enabled, false otherwise
          * @see enable_system
          */
@@ -443,30 +462,120 @@ namespace antara::gaming::ecs
         bool enable_systems() noexcept;
 
         /**
-         * @note This function disable a system
+         * @brief This function disable a system
          * @tparam TSystem Represents the system that needs to be disabled
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. warning::
+         *         If you deactivate a system, it will not be destroyed but simply ignored during the game loop.
+         * @endverbatim
+         *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *
+         *      bool result = system_manager.disable_system<my_game::input>();
+         *      if (!result) {
+         *          // Oh no the system_manager cannot disable this system.
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         *
          * @return true if the the system has been disabled, false otherwise
-         * @attention If you deactivate a system, it will not be destroyed but simply ignore during the game loop
          */
         template<typename TSystem>
         bool disable_system() noexcept;
 
         /**
-         * @note This function disable a list of systems
+         * @brief This function disable a list of systems
          * @tparam TSystems  Represents a list of systems that needs to be disabled
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         This function recursively calls the disable_system function
+         * @endverbatim
+         *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *
+         *      bool result = system_manager.disable_systems<my_game::input, my_game::render>();
+         *      if (!result) {
+         *          // Oh no, atleast one of the requested systems cannot be disabled.
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         *
          * @return true if the list of systems has been disabled, false otherwise
-         * @details This function recursively calls the disable_system function
          */
         template<typename ... TSystems>
         bool disable_systems() noexcept;
 
         /**
+         * @brief This function returns the number of systems registered in the system manager.
+         *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *      // added 2 systems here
+         *      auto nb_systems = system_manager.nb_systems();
+         *      if (nb_systems) {
+         *          // Oh no, was expecting atleast 2 systems.
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         *
          * @return number of systems
          */
         [[nodiscard]] std::size_t nb_systems() const noexcept;
 
         /**
+         * @brief This function returns the system number of a certain type to register in the system manager.
          * @param sys_type represent the type of systems.
+         *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *      // added 2 systems of update type here
+         *      auto nb_systems = system_manager.nb_systems(system_type::pre_update);
+         *      if (nb_systems) {
+         *          // Oh no, was expecting atleast 2 systems of pre_update type.
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         *
          * @return number of systems of a specific type.
          */
         [[nodiscard]] std::size_t nb_systems(system_type sys_type) const noexcept;
