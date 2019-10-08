@@ -16,10 +16,12 @@
 
 #pragma once
 
+#include <entt/entity/helper.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include "meta/sequence/list.hpp"
+#include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/system.hpp"
@@ -30,6 +32,8 @@ namespace antara::gaming::sfml
     {
     public:
         graphic_system(entt::registry &registry) noexcept;
+
+        void refresh_render_texture() noexcept;
 
         void update() noexcept final;
 
@@ -46,6 +50,8 @@ namespace antara::gaming::sfml
 
         //! Public getter
         sf::RenderWindow &get_window() noexcept;
+
+        void on_window_resized_event(const event::window_resized &evt) noexcept;
 
     private:
         config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};

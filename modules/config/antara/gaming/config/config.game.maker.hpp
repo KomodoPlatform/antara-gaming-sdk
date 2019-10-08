@@ -16,23 +16,32 @@
 
 #pragma once
 
-#include <entt/entity/entity.hpp>
-#include <entt/entity/registry.hpp>
+#include <nlohmann/json.hpp>
+#include "config.game.hpp"
 
-namespace tictactoe::example
+namespace antara::gaming::config
 {
-    class tic_tac_toe_factory
+    enum scale_mode
     {
-    public:
-        static entt::entity create_grid_entity(entt::registry &entity_registry) noexcept;
-
-        static entt::entity create_board(entt::registry &entity_registry) noexcept;
-
-        static entt::entity create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
-
-        static void reset_x(entt::registry &entity_registry) noexcept;
-        static void reset_grid(entt::registry &entity_registry) noexcept;
-
-        static entt::entity create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
+        none,
+        stretch,
+        crop,
+        fit
     };
+
+    struct game_maker_cfg
+    {
+        bool operator==(const game_maker_cfg &rhs) const;
+
+        bool operator!=(const game_maker_cfg &rhs) const;
+
+        mutable bool custom_canvas_width{true};
+        mutable bool custom_canvas_height{true};
+        mutable float canvas_width{1920.0f};
+        mutable float canvas_height{1080.0f};
+        mutable scale_mode scale_mode{crop};
+    };
+
+    void from_json(const nlohmann::json &json_data, game_maker_cfg &game_maker_cfg);
+    void to_json(nlohmann::json &json_data, const game_maker_cfg &game_maker_cfg);
 }

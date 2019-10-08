@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <iostream>
+
 namespace tictactoe::example
 {
     struct tic_tac_toe_constants
@@ -25,7 +27,7 @@ namespace tictactoe::example
                 cell_width(width_ / nb_cells),
                 cell_height(height_ / nb_cells)
         {
-
+            std::cout << "constants: " << nb_cells_ << " " << cell_width << " " << cell_height << std::endl;
         }
 
         const std::size_t nb_cells;

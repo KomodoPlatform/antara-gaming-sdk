@@ -14,25 +14,39 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include "antara/gaming/config/config.loading.hpp"
+#include "antara/gaming/config/config.game.maker.hpp"
 
-#include <entt/entity/entity.hpp>
-#include <entt/entity/registry.hpp>
-
-namespace tictactoe::example
+namespace antara::gaming::config::tests
 {
-    class tic_tac_toe_factory
+    TEST_CASE ("game maker config from json")
     {
-    public:
-        static entt::entity create_grid_entity(entt::registry &entity_registry) noexcept;
+        auto json_game_cfg = R"(
+        {
+        "custom_canvas_width": true,
+        "custom_canvas_height": true,
+        "canvas_width": 1280.0,
+        "canvas_height": 720.0,
+        "scale_mode": "crop"})"_json;
+        game_maker_cfg game_maker_config{};
+        CHECK_NOTHROW(from_json(json_game_cfg, game_maker_config));
+        CHECK_EQ(game_maker_config, game_maker_cfg{true, true, 1280.f, 720.f, crop});
+        CHECK_NE(game_maker_config, game_maker_cfg{});
+    }
 
-        static entt::entity create_board(entt::registry &entity_registry) noexcept;
-
-        static entt::entity create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
-
-        static void reset_x(entt::registry &entity_registry) noexcept;
-        static void reset_grid(entt::registry &entity_registry) noexcept;
-
-        static entt::entity create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
-    };
+    TEST_CASE ("game maker config to json")
+    {
+        auto json_game_cfg = R"(
+        {
+        "custom_canvas_width": true,
+        "custom_canvas_height": true,
+        "canvas_width": 1280.0,
+        "canvas_height": 720.0,
+        "scale_mode": "crop"})"_json;
+        game_maker_cfg game_maker_config{true, true, 1280.f, 720.f, crop};
+        nlohmann::json json_data;
+        CHECK_NOTHROW(to_json(json_data, game_maker_config));
+        CHECK_EQ(json_game_cfg, json_data);
+    }
 }

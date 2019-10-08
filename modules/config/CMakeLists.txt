@@ -1,7 +1,8 @@
 ## shared sources between the module and his unit tests
 add_library(antara_config_shared_sources STATIC)
 target_sources(antara_config_shared_sources PRIVATE
-        antara/gaming/config/config.game.cpp)
+        antara/gaming/config/config.game.cpp
+        antara/gaming/config/config.game.maker.cpp)
 target_include_directories(antara_config_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_config_shared_sources PUBLIC antara::default_settings nlohmann_json::nlohmann_json)
 add_library(antara::config ALIAS antara_config_shared_sources)
@@ -11,7 +12,8 @@ if (ANTARA_BUILD_UNIT_TESTS)
     add_executable(antara_config_tests)
     target_sources(antara_config_tests PUBLIC
             antara/gaming/config/antara.config.tests.cpp
-            antara/gaming/config/antara.config.game.tests.cpp)
+            antara/gaming/config/antara.config.game.tests.cpp
+            antara/gaming/config/antara.config.game.maker.tests.cpp)
     target_link_libraries(antara_config_tests PRIVATE doctest PUBLIC antara::config)
     set_target_properties(antara_config_tests
             PROPERTIES
