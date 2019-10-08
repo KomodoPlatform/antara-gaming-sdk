@@ -50,15 +50,14 @@ namespace antara::gaming::ecs
         /// @brief sugar name for a multidimensional array of system_array (pre_update, logic_update, post_update)
         using system_registry = std::array<system_array, system_type::size>;
 
-        //! Constructors
-
         /**
          * @param registry The entity_registry is provided to the system when it is created.
          * @param subscribe_to_internal_events Choose whether to subscribe to default system_manager events
-           @verbatim embed:rst
-                .. note::
-                   Principal Constructor.
-           @endverbatim
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         Principal Constructor.
+         * @endverbatim
+         *
          * Example:
          * @code{cpp}
          *          #include <entt/entity/registry.hpp>
@@ -75,23 +74,20 @@ namespace antara::gaming::ecs
          */
         explicit system_manager(entt::registry &registry, bool subscribe_to_internal_events = true) noexcept;
 
-        //! Callback
-
         /**
-         * @fn void receive_add_base_system(const ecs::event::add_base_system& evt)
          * @param evt The event that contains the system to add
          */
         void receive_add_base_system(const ecs::event::add_base_system &evt) noexcept;
 
         /**
-         * @fn void start()
          * @brief This function tells the system manager that you start your game
          *
-         * @verbatim embed:rst
-                .. note::
-                   This function, which indicates the game is spinning, allows actions to be done at each end of the frame like delete systems or add them while we are going to iterate on
-           @endverbatim
-         * Example:
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         This function, which indicates the game is spinning, allows actions to be done at each end of the frame like delete systems or add them while we are going to iterate on
+         * @endverbatim
+         *
+         * **Example**:
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
@@ -110,24 +106,24 @@ namespace antara::gaming::ecs
         void start() noexcept;
 
         /**
-         * @fn std::size_t update() noexcept
-         * @return number of systems which are successfully updated
-         * @verbatim embed:rst
-                .. role:: raw-html(raw)
-                    :format: html
-                .. note::
-                   This is the function that update your systems. :raw-html:`<br />`
-                   Based on the logic of the different kinds of antara systems, this function takes care of updating your systems in the right order.
-           @endverbatim
-         * @verbatim embed:rst
-                .. role:: raw-html(raw)
-                    :format: html
-                .. warning::
-                   If you have not loaded any system into the system_manager the function returns 0. :raw-html:`<br />`
-                   If you decide to mark a system, it's automatically deleted at the end of the current loop tick through this function. :raw-html:`<br />`
-                   If you decide to add a system through an `ecs::event::add_base_system event`, it's automatically added at the end of the current loop tick through this function.
-           @endverbatim
-         * Example:
+         * @verbatim embed:rst:leading-asterisk
+         *      .. role:: raw-html(raw)
+         *          :format: html
+         *      .. note::
+         *         This is the function that update your systems. :raw-html:`<br />`
+         *         Based on the logic of the different kinds of antara systems, this function takes care of updating your systems in the right order.
+         * @endverbatim
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. role:: raw-html(raw)
+         *          :format: html
+         *      .. warning::
+         *         If you have not loaded any system into the system_manager the function returns 0. :raw-html:`<br />`
+         *         If you decide to mark a system, it's automatically deleted at the end of the current loop tick through this function. :raw-html:`<br />`
+         *         If you decide to add a system through an `ecs::event::add_base_system event`, it's automatically added at the end of the current loop tick through this function.
+         * @endverbatim
+         *
+         * **Example:**
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
@@ -147,21 +143,23 @@ namespace antara::gaming::ecs
          *              return 0;
          *          }
          * @endcode
+         *
+         * @return number of systems which are successfully updated
          */
-
         std::size_t update() noexcept;
 
         /**
+         * @verbatim embed:rst:leading-asterisk
+         *      .. role:: raw-html(raw)
+         *          :format: html
+         *      .. note::
+         *         This function is called multiple times by update(). :raw-html:`<br />`
+         *         It is useful if you want to program your own update function without going through the one provided by us.
+         * @endverbatim
+         *
          * @param system_type_to_update kind of systems to update (pre_update, logic_update, post_update)
          * @return number of systems which are successfully updated
-           @verbatim embed:rst
-                .. role:: raw-html(raw)
-                    :format: html
-                .. note::
-                   This function is called multiple times by update(). :raw-html:`<br />`
-                   It is useful if you want to program your own update function without going through the one provided by us.
-           @endverbatim
-           @see update
+         * @see update
          */
         std::size_t update_systems(system_type system_type_to_update) noexcept;
 
@@ -169,14 +167,13 @@ namespace antara::gaming::ecs
          * @brief This function allows you to get a system through a template parameter.
          * @tparam TSystem represents the system to get.
          * @return A reference to the system obtained.
-         *
          */
         template<typename TSystem>
         const TSystem &get_system() const noexcept;
 
         /**
          * @overload get_system
-         * Example:
+         * **Example:**
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
@@ -202,13 +199,13 @@ namespace antara::gaming::ecs
         TSystem &get_system() noexcept;
 
         /**
-         * @verbatim embed:rst
-                .. role:: raw-html(raw)
-                    :format: html
-                .. note::
-                   This function recursively calls the get_system function
-                   Based on the logic of the different kinds of antara systems, this function takes care of updating your systems in the right order.
-           @endverbatim
+         * @verbatim embed:rst:leading-asterisk
+         *      .. role:: raw-html(raw)
+         *          :format: html
+         *      .. note::
+         *         This function recursively calls the get_system function
+         *         Based on the logic of the different kinds of antara systems, this function takes care of updating your systems in the right order.
+         * @endverbatim
          * @brief This function allow you to get multiple system through multiple templates parameters.
          * @tparam TSystems represents a list of systems to get
          * @return Tuple of systems obtained.
@@ -219,15 +216,14 @@ namespace antara::gaming::ecs
 
         /**
          * @brief const version overload of get_systems
-         * @see get_systems
          *
-           @verbatim embed:rst
-                .. note::
-                   This function is marked as nodiscard_.
-                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
-           @endverbatim
-
-         * Example:
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         This function is marked as nodiscard_.
+         *      .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+         * @endverbatim
+         *
+         * **Example:**
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
@@ -250,6 +246,7 @@ namespace antara::gaming::ecs
          *              return 0;
          *          }
          * @endcode
+         * @see get_systems
          */
         template<typename ...TSystems>
         [[nodiscard]] std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...>
@@ -258,13 +255,11 @@ namespace antara::gaming::ecs
         /**
          * @brief This function allow you to verify if a system is already registered in the system_manager.
          * @tparam TSystem Represents the system that needs to be verified
-         * @return true if the system has been loaded, false otherwise
-         *
-           @verbatim embed:rst
-                .. note::
-                   This function is marked as nodiscard_.
-                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
-           @endverbatim
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         This function is marked as nodiscard_.
+         *      .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+         * @endverbatim
          *
          * **Example:**
          * @code{.cpp}
@@ -285,6 +280,8 @@ namespace antara::gaming::ecs
          *              return 0;
          *          }
          * @endcode
+         *
+         * @return true if the system has been loaded, false otherwise
          */
         template<typename TSystem>
         [[nodiscard]] bool has_system() const noexcept;
@@ -292,20 +289,18 @@ namespace antara::gaming::ecs
         /**
          * @brief This function allow you to verify if a list of systems is already registered in the system_manager.
          * @tparam TSystems represents a list of system that needs to be verified
-         * @return true if the list of systems has been loaded, false otherwise
          *
          * @see has_system
-
-           @verbatim embed:rst
-                .. role:: raw-html(raw)
-                    :format: html
-
-                .. note::
-                   This function is marked as nodiscard_. :raw-html:`<br />`
-                   This function recursively calls the has_system function.
-                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
-           @endverbatim
-
+         * @verbatim  embed:rst:leading-asterisk
+         *      .. role:: raw-html(raw)
+         *          :format: html
+         *
+         *      .. note::
+         *         This function is marked as nodiscard_. :raw-html:`<br />`
+         *         This function recursively calls the has_system function.
+         *      .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+         * @endverbatim
+         *
          * **Example:**
          * @code{.cpp}
          *          #include <entt/entity/registry.hpp>
@@ -325,6 +320,8 @@ namespace antara::gaming::ecs
          *              return 0;
          *          }
          * @endcode
+         *
+         * @return true if the list of systems has been loaded, false otherwise
          */
         template<typename ... TSystems>
         [[nodiscard]] bool has_systems() const noexcept;
@@ -332,9 +329,7 @@ namespace antara::gaming::ecs
         /**
          * @brief This function marks a system that will be destroyed at the next tick of the game loop.
          * @tparam TSystem Represents the system that needs to be marked
-         * @return true if the system has been marked, false otherwise\n
-
-
+         *
          * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
@@ -356,6 +351,7 @@ namespace antara::gaming::ecs
          *  }
          * @endcode
          *
+         * @return true if the system has been marked, false otherwise@n
          */
         template<typename TSystem>
         bool mark_system() noexcept;
@@ -363,20 +359,17 @@ namespace antara::gaming::ecs
         /**
          * @brief This function marks a list of systems, marked systems will be destroyed at the next tick of the game loop.
          * @tparam TSystems Represents a list of systems that needs to be marked
-         * @return true if  the list of systems has been marked, false otherwise
          *
-         * @see mark_system
-
-           @verbatim embed:rst
-                .. role:: raw-html(raw)
-                    :format: html
-
-                .. note::
-                   This function is marked as nodiscard_. :raw-html:`<br />`
-                   This function recursively calls the mark_system function.
-                .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
-           @endverbatim
-
+         * @verbatim embed:rst:leading-asterisk
+         *      .. role:: raw-html(raw)
+         *          :format: html
+         *
+         *      .. note::
+         *         This function is marked as nodiscard_. :raw-html:`<br />`
+         *         This function recursively calls the mark_system function.
+         *      .. _nodiscard: https://en.cppreference.com/w/cpp/language/attributes/nodiscard
+         * @endverbatim
+         *
          * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
@@ -397,71 +390,101 @@ namespace antara::gaming::ecs
          *      return 0;
          *  }
          * @endcode
+         *
+         * @return true if  the list of systems has been marked, false otherwise
+         * @see mark_system
          */
         template<typename ... TSystems>
         bool mark_systems() noexcept;
 
         /**
-        * \note This function enable a system
-        * \tparam TSystem Represents the system that needs to be enabled.
-        * \return true if the system has been enabled, false otherwise
-        */
+         * @brief This function enable a system
+         * @tparam TSystem Represents the system that needs to be enabled.
+         *
+         * **Example:**
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *
+         *      bool result = system_manager.enable_system<my_game::input>();
+         *      if (!result) {
+         *          // Oh no, this system cannot be enabled.
+         *          // Did you enable a system that is not present in the system_manager ?
+         *      }
+         *      return 0;
+         *  }
+         * @endcode
+         *
+         * @return true if the system has been enabled, false otherwise
+         */
         template<typename TSystem>
         bool enable_system() noexcept;
 
         /**
-         * \note This function enable a list of systems
-         * \tparam TSystems Represents a list of systems that needs to be enabled
-         * \return true if the list of systems has been enabled, false otherwise
-         * \details This function recursively calls the enable_system function
-         * \see enable_system
+         * @brief This function enable a list of systems
+         * @tparam TSystems Represents a list of systems that needs to be enabled
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         This function recursively calls the enable_system function
+         * @endverbatim
+         *
+         * @return true if the list of systems has been enabled, false otherwise
+         * @see enable_system
          */
         template<typename ... TSystems>
         bool enable_systems() noexcept;
 
         /**
-         * \note This function disable a system
-         * \tparam TSystem Represents the system that needs to be disabled
-         * \return true if the the system has been disabled, false otherwise
-         * \attention If you deactivate a system, it will not be destroyed but simply ignore during the game loop
+         * @note This function disable a system
+         * @tparam TSystem Represents the system that needs to be disabled
+         * @return true if the the system has been disabled, false otherwise
+         * @attention If you deactivate a system, it will not be destroyed but simply ignore during the game loop
          */
         template<typename TSystem>
         bool disable_system() noexcept;
 
         /**
-         * \note This function disable a list of systems
-         * \tparam TSystems  Represents a list of systems that needs to be disabled
-         * \return true if the list of systems has been disabled, false otherwise
-         * \details This function recursively calls the disable_system function
+         * @note This function disable a list of systems
+         * @tparam TSystems  Represents a list of systems that needs to be disabled
+         * @return true if the list of systems has been disabled, false otherwise
+         * @details This function recursively calls the disable_system function
          */
         template<typename ... TSystems>
         bool disable_systems() noexcept;
 
         /**
-         * \return number of systems
+         * @return number of systems
          */
         [[nodiscard]] std::size_t nb_systems() const noexcept;
 
         /**
-         * \param sys_type represent the type of systems.
-         * \return number of systems of a specific type.
+         * @param sys_type represent the type of systems.
+         * @return number of systems of a specific type.
          */
         [[nodiscard]] std::size_t nb_systems(system_type sys_type) const noexcept;
 
         /**
-         * \note This function allow you to create a system with the given argument
-         * \note This function is a factory
-         * \tparam TSystem represents the type of system to create
-         * \tparam TSystemArgs represents the arguments needed to construct the system to create
-         * \return Returns a reference to the created system
+         * @note This function allow you to create a system with the given argument
+         * @note This function is a factory
+         * @tparam TSystem represents the type of system to create
+         * @tparam TSystemArgs represents the arguments needed to construct the system to create
+         * @return Returns a reference to the created system
          */
         template<typename TSystem, typename ... TSystemArgs>
         TSystem &create_system(TSystemArgs &&...args) noexcept;
 
         /**
-        * \tparam TSystems represents a list of systems to be loaded
-        * \return Tuple of systems loaded
-        * \see create_system
+        * @tparam TSystems represents a list of systems to be loaded
+        * @return Tuple of systems loaded
+        * @see create_system
         */
         template<typename ...TSystems, typename ...TArgs>
         auto load_systems(TArgs &&...args) noexcept;
