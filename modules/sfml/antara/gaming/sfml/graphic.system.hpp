@@ -37,8 +37,6 @@ namespace antara::gaming::sfml
 
         void update() noexcept final;
 
-        sf::Vector2f translate_mouse_pos(int x, int y) const noexcept;
-
         template<size_t Layer, typename DrawableType>
         void draw() noexcept;
 

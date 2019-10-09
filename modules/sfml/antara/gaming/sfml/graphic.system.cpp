@@ -144,8 +144,4 @@ namespace antara::gaming::sfml
         refresh_render_texture();
         this->dispatcher_.trigger<event::canvas_resized>();
     }
-
-    sf::Vector2f graphic_system::translate_mouse_pos(const int x, const int y) const noexcept {
-        return window_.mapPixelToCoords(sf::Vector2i(x, y));
-    }
 }
