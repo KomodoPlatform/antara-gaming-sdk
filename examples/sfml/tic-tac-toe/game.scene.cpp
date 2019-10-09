@@ -139,12 +139,7 @@ namespace tictactoe::example
         if (this->current_state_ == game_state::running) {
             auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
 
-            auto& gfx = system_manager_.get_system<antara::gaming::sfml::graphic_system>();
-            std::cout << "Pressed: " << pressed.x << " " << pressed.y << std::endl;
-            auto world_pos = gfx.translate_mouse_pos(pressed.x, pressed.y);
-            std::cout << "World: " << world_pos.x << " " << world_pos.y << std::endl;
-
-            on_click_cell(world_pos.y / constants.cell_height, world_pos.x / constants.cell_width);
+            on_click_cell(pressed.y / constants.cell_height, pressed.x / constants.cell_width);
         } else {
             reset();
         }
