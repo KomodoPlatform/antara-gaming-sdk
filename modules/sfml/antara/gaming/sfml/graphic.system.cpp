@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
