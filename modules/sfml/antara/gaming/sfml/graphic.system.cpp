@@ -146,7 +146,6 @@ namespace antara::gaming::sfml
     }
 
     sf::Vector2f graphic_system::translate_mouse_pos(const int x, const int y) const noexcept {
-        //return sf::Vector2f(x, y);
-        return render_texture_.mapPixelToCoords(sf::Vector2i(x, y));
+        return window_.mapPixelToCoords(sf::Vector2i(x, y));
     }
 }
