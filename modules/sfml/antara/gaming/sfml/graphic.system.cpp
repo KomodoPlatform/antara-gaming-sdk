@@ -104,6 +104,11 @@ namespace antara::gaming::sfml
         return window_;
     }
 
+    sf::RenderTexture &graphic_system::get_render_texture() noexcept
+    {
+        return render_texture_;
+    }
+
     template<size_t Layer, typename DrawableType>
     void graphic_system::draw() noexcept
     {
