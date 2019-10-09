@@ -113,8 +113,10 @@ namespace tictactoe::example
         auto player_functor = [this, row, column]() {
             this->entity_registry_.view<board_component>().each([this, row, column](board_component &board_cmp) {
                 auto constants = this->entity_registry_.ctx<tic_tac_toe_constants>();
-                if (board_cmp.board[row * constants.nb_cells + column] == cell_state::empty) {
-                    board_cmp.board[row * constants.nb_cells + column] = static_cast<cell_state>(this->player_turn_);
+                auto index = row * constants.nb_cells + column;
+                if (index < board_cmp.board.size() &&
+                    board_cmp.board[index] == cell_state::empty) {
+                    board_cmp.board[index] = static_cast<cell_state>(this->player_turn_);
                     if (this->player_turn_ == x) {
                         tic_tac_toe_factory::create_x(entity_registry_, row, column);
                     } else {

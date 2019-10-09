@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iostream>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
@@ -142,5 +143,10 @@ namespace antara::gaming::sfml
     {
         refresh_render_texture();
         this->dispatcher_.trigger<event::canvas_resized>();
+    }
+
+    sf::Vector2f graphic_system::translate_mouse_pos(const int x, const int y) const noexcept {
+        //return sf::Vector2f(x, y);
+        return render_texture_.mapPixelToCoords(sf::Vector2i(x, y));
     }
 }
