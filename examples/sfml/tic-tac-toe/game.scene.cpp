@@ -17,6 +17,7 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/sfml/component.drawable.hpp>
+#include <antara/gaming/sfml/graphic.system.hpp>
 #include "tic.tac.toe.constants.hpp"
 #include "tic.tac.toe.components.hpp"
 #include "tic.tac.toe.factory.hpp"
@@ -137,7 +138,13 @@ namespace tictactoe::example
     {
         if (this->current_state_ == game_state::running) {
             auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
-            on_click_cell(pressed.y / constants.cell_height, pressed.x / constants.cell_width);
+
+            auto& gfx = system_manager_.get_system<antara::gaming::sfml::graphic_system>();
+            std::cout << "Pressed: " << pressed.x << " " << pressed.y << std::endl;
+            auto world_pos = gfx.translate_mouse_pos(pressed.x, pressed.y);
+            std::cout << "World: " << world_pos.x << " " << world_pos.y << std::endl;
+
+            on_click_cell(world_pos.y / constants.cell_height, world_pos.x / constants.cell_width);
         } else {
             reset();
         }
