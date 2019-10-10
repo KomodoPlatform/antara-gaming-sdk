@@ -20,15 +20,23 @@
 
 namespace antara::gaming::ecs
 {
+    /**
+     * @brief Enumeration that represents all possible system types in sdk gaming.
+     */
     enum system_type
     {
-        pre_update,
-        logic_update,
-        post_update,
-        size
+        pre_update, ///< Represents a pre_update system
+        logic_update, ///< Represents a logic system
+        post_update, ///< Represents a post_update system
+        size ///< Represents the size of the enum
     };
 
+    /// @brief strong_type relative to system_type::pre_update
     using st_system_pre_update = st::type<ecs::system_type, struct system_pre_update_tag>;
+
+    /// @brief strong_type relative to system_type::logic_update
     using st_system_logic_update = st::type<system_type, struct system_logic_update_tag>;
+
+    /// @brief strong_type relative to system_type::post_update
     using st_system_post_update = st::type<system_type, struct system_post_update_tag>;
 }
