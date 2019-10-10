@@ -16,18 +16,10 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
+#include <meta/sequence/list.hpp>
+#include "antara/gaming/transform/component.position.hpp"
 
-namespace antara::gaming::ecs::component
+namespace antara::gaming::transform
 {
-    struct position
-    {
-        position(float pos_x_, float pos_y_) noexcept;
-        position() noexcept;
-
-        float pos_x;
-        float pos_y;
-    };
+    using components_list = doom::meta::list<position>;
 }
-
-REFL_AUTO(type(antara::gaming::ecs::component::position), field(pos_x), field(pos_y))

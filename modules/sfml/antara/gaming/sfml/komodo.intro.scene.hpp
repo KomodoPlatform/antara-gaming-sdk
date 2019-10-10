@@ -23,8 +23,8 @@
 #include <SFML/Graphics.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
-#include "antara/gaming/ecs/component.position.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
 #include "antara/gaming/sfml/component.audio.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"

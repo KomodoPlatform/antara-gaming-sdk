@@ -106,7 +106,7 @@ namespace antara::gaming::sfml
         const sf::Vector2f logo_target_position = sf::Vector2f(window_center.x, screen_size.y * 0.4f);
         auto &logo = entity_registry.get<sfml::sprite>(logo_entity).drawable;
         logo.setScale(10.0f, 10.0f);
-        entity_registry.assign_or_replace<ecs::component::position>(logo_entity, window_center.x, screen_size.y * 0.8f);
+        entity_registry.assign_or_replace<transform::position>(logo_entity, window_center.x, screen_size.y * 0.8f);
         logo.setColor(sf::Color(255, 255, 255, 0));
 
         const float logo_default_angle = 45.0f;
@@ -127,7 +127,7 @@ namespace antara::gaming::sfml
         name.setScale(0.6f, 0.6f);
         const float name_target_position =
                 logo_target_position.y + logo_sprite.getTexture()->getSize().y * logo_final_scale * 0.75f;
-        entity_registry.assign_or_replace<ecs::component::position>(name_entity, window_center.x, screen_size.y);
+        entity_registry.assign_or_replace<transform::position>(name_entity, window_center.x, screen_size.y);
 
         name.setColor(sf::Color(255, 255, 255, 0));
         return std::make_tuple(name_entity, name_target_position);
@@ -251,13 +251,13 @@ namespace antara::gaming::sfml
         // Move Logo
         actions.emplace_back(0.0f, [this, logo_target_position = logo_target_position,
                 logo_entity = logo_entity](float dt) {
-            static auto pos = entity_registry_.get<ecs::component::position>(logo_entity);
+            static auto pos = entity_registry_.get<transform::position>(logo_entity);
 
             // Change pos_y
             bool done = ease(&pos.pos_y, logo_target_position.y, 1.5f, dt);
 
             // Set pos_y
-            entity_registry_.assign_or_replace<ecs::component::position>(logo_entity, pos.pos_x, pos.pos_y);
+            entity_registry_.assign_or_replace<transform::position>(logo_entity, pos.pos_x, pos.pos_y);
 
             return done;
         });
@@ -265,13 +265,13 @@ namespace antara::gaming::sfml
         // Move Name
         actions.emplace_back(1.0f, [this, name_target_position = name_target_position,
                 name_entity = name_entity](float dt) {
-            static auto pos = entity_registry_.get<ecs::component::position>(name_entity);
+            static auto pos = entity_registry_.get<transform::position>(name_entity);
 
             // Change pos_y
             bool done = ease(&pos.pos_y, name_target_position, 2.0f, dt);
 
             // Set pos_y
-            entity_registry_.assign_or_replace<ecs::component::position>(name_entity, pos.pos_x, pos.pos_y);
+            entity_registry_.assign_or_replace<transform::position>(name_entity, pos.pos_x, pos.pos_y);
 
             return done;
         });

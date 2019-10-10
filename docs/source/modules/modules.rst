@@ -50,6 +50,13 @@ Antara Gaming Modules
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
+   * - :doc:`antara::transform<transform>`
+     - Module Containing all the common transform components (position, rotation, ...)
+     - :doc:`antara::event<event>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
    * - :doc:`antara::geometry<geometry>`
      - Module Containing all the common geometry components (circle, square, rect...)
      - :doc:`antara::event<event>`

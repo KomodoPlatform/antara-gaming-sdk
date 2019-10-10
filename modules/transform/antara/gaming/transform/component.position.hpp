@@ -16,15 +16,18 @@
 
 #pragma once
 
-#include <meta/sequence/list.hpp>
-#include <meta/sequence/concat.hpp>
-#include <meta/sequence/flatten.hpp>
-#include "antara/gaming/transform/all.transform.components.hpp"
-#include "antara/gaming/graphics/all.graphics.components.hpp"
-#include "antara/gaming/geometry/all.geometry.components.hpp"
+#include "antara/gaming/core/safe.refl.hpp"
 
-namespace antara::gaming::ecs::component
+namespace antara::gaming::transform
 {
-    using list_component_list = doom::meta::list<transform::components_list, geometry::components_list, graphics::components_list>;
-    using components_list = doom::meta::flatten<list_component_list>;
+    struct position
+    {
+        position(float pos_x_, float pos_y_) noexcept;
+        position() noexcept;
+
+        float pos_x;
+        float pos_y;
+    };
 }
+
+REFL_AUTO(type(antara::gaming::transform::position), field(pos_x), field(pos_y))
