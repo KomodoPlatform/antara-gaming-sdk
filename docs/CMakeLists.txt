@@ -76,6 +76,8 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/timer.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/input.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/event.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/geometry.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/graphics.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/ecs.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/getting_started.rst
