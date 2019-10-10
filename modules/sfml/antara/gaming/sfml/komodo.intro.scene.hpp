@@ -23,8 +23,8 @@
 #include <SFML/Graphics.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/scenes/base.scene.hpp"
-#include "antara/gaming/ecs/component.layer.hpp"
-#include <antara/gaming/ecs/component.position.hpp>
+#include "antara/gaming/ecs/component.position.hpp"
+#include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
 #include "antara/gaming/sfml/component.audio.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
@@ -53,7 +53,7 @@ namespace antara::gaming::sfml
             auto &sprite = entity_registry.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture)).drawable;
             sprite.setOrigin(sprite.getLocalBounds().width * 0.5f, sprite.getLocalBounds().height * 0.5f);
             entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
-            entity_registry.assign<antara::gaming::ecs::component::layer<current_layer>>(entity);
+            entity_registry.assign<antara::gaming::graphics::layer<current_layer>>(entity);
 
             //! Give the fresh entity
             return entity;

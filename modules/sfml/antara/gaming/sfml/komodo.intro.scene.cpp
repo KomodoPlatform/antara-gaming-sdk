@@ -67,7 +67,7 @@ namespace antara::gaming::sfml
                 sf::Vector2f(window_info.x, window_info.y))).drawable;
         rect.setFillColor(sf::Color(0, 0, 0, 0));
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry.assign<ecs::component::layer<2>>(entity);
+        entity_registry.assign<graphics::layer<2>>(entity);
 
         rect.setFillColor(sf::Color(0, 0, 0, 0));
         rect.setSize(sf::Vector2f(window_info.x, window_info.y));
@@ -91,7 +91,7 @@ namespace antara::gaming::sfml
         va.append(sf::Vertex(sf::Vector2f(window_info.x, window_info.y), sf::Color(0, 176, 163)));
         va.append(sf::Vertex(sf::Vector2f(0, window_info.x), sf::Color(0, 67, 106)));
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
-        entity_registry.assign<ecs::component::layer<0>>(entity);
+        entity_registry.assign<graphics::layer<0>>(entity);
 
         //! Give the fresh entity
         return entity;

@@ -17,16 +17,20 @@
 #pragma once
 
 #include <meta/sequence/list.hpp>
-#include <meta/sequence/concat.hpp>
-#include <meta/sequence/flatten.hpp>
-#include "antara/gaming/ecs/component.position.hpp"
-#include "antara/gaming/graphics/all.graphics.components.hpp"
-#include "antara/gaming/geometry/all.geometry.components.hpp"
+#include "antara/gaming/graphics/component.layer.hpp"
 
-namespace antara::gaming::ecs::component
+namespace antara::gaming::graphics
 {
-    using internal_components_list = doom::meta::list<position>;
-    using list_component_list = doom::meta::list<internal_components_list, geometry::components_list, graphics::components_list>;
-    using components_list = doom::meta::flatten<list_component_list>;
-    //using intermediate_list = doom::meta::concat<internal_components_list, geometry::components_list>;
+    using components_list = doom::meta::list<layer_0,
+            layer_1,
+            layer_2,
+            layer_3,
+            layer_4,
+            layer_5,
+            layer_6,
+            layer_7,
+            layer_8,
+            layer_9,
+            layer_10,
+            layer_11>;
 }

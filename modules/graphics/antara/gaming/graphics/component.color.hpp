@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include <utility>
 #include <cstdint>
+#include <utility>
+#include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::graphics
 {
@@ -68,8 +69,8 @@ namespace antara::gaming::graphics
 
     struct outline_color : color
     {
-        template <typename ... TArgs>
-        constexpr outline_color(TArgs&& ...args) noexcept : graphics::color(std::forward<TArgs>(args)...)
+        template<typename ... TArgs>
+        constexpr outline_color(TArgs &&...args) noexcept : graphics::color(std::forward<TArgs>(args)...)
         {
 
         }
@@ -77,10 +78,13 @@ namespace antara::gaming::graphics
 
     struct fill_color : color
     {
-        template <typename ... TArgs>
-        constexpr fill_color(TArgs&& ...args) noexcept : graphics::color(std::forward<TArgs>(args)...)
+        template<typename ... TArgs>
+        constexpr fill_color(TArgs &&...args) noexcept : graphics::color(std::forward<TArgs>(args)...)
         {
 
         }
     };
 }
+
+REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a))
+REFL_AUTO(type(antara::gaming::graphics::fill_color), field(r), field(g), field(b), field(a))
