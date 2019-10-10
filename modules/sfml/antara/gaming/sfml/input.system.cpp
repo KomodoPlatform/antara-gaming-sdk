@@ -24,6 +24,7 @@
 #include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
+#include "graphic.system.hpp"
 
 namespace antara::gaming::sfml
 {
