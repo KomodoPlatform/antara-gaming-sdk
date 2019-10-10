@@ -50,6 +50,20 @@ Antara Gaming Modules
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
+   * - :doc:`antara::geometry<geometry>`
+     - Module Containing all the common geometry components (circle, square, rect...)
+     - :doc:`antara::event<event>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
+   * - :doc:`antara::graphics<graphics>`
+     - Module Containing all the common graphics components (color, layer, ...)
+     - :doc:`antara::event<event>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
    * - :doc:`antara::ecs<ecs>`
      - Module allowing us the manipulations of systems such as adding, updating, disabling, or removing systems (Contains a system manager, and system abtract class)
      - EnTT_ :raw-html:`<br />` strong_type_ :raw-html:`<br />` expected_ :raw-html:`<br />` range_v3_ :raw-html:`<br />` doom_meta_ :doc:`antara::timer<timer>` :doc:`antara::event<event>` :doc:`antara::core<core>`
