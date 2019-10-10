@@ -16,7 +16,7 @@
 
 #include <entt/entity/helper.hpp>
 #include "antara/gaming/world/world.app.hpp"
-#include "antara/gaming/ecs/component.position.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -44,7 +44,7 @@ public:
         sf::Text &txt = txt_cmp.drawable;
         txt.setFillColor(sf::Color::Blue);
         txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
-        this->entity_registry_.assign<antara::gaming::ecs::component::position>(dummy_entity,
+        this->entity_registry_.assign<antara::gaming::transform::position>(dummy_entity,
                                                                                 static_cast<float>(window_info.x) /
                                                                                 2.f,
                                                                                 static_cast<float>(window_info.y) /

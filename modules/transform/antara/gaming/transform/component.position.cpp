@@ -14,25 +14,18 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/ecs/component.position.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 
-namespace antara::gaming::ecs::tests
+namespace antara::gaming::transform
 {
-    TEST_SUITE("test component position")
+    position::position(float pos_x_, float pos_y_) noexcept : pos_x(pos_x_), pos_y(pos_y_)
     {
-        TEST_CASE("component position is default constructible")
-        {
-            component::position c_pos{};
-            CHECK_EQ(c_pos.pos_x, 0.0f);
-            CHECK_EQ(c_pos.pos_y, 0.0f);
-        }
 
-        TEST_CASE("component position constructor with value")
-        {
-            component::position c_pos{42.0f, 27.0f};
-            CHECK_EQ(c_pos.pos_x, 42.0f);
-            CHECK_EQ(c_pos.pos_y, 27.0f);
-        }
+    }
+
+    position::position() noexcept : pos_x(0.f), pos_y(0.f)
+    {
+
     }
 }
+

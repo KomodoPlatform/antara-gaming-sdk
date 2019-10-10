@@ -18,7 +18,7 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
-#include <antara/gaming/ecs/component.position.hpp>
+#include <antara/gaming/transform/component.position.hpp>
 #include <antara/gaming/sfml/component.drawable.hpp>
 #include "tic.tac.toe.factory.hpp"
 #include "tic.tac.toe.constants.hpp"
@@ -101,10 +101,10 @@ namespace tictactoe ::example
         auto &circle_cmp = entity_registry.assign<sfml::circle>(o_entity,
                                                                 sf::CircleShape(half_box_side));
         sf::CircleShape &circle = circle_cmp.drawable;
-        entity_registry.assign<ecs::component::position>(o_entity,
-                                                         center_x - circle.getGlobalBounds().width / 2,
-                                                         center_y -
-                                                         circle.getGlobalBounds().height / 2);
+        entity_registry.assign<transform::position>(o_entity,
+                                                    center_x - circle.getGlobalBounds().width / 2,
+                                                    center_y -
+                                                    circle.getGlobalBounds().height / 2);
         circle.setFillColor(sf::Color::Transparent);
         circle.setOutlineThickness(1.f);
         circle.setOutlineColor(sf::Color::Blue);

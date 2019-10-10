@@ -16,7 +16,7 @@
 
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
-#include "antara/gaming/ecs/component.position.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
@@ -122,7 +122,7 @@ namespace antara::gaming::sfml
                        auto &&drawable,
                        [[maybe_unused]] auto &&) {
                     if constexpr (std::is_base_of_v<sf::Transformable, decltype(DrawableType::drawable)>) {
-                        if (auto cmp_position = this->entity_registry_.try_get<ecs::component::position>(entity);
+                        if (auto cmp_position = this->entity_registry_.try_get<transform::position>(entity);
                                 cmp_position != nullptr) {
                             drawable.drawable.setPosition(cmp_position->pos_x, cmp_position->pos_y);
                         }
