@@ -470,6 +470,7 @@ namespace antara::gaming::ecs
          *         If you deactivate a system, it will not be destroyed but simply ignored during the game loop.
          * @endverbatim
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
@@ -503,6 +504,7 @@ namespace antara::gaming::ecs
          *         This function recursively calls the disable_system function
          * @endverbatim
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
@@ -530,6 +532,7 @@ namespace antara::gaming::ecs
         /**
          * @brief This function returns the number of systems registered in the system manager.
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
@@ -557,6 +560,7 @@ namespace antara::gaming::ecs
          * @brief This function returns the system number of a certain type to register in the system manager.
          * @param sys_type represent the type of systems.
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
@@ -581,11 +585,12 @@ namespace antara::gaming::ecs
         [[nodiscard]] std::size_t nb_systems(system_type sys_type) const noexcept;
 
         /**
-         * @brief This function allow you to create a system with the given argument
-         * @brief This function is a factory
+         * @brief This function allow you to create a system with the given argument.\n
+         *        This function is a factory
          * @tparam TSystem represents the type of system to create
          * @tparam TSystemArgs represents the arguments needed to construct the system to create
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
@@ -616,6 +621,7 @@ namespace antara::gaming::ecs
          *         This function recursively calls the create_system function
          * @endverbatim
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
