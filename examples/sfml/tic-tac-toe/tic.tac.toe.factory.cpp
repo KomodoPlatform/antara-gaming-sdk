@@ -19,6 +19,8 @@
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/transform/component.position.hpp>
+#include <antara/gaming/geometry/component.circle.hpp>
+#include <antara/gaming/graphics/component.color.hpp>
 #include <antara/gaming/sfml/component.drawable.hpp>
 #include "tic.tac.toe.factory.hpp"
 #include "tic.tac.toe.constants.hpp"
@@ -98,16 +100,12 @@ namespace tictactoe ::example
         const auto center_y = static_cast<float>(constants.cell_height * 0.5 + row * constants.cell_height);
 
         auto o_entity = entity_registry.create();
-        auto &circle_cmp = entity_registry.assign<sfml::circle>(o_entity,
-                                                                sf::CircleShape(half_box_side));
-        sf::CircleShape &circle = circle_cmp.drawable;
+        entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
+        entity_registry.assign<graphics::outline_color>(o_entity, 1.f, graphics::blue);
+        entity_registry.assign<geometry::circle>(o_entity, half_box_side);
         entity_registry.assign<transform::position>(o_entity,
-                                                    center_x - circle.getGlobalBounds().width / 2,
-                                                    center_y -
-                                                    circle.getGlobalBounds().height / 2);
-        circle.setFillColor(sf::Color::Transparent);
-        circle.setOutlineThickness(1.f);
-        circle.setOutlineColor(sf::Color::Blue);
+                                                    center_x,
+                                                    center_y);
 
         entity_registry.assign<entt::tag<"game_scene"_hs>>(o_entity);
         entity_registry.assign<graphics::layer<1>>(o_entity);

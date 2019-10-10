@@ -26,12 +26,14 @@ namespace antara::gaming::sfml
     struct sprite
     {
         sprite() = default;
+
         sf::Sprite drawable;
     };
 
     struct rectangle
     {
         rectangle() = default;
+
         sf::RectangleShape drawable;
     };
 
@@ -39,9 +41,13 @@ namespace antara::gaming::sfml
     {
         circle(sf::CircleShape drawable_) : drawable(std::move(drawable_))
         {
-
+            drawable.setOrigin(drawable.getRadius(), drawable.getRadius());
         }
-        circle() = default;
+
+        circle()
+        {
+            drawable.setOrigin(drawable.getRadius(), drawable.getRadius());
+        }
 
         sf::CircleShape drawable;
     };
@@ -56,6 +62,7 @@ namespace antara::gaming::sfml
     struct vertex_array
     {
         vertex_array() = default;
+
         sf::VertexArray drawable;
     };
     // LCOV_EXCL_STOP

@@ -29,6 +29,7 @@ namespace antara::gaming::graphics::tests
 
             graphics::outline_color c_out_color;
             CHECK_EQ(c_out_color, graphics::black);
+            CHECK_EQ(1.0f, c_out_color.thickness);
 
             graphics::fill_color c_fill_color;
             CHECK_EQ(c_fill_color, graphics::black);
@@ -41,8 +42,9 @@ namespace antara::gaming::graphics::tests
             c_color = graphics::red;
             CHECK_EQ(c_color, graphics::red);
 
-            graphics::outline_color c_outline_color(graphics::green);
+            graphics::outline_color c_outline_color(42.f, graphics::green);
             CHECK_EQ(c_outline_color, graphics::green);
+            CHECK_EQ(c_outline_color.thickness, 42.f);
             c_outline_color = graphics::blue;
             CHECK_EQ(c_outline_color, graphics::blue);
 
