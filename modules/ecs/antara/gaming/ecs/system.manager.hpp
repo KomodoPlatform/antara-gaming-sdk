@@ -436,6 +436,7 @@ namespace antara::gaming::ecs
          *         This function recursively calls the enable_system function
          * @endverbatim
          *
+         * **Example:**
          * @code{.cpp}
          *  #include <entt/entity/registry.hpp>
          *  #include <entt/dispatcher/dispatcher.hpp>
