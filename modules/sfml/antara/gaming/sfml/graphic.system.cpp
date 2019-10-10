@@ -17,7 +17,7 @@
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
-#include "antara/gaming/ecs/component.layer.hpp"
+#include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
 
@@ -117,7 +117,7 @@ namespace antara::gaming::sfml
     template<size_t Layer, typename DrawableType>
     void graphic_system::draw() noexcept
     {
-        this->entity_registry_.view<DrawableType, ecs::component::layer<Layer>>().each(
+        this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().each(
                 [this](auto entity,
                        auto &&drawable,
                        [[maybe_unused]] auto &&) {
@@ -145,7 +145,7 @@ namespace antara::gaming::sfml
 
     void graphic_system::draw_all_layers() noexcept
     {
-        draw_all_layers(std::make_index_sequence<ecs::component::max_layer>{});
+        draw_all_layers(std::make_index_sequence<graphics::max_layer>{});
     }
 
     void graphic_system::on_window_resized_event(const event::window_resized &) noexcept

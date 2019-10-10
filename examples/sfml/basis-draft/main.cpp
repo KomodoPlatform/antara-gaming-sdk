@@ -17,7 +17,7 @@
 #include <entt/entity/helper.hpp>
 #include "antara/gaming/world/world.app.hpp"
 #include "antara/gaming/ecs/component.position.hpp"
-#include "antara/gaming/ecs/component.layer.hpp"
+#include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
@@ -26,8 +26,6 @@
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/audio.system.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
-#include "../tic-tac-toe/game.scene.hpp"
-
 
 class intro_scene;
 
@@ -52,7 +50,7 @@ public:
                                                                                 static_cast<float>(window_info.y) /
                                                                                 2.f);
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(dummy_entity);
+        this->entity_registry_.assign<antara::gaming::graphics::layer<0>>(dummy_entity);
 
 
         auto triangle_entity = entity_registry.create();
@@ -68,7 +66,7 @@ public:
         triangle[2].color = sf::Color::Green;
 
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(triangle_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(triangle_entity);
+        this->entity_registry_.assign<antara::gaming::graphics::layer<0>>(triangle_entity);
 
         auto cross_entity = entity_registry.create();
         auto &cross_cmp = entity_registry.assign<antara::gaming::sfml::vertex_array>(cross_entity,
@@ -87,7 +85,7 @@ public:
         }
 
         entity_registry_.assign<entt::tag<"game_scene"_hs>>(cross_entity);
-        this->entity_registry_.assign<antara::gaming::ecs::component::layer<0>>(cross_entity);
+        this->entity_registry_.assign<antara::gaming::graphics::layer<0>>(cross_entity);
     }
 
     void update() noexcept final

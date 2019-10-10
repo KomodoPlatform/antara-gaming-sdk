@@ -17,7 +17,7 @@
 #include <cmath>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <entt/entity/helper.hpp>
-#include <antara/gaming/ecs/component.layer.hpp>
+#include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/ecs/component.position.hpp>
 #include <antara/gaming/sfml/component.drawable.hpp>
 #include "tic.tac.toe.factory.hpp"
@@ -45,7 +45,7 @@ namespace tictactoe ::example
 
         entity_registry.assign<entt::tag<"grid"_hs>>(grid_entity);
         entity_registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
-        entity_registry.assign<ecs::component::layer<0>>(grid_entity);
+        entity_registry.assign<graphics::layer<0>>(grid_entity);
         return grid_entity;
     }
 
@@ -85,7 +85,7 @@ namespace tictactoe ::example
 
         entity_registry.assign<entt::tag<"game_scene"_hs>>(x_entity);
         entity_registry.assign<entt::tag<"player_x"_hs>>(x_entity);
-        entity_registry.assign<ecs::component::layer<1>>(x_entity);
+        entity_registry.assign<graphics::layer<1>>(x_entity);
         return x_entity;
     }
 
@@ -110,7 +110,7 @@ namespace tictactoe ::example
         circle.setOutlineColor(sf::Color::Blue);
 
         entity_registry.assign<entt::tag<"game_scene"_hs>>(o_entity);
-        entity_registry.assign<ecs::component::layer<1>>(o_entity);
+        entity_registry.assign<graphics::layer<1>>(o_entity);
         return o_entity;
     }
 

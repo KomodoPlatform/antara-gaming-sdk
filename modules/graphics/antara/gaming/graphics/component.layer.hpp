@@ -19,7 +19,7 @@
 #include <cstddef>
 #include "antara/gaming/core/safe.refl.hpp"
 
-namespace antara::gaming::ecs::component
+namespace antara::gaming::graphics
 {
     inline constexpr std::size_t max_layer = 12ull;
 
@@ -42,15 +42,15 @@ namespace antara::gaming::ecs::component
     using layer_11 = layer<11>;
 }
 
-REFL_AUTO(type(antara::gaming::ecs::component::layer_0))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_1))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_2))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_3))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_4))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_5))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_6))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_7))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_8))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_9))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_10))
-REFL_AUTO(type(antara::gaming::ecs::component::layer_11))
+REFL_AUTO(type(antara::gaming::graphics::layer_0))
+REFL_AUTO(type(antara::gaming::graphics::layer_1))
+REFL_AUTO(type(antara::gaming::graphics::layer_2))
+REFL_AUTO(type(antara::gaming::graphics::layer_3))
+REFL_AUTO(type(antara::gaming::graphics::layer_4))
+REFL_AUTO(type(antara::gaming::graphics::layer_5))
+REFL_AUTO(type(antara::gaming::graphics::layer_6))
+REFL_AUTO(type(antara::gaming::graphics::layer_7))
+REFL_AUTO(type(antara::gaming::graphics::layer_8))
+REFL_AUTO(type(antara::gaming::graphics::layer_9))
+REFL_AUTO(type(antara::gaming::graphics::layer_10))
+REFL_AUTO(type(antara::gaming::graphics::layer_11))
