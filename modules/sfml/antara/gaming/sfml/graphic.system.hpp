@@ -22,6 +22,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "meta/sequence/list.hpp"
 #include "antara/gaming/event/window.resized.hpp"
+#include "antara/gaming/geometry/component.circle.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/system.hpp"
@@ -50,11 +51,10 @@ namespace antara::gaming::sfml
 
         //! Public getter
         sf::RenderWindow &get_window() noexcept;
-        sf::RenderTexture &get_render_texture() noexcept;
-        sf::Sprite &get_render_texture_sprite() noexcept;
 
+        //! Callback
         void on_window_resized_event(const event::window_resized &evt) noexcept;
-
+        void on_geometry_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
     private:
         config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};
         config::window_cfg &window_cfg_{game_cfg_.win_cfg};

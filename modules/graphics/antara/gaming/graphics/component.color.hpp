@@ -74,6 +74,16 @@ namespace antara::gaming::graphics
         {
 
         }
+
+        template<typename ... TArgs>
+        constexpr
+        outline_color(float thickness, TArgs &&...args) noexcept : graphics::color(std::forward<TArgs>(args)...),
+                                                                   thickness(thickness)
+        {
+
+        }
+
+        float thickness{1.f};
     };
 
     struct fill_color : color
