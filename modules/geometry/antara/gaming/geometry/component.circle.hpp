@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/event/event.invoker.hpp"
 
 namespace antara::gaming::geometry
@@ -31,3 +32,6 @@ namespace antara::gaming::geometry
         float radius{0.f};
     };
 }
+
+REFL_AUTO(type(antara::gaming::geometry::circle), field(radius));
+
