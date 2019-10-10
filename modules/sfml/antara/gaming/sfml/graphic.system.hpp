@@ -51,6 +51,7 @@ namespace antara::gaming::sfml
         //! Public getter
         sf::RenderWindow &get_window() noexcept;
         sf::RenderTexture &get_render_texture() noexcept;
+        sf::Sprite &get_render_texture_sprite() noexcept;
 
         void on_window_resized_event(const event::window_resized &evt) noexcept;
 
