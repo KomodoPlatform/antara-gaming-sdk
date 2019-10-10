@@ -581,20 +581,61 @@ namespace antara::gaming::ecs
         [[nodiscard]] std::size_t nb_systems(system_type sys_type) const noexcept;
 
         /**
-         * @note This function allow you to create a system with the given argument
-         * @note This function is a factory
+         * @brief This function allow you to create a system with the given argument
+         * @brief This function is a factory
          * @tparam TSystem represents the type of system to create
          * @tparam TSystemArgs represents the arguments needed to construct the system to create
+         *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *      auto& foo_system = system_manager.create_system<my_system::foo>(); // you can send argument of the foo constructor here.
+         *      foo_system.update();
+         *      return 0;
+         *  }
+         * @endcode
+         *
          * @return Returns a reference to the created system
          */
         template<typename TSystem, typename ... TSystemArgs>
         TSystem &create_system(TSystemArgs &&...args) noexcept;
 
         /**
-        * @tparam TSystems represents a list of systems to be loaded
-        * @return Tuple of systems loaded
-        * @see create_system
-        */
+         * @brief This function load a bunch os systems
+         * @tparam TSystems represents a list of systems to be loaded
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         This function recursively calls the create_system function
+         * @endverbatim
+         *
+         * @code{.cpp}
+         *  #include <entt/entity/registry.hpp>
+         *  #include <entt/dispatcher/dispatcher.hpp>
+         *  #include <antara/gaming/ecs/system.manager.hpp>
+         *
+         *  int main()
+         *  {
+         *      entt::registry entity_registry;
+         *      entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *      antara::gaming::ecs::system_manager system_manager{entity_registry};
+         *      auto&& [foo_system, bar_system] = system_manager.load_systems<my_system::foo, my_system::bar>();
+         *      foo_system.update();
+         *      bar_system.update();
+         *      return 0;
+         *  }
+         * @endcode
+         *
+         * @return Tuple of systems loaded
+         * @see create_system
+         */
         template<typename ...TSystems, typename ...TArgs>
         auto load_systems(TArgs &&...args) noexcept;
 
