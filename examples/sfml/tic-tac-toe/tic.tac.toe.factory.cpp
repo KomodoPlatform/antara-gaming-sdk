@@ -34,15 +34,23 @@ namespace tictactoe ::example
     {
         auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
         auto grid_entity = entity_registry.create();
-        auto &grid_cmp = entity_registry.assign<sfml::vertex_array>(grid_entity, sf::VertexArray(sf::Lines, 16));
+        auto &grid_cmp = entity_registry.assign<sfml::vertex_array>(grid_entity, sf::VertexArray(sf::Quads, 8 * 4));
         sf::VertexArray &lines = grid_cmp.drawable;
 
         auto constants = entity_registry.ctx<tic_tac_toe_constants>();
-        for (std::size_t counter = 0, i = 0; i <= constants.nb_cells; ++i, counter += 4) {
-            lines[counter].position = sf::Vector2f(i * constants.cell_width, 0);
-            lines[counter + 1].position = sf::Vector2f(i * constants.cell_width, window_info.y);
-            lines[counter + 2].position = sf::Vector2f(0, i * constants.cell_height);
-            lines[counter + 3].position = sf::Vector2f(window_info.x, i * constants.cell_height);
+        const auto thickness = 10.0f;
+        for (std::size_t counter = 0, i = 0; i <= constants.nb_cells; ++i, counter += 4 * 2) {
+            // Vertical
+            lines[counter].position = sf::Vector2f(i * constants.cell_width - thickness, 0);
+            lines[counter + 1].position = sf::Vector2f(i * constants.cell_width + thickness, 0);
+            lines[counter + 2].position = sf::Vector2f(i * constants.cell_width + thickness, window_info.y);
+            lines[counter + 3].position = sf::Vector2f(i * constants.cell_width - thickness, window_info.y);
+
+            // Horizontal
+            lines[counter + 4].position = sf::Vector2f(0, i * constants.cell_height - thickness);
+            lines[counter + 5].position = sf::Vector2f(window_info.x, i * constants.cell_height - thickness);
+            lines[counter + 6].position = sf::Vector2f(window_info.x, i * constants.cell_height + thickness);
+            lines[counter + 7].position = sf::Vector2f(0, i * constants.cell_height + thickness);
         }
 
         entity_registry.assign<entt::tag<"grid"_hs>>(grid_entity);
