@@ -30,6 +30,8 @@ namespace tictactoe ::example
 {
     using namespace antara::gaming;
 
+    const auto grid_thickness = 20.0f;
+
     entt::entity tic_tac_toe_factory::create_grid_entity(entt::registry &entity_registry) noexcept
     {
         auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
@@ -38,8 +40,7 @@ namespace tictactoe ::example
         sf::VertexArray &lines = grid_cmp.drawable;
 
         auto constants = entity_registry.ctx<tic_tac_toe_constants>();
-        const auto thickness = 20.0f;
-        const auto half_thickness = thickness * 0.5f;
+        const auto half_thickness = grid_thickness * 0.5f;
         for (std::size_t counter = 0, i = 0; i <= constants.nb_cells; ++i, counter += 4 * 2) {
             // First and last ones should be a bit inside, otherwise half of it is out of the screen
             auto offset_x = 0.0f;
@@ -124,7 +125,7 @@ namespace tictactoe ::example
 
         auto o_entity = entity_registry.create();
         entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
-        entity_registry.assign<graphics::outline_color>(o_entity, 1.f, graphics::blue);
+        entity_registry.assign<graphics::outline_color>(o_entity, grid_thickness, graphics::blue);
         entity_registry.assign<geometry::circle>(o_entity, half_box_side);
         entity_registry.assign<transform::position>(o_entity,
                                                     center_x,
