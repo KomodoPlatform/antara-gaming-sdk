@@ -60,6 +60,7 @@ namespace antara::gaming::sfml
 
         // Reset View to have 1:1 area instead of stretched
         window_.setView(sf::View(sf::FloatRect(0, 0, window_.getSize().x, window_.getSize().y)));
+
         // Create the Render Texture
         render_texture_.create(rt_size.x, rt_size.y);
         render_texture_sprite_.setTexture(render_texture_.getTexture(), true);
