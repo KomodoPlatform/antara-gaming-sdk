@@ -93,14 +93,14 @@ namespace tictactoe::example
                     [this](antara::gaming::sfml::vertex_array &array_cmp) {
                         for (std::size_t count = 0; count < array_cmp.drawable.getVertexCount(); ++count) {
                             array_cmp.drawable[count].color =
-                                    this->player_turn_ == player::x ? sf::Color::Red : sf::Color::Blue;
+                                    this->player_turn_ == player::x ? sf::Color::Magenta : sf::Color::Cyan;
                         }
                     });
         } else if (tie_functor()) {
             this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().less(
                     [](antara::gaming::sfml::vertex_array &array_cmp) {
                         for (std::size_t count = 0; count < array_cmp.drawable.getVertexCount(); ++count) {
-                            array_cmp.drawable[count].color = sf::Color::Magenta;
+                            array_cmp.drawable[count].color = sf::Color::Yellow;
                         }
                     });
             this->current_state_ = game_state::tie;
