@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <vector>
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
 

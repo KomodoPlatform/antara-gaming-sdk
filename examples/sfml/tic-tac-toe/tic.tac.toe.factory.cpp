@@ -19,9 +19,9 @@
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/transform/component.position.hpp>
+#include <antara/gaming/geometry/component.vertex.hpp>
 #include <antara/gaming/geometry/component.circle.hpp>
 #include <antara/gaming/graphics/component.color.hpp>
-#include <antara/gaming/sfml/component.drawable.hpp>
 #include "tic.tac.toe.factory.hpp"
 #include "tic.tac.toe.constants.hpp"
 #include "tic.tac.toe.components.hpp"
@@ -36,9 +36,8 @@ namespace tictactoe ::example
     {
         auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
         auto grid_entity = entity_registry.create();
-        auto &grid_cmp = entity_registry.assign<sfml::vertex_array>(grid_entity, sf::VertexArray(sf::Quads, 8 * 4));
-        sf::VertexArray &lines = grid_cmp.drawable;
 
+        std::vector<geometry::vertex> lines{8 * 4};
         auto constants = entity_registry.ctx<tic_tac_toe_constants>();
         const auto half_thickness = grid_thickness * 0.5f;
         for (std::size_t counter = 0, i = 0; i <= constants.nb_cells; ++i, counter += 4 * 2) {
@@ -57,18 +56,33 @@ namespace tictactoe ::example
 
             // Prepare lines
             // Vertical
-            lines[counter].position = sf::Vector2f(offset_x + i * constants.cell_width - half_thickness, 0);
-            lines[counter + 1].position = sf::Vector2f(offset_x + i * constants.cell_width + half_thickness, 0);
-            lines[counter + 2].position = sf::Vector2f(offset_x + i * constants.cell_width + half_thickness, window_info.y);
-            lines[counter + 3].position = sf::Vector2f(offset_x + i * constants.cell_width - half_thickness, window_info.y);
+            lines[counter].pos_x = offset_x + i * constants.cell_width - half_thickness;
+            lines[counter].pos_y = 0;
+
+            lines[counter + 1].pos_x = offset_x + i * constants.cell_width + half_thickness;
+            lines[counter + 1].pos_y = 0;
+
+            lines[counter + 2].pos_x = offset_x + i * constants.cell_width + half_thickness;
+            lines[counter + 2].pos_y = window_info.y;
+
+            lines[counter + 3].pos_x = offset_x + i * constants.cell_width - half_thickness;
+            lines[counter + 3].pos_y = window_info.y;
 
             // Horizontal
-            lines[counter + 4].position = sf::Vector2f(offset_x + 0, offset_y + i * constants.cell_height - half_thickness);
-            lines[counter + 5].position = sf::Vector2f(offset_x + window_info.x, offset_y + i * constants.cell_height - half_thickness);
-            lines[counter + 6].position = sf::Vector2f(offset_x + window_info.x, offset_y + i * constants.cell_height + half_thickness);
-            lines[counter + 7].position = sf::Vector2f(offset_x + 0, offset_y + i * constants.cell_height + half_thickness);
+            lines[counter + 4].pos_x = offset_x + 0;
+            lines[counter + 4].pos_y = offset_y + i * constants.cell_height - half_thickness;
+
+            lines[counter + 5].pos_x = offset_x + window_info.x;
+            lines[counter + 5].pos_y = offset_y + i * constants.cell_height - half_thickness;
+
+            lines[counter + 6].pos_x = offset_x + window_info.x;
+            lines[counter + 6].pos_y = offset_y + i * constants.cell_height + half_thickness;
+
+            lines[counter + 7].pos_x = offset_x + 0;
+            lines[counter + 7].pos_y = offset_y + i * constants.cell_height + half_thickness;
         }
 
+        entity_registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
         entity_registry.assign<entt::tag<"grid"_hs>>(grid_entity);
         entity_registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
         entity_registry.assign<graphics::layer<0>>(grid_entity);
@@ -94,27 +108,40 @@ namespace tictactoe ::example
 
         auto x_entity = entity_registry.create();
         entity_registry.assign<cell_position>(x_entity, row, column);
-        auto &cross_cmp = entity_registry.assign<sfml::vertex_array>(x_entity,
-                                                                     sf::VertexArray(sf::Quads, 2 * 4));
+        std::vector<geometry::vertex> lines{2 * 4};
 
-        sf::VertexArray &lines = cross_cmp.drawable;
-
-        for(int i = 0; i < 8; ++i) lines[i].color = sf::Color::Magenta;
+        for (auto&& current_vertex: lines) current_vertex.pixel_color = graphics::magenta;
 
         const auto half_thickness = grid_thickness * 0.5f;
 
         // Top-left to Bottom-right
-        lines[0].position = sf::Vector2f(center_x - half_box_side - half_thickness, center_y - half_box_side);
-        lines[1].position = sf::Vector2f(center_x - half_box_side + half_thickness, center_y - half_box_side);
-        lines[2].position = sf::Vector2f(center_x + half_box_side + half_thickness, center_y + half_box_side);
-        lines[3].position = sf::Vector2f(center_x + half_box_side - half_thickness, center_y + half_box_side);
+        lines[0].pos_x = center_x - half_box_side - half_thickness;
+        lines[0].pos_y = center_y - half_box_side;
+
+        lines[1].pos_x = center_x - half_box_side + half_thickness;
+        lines[1].pos_y = center_y - half_box_side;
+
+        lines[2].pos_x = center_x + half_box_side + half_thickness;
+        lines[2].pos_y = center_y + half_box_side;
+
+        lines[3].pos_x = center_x + half_box_side - half_thickness;
+        lines[3].pos_y = center_y + half_box_side;
+
 
         // Top-right to Bottom-left
-        lines[4].position = sf::Vector2f(center_x + half_box_side - half_thickness, center_y - half_box_side);
-        lines[5].position = sf::Vector2f(center_x + half_box_side + half_thickness, center_y - half_box_side);
-        lines[6].position = sf::Vector2f(center_x - half_box_side + half_thickness, center_y + half_box_side);
-        lines[7].position = sf::Vector2f(center_x - half_box_side - half_thickness, center_y + half_box_side);
+        lines[4].pos_x = center_x + half_box_side - half_thickness;
+        lines[4].pos_y = center_y - half_box_side;
 
+        lines[5].pos_x = center_x + half_box_side + half_thickness;
+        lines[5].pos_y = center_y - half_box_side;
+
+        lines[6].pos_x = center_x - half_box_side + half_thickness;
+        lines[6].pos_y = center_y + half_box_side;
+
+        lines[7].pos_x = center_x - half_box_side - half_thickness;
+        lines[7].pos_y = center_y + half_box_side;
+
+        entity_registry.assign<geometry::vertex_array>(x_entity, lines, geometry::vertex_geometry_type::quads);
         entity_registry.assign<entt::tag<"game_scene"_hs>>(x_entity);
         entity_registry.assign<entt::tag<"player_x"_hs>>(x_entity);
         entity_registry.assign<graphics::layer<1>>(x_entity);
