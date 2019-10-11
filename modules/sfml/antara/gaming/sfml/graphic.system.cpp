@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
