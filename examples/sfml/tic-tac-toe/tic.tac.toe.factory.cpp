@@ -95,19 +95,25 @@ namespace tictactoe ::example
         auto x_entity = entity_registry.create();
         entity_registry.assign<cell_position>(x_entity, row, column);
         auto &cross_cmp = entity_registry.assign<sfml::vertex_array>(x_entity,
-                                                                     sf::VertexArray(sf::Lines, 4));
+                                                                     sf::VertexArray(sf::Quads, 2 * 4));
 
         sf::VertexArray &lines = cross_cmp.drawable;
 
-        lines[0].color = sf::Color::Red;
-        lines[0].position = sf::Vector2f(center_x - half_box_side, center_y - half_box_side);
-        lines[1].color = sf::Color::Red;
-        lines[1].position = sf::Vector2f(center_x + half_box_side, center_y + half_box_side);
+        for(int i = 0; i < 8; ++i) lines[i].color = sf::Color::Red;
 
-        lines[2].color = sf::Color::Red;
-        lines[2].position = sf::Vector2f(center_x + half_box_side, center_y - half_box_side);
-        lines[3].color = sf::Color::Red;
-        lines[3].position = sf::Vector2f(center_x - half_box_side, center_y + half_box_side);
+        const auto half_thickness = grid_thickness * 0.5f;
+
+        // Top-left to Bottom-right
+        lines[0].position = sf::Vector2f(center_x - half_box_side - half_thickness, center_y - half_box_side);
+        lines[1].position = sf::Vector2f(center_x - half_box_side + half_thickness, center_y - half_box_side);
+        lines[2].position = sf::Vector2f(center_x + half_box_side + half_thickness, center_y + half_box_side);
+        lines[3].position = sf::Vector2f(center_x + half_box_side - half_thickness, center_y + half_box_side);
+
+        // Top-right to Bottom-left
+        lines[4].position = sf::Vector2f(center_x + half_box_side - half_thickness, center_y - half_box_side);
+        lines[5].position = sf::Vector2f(center_x + half_box_side + half_thickness, center_y - half_box_side);
+        lines[6].position = sf::Vector2f(center_x - half_box_side + half_thickness, center_y + half_box_side);
+        lines[7].position = sf::Vector2f(center_x - half_box_side - half_thickness, center_y + half_box_side);
 
         entity_registry.assign<entt::tag<"game_scene"_hs>>(x_entity);
         entity_registry.assign<entt::tag<"player_x"_hs>>(x_entity);
