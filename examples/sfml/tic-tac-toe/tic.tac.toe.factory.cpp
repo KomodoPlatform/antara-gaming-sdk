@@ -38,19 +38,34 @@ namespace tictactoe ::example
         sf::VertexArray &lines = grid_cmp.drawable;
 
         auto constants = entity_registry.ctx<tic_tac_toe_constants>();
-        const auto thickness = 10.0f;
+        const auto thickness = 20.0f;
+        const auto half_thickness = thickness * 0.5f;
         for (std::size_t counter = 0, i = 0; i <= constants.nb_cells; ++i, counter += 4 * 2) {
+            // First and last ones should be a bit inside, otherwise half of it is out of the screen
+            auto offset_x = 0.0f;
+            auto offset_y = 0.0f;
+
+            if(i == 0) {
+                offset_x += half_thickness;
+                offset_y += half_thickness;
+            }
+            else if(i == constants.nb_cells) {
+                offset_x -= half_thickness;
+                offset_y -= half_thickness;
+            }
+
+            // Prepare lines
             // Vertical
-            lines[counter].position = sf::Vector2f(i * constants.cell_width - thickness, 0);
-            lines[counter + 1].position = sf::Vector2f(i * constants.cell_width + thickness, 0);
-            lines[counter + 2].position = sf::Vector2f(i * constants.cell_width + thickness, window_info.y);
-            lines[counter + 3].position = sf::Vector2f(i * constants.cell_width - thickness, window_info.y);
+            lines[counter].position = sf::Vector2f(offset_x + i * constants.cell_width - half_thickness, 0);
+            lines[counter + 1].position = sf::Vector2f(offset_x + i * constants.cell_width + half_thickness, 0);
+            lines[counter + 2].position = sf::Vector2f(offset_x + i * constants.cell_width + half_thickness, window_info.y);
+            lines[counter + 3].position = sf::Vector2f(offset_x + i * constants.cell_width - half_thickness, window_info.y);
 
             // Horizontal
-            lines[counter + 4].position = sf::Vector2f(0, i * constants.cell_height - thickness);
-            lines[counter + 5].position = sf::Vector2f(window_info.x, i * constants.cell_height - thickness);
-            lines[counter + 6].position = sf::Vector2f(window_info.x, i * constants.cell_height + thickness);
-            lines[counter + 7].position = sf::Vector2f(0, i * constants.cell_height + thickness);
+            lines[counter + 4].position = sf::Vector2f(offset_x + 0, offset_y + i * constants.cell_height - half_thickness);
+            lines[counter + 5].position = sf::Vector2f(offset_x + window_info.x, offset_y + i * constants.cell_height - half_thickness);
+            lines[counter + 6].position = sf::Vector2f(offset_x + window_info.x, offset_y + i * constants.cell_height + half_thickness);
+            lines[counter + 7].position = sf::Vector2f(offset_x + 0, offset_y + i * constants.cell_height + half_thickness);
         }
 
         entity_registry.assign<entt::tag<"grid"_hs>>(grid_entity);
