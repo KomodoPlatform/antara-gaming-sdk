@@ -25,11 +25,13 @@ namespace antara::gaming::event
     {
         mouse_button_pressed() noexcept = default;
 
-        mouse_button_pressed(input::mouse_button button_, float x_, float y_) noexcept;
+        mouse_button_pressed(input::mouse_button button_, float x_, float y_, float window_x_, float window_y_) noexcept;
 
         input::mouse_button button;
         float x;
         float y;
+        float window_x;
+        float window_y;
     };
 }
 

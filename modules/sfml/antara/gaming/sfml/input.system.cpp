@@ -83,7 +83,7 @@ namespace antara::gaming::sfml
                     auto rt_coord = rt.mapPixelToCoords(rt_pos);
 
                     this->dispatcher_.trigger<event::mouse_button_pressed>(
-                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y);
+                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y, window_coord.x, window_coord.y);
                     break;
                 }
                 case sf::Event::MouseButtonReleased:
