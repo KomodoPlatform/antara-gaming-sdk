@@ -14,12 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <antara/gaming/geometry/component.vertex.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/transform/component.position.hpp"
+#include "antara/gaming/geometry/component.vertex.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
