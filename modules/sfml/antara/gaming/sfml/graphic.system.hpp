@@ -20,6 +20,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <antara/gaming/geometry/component.vertex.hpp>
 #include "meta/sequence/list.hpp"
 #include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
@@ -55,6 +56,8 @@ namespace antara::gaming::sfml
         //! Callback
         void on_window_resized_event(const event::window_resized &evt) noexcept;
         void on_geometry_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
+        void on_geometry_vertex_array_construct(entt::entity entity, entt::registry &registry,
+                geometry::vertex_array &cmp_vertex_array) noexcept;
     private:
         config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};
         config::window_cfg &window_cfg_{game_cfg_.win_cfg};

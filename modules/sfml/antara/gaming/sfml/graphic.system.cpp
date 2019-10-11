@@ -14,6 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iostream>
+#include <antara/gaming/geometry/component.vertex.hpp>
+#include <range/v3/view/iota.hpp>
+#include <range/v3/view/zip.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/transform/component.position.hpp"
@@ -28,6 +32,8 @@ namespace antara::gaming::sfml
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
         this->dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
+        this->entity_registry_.on_construct<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(*this);
+        this->entity_registry_.on_replace<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(*this);
         this->entity_registry_.on_construct<geometry::circle>().connect<&graphic_system::on_geometry_circle_construct>(*this);
         refresh_render_texture();
     }
@@ -150,7 +156,7 @@ namespace antara::gaming::sfml
                                                       entt::registry &registry,
                                                       geometry::circle &circle) noexcept
     {
-        auto& sfml_circle = registry.assign<sfml::circle>(entity, sf::CircleShape(circle.radius));
+        auto &sfml_circle = registry.assign<sfml::circle>(entity, sf::CircleShape(circle.radius));
         if (auto out_color = registry.try_get<graphics::outline_color>(entity); out_color != nullptr) {
             sfml_circle.drawable.setOutlineColor(sf::Color(out_color->r, out_color->g, out_color->b, out_color->a));
             sfml_circle.drawable.setOutlineThickness(out_color->thickness);
@@ -158,6 +164,23 @@ namespace antara::gaming::sfml
 
         if (auto fill_color = registry.try_get<graphics::fill_color>(entity); fill_color != nullptr) {
             sfml_circle.drawable.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
+        }
+    }
+
+    void graphic_system::on_geometry_vertex_array_construct(entt::entity entity, entt::registry &registry,
+                                                            geometry::vertex_array &cmp_vertex_array) noexcept
+    {
+        auto &sf_vertex_array = registry.assign_or_replace<sfml::vertex_array>(entity, sf::VertexArray(
+                static_cast<sf::PrimitiveType>(cmp_vertex_array.geometry_type),
+                cmp_vertex_array.vertices.size())).drawable;
+
+        using ranges::views::zip;
+        using ranges::views::ints;
+        for(auto &&[current_vertex, current_idx]: zip(cmp_vertex_array.vertices, ints(0u, ranges::unreachable))) {
+            sf_vertex_array[current_idx].position = sf::Vector2f{current_vertex.pos_x, current_vertex.pos_y};
+            sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos_x, current_vertex.texture_pos_y};
+            auto [r,g,b,a] = current_vertex.pixel_color;
+            sf_vertex_array[current_idx].color = sf::Color(r, g, b, a);
         }
     }
 }

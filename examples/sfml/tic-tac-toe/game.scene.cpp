@@ -16,8 +16,8 @@
 
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <entt/entity/helper.hpp>
-#include <antara/gaming/sfml/component.drawable.hpp>
-#include <antara/gaming/sfml/graphic.system.hpp>
+#include <antara/gaming/geometry/component.vertex.hpp>
+#include <antara/gaming/graphics/component.color.hpp>
 #include "tic.tac.toe.constants.hpp"
 #include "tic.tac.toe.components.hpp"
 #include "tic.tac.toe.factory.hpp"
@@ -89,19 +89,20 @@ namespace tictactoe::example
         };
         if (player_as_win_functor()) {
             this->current_state_ = static_cast<game_state>(this->player_turn_);
-            this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().less(
-                    [this](antara::gaming::sfml::vertex_array &array_cmp) {
-                        for (std::size_t count = 0; count < array_cmp.drawable.getVertexCount(); ++count) {
-                            array_cmp.drawable[count].color =
-                                    this->player_turn_ == player::x ? sf::Color::Magenta : sf::Color::Cyan;
+            this->entity_registry_.view<antara::gaming::geometry::vertex_array, entt::tag<"grid"_hs>>().less(
+                    [this](entt::entity entity, antara::gaming::geometry::vertex_array &array_cmp) {
+                        for (auto&& current_vertex : array_cmp.vertices) {
+                            current_vertex.pixel_color =  this->player_turn_ == player::x ? antara::gaming::graphics::magenta : antara::gaming::graphics::cyan;
                         }
+                        this->entity_registry_.assign_or_replace<antara::gaming::geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
                     });
         } else if (tie_functor()) {
-            this->entity_registry_.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().less(
-                    [](antara::gaming::sfml::vertex_array &array_cmp) {
-                        for (std::size_t count = 0; count < array_cmp.drawable.getVertexCount(); ++count) {
-                            array_cmp.drawable[count].color = sf::Color::Yellow;
+            this->entity_registry_.view<antara::gaming::geometry::vertex_array, entt::tag<"grid"_hs>>().less(
+                    [this](entt::entity entity, antara::gaming::geometry::vertex_array &array_cmp) {
+                        for (auto&& current_vertex : array_cmp.vertices) {
+                            current_vertex.pixel_color = antara::gaming::graphics::yellow;
                         }
+                        this->entity_registry_.assign_or_replace<antara::gaming::geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
                     });
             this->current_state_ = game_state::tie;
         }
