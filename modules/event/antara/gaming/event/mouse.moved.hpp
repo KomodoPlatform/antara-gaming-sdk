@@ -24,10 +24,12 @@ namespace antara::gaming::event
     {
         mouse_moved() noexcept = default;
 
-        mouse_moved(int x_, int y_) noexcept;
+        mouse_moved(float x_, float y_, float window_x_, float window_y_) noexcept;
 
-        int x;
-        int y;
+        float x;
+        float y;
+        float window_x;
+        float window_y;
     };
 }
 REFL_AUTO(type(antara::gaming::event::mouse_moved), field(x), field(y));
