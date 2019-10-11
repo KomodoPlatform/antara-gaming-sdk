@@ -99,7 +99,7 @@ namespace tictactoe ::example
 
         sf::VertexArray &lines = cross_cmp.drawable;
 
-        for(int i = 0; i < 8; ++i) lines[i].color = sf::Color::Red;
+        for(int i = 0; i < 8; ++i) lines[i].color = sf::Color::Magenta;
 
         const auto half_thickness = grid_thickness * 0.5f;
 
@@ -131,7 +131,7 @@ namespace tictactoe ::example
 
         auto o_entity = entity_registry.create();
         entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
-        entity_registry.assign<graphics::outline_color>(o_entity, grid_thickness, graphics::blue);
+        entity_registry.assign<graphics::outline_color>(o_entity, grid_thickness, graphics::cyan);
         entity_registry.assign<geometry::circle>(o_entity, half_box_side);
         entity_registry.assign<transform::position>(o_entity,
                                                     center_x,
