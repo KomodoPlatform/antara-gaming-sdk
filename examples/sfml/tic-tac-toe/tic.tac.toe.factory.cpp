@@ -111,39 +111,4 @@ namespace tictactoe ::example
         entity_registry.assign<graphics::layer<1>>(o_entity);
         return o_entity;
     }
-
-    void tic_tac_toe_factory::reset_x(entt::registry &entity_registry) noexcept
-    {
-        auto constants = entity_registry.ctx<tic_tac_toe_constants>();
-        entity_registry.view<antara::gaming::sfml::vertex_array,
-                entt::tag<"player_x"_hs>, cell_position>().less([constants](auto &vertex_array,
-                                                                            cell_position &pos) {
-            const float half_box_side = static_cast<float>(std::fmin(constants.cell_width, constants.cell_height) *
-                                                           0.25f);
-            const float center_x = static_cast<float>(constants.cell_width * 0.5 + pos.column * constants.cell_width);
-            const float center_y = static_cast<float>(constants.cell_height * 0.5 + pos.row * constants.cell_height);
-
-            sf::VertexArray &lines = vertex_array.drawable;
-            lines[0].position = sf::Vector2f(center_x - half_box_side, center_y - half_box_side);
-            lines[1].position = sf::Vector2f(center_x + half_box_side, center_y + half_box_side);
-            lines[2].position = sf::Vector2f(center_x + half_box_side, center_y - half_box_side);
-            lines[3].position = sf::Vector2f(center_x - half_box_side, center_y + half_box_side);
-        });
-    }
-
-    void tic_tac_toe_factory::reset_grid(entt::registry &entity_registry) noexcept
-    {
-        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
-        entity_registry.view<antara::gaming::sfml::vertex_array, entt::tag<"grid"_hs>>().less(
-                [&entity_registry, &window_info](antara::gaming::sfml::vertex_array &array_cmp) {
-                    auto constants = entity_registry.ctx<tic_tac_toe_constants>();
-                    sf::VertexArray &lines = array_cmp.drawable;
-                    for (std::size_t counter = 0, i = 0; i <= constants.nb_cells; ++i, counter += 4) {
-                        lines[counter].position = sf::Vector2f(i * constants.cell_width, 0);
-                        lines[counter + 1].position = sf::Vector2f(i * constants.cell_width, window_info.y);
-                        lines[counter + 2].position = sf::Vector2f(0, i * constants.cell_height);
-                        lines[counter + 3].position = sf::Vector2f(window_info.x, i * constants.cell_height);
-                    }
-                });
-    }
 }

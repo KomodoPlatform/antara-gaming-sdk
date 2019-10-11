@@ -57,16 +57,16 @@ Antara Gaming Modules
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
-   * - :doc:`antara::geometry<geometry>`
-     - Module Containing all the common geometry components (circle, square, rect...)
+   * - :doc:`antara::graphics<graphics>`
+     - Module Containing all the common graphics components (color, layer, ...)
      - :doc:`antara::event<event>`
      - |:no_entry_sign:|
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
-   * - :doc:`antara::graphics<graphics>`
-     - Module Containing all the common graphics components (color, layer, ...)
-     - :doc:`antara::event<event>`
+   * - :doc:`antara::geometry<geometry>`
+     - Module Containing all the common geometry components (circle, square, rect...)
+     - :doc:`antara::event<event>` :doc:`antara::graphics<graphics>`
      - |:no_entry_sign:|
      - |:no_entry_sign:|
      - Roman Sztergbaum

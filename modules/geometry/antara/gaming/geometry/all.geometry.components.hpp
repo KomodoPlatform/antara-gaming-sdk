@@ -18,8 +18,9 @@
 
 #include <meta/sequence/list.hpp>
 #include "antara/gaming/geometry/component.circle.hpp"
+#include "antara/gaming/geometry/component.vertex.hpp"
 
 namespace antara::gaming::geometry
 {
-    using components_list = doom::meta::list<circle>;
+    using components_list = doom::meta::list<circle, vertex, vertex_array>;
 }

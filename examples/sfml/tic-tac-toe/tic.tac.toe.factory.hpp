@@ -30,9 +30,6 @@ namespace tictactoe::example
 
         static entt::entity create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
 
-        static void reset_x(entt::registry &entity_registry) noexcept;
-        static void reset_grid(entt::registry &entity_registry) noexcept;
-
         static entt::entity create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept;
     };
 }
