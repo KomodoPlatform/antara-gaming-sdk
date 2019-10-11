@@ -27,7 +27,6 @@ namespace tictactoe::example
 {
     game_scene::game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
-        this->dispatcher_.sink<antara::gaming::event::canvas_resized>().connect<&game_scene::on_canvas_resized_event>(*this);
         prepare_constants();
         tic_tac_toe_factory::create_grid_entity(entity_registry);
         tic_tac_toe_factory::create_board(entity_registry);
@@ -169,13 +168,5 @@ namespace tictactoe::example
     {
         auto canvas_size = this->entity_registry_.ctx<sf::RenderTexture>().getSize();
         this->entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_size.x, canvas_size.y);
-    }
-
-    void game_scene::on_canvas_resized_event(const antara::gaming::event::canvas_resized &) noexcept
-    {
-        entity_registry_.unset<tic_tac_toe_constants>();
-        prepare_constants();
-        tic_tac_toe_factory::reset_grid(entity_registry_);
-        tic_tac_toe_factory::reset_x(entity_registry_);
     }
 }

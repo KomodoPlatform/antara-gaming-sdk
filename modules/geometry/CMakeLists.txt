@@ -3,7 +3,7 @@ add_library(antara_geometry_shared_sources STATIC)
 target_sources(antara_geometry_shared_sources PRIVATE
         antara/gaming/geometry/component.circle.cpp)
 target_include_directories(antara_geometry_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_geometry_shared_sources PUBLIC antara::default_settings antara::event)
+target_link_libraries(antara_geometry_shared_sources PUBLIC antara::default_settings antara::event antara::graphics)
 add_library(antara::geometry ALIAS antara_geometry_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)
