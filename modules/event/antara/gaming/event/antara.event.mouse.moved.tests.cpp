@@ -35,8 +35,8 @@ namespace antara::gaming::event::tests
             event::mouse_moved mouse_moved_event{42, 42, 10, 11};
             CHECK_EQ(mouse_moved_event.x, 42);
             CHECK_EQ(mouse_moved_event.y, 42);
-            CHECK_EQ(mouse_moved_event.window_x, 42);
-            CHECK_EQ(mouse_moved_event.window_y, 42);
+            CHECK_EQ(mouse_moved_event.window_x, 10);
+            CHECK_EQ(mouse_moved_event.window_y, 11);
         }
     }
 }
