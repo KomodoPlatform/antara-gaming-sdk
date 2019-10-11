@@ -87,21 +87,21 @@ namespace antara::gaming::sfml
                     break;
                 case sf::Event::MouseButtonPressed: {
                     auto [rt_coord, window_pos] = translate_window_coord(evt.mouseButton.x, evt.mouseButton.y);
-
                     this->dispatcher_.trigger<event::mouse_button_pressed>(
                             static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y, window_pos.x, window_pos.y);
                     break;
                 }
                 case sf::Event::MouseButtonReleased: {
                     auto [rt_coord, window_pos] = translate_window_coord(evt.mouseButton.x, evt.mouseButton.y);
-
                     this->dispatcher_.trigger<event::mouse_button_released>(
                             static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y, window_pos.x, window_pos.y);
                     break;
                 }
-                case sf::Event::MouseMoved:
-                    this->dispatcher_.trigger<event::mouse_moved>(evt.mouseMove.x, evt.mouseMove.y);
+                case sf::Event::MouseMoved: {
+                    auto [rt_coord, window_pos] = translate_window_coord(evt.mouseMove.x, evt.mouseMove.y);
+                    this->dispatcher_.trigger<event::mouse_moved>(rt_coord.x, rt_coord.y, window_pos.x, window_pos.y);
                     break;
+                }
                 case sf::Event::MouseEntered:
                     break;
                 case sf::Event::MouseLeft:
