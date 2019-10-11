@@ -68,6 +68,7 @@ namespace antara::gaming::sfml
                 case sf::Event::MouseWheelScrolled:
                     break;
                 case sf::Event::MouseButtonPressed: {
+                    // Translate Window pixel position to coordinate using the view
                     auto window_coord = window_.mapPixelToCoords(sf::Vector2i(evt.mouseButton.x, evt.mouseButton.y));
 
                     // Translate position of RT, if half of it is out of the screen for example, still find the correct position
@@ -77,8 +78,12 @@ namespace antara::gaming::sfml
                     // Scale the position to RT level
                     sf::Vector2i rt_pos(translated_coord.x / rt_sprite.getScale().x, translated_coord.y / rt_sprite.getScale().y);
 
+                    // Translate RT pixel position to coordinate using the view
+                    auto& rt = this->entity_registry_.ctx<sf::RenderTexture>();
+                    auto rt_coord = rt.mapPixelToCoords(rt_pos);
+
                     this->dispatcher_.trigger<event::mouse_button_pressed>(
-                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_pos.x, rt_pos.y);
+                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y);
                     break;
                 }
                 case sf::Event::MouseButtonReleased:
