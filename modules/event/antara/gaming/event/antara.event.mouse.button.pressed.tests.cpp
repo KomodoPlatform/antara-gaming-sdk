@@ -26,13 +26,17 @@ namespace antara::gaming::event::tests
             event::mouse_button_pressed mouse_button_pressed_evt{};
             CHECK_EQ(mouse_button_pressed_evt.x, 0);
             CHECK_EQ(mouse_button_pressed_evt.y, 0);
+            CHECK_EQ(mouse_button_pressed_evt.window_x, 0);
+            CHECK_EQ(mouse_button_pressed_evt.window_y, 0);
         }
 
         TEST_CASE ("can construct from a button and 2 positions")
         {
-            event::mouse_button_pressed mouse_button_pressed_evt{input::mouse_button::right, 42, 42};
+            event::mouse_button_pressed mouse_button_pressed_evt{input::mouse_button::right, 42, 42, 10, 11};
             CHECK_EQ(mouse_button_pressed_evt.x, 42);
             CHECK_EQ(mouse_button_pressed_evt.y, 42);
+            CHECK_EQ(mouse_button_pressed_evt.window_x, 10);
+            CHECK_EQ(mouse_button_pressed_evt.window_y, 11);
             CHECK_EQ(mouse_button_pressed_evt.button, input::mouse_button::right);
         }
     }

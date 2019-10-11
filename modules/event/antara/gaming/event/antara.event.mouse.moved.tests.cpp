@@ -26,13 +26,17 @@ namespace antara::gaming::event::tests
             event::mouse_moved mouse_moved{};
             CHECK_EQ(mouse_moved.x, 0);
             CHECK_EQ(mouse_moved.y, 0);
+            CHECK_EQ(mouse_moved.window_x, 0);
+            CHECK_EQ(mouse_moved.window_y, 0);
         }
 
         TEST_CASE ("can construct from 2 positions")
         {
-            event::mouse_moved mouse_moved_event{42, 42};
+            event::mouse_moved mouse_moved_event{42, 42, 10, 11};
             CHECK_EQ(mouse_moved_event.x, 42);
             CHECK_EQ(mouse_moved_event.y, 42);
+            CHECK_EQ(mouse_moved_event.window_x, 42);
+            CHECK_EQ(mouse_moved_event.window_y, 42);
         }
     }
 }
