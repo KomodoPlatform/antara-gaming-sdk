@@ -31,6 +31,8 @@ namespace antara::gaming::sfml
         void update() noexcept final;
 
     private:
+        auto translate_window_coord(int x,  int y) const;
+
         sf::RenderWindow &window_;
     };
 }
