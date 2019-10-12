@@ -68,6 +68,7 @@ namespace antara::gaming::lua
             try {
                 std::apply(
                         [this](auto &&...params) {
+                            //static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is flawed");
                             this->lua_state_->new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
                         }, final_table);
             }

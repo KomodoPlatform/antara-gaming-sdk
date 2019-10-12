@@ -17,6 +17,7 @@
 #pragma once
 
 #include <vector>
+#include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
 
@@ -35,10 +36,8 @@ namespace antara::gaming::geometry
 
     struct vertex
     {
-        float pos_x{0.f};
-        float pos_y{0.f};
-        float texture_pos_x{0.f};
-        float texture_pos_y{0.f};
+        transform::position_2d pos{transform::position_2d::scalar(0.f)};
+        transform::position_2d texture_pos{transform::position_2d::scalar(0.f)};
         graphics::color pixel_color{graphics::white};
     };
 
@@ -49,5 +48,5 @@ namespace antara::gaming::geometry
     };
 }
 
-REFL_AUTO(type(antara::gaming::geometry::vertex), field(pos_x), field(pos_y), field(texture_pos_x), field(texture_pos_y))
+REFL_AUTO(type(antara::gaming::geometry::vertex), field(pos), field(texture_pos), field(pixel_color))
 REFL_AUTO(type(antara::gaming::geometry::vertex_array), field(vertices), field(geometry_type))

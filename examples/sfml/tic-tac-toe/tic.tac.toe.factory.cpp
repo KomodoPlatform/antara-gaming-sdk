@@ -56,30 +56,16 @@ namespace tictactoe ::example
 
             // Prepare lines
             // Vertical
-            lines[counter].pos_x = offset_x + i * constants.cell_width - half_thickness;
-            lines[counter].pos_y = 0;
-
-            lines[counter + 1].pos_x = offset_x + i * constants.cell_width + half_thickness;
-            lines[counter + 1].pos_y = 0;
-
-            lines[counter + 2].pos_x = offset_x + i * constants.cell_width + half_thickness;
-            lines[counter + 2].pos_y = window_info.y;
-
-            lines[counter + 3].pos_x = offset_x + i * constants.cell_width - half_thickness;
-            lines[counter + 3].pos_y = window_info.y;
+            lines[counter].pos = {offset_x + i * constants.cell_width - half_thickness, 0.f};
+            lines[counter + 1].pos = {offset_x + i * constants.cell_width + half_thickness, 0.f};
+            lines[counter + 2].pos = {offset_x + i * constants.cell_width + half_thickness, static_cast<float>(window_info.y)};
+            lines[counter + 3].pos = {offset_x + i * constants.cell_width - half_thickness, static_cast<float>(window_info.y)};
 
             // Horizontal
-            lines[counter + 4].pos_x = offset_x + 0;
-            lines[counter + 4].pos_y = offset_y + i * constants.cell_height - half_thickness;
-
-            lines[counter + 5].pos_x = offset_x + window_info.x;
-            lines[counter + 5].pos_y = offset_y + i * constants.cell_height - half_thickness;
-
-            lines[counter + 6].pos_x = offset_x + window_info.x;
-            lines[counter + 6].pos_y = offset_y + i * constants.cell_height + half_thickness;
-
-            lines[counter + 7].pos_x = offset_x + 0;
-            lines[counter + 7].pos_y = offset_y + i * constants.cell_height + half_thickness;
+            lines[counter + 4].pos = {offset_x + 0, offset_y + i * constants.cell_height - half_thickness};
+            lines[counter + 5].pos = {offset_x + window_info.x, offset_y + i * constants.cell_height - half_thickness};
+            lines[counter + 6].pos = {offset_x + window_info.x, offset_y + i * constants.cell_height + half_thickness};
+            lines[counter + 7].pos = {offset_x + 0, offset_y + i * constants.cell_height + half_thickness};
         }
 
         entity_registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
@@ -115,31 +101,17 @@ namespace tictactoe ::example
         const auto half_thickness = grid_thickness * 0.5f;
 
         // Top-left to Bottom-right
-        lines[0].pos_x = center_x - half_box_side - half_thickness;
-        lines[0].pos_y = center_y - half_box_side;
-
-        lines[1].pos_x = center_x - half_box_side + half_thickness;
-        lines[1].pos_y = center_y - half_box_side;
-
-        lines[2].pos_x = center_x + half_box_side + half_thickness;
-        lines[2].pos_y = center_y + half_box_side;
-
-        lines[3].pos_x = center_x + half_box_side - half_thickness;
-        lines[3].pos_y = center_y + half_box_side;
+        lines[0].pos = {center_x - half_box_side - half_thickness, center_y - half_box_side};
+        lines[1].pos = {center_x - half_box_side + half_thickness, center_y - half_box_side};
+        lines[2].pos = {center_x + half_box_side + half_thickness, center_y + half_box_side};
+        lines[3].pos = {center_x + half_box_side - half_thickness, center_y + half_box_side};
 
 
         // Top-right to Bottom-left
-        lines[4].pos_x = center_x + half_box_side - half_thickness;
-        lines[4].pos_y = center_y - half_box_side;
-
-        lines[5].pos_x = center_x + half_box_side + half_thickness;
-        lines[5].pos_y = center_y - half_box_side;
-
-        lines[6].pos_x = center_x - half_box_side + half_thickness;
-        lines[6].pos_y = center_y + half_box_side;
-
-        lines[7].pos_x = center_x - half_box_side - half_thickness;
-        lines[7].pos_y = center_y + half_box_side;
+        lines[4].pos = {center_x + half_box_side - half_thickness, center_y - half_box_side};
+        lines[5].pos = {center_x + half_box_side + half_thickness, center_y - half_box_side};
+        lines[6].pos = {center_x - half_box_side + half_thickness, center_y + half_box_side};
+        lines[7].pos = {center_x - half_box_side - half_thickness, center_y + half_box_side};
 
         entity_registry.assign<geometry::vertex_array>(x_entity, lines, geometry::vertex_geometry_type::quads);
         entity_registry.assign<entt::tag<"game_scene"_hs>>(x_entity);
@@ -160,9 +132,9 @@ namespace tictactoe ::example
         entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
         entity_registry.assign<graphics::outline_color>(o_entity, grid_thickness, graphics::cyan);
         entity_registry.assign<geometry::circle>(o_entity, half_box_side);
-        entity_registry.assign<transform::position>(o_entity,
-                                                    center_x,
-                                                    center_y);
+        entity_registry.assign<transform::position_2d>(o_entity,
+                                                       center_x,
+                                                       center_y);
 
         entity_registry.assign<entt::tag<"game_scene"_hs>>(o_entity);
         entity_registry.assign<graphics::layer<1>>(o_entity);

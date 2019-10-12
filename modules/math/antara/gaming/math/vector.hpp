@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <array>
+#include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::math
 {
@@ -314,13 +315,13 @@ namespace antara::gaming::math
             constexpr auto x() const noexcept
             { return static_cast<Derived const *>(this)->template get<0>(); }
 
-            constexpr auto &x() noexcept
+            constexpr auto &x_ref() noexcept
             { return static_cast<Derived *>(this)->template get<0>(); }
 
             constexpr auto y() const noexcept
             { return static_cast<Derived const *>(this)->template get<1>(); }
 
-            constexpr auto &y() noexcept
+            constexpr auto &y_ref() noexcept
             { return static_cast<Derived *>(this)->template get<1>(); }
         };
 
@@ -331,7 +332,7 @@ namespace antara::gaming::math
             constexpr auto z() const noexcept
             { return static_cast<Derived const *>(this)->template get<2>(); }
 
-            constexpr auto &z() noexcept
+            constexpr auto &z_ref() noexcept
             { return static_cast<Derived *>(this)->template get<2>(); }
         };
     }
@@ -379,3 +380,5 @@ namespace std {
     template <size_t I, class Unit, size_t Size, template<class> class...Mixins>
     struct tuple_element<I, antara::gaming::math::basic_vector<Unit, Size, Mixins...>> { using type = Unit; };
 }
+
+REFL_AUTO(type(antara::gaming::math::vec2f), func(x), func(y), func(x_ref), func(y_ref), func(size));

@@ -125,6 +125,16 @@ namespace antara::gaming::math::tests
         CHECK_EQ(*c_vec3_float.begin(), 42.f);
         CHECK_EQ(*(c_vec3_float.data() + 1), 42.f);
         CHECK_EQ(c_vec3_float.end(), c_vec3_float.end());
+
+        auto& pos_x = vec3_float.x_ref();
+        pos_x += 1;
+        auto& pos_y = vec3_float.y_ref();
+        pos_y += 1;
+        auto& pos_z = vec3_float.z_ref();
+        pos_z += 1;
+
+        CHECK_EQ(vec3_float, math::vec3f::scalar(43.f));
+
     }
 
     TEST_CASE("cast")
@@ -132,5 +142,14 @@ namespace antara::gaming::math::tests
         math::vec2i vec_int{42, 42};
         math::vec2f vec_float = vec_int.to<math::vec2f>();
         CHECK_EQ(vec_float, math::vec2f::scalar(42.f));
+    }
+
+    TEST_CASE("reflection")
+    {
+        math::vec2f vec_float{42.f, 42.f};
+        refl::util::for_each(refl::reflect(vec_float).members, [&](auto member)
+        {
+            MESSAGE(member(vec_float));
+        });
     }
 }
