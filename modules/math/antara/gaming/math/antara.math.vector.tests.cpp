@@ -74,6 +74,16 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec2_float, math::vec2f::scalar(8.f));
         vec2_float = math::vec2f::scalar(8.f) / math::vec2f::scalar(2.f);
         CHECK_EQ(vec2_float, math::vec2f::scalar(4.f));
+
+
+        vec2_float = math::vec2f::scalar(2.f) + 2.f;
+        CHECK_EQ(vec2_float, math::vec2f::scalar(4.f));
+        vec2_float = math::vec2f::scalar(4.f) - 2.f;
+        CHECK_EQ(vec2_float, math::vec2f::scalar(2.f));
+        vec2_float = math::vec2f::scalar(4.f) * 2.f;
+        CHECK_EQ(vec2_float, math::vec2f::scalar(8.f));
+        vec2_float = math::vec2f::scalar(8.f) / 2.f;
+        CHECK_EQ(vec2_float, math::vec2f::scalar(4.f));
     }
 
     TEST_CASE("length")
@@ -91,8 +101,20 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec3_float.x(), 42.f);
         CHECK_EQ(vec3_float.y(), 42.f);
         CHECK_EQ(vec3_float.z(), 42.f);
+        CHECK_EQ(vec3_float[0], 42.f);
+        CHECK_EQ(*vec3_float.begin(), 42.f);
         CHECK_EQ(c_vec3_float.x(), 42.f);
         CHECK_EQ(c_vec3_float.y(), 42.f);
         CHECK_EQ(c_vec3_float.z(), 42.f);
+        CHECK_EQ(c_vec3_float.size(), 3);
+        CHECK_EQ(c_vec3_float[0], 42.f);
+        CHECK_EQ(*c_vec3_float.begin(), 42.f);
+    }
+
+    TEST_CASE("cast")
+    {
+        math::vec2i vec_int{42, 42};
+        math::vec2f vec_float = vec_int.to<math::vec2f>();
+        CHECK_EQ(vec_float, math::vec2f::scalar(42.f));
     }
 }
