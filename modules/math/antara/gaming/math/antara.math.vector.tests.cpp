@@ -75,4 +75,24 @@ namespace antara::gaming::math::tests
         vec2_float = math::vec2f::scalar(8.f) / math::vec2f::scalar(2.f);
         CHECK_EQ(vec2_float, math::vec2f::scalar(4.f));
     }
+
+    TEST_CASE("length")
+    {
+        math::vec2f vec2_float{0.f, 9.f};
+        CHECK_EQ(vec2_float.length(), 9.f);
+        CHECK_EQ(vec2_float.square_length(), 81);
+    }
+
+    TEST_CASE("access")
+    {
+        math::vec3f vec3_float{42.f, 42.f, 42.f};
+        const math::vec3f c_vec3_float{42.f, 42.f, 42.f};
+
+        CHECK_EQ(vec3_float.x(), 42.f);
+        CHECK_EQ(vec3_float.y(), 42.f);
+        CHECK_EQ(vec3_float.z(), 42.f);
+        CHECK_EQ(c_vec3_float.x(), 42.f);
+        CHECK_EQ(c_vec3_float.y(), 42.f);
+        CHECK_EQ(c_vec3_float.z(), 42.f);
+    }
 }
