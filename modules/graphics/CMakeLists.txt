@@ -2,7 +2,7 @@
 add_library(antara_graphics_shared_sources INTERFACE)
 #target_sources(antara_graphics_shared_sources PRIVATE )
 target_include_directories(antara_graphics_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_graphics_shared_sources INTERFACE antara::default_settings antara::event range-v3)
+target_link_libraries(antara_graphics_shared_sources INTERFACE antara::default_settings antara::event range-v3 antara::math)
 add_library(antara::graphics ALIAS antara_graphics_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)

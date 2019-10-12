@@ -4,7 +4,7 @@ target_sources(antara_config_shared_sources PRIVATE
         antara/gaming/config/config.game.cpp
         antara/gaming/config/config.game.maker.cpp)
 target_include_directories(antara_config_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_config_shared_sources PUBLIC antara::default_settings nlohmann_json::nlohmann_json)
+target_link_libraries(antara_config_shared_sources PUBLIC antara::default_settings antara::graphics nlohmann_json::nlohmann_json)
 add_library(antara::config ALIAS antara_config_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)

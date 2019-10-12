@@ -19,6 +19,7 @@
 #include <meta/sequence/list.hpp>
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
+#include "antara/gaming/graphics/component.canvas.hpp"
 
 namespace antara::gaming::graphics
 {
@@ -35,5 +36,7 @@ namespace antara::gaming::graphics
             layer_10,
             layer_11,
             outline_color,
-            fill_color>;
+            fill_color,
+            rectangle,
+            canvas_2d>;
 }

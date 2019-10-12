@@ -24,27 +24,50 @@ namespace antara::gaming::config::tests
     {
         auto json_game_cfg = R"(
         {
-        "custom_canvas_width": true,
-        "custom_canvas_height": true,
-        "canvas_width": 1280.0,
-        "canvas_height": 720.0,
-        "scale_mode": "crop"})"_json;
-        game_maker_cfg game_maker_config{};
+  "native_desktop_mode": false,
+  "canvas_height": 1080.0,
+  "canvas_width": 1920.0,
+  "scale_mode": "fit",
+  "window_width": 1921,
+  "window_height": 1081,
+  "window_title": "tic-tac-toe",
+  "background_color": [
+    0,
+    0,
+    0,
+    255
+  ]
+})"_json;
+        graphics::canvas_2d game_maker_config{};
         CHECK_NOTHROW(from_json(json_game_cfg, game_maker_config));
-        CHECK_EQ(game_maker_config, game_maker_cfg{true, true, 1280.f, 720.f, crop});
-        CHECK_NE(game_maker_config, game_maker_cfg{});
+        CHECK_EQ(game_maker_config.is_fullscreen, false);
+        CHECK_NE(game_maker_config, graphics::canvas_2d{});
     }
 
     TEST_CASE ("game maker config to json")
     {
         auto json_game_cfg = R"(
         {
-        "custom_canvas_width": true,
-        "custom_canvas_height": true,
-        "canvas_width": 1280.0,
-        "canvas_height": 720.0,
-        "scale_mode": "crop"})"_json;
-        game_maker_cfg game_maker_config{true, true, 1280.f, 720.f, crop};
+  "native_desktop_mode": false,
+  "canvas_height": 1080.0,
+  "canvas_width": 1920.0,
+  "scale_mode": "crop",
+  "window_width": 1921.0,
+  "window_height": 1081.0,
+  "window_title": "tic-tac-toe",
+  "background_color": [
+    0,
+    0,
+    0,
+    255
+  ]
+})"_json;
+        graphics::canvas_2d game_maker_config;
+        game_maker_config.native_desktop_mode = false;
+        game_maker_config.canvas.size = math::vec2f{1920.f, 1080.f};
+        game_maker_config.window.size = math::vec2f{1921.f, 1081.f};
+        game_maker_config.window_title = "tic-tac-toe";
+        game_maker_config.background_color = graphics::black;
         nlohmann::json json_data;
         CHECK_NOTHROW(to_json(json_data, game_maker_config));
         CHECK_EQ(json_game_cfg, json_data);

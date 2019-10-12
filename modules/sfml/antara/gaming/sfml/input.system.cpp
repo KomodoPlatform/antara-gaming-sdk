@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <SFML/Window/Event.hpp>
+#include <antara/gaming/graphics/component.canvas.hpp>
 #include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/mouse.button.pressed.hpp"
@@ -61,9 +62,11 @@ namespace antara::gaming::sfml
                     this->dispatcher_.trigger<event::quit_game>(0);
                     break;
                 case sf::Event::Resized: {
-                    auto &window_component = this->entity_registry_.ctx<config::game_cfg>().win_cfg;
-                    window_component.width = evt.size.width;
-                    window_component.height = evt.size.height;
+                    auto& canvas = this->entity_registry_.ctx<graphics::canvas_2d>();
+                    auto &&[window_width, window_height] = canvas.window.size;
+                    window_width = evt.size.width;
+                    window_height = evt.size.height;
+                    canvas.reset_canvas();
                     this->dispatcher_.trigger<event::window_resized>();
                 }
                     break;
