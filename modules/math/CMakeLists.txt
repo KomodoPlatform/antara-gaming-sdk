@@ -1,7 +1,7 @@
 ## shared sources between the module and his unit tests
 add_library(antara_math_shared_sources INTERFACE)
 target_include_directories(antara_math_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_math_shared_sources INTERFACE antara::default_settings)
+target_link_libraries(antara_math_shared_sources INTERFACE antara::default_settings antara::core antara::transform)
 add_library(antara::math ALIAS antara_math_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)

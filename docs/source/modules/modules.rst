@@ -29,6 +29,13 @@ Antara Gaming Modules
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
+   * - :doc:`antara::math<math>`
+     - Modules containing math utilities such as (vector2d, vector3d, etc)
+     - refl-cpp_
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
    * - :doc:`antara::input<input>`
      - Modules containing enums representing keyboard, mouse, etc...
      - |:no_entry_sign:|
@@ -52,7 +59,7 @@ Antara Gaming Modules
      -
    * - :doc:`antara::transform<transform>`
      - Module Containing all the common transform components (position, rotation, ...)
-     - :doc:`antara::event<event>`
+     - :doc:`antara::event<event>` :doc:`antara::math<math>`
      - |:no_entry_sign:|
      - |:no_entry_sign:|
      - Roman Sztergbaum
@@ -66,7 +73,7 @@ Antara Gaming Modules
      -
    * - :doc:`antara::geometry<geometry>`
      - Module Containing all the common geometry components (circle, square, rect...)
-     - :doc:`antara::event<event>` :doc:`antara::graphics<graphics>`
+     - :doc:`antara::event<event>` :doc:`antara::graphics<graphics>` :doc:`antara::transform<transform>`
      - |:no_entry_sign:|
      - |:no_entry_sign:|
      - Roman Sztergbaum

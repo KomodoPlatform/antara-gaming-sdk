@@ -23,16 +23,16 @@ namespace antara::gaming::transform::tests
     {
         TEST_CASE ("component position is default constructible")
         {
-            position c_pos{};
-            CHECK_EQ(c_pos.pos_x, 0.0f);
-            CHECK_EQ(c_pos.pos_y, 0.0f);
+            position_2d c_pos{};
+            CHECK_EQ(c_pos.x(), 0.0f);
+            CHECK_EQ(c_pos.y(), 0.0f);
         }
 
         TEST_CASE ("component position constructor with value")
         {
-            position c_pos{42.0f, 27.0f};
-            CHECK_EQ(c_pos.pos_x, 42.0f);
-            CHECK_EQ(c_pos.pos_y, 27.0f);
+            position_2d c_pos{42.0f, 27.0f};
+            CHECK_EQ(c_pos.x(), 42.0f);
+            CHECK_EQ(c_pos.y(), 27.0f);
         }
     }
 }

@@ -119,9 +119,9 @@ namespace antara::gaming::sfml
                        auto &&drawable,
                        [[maybe_unused]] auto &&) {
                     if constexpr (std::is_base_of_v<sf::Transformable, decltype(DrawableType::drawable)>) {
-                        if (auto cmp_position = this->entity_registry_.try_get<transform::position>(entity);
+                        if (auto cmp_position = this->entity_registry_.try_get<transform::position_2d>(entity);
                                 cmp_position != nullptr) {
-                            drawable.drawable.setPosition(cmp_position->pos_x, cmp_position->pos_y);
+                            drawable.drawable.setPosition(cmp_position->x(), cmp_position->y());
                         }
                     }
                     this->render_texture_.draw(drawable.drawable);
@@ -176,8 +176,8 @@ namespace antara::gaming::sfml
         using ranges::views::zip;
         using ranges::views::ints;
         for(auto &&[current_vertex, current_idx]: zip(cmp_vertex_array.vertices, ints(0u, ranges::unreachable))) {
-            sf_vertex_array[current_idx].position = sf::Vector2f{current_vertex.pos_x, current_vertex.pos_y};
-            sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos_x, current_vertex.texture_pos_y};
+            sf_vertex_array[current_idx].position = sf::Vector2f{current_vertex.pos.x(), current_vertex.pos.y()};
+            sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos.x(), current_vertex.texture_pos.y()};
             auto [r,g,b,a] = current_vertex.pixel_color;
             sf_vertex_array[current_idx].color = sf::Color(r, g, b, a);
         }

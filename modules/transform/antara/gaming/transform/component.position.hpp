@@ -17,17 +17,18 @@
 #pragma once
 
 #include "antara/gaming/core/safe.refl.hpp"
+#include "antara/gaming/math/vector.hpp"
 
 namespace antara::gaming::transform
 {
-    struct position
+    struct position_2d : public math::vec2f
     {
-        position(float pos_x_, float pos_y_) noexcept;
-        position() noexcept;
+        template<typename ... Args>
+        position_2d(Args&& ...args) noexcept: math::vec2f(std::forward<Args>(args)...)
+        {
 
-        float pos_x;
-        float pos_y;
+        }
     };
 }
 
-REFL_AUTO(type(antara::gaming::transform::position), field(pos_x), field(pos_y))
+REFL_AUTO(type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size))

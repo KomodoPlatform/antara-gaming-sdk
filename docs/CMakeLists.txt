@@ -79,6 +79,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/transform.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/geometry.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/graphics.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/math.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/ecs.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/getting_started.rst

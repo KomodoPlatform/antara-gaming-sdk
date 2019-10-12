@@ -21,5 +21,5 @@
 
 namespace antara::gaming::transform
 {
-    using components_list = doom::meta::list<position>;
+    using components_list = doom::meta::list<position_2d>;
 }

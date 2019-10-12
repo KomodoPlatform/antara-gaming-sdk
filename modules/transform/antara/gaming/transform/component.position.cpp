@@ -18,14 +18,5 @@
 
 namespace antara::gaming::transform
 {
-    position::position(float pos_x_, float pos_y_) noexcept : pos_x(pos_x_), pos_y(pos_y_)
-    {
-
-    }
-
-    position::position() noexcept : pos_x(0.f), pos_y(0.f)
-    {
-
-    }
 }
 
