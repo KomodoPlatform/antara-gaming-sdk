@@ -84,6 +84,7 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec2_float, math::vec2f::scalar(8.f));
         vec2_float = math::vec2f::scalar(8.f) / 2.f;
         CHECK_EQ(vec2_float, math::vec2f::scalar(4.f));
+        CHECK_EQ(-vec2_float, math::vec2f::scalar(-4.f));
     }
 
     TEST_CASE("relational")
@@ -123,6 +124,7 @@ namespace antara::gaming::math::tests
         CHECK_EQ(c_vec3_float[0], 42.f);
         CHECK_EQ(*c_vec3_float.begin(), 42.f);
         CHECK_EQ(*(c_vec3_float.data() + 1), 42.f);
+        CHECK_EQ(c_vec3_float.end(), c_vec3_float.end());
     }
 
     TEST_CASE("cast")
