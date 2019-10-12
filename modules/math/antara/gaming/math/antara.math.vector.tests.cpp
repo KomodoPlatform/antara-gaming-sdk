@@ -102,6 +102,7 @@ namespace antara::gaming::math::tests
         math::vec2f vec2_float{0.f, 9.f};
         CHECK_EQ(vec2_float.length(), 9.f);
         CHECK_EQ(vec2_float.square_length(), 81);
+        CHECK_EQ(vec2_float.normalized(), math::vec2f{0.f, 1.f});
     }
 
     TEST_CASE("access")
@@ -114,12 +115,14 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec3_float.z(), 42.f);
         CHECK_EQ(vec3_float[0], 42.f);
         CHECK_EQ(*vec3_float.begin(), 42.f);
+        CHECK_EQ(*(vec3_float.data() + 1), 42.f);
         CHECK_EQ(c_vec3_float.x(), 42.f);
         CHECK_EQ(c_vec3_float.y(), 42.f);
         CHECK_EQ(c_vec3_float.z(), 42.f);
         CHECK_EQ(c_vec3_float.size(), 3);
         CHECK_EQ(c_vec3_float[0], 42.f);
         CHECK_EQ(*c_vec3_float.begin(), 42.f);
+        CHECK_EQ(*(c_vec3_float.data() + 1), 42.f);
     }
 
     TEST_CASE("cast")
