@@ -60,6 +60,8 @@ namespace antara::gaming::config
 
         game_cfg(const game_cfg& other) = default;
 
+        game_cfg& operator=(const game_cfg& other) = default;
+
         window_cfg win_cfg;
     };
 
