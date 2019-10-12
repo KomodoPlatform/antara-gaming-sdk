@@ -17,31 +17,11 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include "antara/gaming/graphics/component.canvas.hpp"
 #include "config.game.hpp"
 
-namespace antara::gaming::config
+namespace antara::gaming::graphics
 {
-    enum scale_mode
-    {
-        none,
-        stretch,
-        crop,
-        fit
-    };
-
-    struct game_maker_cfg
-    {
-        bool operator==(const game_maker_cfg &rhs) const;
-
-        bool operator!=(const game_maker_cfg &rhs) const;
-
-        mutable bool custom_canvas_width{true};
-        mutable bool custom_canvas_height{true};
-        mutable float canvas_width{1920.0f};
-        mutable float canvas_height{1080.0f};
-        mutable scale_mode scale_mode{crop};
-    };
-
-    void from_json(const nlohmann::json &json_data, game_maker_cfg &game_maker_cfg);
-    void to_json(nlohmann::json &json_data, const game_maker_cfg &game_maker_cfg);
+    void from_json(const nlohmann::json &json_data, canvas_2d &game_maker_cfg);
+    void to_json(nlohmann::json &json_data, const canvas_2d &game_maker_cfg);
 }

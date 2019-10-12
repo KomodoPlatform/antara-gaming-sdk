@@ -21,11 +21,11 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <antara/gaming/geometry/component.vertex.hpp>
+#include <antara/gaming/graphics/component.canvas.hpp>
 #include "meta/sequence/list.hpp"
 #include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::sfml
@@ -59,10 +59,9 @@ namespace antara::gaming::sfml
         void on_geometry_vertex_array_construct(entt::entity entity, entt::registry &registry,
                 geometry::vertex_array &cmp_vertex_array) noexcept;
     private:
-        config::game_cfg &game_cfg_{entity_registry_.ctx<config::game_cfg>()};
-        config::window_cfg &window_cfg_{game_cfg_.win_cfg};
-        sf::RenderWindow window_{sf::VideoMode(window_cfg_.width, window_cfg_.height),
-                                 window_cfg_.title, game_cfg_.win_cfg.is_fullscreen
+        graphics::canvas_2d &canvas_{entity_registry_.ctx<graphics::canvas_2d>()};
+        sf::RenderWindow window_{sf::VideoMode(canvas_.window.size.x(), canvas_.window.size.y()),
+                                 canvas_.window_title, canvas_.is_fullscreen
                                                     ? static_cast<sf::Uint32>(sf::Style::Fullscreen) :
                                                     static_cast<sf::Uint32>(sf::Style::Default)};
         sf::RenderTexture& render_texture_{this->entity_registry_.set<sf::RenderTexture>()};
