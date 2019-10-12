@@ -57,5 +57,13 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec2_float, math::vec2f::scalar(43.f));
         vec2_float -= 1.f;
         CHECK_EQ(vec2_float, math::vec2f::scalar(42.f));
+        vec2_float += math::vec2f::scalar(42.f);
+        CHECK_EQ(vec2_float, math::vec2f::scalar(84.f));
+        vec2_float -= math::vec2f::scalar(42.f);
+        CHECK_EQ(vec2_float, math::vec2f::scalar(42.f));
+        vec2_float /= math::vec2f::scalar(2.f);
+        CHECK_EQ(vec2_float, math::vec2f::scalar(21.f));
+        vec2_float *= math::vec2f::scalar(2.f);
+        CHECK_EQ(vec2_float, math::vec2f::scalar(42.f));
     }
 }
