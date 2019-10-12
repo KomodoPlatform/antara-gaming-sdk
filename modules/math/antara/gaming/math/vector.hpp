@@ -22,11 +22,11 @@
 
 namespace antara::gaming::math
 {
-    template<class Unit, size_t Size, template<class> class...Mixins>
-    class basic_vector : public Mixins<basic_vector<Unit, Size, Mixins...>> ...
+    template<class Unit, size_t Size, template<class, class> class...Mixins>
+    class basic_vector : public Mixins<basic_vector<Unit, Size, Mixins...>, Unit> ...
     {
 
-        template<class, size_t, template<class> class...>
+        template<class, size_t, template<class, class> class...>
         friend
         class basic_vector;
 
@@ -144,7 +144,7 @@ namespace antara::gaming::math
         { return data_.end(); }
 
         // Implicit cast
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr operator basic_vector<NewUnit, Size, NewMixins...>() const noexcept
         {
             static_assert(std::is_convertible_v<Unit, NewUnit>, "Impossible cast from [value_type] to [NewUnit]");
@@ -269,37 +269,37 @@ namespace antara::gaming::math
             return *this / length();
         }
 
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr bool operator==(basic_vector<NewUnit, Size, NewMixins...> const &rhs) const noexcept
         {
             return test_predicate([](Unit a, Unit b) { return a == b; }, rhs, sequence_type{});
         }
 
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr bool operator!=(basic_vector<NewUnit, Size, NewMixins...> const &rhs) const noexcept
         {
             return !(*this == rhs);
         }
 
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr bool operator<(basic_vector<NewUnit, Size, NewMixins...> const &rhs) const noexcept
         {
             return test_predicate([](Unit a, Unit b) { return a < b; }, rhs, sequence_type{});
         }
 
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr bool operator>=(basic_vector<NewUnit, Size, NewMixins...> const &rhs) const noexcept
         {
             return !(*this < rhs);
         }
 
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr bool operator>(basic_vector<NewUnit, Size, NewMixins...> const &rhs) const noexcept
         {
             return rhs < *this;
         }
 
-        template<class NewUnit, template<class> class...NewMixins>
+        template<class NewUnit, template<class, class> class...NewMixins>
         constexpr bool operator<=(basic_vector<NewUnit, Size, NewMixins...> const &rhs) const noexcept
         {
             return !(rhs < *this);
@@ -308,10 +308,11 @@ namespace antara::gaming::math
 
     namespace vector_mixins
     {
-        template<class Derived>
+        template<class Derived, class Unit>
         class access_xy
         {
         public:
+            using value_type = Unit;
             constexpr auto x() const noexcept
             { return static_cast<Derived const *>(this)->template get<0>(); }
 
@@ -323,17 +324,49 @@ namespace antara::gaming::math
 
             constexpr auto &y_ref() noexcept
             { return static_cast<Derived *>(this)->template get<1>(); }
+
+            constexpr void set_x(value_type value) noexcept
+            {
+                x_ref() = value;
+            }
+
+            constexpr void set_y(value_type value) noexcept
+            {
+                y_ref() = value;
+            }
+
+            constexpr void set_xy(value_type value_x, value_type value_y) noexcept
+            {
+                set_x(value_x);
+                set_y(value_y);
+            }
         };
 
-        template<class Derived>
+        template<class Derived, class Unit>
         class access_z
         {
         public:
+            using value_type = Unit;
+
             constexpr auto z() const noexcept
             { return static_cast<Derived const *>(this)->template get<2>(); }
 
             constexpr auto &z_ref() noexcept
             { return static_cast<Derived *>(this)->template get<2>(); }
+
+            constexpr void set_z(value_type value_z) noexcept
+            {
+                z_ref() = value_z;
+            }
+
+            constexpr void set_xyz(value_type value_x, value_type value_y, value_type value_z) noexcept
+            {
+                auto& x_ref = static_cast<Derived *>(this)->template get<0>();
+                x_ref = value_x;
+                auto& y_ref = static_cast<Derived *>(this)->template get<1>();
+                y_ref = value_y;
+                z_ref() = value_z;
+            }
         };
     }
 
@@ -372,13 +405,23 @@ namespace antara::gaming::math
     using vec3ld = vec3<long double>;
 }
 
-namespace std {
+namespace std
+{
 
-    template<class Unit, size_t Size, template<class> class...Mixins>
-    struct tuple_size<antara::gaming::math::basic_vector<Unit, Size, Mixins...>> : integral_constant<size_t, Size> {};
+    template<class Unit, size_t Size, template<class, class> class...Mixins>
+    struct tuple_size<antara::gaming::math::basic_vector<Unit, Size, Mixins...>> : integral_constant<size_t, Size>
+    {
+    };
 
-    template <size_t I, class Unit, size_t Size, template<class> class...Mixins>
-    struct tuple_element<I, antara::gaming::math::basic_vector<Unit, Size, Mixins...>> { using type = Unit; };
+    template<size_t I, class Unit, size_t Size, template<class, class> class...Mixins>
+    struct tuple_element<I, antara::gaming::math::basic_vector<Unit, Size, Mixins...>>
+    {
+        using type = Unit;
+    };
 }
 
-REFL_AUTO(type(antara::gaming::math::vec2f), func(x), func(y), func(x_ref), func(y_ref), func(size));
+REFL_AUTO(type(antara::gaming::math::vec2f), func(x), func(y), func(x_ref), func(y_ref), func(size), func(set_x),
+          func(set_y));
+
+REFL_AUTO(type(antara::gaming::math::vec3f), func(x), func(y), func(x_ref), func(y_ref), func(size), func(set_x),
+          func(set_y), func(set_xyz));

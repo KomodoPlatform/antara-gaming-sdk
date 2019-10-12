@@ -24,11 +24,12 @@ namespace antara::gaming::transform
     struct position_2d : public math::vec2f
     {
         template<typename ... Args>
-        position_2d(Args&& ...args) noexcept: math::vec2f(std::forward<Args>(args)...)
+        position_2d(Args &&...args) noexcept: math::vec2f(std::forward<Args>(args)...)
         {
 
         }
     };
 }
 
-REFL_AUTO(type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size))
+REFL_AUTO(type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size),
+          func(set_x), func(set_y))

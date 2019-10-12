@@ -138,12 +138,10 @@ namespace antara::gaming::lua::tests
                 assert(entt.entity_registry:has_layer_1_component(entity) == true)
                 entt.entity_registry:remove_layer_1_component(entity)
                 assert(entt.entity_registry:has_layer_1_component(entity) == false)
-                local pos = entt.entity_registry:add_position_component(entity)
-                print("pos.pos_x: " .. pos.pos_x)
-                pos.pos_x = pos.pos_x + 1
-                print("pos.pos_x: " .. pos.pos_x)
-                local same_pos = entt.entity_registry:get_position_component(entity)
-                assert(same_pos.pos_x == pos.pos_x, "should be equal")
+                local pos = entt.entity_registry:add_position_2d_component(entity)
+                pos:set_x(pos:x() + 1)
+		        local same_pos = entt.entity_registry:get_position_2d_component(entity)
+                assert(same_pos:x() == pos:x())
                 entt.entity_registry:destroy(entity)
             end
             test_basis()
