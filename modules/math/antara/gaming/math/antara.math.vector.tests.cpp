@@ -86,6 +86,17 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec2_float, math::vec2f::scalar(4.f));
     }
 
+    TEST_CASE("relational")
+    {
+        math::vec2f vec2_float{42.f, 42.f};
+        CHECK(vec2_float > math::vec2f::scalar(21.f));
+        CHECK(vec2_float < math::vec2f::scalar(84.f));
+        CHECK(vec2_float <= math::vec2f::scalar(42.f));
+        CHECK(vec2_float >= math::vec2f::scalar(42.f));
+        CHECK(vec2_float == math::vec2f::scalar(42.f));
+        CHECK(vec2_float != math::vec2f::scalar(21.f));
+    }
+
     TEST_CASE("length")
     {
         math::vec2f vec2_float{0.f, 9.f};
