@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <utility>
+#include <ostream>
 #include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::graphics
@@ -54,6 +55,12 @@ namespace antara::gaming::graphics
         std::uint8_t g{0};
         std::uint8_t b{0};
         std::uint8_t a{255};
+
+        friend std::ostream &operator<<(std::ostream &os, const color &color)
+        {
+            os << "r: " << int(color.r) << " g: " << int(color.g) << " b: " << int(color.b) << " a: " << int(color.a);
+            return os;
+        }
     };
 
     inline constexpr color black{0, 0, 0};

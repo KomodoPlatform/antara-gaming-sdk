@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <ostream>
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/math/vector.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
@@ -37,7 +38,13 @@ namespace antara::gaming::graphics
         {
             return !(rhs == *this);
         }
+
         //! pos of the rectangle
+        friend std::ostream &operator<<(std::ostream &os, const rectangle &rectangle)
+        {
+            os << "size: " << rectangle.size << " position: " << rectangle.position;
+            return os;
+        }
     };
 
     struct canvas_2d
@@ -50,8 +57,10 @@ namespace antara::gaming::graphics
             fit
         };
 
-        rectangle window{{0.f, 0.f}, {1921.f, 1080.f}};
-        rectangle canvas{{0.f, 0.f}, {1920.f, 1080.f}};
+        rectangle window{.size = math::vec2f{1921.f, 1081.f},
+                .position = math::vec2f::scalar(0.f)};
+        rectangle canvas{.size = math::vec2f{1921.f, 1081.f},
+                .position = math::vec2f::scalar(0.f)};
         rectangle canvas_texture;
         bool custom_canvas_width{true};
         bool custom_canvas_height{true};
@@ -71,6 +80,17 @@ namespace antara::gaming::graphics
                    view_port == rhs.view_port &&
                    window_title == rhs.window_title &&
                    background_color == rhs.background_color;
+        }
+
+        friend inline std::ostream &operator<<(std::ostream &os, const canvas_2d &d)
+        {
+            os << "window: " << d.window << " canvas: " << d.canvas << " canvas_texture: " << d.canvas_texture
+               << " custom_canvas_width: " << d.custom_canvas_width << " custom_canvas_height: "
+               << d.custom_canvas_height << " native_desktop_mode: " << d.native_desktop_mode << " is_fullscreen: "
+               << d.is_fullscreen << " current_scaling_mode: " << d.current_scaling_mode << " view_port: "
+               << d.view_port << " window_title: " << d.window_title << " background_color: " << d.background_color
+               << " canvas_texture_scaling: " << d.canvas_texture_scaling;
+            return os;
         }
 
         bool operator!=(const canvas_2d &rhs) const
@@ -104,21 +124,26 @@ namespace antara::gaming::graphics
                 case none:
                     break;
                 case stretch:
-                    canvas_texture_scaling = math::vec2f{window_width / canvas_texture_width, window_height / canvas_texture_height};
+                    canvas_texture_scaling = math::vec2f{window_width / canvas_texture_width,
+                                                         window_height / canvas_texture_height};
                     break;
                 case crop:
-                    canvas_texture_scaling = math::vec2f::scalar(std::max(window_width / canvas_texture_width, window_height / canvas_texture_height));
+                    canvas_texture_scaling = math::vec2f::scalar(
+                            std::max(window_width / canvas_texture_width, window_height / canvas_texture_height));
                     break;
                 case fit:
-                    canvas_texture_scaling = math::vec2f::scalar(std::min(window_width / canvas_texture_width, window_height / canvas_texture_height));
+                    canvas_texture_scaling = math::vec2f::scalar(
+                            std::min(window_width / canvas_texture_width, window_height / canvas_texture_height));
                     break;
             }
             canvas_texture.position = math::vec2f{window_width * 0.5f, window_height * 0.5f};
         }
 
         canvas_2d() = default;
-        canvas_2d(const canvas_2d& other) = default;
-        canvas_2d& operator=(const canvas_2d& other) = default;
+
+        canvas_2d(const canvas_2d &other) = default;
+
+        canvas_2d &operator=(const canvas_2d &other) = default;
     };
 }
 

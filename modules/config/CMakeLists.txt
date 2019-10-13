@@ -11,7 +11,7 @@ if (ANTARA_BUILD_UNIT_TESTS)
     add_executable(antara_config_tests)
     target_sources(antara_config_tests PUBLIC
             antara/gaming/config/antara.config.tests.cpp
-            antara/gaming/config/antara.config.game.tests.cpp
+            antara/gaming/config/antara.config.loading.tests.cpp
             antara/gaming/config/antara.config.game.maker.tests.cpp)
     target_link_libraries(antara_config_tests PRIVATE doctest PUBLIC antara::config)
     set_target_properties(antara_config_tests
