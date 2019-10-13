@@ -27,8 +27,6 @@ namespace tictactoe::example
     public:
         game_scene(entt::registry &entity_registry) noexcept;
 
-        void on_canvas_resized_event(const antara::gaming::event::canvas_resized& evt) noexcept;
-
         void update() noexcept final;
 
         bool on_mouse_button_pressed(const antara::gaming::event::mouse_button_pressed &pressed) noexcept final;
@@ -40,6 +38,12 @@ namespace tictactoe::example
         void reset() noexcept;
 
     private:
+        //! Game logic
+        void play_one_turn(std::size_t row, std::size_t column) noexcept;
+
+        [[nodiscard]] bool is_current_player_win_the_game() const noexcept;
+        [[nodiscard]] bool is_tie_game() const noexcept;
+
         enum game_state
         {
             running,
