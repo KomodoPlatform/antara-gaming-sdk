@@ -111,14 +111,14 @@ namespace antara::gaming::math
         template<size_t I>
         constexpr Unit get() const noexcept
         {
-            static_assert(I >= 0 && I < Size, "Index outside of bounds");
+            static_assert(I < Size, "Index outside of bounds");
             return std::get<I>(data_);
         }
 
         template<size_t I>
         constexpr Unit &get() noexcept
         {
-            static_assert(I >= 0 && I < Size, "Index outside of bounds");
+            static_assert(I < Size, "Index outside of bounds");
             return std::get<I>(data_);
         }
 
@@ -128,7 +128,7 @@ namespace antara::gaming::math
         constexpr Unit const *data() const noexcept
         { return data_.data(); }
 
-        constexpr int size() const noexcept
+        [[nodiscard]] constexpr int size() const noexcept
         { return Size; }
 
         constexpr auto begin() noexcept
@@ -313,6 +313,7 @@ namespace antara::gaming::math
         {
         public:
             using value_type = Unit;
+
             constexpr auto x() const noexcept
             { return static_cast<Derived const *>(this)->template get<0>(); }
 
@@ -361,9 +362,9 @@ namespace antara::gaming::math
 
             constexpr void set_xyz(value_type value_x, value_type value_y, value_type value_z) noexcept
             {
-                auto& x_ref = static_cast<Derived *>(this)->template get<0>();
+                auto &x_ref = static_cast<Derived *>(this)->template get<0>();
                 x_ref = value_x;
-                auto& y_ref = static_cast<Derived *>(this)->template get<1>();
+                auto &y_ref = static_cast<Derived *>(this)->template get<1>();
                 y_ref = value_y;
                 z_ref() = value_z;
             }
