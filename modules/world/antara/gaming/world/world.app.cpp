@@ -20,7 +20,6 @@
 
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/config/config.loading.hpp"
-#include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/start.game.hpp"
 #include "antara/gaming/world/world.app.hpp"
@@ -34,13 +33,10 @@ void emscripten_antara_loop(void *world)
 namespace antara::gaming::world
 {
     //! Constructor
-    app::app(std::string config_name, std::string config_maker_name) noexcept
+    app::app(std::string config_maker_name) noexcept
     {
-        auto cfg = config::load_configuration<config::game_cfg>(core::assets_real_path() / "config",
-                                                                std::move(config_name));
         auto cfg_maker = config::load_configuration<graphics::canvas_2d>(core::assets_real_path() / "config",
                                                                          std::move(config_maker_name));
-        this->entity_registry_.set<config::game_cfg>(cfg);
         auto &canvas_2d_cmp = this->entity_registry_.set<graphics::canvas_2d>(cfg_maker);
         canvas_2d_cmp.reset_canvas();
         dispatcher_.sink<event::quit_game>().connect<&app::receive_quit_game>(*this);

@@ -18,7 +18,6 @@
 
 #include <nlohmann/json.hpp>
 #include "antara/gaming/graphics/component.canvas.hpp"
-#include "config.game.hpp"
 
 namespace antara::gaming::graphics
 {

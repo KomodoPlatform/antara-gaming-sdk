@@ -16,7 +16,6 @@
 
 #include <SFML/Window/Event.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
-#include "antara/gaming/config/config.game.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/mouse.button.pressed.hpp"
 #include "antara/gaming/event/mouse.button.released.hpp"
