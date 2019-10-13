@@ -46,10 +46,7 @@ namespace tictactoe::example
                                   geometry::vertex_array &array_cmp,
                                   entt::entity entity) {
             std::vector<geometry::vertex> vertices;
-            auto f = [&clr_winner](geometry::vertex vertex) {
-                vertex.pixel_color = clr_winner;
-                return vertex;
-            };
+            auto f = [&clr_winner](geometry::vertex vertex) { vertex.pixel_color = clr_winner; return vertex; };
             array_cmp.vertices >>= pipes::transform(f) >>= pipes::push_back(vertices);
             entity_registry_.replace<geometry::vertex_array>(entity, vertices, array_cmp.geometry_type);
         };
