@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <array>
+#include <ostream>
 #include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::math
@@ -213,6 +214,8 @@ namespace antara::gaming::math
             return *this;
         }
 
+        friend std::ostream &operator<<(std::ostream &os, const basic_vector &vector);
+
         constexpr basic_vector &operator*=(Unit b) noexcept
         {
             update_vec([b](Unit &a) { a *= b; }, sequence_type{});
@@ -304,7 +307,19 @@ namespace antara::gaming::math
         {
             return !(rhs < *this);
         }
+
+        friend std::ostream &operator<<(std::ostream &os, const basic_vector<Unit, Size, Mixins...> &vector)
+        {
+            os << " data_: {";
+            for (auto&& current : vector.data_) {
+                os << current << " ";
+            }
+            os << "}";
+            return os;
+        }
     };
+
+
 
     namespace vector_mixins
     {
