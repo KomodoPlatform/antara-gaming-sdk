@@ -3,7 +3,7 @@ configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
 add_executable(antara-sfml-tictactoe MACOSX_BUNDLE ${ICON} main.cpp)
 target_sources(antara-sfml-tictactoe PRIVATE world.cpp game.scene.cpp tic.tac.toe.factory.cpp)
-target_link_libraries(antara-sfml-tictactoe PUBLIC antara::world antara::scenes antara::sfml)
+target_link_libraries(antara-sfml-tictactoe PUBLIC antara::world antara::scenes antara::sfml joboccara::pipes)
 
 set_target_properties(antara-sfml-tictactoe
         PROPERTIES

@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include <entt/entity/helper.hpp>
+#include <pipes/transform.hpp>
+#include <pipes/push_back.hpp>
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include <antara/gaming/graphics/component.color.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
@@ -36,110 +38,41 @@ namespace tictactoe::example
     }
 
     void game_scene::update() noexcept
-    {
-
-    }
+    {}
 
     void game_scene::check_condition()
     {
-        auto player_as_win_functor = [this]() {
-            std::size_t row_count{0u};
-            std::size_t column_count{0u};
-            std::size_t diag1_count{0u};
-            std::size_t diag2_count{0u};
-            bool player_won{false};
-            this->entity_registry_.view<board_component>().each([&, this](board_component &board_cmp) {
-                auto constants = this->entity_registry_.ctx<tic_tac_toe_constants>();
-                for (std::size_t i = 0; i < constants.nb_cells; ++i) {
-                    for (std::size_t j = 0; j < constants.nb_cells; ++j) {
-                        if (board_cmp.board[i * constants.nb_cells + j] ==
-                            static_cast<cell_state>(this->player_turn_)) {
-                            row_count++;
-                        }
-
-                        if (board_cmp.board[j * constants.nb_cells + i] ==
-                            static_cast<cell_state>(this->player_turn_)) {
-                            column_count++;
-                        }
-                    }
-                    if (row_count >= constants.nb_cells || column_count >= constants.nb_cells) {
-                        player_won = true;
-                        return;
-                    }
-                    row_count = 0;
-                    column_count = 0;
-                    if (board_cmp.board[i * constants.nb_cells + i] == static_cast<cell_state>(this->player_turn_)) {
-                        diag1_count++;
-                    }
-
-                    if (board_cmp.board[i * constants.nb_cells + constants.nb_cells - i - 1] ==
-                        static_cast<cell_state>(this->player_turn_)) {
-                        diag2_count++;
-                    }
-                }
-
-                player_won = diag1_count >= constants.nb_cells || diag2_count >= constants.nb_cells;
-            });
-            return player_won;
+        auto make_screen = [this](graphics::color clr_winner,
+                                  geometry::vertex_array &array_cmp,
+                                  entt::entity entity) {
+            std::vector<geometry::vertex> vertices;
+            auto f = [&clr_winner](geometry::vertex vertex) { vertex.pixel_color = clr_winner; return vertex; };
+            array_cmp.vertices >>= pipes::transform(f) >>= pipes::push_back(vertices);
+            entity_registry_.replace<geometry::vertex_array>(entity, vertices, array_cmp.geometry_type);
         };
 
-        auto tie_functor = [this]() {
-            bool tie{false};
-            this->entity_registry_.view<board_component>().each([&tie](board_component &board_cmp) {
-                tie = std::count(begin(board_cmp.board), end(board_cmp.board), cell_state::empty) == 0;
-            });
-            return tie;
+        auto make_player_win_screen = [this, make_screen](entt::entity entity, geometry::vertex_array &array_cmp) {
+            auto winning_color = player_turn_ == player::x ? graphics::magenta : graphics::cyan;
+            make_screen(winning_color, array_cmp, entity);
         };
-        if (player_as_win_functor()) {
-            this->current_state_ = static_cast<game_state>(this->player_turn_);
-            this->entity_registry_.view<geometry::vertex_array, entt::tag<"grid"_hs>>().less(
-                    [this](entt::entity entity, geometry::vertex_array &array_cmp) {
-                        for (auto &&current_vertex : array_cmp.vertices) {
-                            current_vertex.pixel_color =
-                                    this->player_turn_ == player::x ? graphics::magenta
-                                                                    : graphics::cyan;
-                        }
-                        this->entity_registry_.assign_or_replace<geometry::vertex_array>(entity,
-                                                                                         array_cmp.vertices,
-                                                                                         array_cmp.geometry_type);
-                    });
-        } else if (tie_functor()) {
-            this->entity_registry_.view<geometry::vertex_array, entt::tag<"grid"_hs>>().less(
-                    [this](entt::entity entity, geometry::vertex_array &array_cmp) {
-                        for (auto &&current_vertex : array_cmp.vertices) {
-                            current_vertex.pixel_color = graphics::yellow;
-                        }
-                        this->entity_registry_.assign_or_replace<geometry::vertex_array>(entity,
-                                                                                         array_cmp.vertices,
-                                                                                         array_cmp.geometry_type);
-                    });
-            this->current_state_ = game_state::tie;
+
+        auto make_tie_screen = [make_screen](entt::entity entity, geometry::vertex_array &array_cmp) {
+            make_screen(graphics::yellow, array_cmp, entity);
+        };
+
+        if (is_current_player_win_the_game()) {
+            current_state_ = static_cast<game_state>(player_turn_);
+            entity_registry_.view<geometry::vertex_array, entt::tag<"grid"_hs>>().less(make_player_win_screen);
+        } else if (is_tie_game()) {
+            entity_registry_.view<geometry::vertex_array, entt::tag<"grid"_hs>>().less(make_tie_screen);
+            current_state_ = game_state::tie;
         }
     }
 
-
     void game_scene::on_click_cell(std::size_t row, std::size_t column) noexcept
     {
-        auto player_functor = [this, row, column]() {
-            this->entity_registry_.view<board_component>().each([this, row, column](board_component &board_cmp) {
-                auto constants = this->entity_registry_.ctx<tic_tac_toe_constants>();
-                auto index = row * constants.nb_cells + column;
-                if (index < board_cmp.board.size() &&
-                    board_cmp.board[index] == cell_state::empty) {
-                    board_cmp.board[index] = static_cast<cell_state>(this->player_turn_);
-                    if (this->player_turn_ == x) {
-                        tic_tac_toe_factory::create_x(entity_registry_, row, column);
-                    } else {
-                        tic_tac_toe_factory::create_o(entity_registry_, row, column);
-                    }
-                    check_condition();
-                    this->player_turn_ = this->player_turn_ == player::x ? o : x;
-                }
-            });
-        };
-
         if (this->current_state_ == game_state::running) {
-            player_functor();
+            play_one_turn(row, column);
         }
     }
 
@@ -147,7 +80,6 @@ namespace tictactoe::example
     {
         if (this->current_state_ == game_state::running) {
             auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
-
             on_click_cell(pressed.y / constants.cell_height, pressed.x / constants.cell_width);
         } else {
             reset();
@@ -176,8 +108,64 @@ namespace tictactoe::example
 
     void game_scene::prepare_constants() noexcept
     {
-        auto[canvas_width, canvas_height] = this->entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
-
+        auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
         this->entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
+    }
+
+    void game_scene::play_one_turn(std::size_t row, std::size_t column) noexcept
+    {
+        this->entity_registry_.view<board_component>().each([this, row, column](board_component &board_cmp) {
+            auto constants = this->entity_registry_.ctx<tic_tac_toe_constants>();
+            auto index = row * constants.nb_cells + column;
+            if (index < board_cmp.board.size() && board_cmp.board[index] == cell_state::empty) {
+                board_cmp.board[index] = static_cast<cell_state>(player_turn_);
+                player_turn_ == x ? tic_tac_toe_factory::create_x(entity_registry_, row, column)
+                                  : tic_tac_toe_factory::create_o(entity_registry_, row, column);
+                check_condition();
+                player_turn_ = player_turn_ == player::x ? o : x;
+            }
+        });
+    }
+
+    bool game_scene::is_current_player_win_the_game() const noexcept
+    {
+        bool player_won{false};
+        auto winning_condition_functor = [&player_won, this](board_component &board_cmp) {
+            std::size_t row_count{0u}, column_count{0u}, diag1_count{0u}, diag2_count{0u};
+            auto[nb_cells, cell_width, cell_height] = this->entity_registry_.ctx<tic_tac_toe_constants>();
+            for (std::size_t i = 0; i < nb_cells; ++i) {
+                for (std::size_t j = 0; j < nb_cells; ++j) {
+                    if (board_cmp.board[i * nb_cells + j] == static_cast<cell_state>(this->player_turn_))
+                        row_count++;
+
+                    if (board_cmp.board[j * nb_cells + i] == static_cast<cell_state>(this->player_turn_))
+                        column_count++;
+                }
+                if (row_count >= nb_cells || column_count >= nb_cells) {
+                    player_won = true;
+                    return;
+                }
+                row_count = 0u, column_count = 0u;
+                if (board_cmp.board[i * nb_cells + i] == static_cast<cell_state>(this->player_turn_))
+                    diag1_count++;
+
+                if (board_cmp.board[i * nb_cells + nb_cells - i - 1] == static_cast<cell_state>(player_turn_))
+                    diag2_count++;
+            }
+
+            player_won = diag1_count >= nb_cells || diag2_count >= nb_cells;
+        };
+
+        this->entity_registry_.view<board_component>().each(winning_condition_functor);
+        return player_won;
+    }
+
+    bool game_scene::is_tie_game() const noexcept
+    {
+        bool tie{false};
+        entity_registry_.view<board_component>().each([&tie](board_component &board_cmp) {
+            tie = std::count(begin(board_cmp.board), end(board_cmp.board), cell_state::empty) == 0;
+        });
+        return tie;
     }
 }

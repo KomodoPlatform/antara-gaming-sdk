@@ -45,6 +45,10 @@ FetchContent_Declare(
         URL https://github.com/veselink1/refl-cpp/archive/v0.6.3.zip
 )
 
+FetchContent_Declare(
+        joboccara-pipes
+        URL https://github.com/joboccara/pipes/archive/master.zip)
+
 if (USE_BOX2D_ANTARA_WRAPPER)
     FetchContent_Declare(
             box2d
@@ -71,7 +75,7 @@ if (USE_SFML_ANTARA_WRAPPER)
     )
 endif ()
 
-FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json)
+FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
