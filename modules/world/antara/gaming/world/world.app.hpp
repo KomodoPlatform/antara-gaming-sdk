@@ -28,7 +28,7 @@ namespace antara::gaming::world
     class app
     {
     public:
-        app(std::string config_name = "game.config.json", std::string config_maker_name = "game.config.maker.json") noexcept;
+        app(std::string config_maker_name = "game.config.maker.json") noexcept;
 
         //! Public callbacks
         void receive_quit_game(const event::quit_game &evt) noexcept;
