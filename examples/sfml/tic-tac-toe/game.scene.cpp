@@ -14,14 +14,17 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <SFML/Graphics/RenderTexture.hpp>
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include <antara/gaming/graphics/component.color.hpp>
+#include <antara/gaming/graphics/component.canvas.hpp>
+#include <antara/gaming/math/vector.hpp>
 #include "tic.tac.toe.constants.hpp"
 #include "tic.tac.toe.components.hpp"
 #include "tic.tac.toe.factory.hpp"
 #include "game.scene.hpp"
+
+using namespace antara::gaming;
 
 namespace tictactoe::example
 {
@@ -89,20 +92,26 @@ namespace tictactoe::example
         };
         if (player_as_win_functor()) {
             this->current_state_ = static_cast<game_state>(this->player_turn_);
-            this->entity_registry_.view<antara::gaming::geometry::vertex_array, entt::tag<"grid"_hs>>().less(
-                    [this](entt::entity entity, antara::gaming::geometry::vertex_array &array_cmp) {
-                        for (auto&& current_vertex : array_cmp.vertices) {
-                            current_vertex.pixel_color =  this->player_turn_ == player::x ? antara::gaming::graphics::magenta : antara::gaming::graphics::cyan;
+            this->entity_registry_.view<geometry::vertex_array, entt::tag<"grid"_hs>>().less(
+                    [this](entt::entity entity, geometry::vertex_array &array_cmp) {
+                        for (auto &&current_vertex : array_cmp.vertices) {
+                            current_vertex.pixel_color =
+                                    this->player_turn_ == player::x ? graphics::magenta
+                                                                    : graphics::cyan;
                         }
-                        this->entity_registry_.assign_or_replace<antara::gaming::geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
+                        this->entity_registry_.assign_or_replace<geometry::vertex_array>(entity,
+                                                                                         array_cmp.vertices,
+                                                                                         array_cmp.geometry_type);
                     });
         } else if (tie_functor()) {
-            this->entity_registry_.view<antara::gaming::geometry::vertex_array, entt::tag<"grid"_hs>>().less(
-                    [this](entt::entity entity, antara::gaming::geometry::vertex_array &array_cmp) {
-                        for (auto&& current_vertex : array_cmp.vertices) {
-                            current_vertex.pixel_color = antara::gaming::graphics::yellow;
+            this->entity_registry_.view<geometry::vertex_array, entt::tag<"grid"_hs>>().less(
+                    [this](entt::entity entity, geometry::vertex_array &array_cmp) {
+                        for (auto &&current_vertex : array_cmp.vertices) {
+                            current_vertex.pixel_color = graphics::yellow;
                         }
-                        this->entity_registry_.assign_or_replace<antara::gaming::geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
+                        this->entity_registry_.assign_or_replace<geometry::vertex_array>(entity,
+                                                                                         array_cmp.vertices,
+                                                                                         array_cmp.geometry_type);
                     });
             this->current_state_ = game_state::tie;
         }
@@ -134,7 +143,7 @@ namespace tictactoe::example
         }
     }
 
-    bool game_scene::on_mouse_button_pressed(const antara::gaming::event::mouse_button_pressed &pressed) noexcept
+    bool game_scene::on_mouse_button_pressed(const event::mouse_button_pressed &pressed) noexcept
     {
         if (this->current_state_ == game_state::running) {
             auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
@@ -167,7 +176,8 @@ namespace tictactoe::example
 
     void game_scene::prepare_constants() noexcept
     {
-        auto canvas_size = this->entity_registry_.ctx<sf::RenderTexture>().getSize();
-        this->entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_size.x, canvas_size.y);
+        auto[canvas_width, canvas_height] = this->entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
+
+        this->entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
     }
 }

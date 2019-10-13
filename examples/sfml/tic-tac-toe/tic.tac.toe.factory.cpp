@@ -15,13 +15,13 @@
  ******************************************************************************/
 
 #include <cmath>
-#include <SFML/Graphics/RenderTexture.hpp>
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/transform/component.position.hpp>
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include <antara/gaming/geometry/component.circle.hpp>
 #include <antara/gaming/graphics/component.color.hpp>
+#include <antara/gaming/graphics/component.canvas.hpp>
 #include "tic.tac.toe.factory.hpp"
 #include "tic.tac.toe.constants.hpp"
 #include "tic.tac.toe.components.hpp"
@@ -34,7 +34,7 @@ namespace tictactoe ::example
 
     entt::entity tic_tac_toe_factory::create_grid_entity(entt::registry &entity_registry) noexcept
     {
-        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
+        auto [canvas_width, canvas_height] = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
         auto grid_entity = entity_registry.create();
 
         std::vector<geometry::vertex> lines{8 * 4};
@@ -58,13 +58,13 @@ namespace tictactoe ::example
             // Vertical
             lines[counter].pos = {offset_x + i * constants.cell_width - half_thickness, 0.f};
             lines[counter + 1].pos = {offset_x + i * constants.cell_width + half_thickness, 0.f};
-            lines[counter + 2].pos = {offset_x + i * constants.cell_width + half_thickness, static_cast<float>(window_info.y)};
-            lines[counter + 3].pos = {offset_x + i * constants.cell_width - half_thickness, static_cast<float>(window_info.y)};
+            lines[counter + 2].pos = {offset_x + i * constants.cell_width + half_thickness, canvas_height};
+            lines[counter + 3].pos = {offset_x + i * constants.cell_width - half_thickness, canvas_height};
 
             // Horizontal
             lines[counter + 4].pos = {offset_x + 0, offset_y + i * constants.cell_height - half_thickness};
-            lines[counter + 5].pos = {offset_x + window_info.x, offset_y + i * constants.cell_height - half_thickness};
-            lines[counter + 6].pos = {offset_x + window_info.x, offset_y + i * constants.cell_height + half_thickness};
+            lines[counter + 5].pos = {offset_x + canvas_width, offset_y + i * constants.cell_height - half_thickness};
+            lines[counter + 6].pos = {offset_x + canvas_width, offset_y + i * constants.cell_height + half_thickness};
             lines[counter + 7].pos = {offset_x + 0, offset_y + i * constants.cell_height + half_thickness};
         }
 
