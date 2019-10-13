@@ -25,8 +25,10 @@ namespace antara::gaming::config::tests
         auto json_game_cfg = R"(
         {
   "native_desktop_mode": false,
-  "canvas_height": 1080.0,
   "canvas_width": 1920.0,
+  "canvas_height": 1080.0,
+  "custom_canvas_width": true,
+  "custom_canvas_height": true,
   "scale_mode": "crop",
   "window_width": 1921,
   "window_height": 1081,
@@ -61,8 +63,10 @@ namespace antara::gaming::config::tests
         auto json_game_cfg = R"(
         {
   "native_desktop_mode": false,
-  "canvas_height": 1080.0,
   "canvas_width": 1920.0,
+  "canvas_height": 1080.0,
+  "custom_canvas_width": false,
+  "custom_canvas_height": false,
   "scale_mode": "crop",
   "window_width": 1921.0,
   "window_height": 1081.0,

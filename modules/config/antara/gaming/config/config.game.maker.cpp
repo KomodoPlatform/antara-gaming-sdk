@@ -33,28 +33,15 @@ namespace antara::gaming::graphics
 
         game_maker_cfg.canvas.size.x_ref() = json_data.at("canvas_width").get<float>();
         game_maker_cfg.canvas.size.y_ref() = json_data.at("canvas_height").get<float>();
-        if (json_data.find("native_desktop_mode") != json_data.end() &&
-            json_data.at("native_desktop_mode").get<bool>() == true) {
-            game_maker_cfg.custom_canvas_width = true;
-            game_maker_cfg.custom_canvas_height = true;
-            game_maker_cfg.native_desktop_mode = true;
-        } else {
-            game_maker_cfg.custom_canvas_width = false;
-            game_maker_cfg.custom_canvas_height = false;
-            game_maker_cfg.native_desktop_mode = false;
-        }
+        game_maker_cfg.native_desktop_mode = json_data.find("native_desktop_mode") != json_data.end() &&
+                                             json_data.at("native_desktop_mode").get<bool>() == true;
+        
+        json_data.at("custom_canvas_width").get_to(game_maker_cfg.custom_canvas_width);
+        json_data.at("custom_canvas_height").get_to(game_maker_cfg.custom_canvas_height);
 
         if (not game_maker_cfg.native_desktop_mode) {
             game_maker_cfg.window.size.x_ref() = static_cast<float>(json_data.at("window_width").get<int>());
             game_maker_cfg.window.size.y_ref() = static_cast<float>(json_data.at("window_height").get<int>());
-        }
-
-        if (game_maker_cfg.window.size.x() > game_maker_cfg.canvas.size.x()) {
-            game_maker_cfg.custom_canvas_width = true;
-        }
-
-        if (game_maker_cfg.window.size.y() > game_maker_cfg.canvas.size.y()) {
-            game_maker_cfg.custom_canvas_height = true;
         }
 
         json_data.at("window_title").get_to(game_maker_cfg.window_title);
@@ -70,6 +57,8 @@ namespace antara::gaming::graphics
         json_data["window_width"] = game_maker_cfg.window.size.x();
         json_data["window_height"] = game_maker_cfg.window.size.y();
         json_data["window_title"] = game_maker_cfg.window_title;
+        json_data["custom_canvas_width"] = game_maker_cfg.custom_canvas_width;
+        json_data["custom_canvas_height"] = game_maker_cfg.custom_canvas_height;
         auto[r, g, b, a] = game_maker_cfg.background_color;
         json_data["background_color"] = {r, g, b, a};
         switch (game_maker_cfg.current_scaling_mode) {
