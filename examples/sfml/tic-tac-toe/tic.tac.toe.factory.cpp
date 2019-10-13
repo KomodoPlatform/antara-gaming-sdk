@@ -30,7 +30,7 @@ namespace tictactoe ::example
 {
     using namespace antara::gaming;
 
-    const auto grid_thickness = 20.0f;
+    inline constexpr auto grid_thickness{20.0f};
 
     entt::entity tic_tac_toe_factory::create_grid_entity(entt::registry &entity_registry) noexcept
     {

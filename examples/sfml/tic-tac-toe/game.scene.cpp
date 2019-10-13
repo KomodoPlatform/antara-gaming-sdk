@@ -15,8 +15,6 @@
  ******************************************************************************/
 
 #include <entt/entity/helper.hpp>
-#include <pipes/transform.hpp>
-#include <pipes/override.hpp>
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include <antara/gaming/graphics/component.color.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
@@ -45,8 +43,7 @@ namespace tictactoe::example
         auto make_screen = [this](graphics::color clr_winner,
                                   geometry::vertex_array &array_cmp,
                                   entt::entity entity) {
-            auto f = [&clr_winner](geometry::vertex vertex) { vertex.pixel_color = clr_winner; return vertex; };
-            array_cmp.vertices >>= pipes::transform(f) >>= pipes::override(array_cmp.vertices);
+            for (auto &v : array_cmp.vertices) v.pixel_color = clr_winner;
             entity_registry_.replace<geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
         };
 
