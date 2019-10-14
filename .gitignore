@@ -480,5 +480,3 @@ _deps
 
 cmake-build-*
 .idea
-
-examples/sfml/*/assets
