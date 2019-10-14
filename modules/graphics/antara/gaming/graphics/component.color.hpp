@@ -16,6 +16,12 @@
 
 #pragma once
 
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+
+#include <sol/sol.hpp>
+
+#endif
+
 #include <cstdint>
 #include <utility>
 #include <ostream>
@@ -38,17 +44,18 @@ namespace antara::gaming::graphics
 
         }
 
-        void set_color(const color& to) noexcept
+        void set_color(const color &to) noexcept
         {
-            auto [r, g, b, a] = to;
+            auto[r, g, b, a] = to;
             this->r = r;
             this->g = g;
             this->b = b;
             this->a = a;
         }
 
-        constexpr color& operator=(const color& other) noexcept = default;
-        constexpr color(const color& other) noexcept = default;
+        constexpr color &operator=(const color &other) noexcept = default;
+
+        constexpr color(const color &other) noexcept = default;
 
         constexpr bool operator==(const color &rhs) const noexcept
         {
@@ -102,10 +109,16 @@ namespace antara::gaming::graphics
 
         }
 
-        constexpr outline_color& operator=(const outline_color& other) noexcept = default;
-        constexpr outline_color(const outline_color& other) noexcept = default;
+        constexpr outline_color &operator=(const outline_color &other) noexcept = default;
+
+        constexpr outline_color(const outline_color &other) noexcept = default;
 
         float thickness{1.f};
+
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+        using constructors = sol::constructors<outline_color(), outline_color(float, graphics::color), outline_color(
+                float thickness, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
+#endif
     };
 
     struct fill_color : color
@@ -115,9 +128,15 @@ namespace antara::gaming::graphics
         {
 
         }
+
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+        using constructors = sol::constructors<fill_color(), fill_color(graphics::color),
+        fill_color(std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
+#endif
     };
 }
 
 REFL_AUTO(type(antara::gaming::graphics::color), field(r), field(g), field(b), field(a), func(set_color))
-REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a), field(thickness), func(set_color))
+REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a), field(thickness),
+          func(set_color))
 REFL_AUTO(type(antara::gaming::graphics::fill_color), field(r), field(g), field(b), field(a), func(set_color))

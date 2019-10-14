@@ -16,6 +16,9 @@
 
 #pragma once
 
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+    #include <sol/sol.hpp>
+#endif
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/event/event.invoker.hpp"
 
@@ -29,6 +32,10 @@ namespace antara::gaming::geometry
         circle(const circle& other) noexcept = default;
         circle() noexcept;
         circle& operator=(const circle& other) noexcept = default;
+
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+        using constructors = sol::constructors<circle(), circle(const circle& other), circle(float radius)>;
+#endif
 
         float radius{0.f};
     };
