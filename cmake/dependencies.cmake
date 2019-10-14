@@ -26,7 +26,7 @@ SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
 SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
 FetchContent_Declare(
         nlohmann_json
-        URL https://github.com/nlohmann/json/archive/v3.6.1.tar.gz
+        URL https://github.com/nlohmann/json/releases/download/v3.7.0/include.zip
 )
 
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)
@@ -79,6 +79,10 @@ FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
+
+add_library(nlohmann_json INTERFACE)
+target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR})
+add_library(nlohmann_json::nlohmann_json ALIAS nlohmann_json)
 
 if (USE_BOX2D_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(box2d)

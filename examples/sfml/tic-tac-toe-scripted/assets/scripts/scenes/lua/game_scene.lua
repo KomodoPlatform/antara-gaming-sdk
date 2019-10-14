@@ -118,9 +118,9 @@ end
 
 local function create_x(row, column)
     local entity_x = entt.entity_registry:create()
-    local float half_box_side = math.min(cell_width, cell_height) * 0.25
-    local float center_x = cell_width * 0.5 + column * cell_width
-    local float center_y = cell_height * 0.5 + row * cell_height
+    local half_box_side = math.min(cell_width, cell_height) * 0.25
+    local center_x = cell_width * 0.5 + column * cell_width
+    local center_y = cell_height * 0.5 + row * cell_height
 
     local lines = new_array(2 * 4, vertex)
     for idx, value in ipairs(lines) do value.pixel_color = antara.color_magenta end
