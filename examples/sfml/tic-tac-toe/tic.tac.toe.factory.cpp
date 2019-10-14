@@ -66,6 +66,7 @@ namespace tictactoe ::example
             lines[counter + 5].pos = {offset_x + canvas_width, offset_y + i * constants.cell_height - half_thickness};
             lines[counter + 6].pos = {offset_x + canvas_width, offset_y + i * constants.cell_height + half_thickness};
             lines[counter + 7].pos = {offset_x + 0, offset_y + i * constants.cell_height + half_thickness};
+            std::cout << "loop: " << i << " / " << counter << std::endl;
         }
 
         entity_registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);

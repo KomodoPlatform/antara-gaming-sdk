@@ -35,4 +35,4 @@ namespace antara::gaming::event
     };
 }
 
-REFL_AUTO(type(antara::gaming::event::mouse_button_pressed), field(button), field(x), field(y));
+REFL_AUTO(type(antara::gaming::event::mouse_button_pressed), field(button), field(x), field(y), field(window_x), field(window_y));

@@ -32,4 +32,4 @@ namespace antara::gaming::event
         float window_y;
     };
 }
-REFL_AUTO(type(antara::gaming::event::mouse_moved), field(x), field(y));
+REFL_AUTO(type(antara::gaming::event::mouse_moved), field(x), field(y), field(window_x), field(window_y));

@@ -17,6 +17,13 @@
 #pragma once
 
 #include <vector>
+
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+
+#include <sol/sol.hpp>
+
+#endif
+
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
@@ -43,8 +50,26 @@ namespace antara::gaming::geometry
 
     struct vertex_array
     {
+        vertex_array() noexcept = default;
+
+        vertex_array(std::vector<vertex> vertices_) noexcept : vertices(std::move(vertices_))
+        {
+
+        }
+
+        vertex_array(std::vector<vertex> vertices_, vertex_geometry_type geometry_type_) noexcept : vertices(
+                std::move(vertices_)), geometry_type(geometry_type_)
+        {
+
+        }
+
         std::vector<vertex> vertices;
         vertex_geometry_type geometry_type;
+
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+        using constructors = sol::constructors<vertex_array(), vertex_array(std::vector<vertex>),
+                vertex_array(std::vector<vertex>, vertex_geometry_type)>;
+#endif
     };
 }
 

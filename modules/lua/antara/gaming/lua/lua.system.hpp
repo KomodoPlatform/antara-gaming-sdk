@@ -31,6 +31,10 @@ namespace antara::gaming::lua
     class scripting_system final : public ecs::logic_update_system<lua::scripting_system>
     {
     public:
+
+        template <typename T>
+        using member_type_constructors_detector = typename T::constructors;
+
         scripting_system(entt::registry &entity_registry,
                 std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua",
                 std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" / "systems" / "lua",
@@ -62,10 +66,31 @@ namespace antara::gaming::lua
                 //! Skip namespace
                 final_name = current_name.substr(found + 1); //! LCOV_EXCL_LINE
             }
-            auto final_table = std::tuple_cat(
-                    std::make_tuple(replace_name == nullptr ? final_name : replace_name),
-                    std::make_tuple(Members::name.c_str(), Members::pointer)...);
-            try {
+
+            auto apply_functor = [this](auto &&final_table){
+                try {
+                    std::apply(
+                            [this](auto &&...params) {
+                                //static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is flawed");
+                                this->lua_state_->new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
+                            }, final_table);
+                }
+                catch (const std::exception &error) {
+                    std::cerr << error.what() << std::endl; //! LCOV_EXCL_LINE
+                }
+            };
+
+            auto name_table = std::make_tuple(replace_name == nullptr ? final_name : replace_name);
+            if constexpr(doom::meta::is_detected_v<member_type_constructors_detector, TypeToRegister>) {
+                using ctor = typename TypeToRegister::constructors;
+                auto final_table = std::tuple_cat(name_table, std::make_tuple(ctor()), std::make_tuple(Members::name.c_str(), Members::pointer)...);
+                apply_functor(final_table);
+            } else {
+                auto final_table = std::tuple_cat(name_table,
+                                                  std::make_tuple(Members::name.c_str(), Members::pointer)...);
+                apply_functor(final_table);
+            }
+            /*try {
                 std::apply(
                         [this](auto &&...params) {
                             //static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is flawed");
@@ -74,7 +99,7 @@ namespace antara::gaming::lua
             }
             catch (const std::exception &error) {
                 std::cerr << error.what() << std::endl; //! LCOV_EXCL_LINE
-            }
+            }*/
         }
 
         template<typename ...Args>
@@ -134,6 +159,13 @@ namespace antara::gaming::lua
             if (std::size_t found = info.name.str().find_last_of(":"); found != std::string::npos) {
                 final_name = info.name.str().substr(found + 1);
             }
+
+            if (this->entity_registry_.try_ctx<TComponent>() != nullptr) {
+                (*this->lua_state_)["entity_registry"]["ctx_" + final_name] = [](entt::registry &self) {
+                    return std::ref(self.ctx<TComponent>());
+                };
+            }
+
             (*this->lua_state_)["entity_registry"][final_name + "_id"] = [](entt::registry &self) {
                 return self.type<TComponent>();
             };
@@ -174,6 +206,17 @@ namespace antara::gaming::lua
                         self.assign<TComponent>(entity);
                     } else
                         return std::ref(self.assign<TComponent>(entity));
+                };
+            }
+
+            if constexpr (std::is_copy_constructible_v<TComponent>) {
+                (*this->lua_state_)["entity_registry"]["add_by_copy_"s + final_name + "_component"s] = [](
+                        entt::registry &self,
+                        entt::registry::entity_type entity, const TComponent &cmp) {
+                    if constexpr (std::is_empty_v<TComponent>) {
+                        self.assign<TComponent>(entity, cmp);
+                    } else
+                        return std::ref(self.assign<TComponent>(entity, cmp));
                 };
             }
         }

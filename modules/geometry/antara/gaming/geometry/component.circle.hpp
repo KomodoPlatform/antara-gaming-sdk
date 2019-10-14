@@ -26,8 +26,9 @@ namespace antara::gaming::geometry
         static constexpr const event::invoker_dispatcher<circle, float> invoker{};
 
         circle(float radius_) noexcept;
-
+        circle(const circle& other) noexcept = default;
         circle() noexcept;
+        circle& operator=(const circle& other) noexcept = default;
 
         float radius{0.f};
     };

@@ -38,6 +38,18 @@ namespace antara::gaming::graphics
 
         }
 
+        void set_color(const color& to) noexcept
+        {
+            auto [r, g, b, a] = to;
+            this->r = r;
+            this->g = g;
+            this->b = b;
+            this->a = a;
+        }
+
+        constexpr color& operator=(const color& other) noexcept = default;
+        constexpr color(const color& other) noexcept = default;
+
         constexpr bool operator==(const color &rhs) const noexcept
         {
             return r == rhs.r &&
@@ -90,6 +102,9 @@ namespace antara::gaming::graphics
 
         }
 
+        constexpr outline_color& operator=(const outline_color& other) noexcept = default;
+        constexpr outline_color(const outline_color& other) noexcept = default;
+
         float thickness{1.f};
     };
 
@@ -103,5 +118,6 @@ namespace antara::gaming::graphics
     };
 }
 
-REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a))
-REFL_AUTO(type(antara::gaming::graphics::fill_color), field(r), field(g), field(b), field(a))
+REFL_AUTO(type(antara::gaming::graphics::color), field(r), field(g), field(b), field(a), func(set_color))
+REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a), field(thickness), func(set_color))
+REFL_AUTO(type(antara::gaming::graphics::fill_color), field(r), field(g), field(b), field(a), func(set_color))
