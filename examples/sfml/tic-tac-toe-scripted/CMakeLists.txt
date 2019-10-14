@@ -14,11 +14,11 @@ set_target_properties(antara-sfml-tic-tac-toe-scripted
         )
 
 magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
-        "org.antara.gaming.sfml.flappybird.desktop"
-        "org.antara.gaming.sfml.flappybirds.appdata.xml"
+        "org.antara.gaming.sfml.tictactoe.scripted.desktop"
+        "org.antara.gaming.sfml.tictactoe.scripted.appdata.xml"
         "komodo_icon.png"
         antara-sfml-tic-tac-toe-scripted
-        AntaraFlappyBirdsAppDir
+        AntaraTicTacToeScriptedAppDir
         ${CMAKE_CURRENT_SOURCE_DIR}/assets
         )
 
