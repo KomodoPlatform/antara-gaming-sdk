@@ -480,3 +480,9 @@ _deps
 
 cmake-build-*
 .idea
+
+examples/sfml/*/assets/textures/logo.png
+examples/sfml/*/assets/textures/name.png
+examples/sfml/*/assets/sounds/intro1.wav
+examples/sfml/*/assets/sounds/intro2.wav
+
