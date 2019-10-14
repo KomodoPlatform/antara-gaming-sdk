@@ -196,6 +196,7 @@ namespace antara::gaming::lua
         (*this->lua_state_)["antara"]["color_magenta"] = graphics::magenta;
         (*this->lua_state_)["antara"]["color_cyan"] = graphics::cyan;
         (*this->lua_state_)["antara"]["color_transparent"] = graphics::transparent;
+        (*this->lua_state_)["antara"]["color_yellow"] = graphics::yellow;
         register_components_list(ecs::component::components_list{});
         register_events_list(event::events_list{});
         (*this->lua_state_)["entt"] = lua_state_->create_table_with("entity_registry", std::ref(this->entity_registry_),

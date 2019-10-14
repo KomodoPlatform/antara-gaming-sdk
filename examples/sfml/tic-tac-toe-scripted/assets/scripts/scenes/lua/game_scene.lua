@@ -29,6 +29,7 @@ end
 
 local entities = {}
 local board = {}
+local grid_entity = 0
 local canvas_2d = entt.entity_registry:ctx_canvas_2d()
 local nb_cells_per_row = 3
 local cell_width = math.floor(canvas_2d.canvas.size:x() /  nb_cells_per_row)
@@ -97,14 +98,14 @@ local function create_board()
 end
 
 local function enter()
-    print("constants: [" .. cell_width .. " / " .. cell_height .. "]")
-    entities[#entities + 1] = create_grid()
+    current_game_state = game_state.running.id
+    current_player = player.x.id
+    grid_entity = create_grid()
+    entities[#entities + 1] = grid_entity
     create_board()
-    print("enter game scene")
 end
 
 local function leave()
-    print("leave game scene")
     for key, value in pairs(entities) do
             entt.entity_registry:destroy(value)
             entities[key] = nil
@@ -161,27 +162,88 @@ local function create_o(row, column)
     return entity_o
 end
 
+local function is_current_player_winning_the_game()
+    row_count, column_count, diag1_count, diag2_count = 0, 0, 0, 0
+    for i = 1, nb_cells_per_row, 1 do
+        for j = 1, nb_cells_per_row, 1 do
+            if board[(i - 1) * nb_cells_per_row + (j - 1) + 1] == current_player then
+                row_count = row_count + 1
+            end
+            if board[(j - 1) * nb_cells_per_row + (i - 1) + 1] == current_player then
+               column_count = column_count + 1
+            end
+        end
+            if row_count >= nb_cells_per_row or column_count >= nb_cells_per_row then
+                return true
+            end
+
+            row_count, column_count = 0, 0
+            if board[ (i - 1) * nb_cells_per_row + (i - 1) + 1] == current_player then
+               diag1_count = diag1_count + 1
+            end
+
+            if board[(i - 1) * nb_cells_per_row + nb_cells_per_row - i - 1] == current_player then
+                diag2_count = diag2_count + 1
+            end
+    end
+    return diag1_count >= nb_cells_per_row or diag2_count >= nb_cells_per_row
+end
+
+local function is_tie()
+    local nb_empty = 0
+    for idx, value in ipairs(board) do
+        if value ~= cell_state.empty.id then
+            nb_empty = nb_empty + 1
+        end
+    end
+
+    print("nb_empty: " .. nb_empty)
+    return nb_empty == nb_cells_per_row * nb_cells_per_row
+end
+
+local function check_condition()
+    if is_current_player_winning_the_game() then
+        current_game_state = current_player
+        local vx_array = entt.entity_registry:get_vertex_array_component(grid_entity)
+        if current_player == player.x.id then
+            for idx, value in ipairs(vx_array.vertices) do value.pixel_color = antara.color_magenta end
+        else
+            for idx, value in ipairs(vx_array.vertices) do value.pixel_color = antara.color_cyan end
+        end
+        entt.entity_registry:replace_by_copy_vertex_array_component(grid_entity, vx_array)
+    elseif is_tie() then
+        current_game_state = game_state.tie.id
+        local vx_array = entt.entity_registry:get_vertex_array_component(grid_entity)
+        for idx, value in ipairs(vx_array.vertices) do value.pixel_color = antara.color_yellow end
+        entt.entity_registry:replace_by_copy_vertex_array_component(grid_entity, vx_array)
+    end
+
+    print(game_state[current_game_state].name)
+end
+
 local function play_one_turn(row, column)
     local index = math.floor(row * nb_cells_per_row + column) + 1
-    print("index: " .. index)
     if index <= #board and board[index] == cell_state.empty.id then
-        print("we are here")
         board[index] = current_player
         if current_player == player.x.id then
             entities[#entities + 1] = create_x(row, column)
+            check_condition()
             current_player = player.o.id
         elseif current_player == player.o.id then
             entities[#entities + 1] = create_o(row, column)
+            check_condition()
             current_player = player.x.id
         end
+
     end
 end
 
 local function reset()
+    leave()
+    enter()
 end
 
 local function on_mouse_button_pressed(evt)
-    print("mouse button pressed: [" .. evt.x .. " / " .. evt.y .. "]")
     if current_game_state == game_state.running.id then
         play_one_turn(math.floor(evt.y / cell_height), math.floor(evt.x / cell_width))
     else
