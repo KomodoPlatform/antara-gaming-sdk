@@ -16,6 +16,12 @@
 
 #pragma once
 
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+
+#include <sol/sol.hpp>
+
+#endif
+
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/math/vector.hpp"
 
@@ -28,6 +34,23 @@ namespace antara::gaming::transform
         {
 
         }
+
+        position_2d() noexcept = default;
+
+        position_2d(const position_2d &other) noexcept = default;
+
+        position_2d(math::vec2f pos) noexcept : math::vec2f(std::move(pos))
+        {
+        }
+
+        position_2d(float x, float y) noexcept : math::vec2f(x, y)
+        {
+        }
+
+#ifdef ANTARA_LUA_SCRIPTING_ENABLED
+        using constructors = sol::constructors<position_2d(), position_2d(math::vec2f pos), position_2d(float x,
+                                                                                                        float y)>;
+#endif
     };
 }
 

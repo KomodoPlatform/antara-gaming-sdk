@@ -27,6 +27,19 @@ local function enum(names, offset)
     return objects
 end
 
+function new_array(size, obj)
+    obj = obj or nil
+    local t = {}
+    for i = 1, size do
+        if type(obj) == "number" then
+            t[i] = obj
+        elseif obj ~= nil and obj.new ~= nil then
+            t[i] = obj.new()
+        end
+    end
+    return t
+end
+
 local entities = {}
 local board = {}
 local grid_entity = 0
@@ -40,19 +53,6 @@ local game_state = enum({ "running", "player_x_won", "player_o_won", "tie" })
 local player = enum({ "x", "o" }, 2)
 local current_player = player.x.id
 local current_game_state = game_state.running.id
-
-function new_array(size, obj)
-    obj = obj or nil
-    local t = {}
-    for i = 1, size do
-        if type(obj) == "number" then
-            t[i] = obj
-        elseif obj ~= nil and obj.new ~= nil then
-            t[i] = obj.new()
-        end
-    end
-    return t
-end
 
 local function create_grid()
     local grid_entity = entt.entity_registry:create()
@@ -93,16 +93,12 @@ local function create_grid()
     return grid_entity
 end
 
-local function create_board()
-    board = new_array(nb_cells_per_row * nb_cells_per_row, cell_state.empty.id)
-end
-
 local function enter()
     current_game_state = game_state.running.id
     current_player = player.x.id
     grid_entity = create_grid()
     entities[#entities + 1] = grid_entity
-    create_board()
+    board = new_array(nb_cells_per_row * nb_cells_per_row, cell_state.empty.id)
 end
 
 local function leave()
@@ -112,34 +108,24 @@ local function leave()
     end
 end
 
-local function on_key_pressed(evt)
-    print("key pressed: " .. evt.key)
-end
-
 local function create_x(row, column)
     local entity_x = entt.entity_registry:create()
     local half_box_side = math.min(cell_width, cell_height) * 0.25
     local center_x = cell_width * 0.5 + column * cell_width
     local center_y = cell_height * 0.5 + row * cell_height
-
     local lines = new_array(2 * 4, vertex)
     for idx, value in ipairs(lines) do value.pixel_color = antara.color_magenta end
     local half_thickness = grid_thickness * 0.5;
-
-    --Top-left to Bottom-right
     lines[1].pos:set_xy(center_x - half_box_side - half_thickness, center_y - half_box_side)
     lines[2].pos:set_xy(center_x - half_box_side + half_thickness, center_y - half_box_side)
     lines[3].pos:set_xy(center_x + half_box_side + half_thickness, center_y + half_box_side)
     lines[4].pos:set_xy(center_x + half_box_side - half_thickness, center_y + half_box_side)
-
-    -- Top-right to Bottom-left
     lines[5].pos:set_xy(center_x + half_box_side - half_thickness, center_y - half_box_side)
     lines[6].pos:set_xy(center_x + half_box_side + half_thickness, center_y - half_box_side)
     lines[7].pos:set_xy(center_x - half_box_side + half_thickness, center_y + half_box_side)
     lines[8].pos:set_xy(center_x - half_box_side - half_thickness, center_y + half_box_side)
     entt.entity_registry:add_layer_1_component(entity_x)
-    local cmp_vertex_array = vertex_array.new(lines, antara.geometry_type.quads)
-    entt.entity_registry:add_by_copy_vertex_array_component(entity_x, cmp_vertex_array)
+    entt.entity_registry:add_by_copy_vertex_array_component(entity_x, vertex_array.new(lines, antara.geometry_type.quads))
     return entity_x
 end
 
@@ -148,16 +134,10 @@ local function create_o(row, column)
     local half_box_side = math.min(cell_width, cell_height) * 0.25
     local center_x = cell_width * 0.5 + column * cell_width
     local center_y = cell_height * 0.5 + row * cell_height
-    local cmp_circle = circle.new()
-    cmp_circle.radius = half_box_side
-    local fill_color = entt.entity_registry:add_fill_color_component(entity_o)
-    fill_color:set_color(antara.color_transparent)
-    local outline_color = entt.entity_registry:add_outline_color_component(entity_o)
-    outline_color.thickness = grid_thickness
-    outline_color:set_color(antara.color_cyan)
-    entt.entity_registry:add_by_copy_circle_component(entity_o, cmp_circle)
-    local pos = entt.entity_registry:add_position_2d_component(entity_o)
-    pos:set_xy(center_x, center_y)
+    entt.entity_registry:add_by_copy_fill_color_component(entity_o, fill_color.new(antara.color_transparent))
+    entt.entity_registry:add_by_copy_outline_color_component(entity_o, outline_color.new(grid_thickness, antara.color_cyan))
+    entt.entity_registry:add_by_copy_circle_component(entity_o, circle.new(half_box_side))
+    entt.entity_registry:add_by_copy_position_2d_component(entity_o, position_2d.new(center_x, center_y))
     entt.entity_registry:add_layer_1_component(entity_o)
     return entity_o
 end
@@ -182,7 +162,7 @@ local function is_current_player_winning_the_game()
             diag1_count = diag1_count + 1
         end
 
-        if board[(i - 1) * nb_cells_per_row + nb_cells_per_row - i - 1] == current_player then
+        if board[(i - 1) * nb_cells_per_row + nb_cells_per_row - (i - 1)] == current_player then
             diag2_count = diag2_count + 1
         end
     end
@@ -196,7 +176,6 @@ local function is_tie()
             nb_empty = nb_empty + 1
         end
     end
-
     return nb_empty == nb_cells_per_row * nb_cells_per_row
 end
 
@@ -247,14 +226,9 @@ local function on_mouse_button_pressed(evt)
     end
 end
 
-local function update()
-end
-
 return {
     enter = enter,
     leave = leave,
-    update = update,
     on_mouse_button_pressed = on_mouse_button_pressed,
-    on_key_pressed = on_key_pressed,
     scene_active = true
 }
