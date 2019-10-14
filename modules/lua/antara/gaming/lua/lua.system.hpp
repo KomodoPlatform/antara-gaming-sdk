@@ -218,6 +218,24 @@ namespace antara::gaming::lua
                     } else
                         return std::ref(self.assign<TComponent>(entity, cmp));
                 };
+
+                (*this->lua_state_)["entity_registry"]["add_or_replace_by_copy_"s + final_name + "_component"s] = [](
+                        entt::registry &self,
+                        entt::registry::entity_type entity, const TComponent &cmp) {
+                    if constexpr (std::is_empty_v<TComponent>) {
+                        self.assign<TComponent>(entity, cmp);
+                    } else
+                        return std::ref(self.assign_or_replace<TComponent>(entity, cmp));
+                };
+
+                (*this->lua_state_)["entity_registry"]["replace_by_copy_"s + final_name + "_component"s] = [](
+                        entt::registry &self,
+                        entt::registry::entity_type entity, const TComponent &cmp) {
+                    if constexpr (std::is_empty_v<TComponent>) {
+                        self.assign<TComponent>(entity, cmp);
+                    } else
+                        return std::ref(self.replace<TComponent>(entity, cmp));
+                };
             }
         }
 

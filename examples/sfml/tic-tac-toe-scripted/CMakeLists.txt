@@ -1,7 +1,10 @@
 set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
+
+add_custom_target(antara-sfml-tic-tac-toe-scripts DEPENDS assets/scripts/scenes/lua/game_scene.lua)
 add_executable(antara-sfml-tic-tac-toe-scripted MACOSX_BUNDLE ${ICON} main.cpp)
+add_dependencies(antara-sfml-tic-tac-toe-scripted antara-sfml-tic-tac-toe-scripts)
 target_sources(antara-sfml-tic-tac-toe-scripted PRIVATE world.cpp)
 target_link_libraries(antara-sfml-tic-tac-toe-scripted PUBLIC antara::world antara::sfml)
 
@@ -21,6 +24,10 @@ magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
 
 if (APPLE)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/antara-sfml-tic-tac-toe-scripted.app/Contents/Resources)
+    add_custom_command(
+            OUTPUT ${CMAKE_BINARY_DIR}/bin/antara-sfml-tic-tac-toe-scripted.app/Contents/Resources/assets/scripts/scenes/lua/game_scene.lua
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/assets/scripts/scenes/lua/game_scene.lua ${CMAKE_BINARY_DIR}/bin/antara-sfml-tic-tac-toe-scripted.app/Contents/Resources/assets/scripts/scenes/lua/game_scene.lua
+            MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/assets/scripts/scenes/lua/game_scene.lua)
     include(data/osx/sfml_tictactoe_scripted_install.cmake)
 endif ()
 
