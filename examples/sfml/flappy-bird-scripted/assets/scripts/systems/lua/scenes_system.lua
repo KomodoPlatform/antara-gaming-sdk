@@ -52,6 +52,14 @@ local function on_key_pressed(evt)
     end
 end
 
+local function on_mouse_button_pressed(evt)
+    if current_scene ~= nil and current_scene.on_mouse_button_pressed ~= nil then
+        current_scene.on_mouse_button_pressed(evt)
+    else
+        print("current scene doesn't have on_key_pressed callback")
+    end
+end
+
 local function on_key_released(evt)
     if current_scene ~= nil and current_scene.on_key_released ~= nil then
         current_scene.on_key_released(evt)
@@ -84,6 +92,7 @@ scenes_system_table = {
     on_destruct = __destructor__,
     on_key_pressed = on_key_pressed,
     on_key_released = on_key_released,
+    on_mouse_button_pressed = on_mouse_button_pressed,
     on_change_scene = change_scene,
     system_type = antara.system_type.logic_update
 }

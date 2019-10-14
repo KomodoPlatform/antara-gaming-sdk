@@ -39,6 +39,15 @@ if (WIN32)
             COMMENT "copying dlls …"
             $<TARGET_FILE_DIR:antara-sfml-tic-tac-toe-scripted>
             )
+    ADD_CUSTOM_COMMAND(TARGET antara-sfml-tic-tac-toe-scripted POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${SFML_SOURCE_DIR}/extlibs/bin/x64/openal32.dll" "${CMAKE_BINARY_DIR}/bin/openal32.dll"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:antara-sfml-tic-tac-toe-scripted>
+            )
+    add_custom_command(
+            OUTPUT ${CMAKE_BINARY_DIR}/bin/assets/scripts/scenes/lua/game_scene.lua
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/assets/scripts/scenes/lua/game_scene.lua ${CMAKE_BINARY_DIR}/bin/assets/scripts/scenes/lua/game_scene.lua
+            MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/assets/scripts/scenes/lua/game_scene.lua)
 endif ()
 
 if (USE_LUA_ANTARA_WRAPPER)
