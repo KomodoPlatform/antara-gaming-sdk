@@ -35,6 +35,7 @@ namespace antara::gaming::graphics
             layer_9,
             layer_10,
             layer_11,
+            color,
             outline_color,
             fill_color,
             rectangle,

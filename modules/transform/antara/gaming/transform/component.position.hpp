@@ -32,4 +32,4 @@ namespace antara::gaming::transform
 }
 
 REFL_AUTO(type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size),
-          func(set_x), func(set_y))
+          func(set_x), func(set_y), func(set_xy), func(make_xy))

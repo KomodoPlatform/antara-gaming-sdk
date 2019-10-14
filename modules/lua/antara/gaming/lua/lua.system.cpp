@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * Copyright © 2013-2019 The Komodo Platform Developers.                      *
  *                                                                            *
@@ -52,6 +53,16 @@ namespace antara::gaming::lua
                 {"post_update",  ecs::post_update},
                 {"logic_update", ecs::logic_update}
         });
+
+        table.new_enum<geometry::vertex_geometry_type>("geometry_type", {
+                {"points",       geometry::vertex_geometry_type::points},
+                {"lines",        geometry::vertex_geometry_type::lines},
+                {"line_strip",   geometry::vertex_geometry_type::line_strip},
+                {"triangles",    geometry::vertex_geometry_type::triangles},
+                {"triangle_fan", geometry::vertex_geometry_type::triangle_fan},
+                {"quads",        geometry::vertex_geometry_type::quads},
+        });
+
         table.new_enum<input::key>("keyboard", {
                 {"a",             input::key::a},
                 {"b",             input::key::b},
@@ -181,6 +192,10 @@ namespace antara::gaming::lua
             }
             return std::make_tuple(path_scenes_entries, filename_scenes);
         };
+        (*this->lua_state_)["antara"]["color_black"] = graphics::black;
+        (*this->lua_state_)["antara"]["color_magenta"] = graphics::magenta;
+        (*this->lua_state_)["antara"]["color_cyan"] = graphics::cyan;
+        (*this->lua_state_)["antara"]["color_transparent"] = graphics::transparent;
         register_components_list(ecs::component::components_list{});
         register_events_list(event::events_list{});
         (*this->lua_state_)["entt"] = lua_state_->create_table_with("entity_registry", std::ref(this->entity_registry_),

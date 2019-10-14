@@ -52,6 +52,9 @@ namespace antara::gaming::graphics::tests
             CHECK_EQ(c_fill_color, graphics::red);
             c_fill_color = graphics::cyan;
             CHECK_EQ(c_fill_color, graphics::cyan);
+
+            c_fill_color.set_color(graphics::yellow);
+            CHECK_EQ(c_fill_color, graphics::yellow);
         }
     }
 }

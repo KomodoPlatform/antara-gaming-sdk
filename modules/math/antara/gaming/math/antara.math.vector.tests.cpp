@@ -160,4 +160,11 @@ namespace antara::gaming::math::tests
             MESSAGE(member.name);
         });
     }
+
+    TEST_CASE("factory")
+    {
+        auto res = math::vec2f::create(1.f, 2.f);
+        CHECK_EQ(res, math::vec2f(1.f, 2.f));
+        CHECK_EQ(res.make_xy(3.f, 4.f), math::vec2f(3.f, 4.f));
+    }
 }

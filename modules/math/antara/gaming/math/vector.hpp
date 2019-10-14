@@ -19,6 +19,7 @@
 #include <cmath>
 #include <array>
 #include <ostream>
+#include <meta/sequence/list.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::math
@@ -91,11 +92,21 @@ namespace antara::gaming::math
                 std::conjunction_v<std::is_convertible<Args, Unit>...>
         >>
         constexpr basic_vector(Args...args) noexcept : data_{args...}
-        {}
+        {
+
+        }
 
         constexpr basic_vector(Unit single_value) noexcept
         {
             std::fill(begin(), end(), single_value);
+        }
+
+        template<class...Args, class = std::enable_if_t<
+                std::conjunction_v<std::is_convertible<Args, Unit>...>
+        >>
+        static constexpr basic_vector create(Args&&... units) noexcept
+        {
+            return basic_vector(std::forward<Args>(units)...);
         }
 
         static constexpr auto scalar(Unit single_value) noexcept
@@ -341,20 +352,27 @@ namespace antara::gaming::math
             constexpr auto &y_ref() noexcept
             { return static_cast<Derived *>(this)->template get<1>(); }
 
-            constexpr void set_x(value_type value) noexcept
+            constexpr Derived& set_x(value_type value) noexcept
             {
                 x_ref() = value;
+                return static_cast<Derived &>(*this);
             }
 
-            constexpr void set_y(value_type value) noexcept
+            constexpr Derived& set_y(value_type value) noexcept
             {
                 y_ref() = value;
+                return static_cast<Derived &>(*this);
             }
 
-            constexpr void set_xy(value_type value_x, value_type value_y) noexcept
+            constexpr Derived& set_xy(value_type value_x, value_type value_y) noexcept
             {
                 set_x(value_x);
-                set_y(value_y);
+                return set_y(value_y);
+            }
+
+            constexpr auto make_xy(value_type value_x, value_type value_y) noexcept
+            {
+                return static_cast<Derived *>(this)->template create(value_x, value_y);
             }
         };
 
@@ -419,6 +437,8 @@ namespace antara::gaming::math
     using vec3f   = vec3<float>;
     using vec3d   = vec3<double>;
     using vec3ld = vec3<long double>;
+
+    using vector_type_list = doom::meta::list<vec2f, vec3f>;
 }
 
 namespace std
@@ -437,7 +457,7 @@ namespace std
 }
 
 REFL_AUTO(type(antara::gaming::math::vec2f), func(x), func(y), func(x_ref), func(y_ref), func(size), func(set_x),
-          func(set_y));
+          func(set_y), func(set_xy), func(make_xy));
 
 REFL_AUTO(type(antara::gaming::math::vec3f), func(x), func(y), func(x_ref), func(y_ref), func(size), func(set_x),
-          func(set_y), func(set_xyz));
+          func(set_y), func(set_z), func(set_xyz));
