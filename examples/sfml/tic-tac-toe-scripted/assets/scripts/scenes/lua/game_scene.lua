@@ -60,8 +60,8 @@ local function create_grid()
     local half_thickness = grid_thickness * 0.5
     local canvas_height = canvas_2d.canvas.size:y()
     local canvas_width = canvas_2d.canvas.size:x()
-
     local counter = 1
+
     for i = 0, nb_cells_per_row, 1 do
         local offset_x = 0.0;
         local offset_y = 0.0;
@@ -73,13 +73,10 @@ local function create_grid()
             offset_y = offset_y - half_thickness;
         end
 
-        -- Vertical
         lines[counter].pos:set_xy(offset_x + i * cell_width - half_thickness, 0.0)
         lines[counter + 1].pos:set_xy(offset_x + i * cell_width + half_thickness, 0)
         lines[counter + 2].pos:set_xy(offset_x + i * cell_width + half_thickness, canvas_height)
         lines[counter + 3].pos:set_xy(offset_x + i * cell_width - half_thickness, canvas_height)
-
-        -- Horizontal
         lines[counter + 4].pos:set_xy(offset_x + 0, offset_y + i * cell_height - half_thickness)
         lines[counter + 5].pos:set_xy(offset_x + canvas_width, offset_y + i * cell_height - half_thickness)
         lines[counter + 6].pos:set_xy(offset_x + canvas_width, offset_y + i * cell_height + half_thickness)
@@ -134,6 +131,7 @@ local function create_o(row, column)
     local half_box_side = math.min(cell_width, cell_height) * 0.25
     local center_x = cell_width * 0.5 + column * cell_width
     local center_y = cell_height * 0.5 + row * cell_height
+
     entt.entity_registry:add_by_copy_fill_color_component(entity_o, fill_color.new(antara.color_transparent))
     entt.entity_registry:add_by_copy_outline_color_component(entity_o, outline_color.new(grid_thickness, antara.color_cyan))
     entt.entity_registry:add_by_copy_circle_component(entity_o, circle.new(half_box_side))
