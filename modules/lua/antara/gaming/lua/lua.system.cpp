@@ -316,7 +316,7 @@ namespace antara::gaming::lua
     {
         bool res = true;
         for(auto& p: std::filesystem::directory_iterator(directory_path)) {
-            res &= load_script(p.path().filename(), script_lib_directory_);
+            res &= load_script(p.path().filename().string(), script_lib_directory_);
         }
         return res;
     }
