@@ -64,6 +64,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/core.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/config.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/ecs.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/api/event.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/core.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/config.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/modules.rst
@@ -82,6 +83,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/math.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/ecs.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/event.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/getting_started.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/basic_setup.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/quick_and_dirty.rst
