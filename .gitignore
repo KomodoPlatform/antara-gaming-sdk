@@ -485,7 +485,7 @@ examples/sfml/*/assets/textures/logo.png
 examples/sfml/*/assets/textures/name.png
 examples/sfml/*/assets/sounds/intro1.wav
 examples/sfml/*/assets/sounds/intro2.wav
-/examples/sfml/*/assets/scripts/lib/
+/examples/sfml/*/assets/scripts/lib/lua/*.lua
 /examples/sfml/*/assets/scripts/systems/lua/scenes_system.lua
 /modules/lua/assets/lua_assets/*
 
