@@ -38,7 +38,8 @@ namespace antara::gaming::lua
         scripting_system(entt::registry &entity_registry,
                 std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua",
                 std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" / "systems" / "lua",
-                std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" / "scenes" / "lua") noexcept;
+                std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" / "scenes" / "lua",
+                std::filesystem::path script_lib_directory = core::assets_real_path() / "scripts" / "lib" / "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 
@@ -50,6 +51,8 @@ namespace antara::gaming::lua
         bool load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept;
 
         bool load_script(const std::string &file_name) noexcept;
+
+        bool load_scripts(const std::filesystem::path& directory_path) noexcept;
 
         template<typename TypeToRegister>
         void register_type(const char *replace_name = nullptr) noexcept
@@ -90,16 +93,6 @@ namespace antara::gaming::lua
                                                   std::make_tuple(Members::name.c_str(), Members::pointer)...);
                 apply_functor(final_table);
             }
-            /*try {
-                std::apply(
-                        [this](auto &&...params) {
-                            //static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is flawed");
-                            this->lua_state_->new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
-                        }, final_table);
-            }
-            catch (const std::exception &error) {
-                std::cerr << error.what() << std::endl; //! LCOV_EXCL_LINE
-            }*/
         }
 
         template<typename ...Args>
@@ -260,6 +253,7 @@ namespace antara::gaming::lua
         std::filesystem::path directory_path_;
         std::filesystem::path systems_directory_path_;
         std::filesystem::path scenes_directory_path_;
+        std::filesystem::path script_lib_directory_;
 
         void register_entity_registry();
     };

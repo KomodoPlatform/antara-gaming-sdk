@@ -38,15 +38,22 @@ namespace antara::gaming::lua
     scripting_system::scripting_system(entt::registry &entity_registry,
                                        std::filesystem::path script_directory,
                                        std::filesystem::path systems_directory,
-                                       std::filesystem::path script_scenes_directory) noexcept :
+                                       std::filesystem::path script_scenes_directory,
+                                       std::filesystem::path script_lib_directory) noexcept :
             system(entity_registry),
             directory_path_(std::move(script_directory)), systems_directory_path_(
             std::move(systems_directory)),
-            scenes_directory_path_(std::move(script_scenes_directory))
+            scenes_directory_path_(std::move(script_scenes_directory)),
+            script_lib_directory_(std::move(script_lib_directory))
     {
         lua_state_->open_libraries();
         register_entity_registry();
         lua_state_->new_usertype<entt::dispatcher>("dispatcher");
+        assert(std::filesystem::exists(scenes_directory_path_));
+        assert(std::filesystem::exists(systems_directory_path_));
+        assert(std::filesystem::exists(script_lib_directory_));
+        assert(std::filesystem::exists(directory_path_));
+        assert(this->load_scripts(script_lib_directory_));
         sol::table table = lua_state_->create_table_with("version", gaming::version());
         table.new_enum<ecs::system_type>("system_type", {
                 {"pre_update",   ecs::pre_update},
@@ -238,25 +245,6 @@ namespace antara::gaming::lua
         return (*this->lua_state_);
     }
 
-    bool
-    scripting_system::load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept
-    {
-        try {
-            this->lua_state_->script_file((script_directory / file_name).string());
-        }
-        catch (const std::exception &error) {
-            std::cerr << "error when loading script " << file_name << " err: " << error.what() << " script_directory: "
-                      << script_directory << std::endl;
-            return false;
-        }
-        return true;
-    }
-
-    bool scripting_system::load_script(const std::string &file_name) noexcept
-    {
-        return load_script(file_name, this->directory_path_);
-    }
-
     bool scripting_system::load_script_from_entities() noexcept
     {
         bool res = true;
@@ -303,5 +291,33 @@ namespace antara::gaming::lua
     std::shared_ptr<sol::state> scripting_system::get_state_ptr() noexcept
     {
         return lua_state_;
+    }
+
+    bool
+    scripting_system::load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept
+    {
+        try {
+            this->lua_state_->script_file((script_directory / file_name).string());
+        }
+        catch (const std::exception &error) {
+            std::cerr << "error when loading script " << file_name << " err: " << error.what() << " script_directory: "
+                      << script_directory << std::endl;
+            return false;
+        }
+        return true;
+    }
+
+    bool scripting_system::load_script(const std::string &file_name) noexcept
+    {
+        return load_script(file_name, this->directory_path_);
+    }
+
+    bool scripting_system::load_scripts(const std::filesystem::path& directory_path) noexcept
+    {
+        bool res = true;
+        for(auto& p: std::filesystem::directory_iterator(directory_path)) {
+            res &= load_script(p.path().filename(), script_lib_directory_);
+        }
+        return res;
     }
 }

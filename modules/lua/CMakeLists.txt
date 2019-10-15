@@ -24,8 +24,12 @@ if (ANTARA_BUILD_UNIT_TESTS)
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:antara_lua_tests>)
 
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/systems/scenes_system.lua)
+    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/systems/scenes_system.lua OR
+            NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/lib/enum.lua OR
+            NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/lib/array_utils.lua)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/antara/gaming/lua/scenes_system.lua ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/systems/scenes_system.lua COPYONLY)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/antara/gaming/lua/enum.lua ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/lib/enum.lua COPYONLY)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/antara/gaming/lua/array_utils.lua ${CMAKE_CURRENT_SOURCE_DIR}/assets/lua_assets/scripts/lib/array_utils.lua COPYONLY)
     endif ()
     target_enable_coverage(antara_lua_tests)
     target_enable_tsan(antara_lua_tests)
@@ -50,4 +54,6 @@ set(get_lua_macro_internal_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 
 macro(get_lua_scenes_system output_dir)
     configure_file(${get_lua_macro_internal_dir}/antara/gaming/lua/scenes_system.lua ${output_dir}/assets/scripts/systems/lua/scenes_system.lua COPYONLY)
+    configure_file(${get_lua_macro_internal_dir}/antara/gaming/lua/array_utils.lua ${output_dir}/assets/scripts/lib/lua/array_utils.lua COPYONLY)
+    configure_file(${get_lua_macro_internal_dir}/antara/gaming/lua/enum.lua ${output_dir}/assets/scripts/lib/lua/enum.lua COPYONLY)
 endmacro()

@@ -94,7 +94,6 @@ namespace tictactoe ::example
         const float center_y = static_cast<float>(constants.cell_height * 0.5 + row * constants.cell_height);
 
         auto x_entity = entity_registry.create();
-        entity_registry.assign<cell_position>(x_entity, row, column);
         std::vector<geometry::vertex> lines{2 * 4};
 
         for (auto&& current_vertex: lines) current_vertex.pixel_color = graphics::magenta;
