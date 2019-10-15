@@ -39,6 +39,12 @@ namespace antara::gaming::sfml
 
         void update() noexcept final;
 
+        template<typename DrawableType>
+        bool set_position(entt::entity entity, transform::position_2d &pos) noexcept;
+
+        template<typename ... DrawableType>
+        void set_position(entt::entity entity, transform::position_2d &pos, doom::meta::list<DrawableType...>) noexcept;
+
         template<size_t Layer, typename DrawableType>
         void draw() noexcept;
 
@@ -56,6 +62,7 @@ namespace antara::gaming::sfml
         //! Callback
         void on_window_resized_event(const event::window_resized &evt) noexcept;
         void on_geometry_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
+        void on_position_2d_construct(entt::entity entity, entt::registry &registry, transform::position_2d &pos) noexcept;
         void on_geometry_vertex_array_construct(entt::entity entity, entt::registry &registry,
                 geometry::vertex_array &cmp_vertex_array) noexcept;
     private:

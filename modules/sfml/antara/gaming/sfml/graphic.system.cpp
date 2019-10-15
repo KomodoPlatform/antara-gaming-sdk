@@ -31,30 +31,37 @@ namespace antara::gaming::sfml
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
         this->dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
-        this->entity_registry_.on_construct<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(*this);
-        this->entity_registry_.on_replace<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(*this);
-        this->entity_registry_.on_construct<geometry::circle>().connect<&graphic_system::on_geometry_circle_construct>(*this);
+        this->entity_registry_.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(
+                *this);
+        this->entity_registry_.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(
+                *this);
+        this->entity_registry_.on_construct<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(
+                *this);
+        this->entity_registry_.on_replace<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(
+                *this);
+        this->entity_registry_.on_construct<geometry::circle>().connect<&graphic_system::on_geometry_circle_construct>(
+                *this);
         refresh_render_texture();
     }
 
     void graphic_system::refresh_render_texture() noexcept
     {
-        auto& canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
+        auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
 
-        auto [view_pos_x, view_pos_y] = canvas_2d.view_port.position;
-        auto [view_width, view_height] = canvas_2d.view_port.size;
+        auto[view_pos_x, view_pos_y] = canvas_2d.view_port.position;
+        auto[view_width, view_height] = canvas_2d.view_port.size;
         window_.setView(sf::View(sf::FloatRect(view_pos_x, view_pos_y, view_width, view_height)));
 
-        auto [rt_size_x, rt_size_y] = canvas_2d.canvas_texture.size;
+        auto[rt_size_x, rt_size_y] = canvas_2d.canvas_texture.size;
         render_texture_.create(rt_size_x, rt_size_y);
         render_texture_sprite_.setTexture(render_texture_.getTexture(), true);
         render_texture_.setSmooth(true);
 
-        auto [scale_x, scale_y] = canvas_2d.canvas_texture_scaling;
+        auto[scale_x, scale_y] = canvas_2d.canvas_texture_scaling;
         render_texture_sprite_.setScale(sf::Vector2f(scale_x, scale_y));
         render_texture_sprite_.setOrigin(render_texture_sprite_.getLocalBounds().width * 0.5f,
                                          render_texture_sprite_.getLocalBounds().height * 0.5f);
-        auto [rt_texture_pos_x, rt_texture_pos_y] = canvas_2d.canvas_texture.position;
+        auto[rt_texture_pos_x, rt_texture_pos_y] = canvas_2d.canvas_texture.position;
         render_texture_sprite_.setPosition(rt_texture_pos_x, rt_texture_pos_y);
     }
 
@@ -80,12 +87,6 @@ namespace antara::gaming::sfml
                 [this](auto entity,
                        auto &&drawable,
                        [[maybe_unused]] auto &&) {
-                    if constexpr (std::is_base_of_v<sf::Transformable, decltype(DrawableType::drawable)>) {
-                        if (auto cmp_position = this->entity_registry_.try_get<transform::position_2d>(entity);
-                                cmp_position != nullptr) {
-                            drawable.drawable.setPosition(cmp_position->x(), cmp_position->y());
-                        }
-                    }
                     this->render_texture_.draw(drawable.drawable);
                 });
     }
@@ -137,11 +138,35 @@ namespace antara::gaming::sfml
 
         using ranges::views::zip;
         using ranges::views::ints;
-        for(auto &&[current_vertex, current_idx]: zip(cmp_vertex_array.vertices, ints(0u, ranges::unreachable))) {
+        for (auto &&[current_vertex, current_idx]: zip(cmp_vertex_array.vertices, ints(0u, ranges::unreachable))) {
             sf_vertex_array[current_idx].position = sf::Vector2f{current_vertex.pos.x(), current_vertex.pos.y()};
-            sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos.x(), current_vertex.texture_pos.y()};
-            auto [r,g,b,a] = current_vertex.pixel_color;
+            sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos.x(),
+                                                                  current_vertex.texture_pos.y()};
+            auto[r, g, b, a] = current_vertex.pixel_color;
             sf_vertex_array[current_idx].color = sf::Color(r, g, b, a);
         }
+    }
+
+    void graphic_system::on_position_2d_construct(entt::entity entity, entt::registry &,
+                                                  transform::position_2d &pos) noexcept
+    {
+        set_position(entity, pos, drawable_list_transformable{});
+    }
+
+    template<typename... DrawableType>
+    void graphic_system::set_position(entt::entity entity, transform::position_2d &pos,
+                                      doom::meta::list<DrawableType...>) noexcept
+    {
+        (... || set_position<DrawableType>(entity, pos));
+    }
+
+    template<typename DrawableType>
+    bool graphic_system::set_position(entt::entity entity, transform::position_2d &pos) noexcept
+    {
+        if (auto cmp = this->entity_registry_.try_get<DrawableType>(entity); cmp != nullptr) {
+            cmp->drawable.setPosition(pos.x(), pos.y());
+            return true;
+        }
+        return false;
     }
 }
