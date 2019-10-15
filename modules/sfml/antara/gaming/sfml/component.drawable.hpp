@@ -68,4 +68,5 @@ namespace antara::gaming::sfml
     // LCOV_EXCL_STOP
 
     using drawable_list = doom::meta::list<sprite, circle, text, vertex_array, rectangle>;
+    using drawable_list_transformable = doom::meta::list<sprite, circle, text, rectangle>;
 }
