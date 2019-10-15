@@ -5,14 +5,14 @@
 ### Graphics (SFML)
 
 - [ ] 1.0 Graphics (Total 20 hours)
-    - [ ] 1.1 Manipulation of a window, opening, closing, resize. Must work on all major platforms (**Linux**, **Windows**, **OSX**) And must also have a nice `CMake` integration to facilitate its use in external projects in a modern C++ 17 wrapper. (8 hours) (Design + Implementation)
+    - [x] 1.1 Manipulation of a window, opening, closing, resize. Must work on all major platforms (**Linux**, **Windows**, **OSX**) And must also have a nice `CMake` integration to facilitate its use in external projects in a modern C++ 17 wrapper. (8 hours) (Design + Implementation)
     - [ ] 1.2 Ability to draw any type of drawable with a predefined list at compilation in the form of ecs and not object-oriented, must work on all platforms in a modern C++ 17 wrapper. (8 hours) (Design + Implementation)
     - [ ] 1.3 Technical Documentation (4 Hours) 
 
 ### Input (SFML)
 
 - [ ] 1.0 Input (Total 20 Hours)
-    - [ ] 1.1 Manipulation of input, through a keyboard or a mouse, automatic transmission of events inputs to other parts of the program, must work on all platforms And must also have a nice `CMake` integration to facilitate its use in external projects. in a modern C++ 17 wrapper. (16 hours) (Design + Implementation)
+    - [x] 1.1 Manipulation of input, through a keyboard or a mouse, automatic transmission of events inputs to other parts of the program, must work on all platforms And must also have a nice `CMake` integration to facilitate its use in external projects. in a modern C++ 17 wrapper. (16 hours) (Design + Implementation)
     - [ ] 1.2 Technical Documentation (4 Hours)
 
 ### Audio (SFML)
@@ -24,33 +24,33 @@
 ### Config
 
 - [ ] 1.0 Config (Total 6 Hours)
-    - [ ] 1.1 Configuration json of the game to choose the title of the game, the size of the screen, if you want a screen fullscreen etc. Possibility to have access to this configuration from the ecs (2 hours)
+    - [x] 1.1 Configuration json of the game to choose the title of the game, the size of the screen, if you want a screen fullscreen etc. Possibility to have access to this configuration from the ecs (2 hours)
     - [ ] 1.2 User Documentation (How to customize our configuration) (4 Hours)
 
 ### Core
 
 - [ ] 1.0 Core (Total 52 Hours)
     - [ ] 1.1 Contains all the core of the projects such as function utilities (48 Hours) (Design + Implementation)
-        - [ ] 1.2 Filesystem
-        - [ ] 1.3 Versionning
+        - [x] 1.2 Filesystem
+        - [x] 1.3 Versionning
         - [ ] 1.4 Security Functionnality
-        - [ ] 1.5 Reflection
+        - [x] 1.5 Reflection
         - [ ] 1.6 Collection of algorithm
-        - [ ] 1.7 Modern CMake compliant.
-        - [ ] 1.8 Unit Tests
+        - [x] 1.7 Modern CMake compliant.
+        - [x] 1.8 Unit Tests
     - [ ] 1.9 Technical Documentation (Documentation of the functions and how to use them + Choice of design) (4 Hours)
 
 ### ECS (Entity Component System)
 
-- [ ] 1.0 ECS (100 hours)
-    - [ ] 1.1 Full system implementation for the whole logic of the game, optimization compile time + CMake integration + Cross platform + Unit tests + Design + Implementation (96 Hours)
-        - [ ] 1.2 Modern CMake Compliant
-        - [ ] 1.3 System Manager With possibility of Update, Delete, Add, Remove a system, Update all systems, and update a category of systems.
-        - [ ] 1.4 Systems class with possibility of Update, Disable, Enable, Get a Name of a system
-        - [ ] 1.5 Systems category (pre_update, post_update, logic_update)
-        - [ ] 1.6 Unit Tests
-        - [ ] 1.7 Common Game Components (Position, Scaling, Transform, Layer, etc...)
-    - [ ] 1.8 Technical Documentation (4 Hours)
+- [x] 1.0 ECS (100 hours)
+    - [x] 1.1 Full system implementation for the whole logic of the game, optimization compile time + CMake integration + Cross platform + Unit tests + Design + Implementation (96 Hours)
+        - [x] 1.2 Modern CMake Compliant
+        - [x] 1.3 System Manager With possibility of Update, Delete, Add, Remove a system, Update all systems, and update a category of systems.
+        - [x] 1.4 Systems class with possibility of Update, Disable, Enable, Get a Name of a system
+        - [x] 1.5 Systems category (pre_update, post_update, logic_update)
+        - [x] 1.6 Unit Tests
+        - [x] 1.7 Common Game Components (Position, Scaling, Transform, Layer, etc...)
+    - [x] 1.8 Technical Documentation (4 Hours)
     
 ### Event
 
