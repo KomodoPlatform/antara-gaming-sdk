@@ -22,7 +22,7 @@
 namespace antara::gaming::event
 {
     /**
-     * @class key_pressed
+     * @struct key_pressed
      * @brief triggered when pressing a key on the keyboard.
      *
      * @verbatim embed:rst:leading-asterisk

@@ -21,14 +21,50 @@
 
 namespace antara::gaming::event
 {
+    /**
+     * @struct quit_game
+     * @brief Event that allows us to leave a game with a return value
+     *
+     * @verbatim embed:rst:leading-asterisk
+     *      .. note::
+     *         This class is automatically reflected for scripting systems such as lua, python.
+     * @endverbatim
+     */
     struct quit_game
     {
         static constexpr const event::invoker_dispatcher<quit_game, int> invoker{};
+
+        /**
+         * constructor with args
+         * @param return_value The return value of the program when leaving the game
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         Principal Constructor.
+         * @endverbatim
+         *
+         * Example:
+         * @code{cpp}
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/event/quit_game.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              dispatcher.trigger<quit_game>(0);
+         *          }
+         * @endcode
+         */
         quit_game(int return_value) noexcept;
 
+        /**
+         * default constructor (for scripting systems convenience)
+         */
         quit_game();
 
-        int return_value_;
+        int return_value_; ///< the return value of the program when leaving the game
     };
 }
 
