@@ -12,10 +12,10 @@ struct tic_tac_toe_world : world::app
     tic_tac_toe_world() noexcept
     {
         //! Here we load our graphical system
-        auto &graphic_system = this->system_manager_.create_system<sfml::graphic_system>();
+        auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
         //! Here we load our input system with the window from the graphical system
-        this->system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
+        system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
     }
 };
 
