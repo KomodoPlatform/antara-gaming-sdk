@@ -26,13 +26,23 @@ struct tic_tac_toe_constants
 
 static inline entt::entity create_grid(entt::registry &registry) noexcept
 {
+    //! retrieve canvas information
     auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+
+    //! entity creation
     auto grid_entity = registry.create();
 
+    //! our vertices
     std::vector<geometry::vertex> lines{8 * 4};
+
+    //! retrieve constants information
     auto[nb_cells, cell_width, cell_height, grid_thickness] = registry.ctx<tic_tac_toe_constants>();
     const auto half_thickness = grid_thickness * 0.5f;
+
+    //! our loop to create the grid
     for (std::size_t counter = 0, i = 0; i <= nb_cells; ++i, counter += 4 * 2) {
+
+        //! to avoid narrowing conversion
         auto idx = static_cast<float>(i);
 
         // First and last ones should be a bit inside, otherwise half of it is out of the screen
@@ -48,6 +58,7 @@ static inline entt::entity create_grid(entt::registry &registry) noexcept
         }
 
         // Prepare lines
+
         // Vertical
         lines[counter].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
         lines[counter + 1].pos = {offset_x + idx * cell_width + half_thickness, 0.f};
@@ -60,9 +71,17 @@ static inline entt::entity create_grid(entt::registry &registry) noexcept
         lines[counter + 6].pos = {offset_x + canvas_width, offset_y + idx * cell_height + half_thickness};
         lines[counter + 7].pos = {offset_x + 0, offset_y + idx * cell_height + half_thickness};
     }
+
+    //! assign the vertex array to the grid entity
     registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
+
+    //! assign the game_scene tag to the grid_entity (_hs means hashed_string)
     registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
+
+    //! We want to draw the grid on the most deep layer, here 0.
     registry.assign<graphics::layer<0>>(grid_entity);
+
+    //! we give back our fresh entity
     return grid_entity;
 }
 
@@ -119,6 +138,12 @@ struct tic_tac_toe_world : world::app
 
         //! Here we load our input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
+
+        //! Here we want to handle the resize of the window and fit the whole game
+        auto& canvas = entity_registry_.ctx<graphics::canvas_2d>();
+        canvas.current_scaling_mode = graphics::canvas_2d::scale_mode::fit;
+        canvas.reset_canvas();
+        this->dispatcher_.trigger<event::window_resized>();
 
         //! Here we load the scenes manager
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
