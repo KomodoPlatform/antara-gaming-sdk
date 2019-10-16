@@ -31,7 +31,6 @@ namespace antara::gaming::sfml
     class audio_system final : public ecs::pre_update_system<audio_system>
     {
     public:
-        //! Constructors
         /**
          * @param registry The entity_registry is provided to the system when it is created.
          */
