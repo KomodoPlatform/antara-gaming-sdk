@@ -27,7 +27,7 @@
 namespace antara::gaming::sfml
 {
     template<typename ResourceType>
-    struct loader final : entt::resource_loader<loader<ResourceType>, ResourceType>
+    struct loader final : entt::loader<loader<ResourceType>, ResourceType>
     {
         template<typename ... Args>
         std::shared_ptr<ResourceType> load(Args &&...args) const
@@ -41,7 +41,7 @@ namespace antara::gaming::sfml
     };
 
     template <>
-    struct loader<sf::Music> final : ::entt::resource_loader<loader<sf::Music>, sf::Music>
+    struct loader<sf::Music> final : ::entt::loader<loader<sf::Music>, sf::Music>
     {
         template <typename ... Args>
         std::shared_ptr<sf::Music> load(Args &&...args) const
@@ -55,18 +55,18 @@ namespace antara::gaming::sfml
     };
 
     //! Public typedefs
-    using textures_cache = entt::resource_cache<sf::Texture>;
-    using musics_cache = entt::resource_cache<sf::Music>;
-    using sounds_cache = entt::resource_cache<sf::SoundBuffer>;
-    using fonts_cache = entt::resource_cache<sf::Font>;
+    using textures_cache = entt::cache<sf::Texture>;
+    using musics_cache = entt::cache<sf::Music>;
+    using sounds_cache = entt::cache<sf::SoundBuffer>;
+    using fonts_cache = entt::cache<sf::Font>;
 
     using textures_loader = loader<sf::Texture>;
     using musics_loader = loader<sf::Music>;
     using sounds_loader = loader<sf::SoundBuffer>;
     using fonts_loader = loader<sf::Font>;
 
-    using texture_handle = entt::resource_handle<sf::Texture>;
-    using music_handle = entt::resource_handle<sf::Music>;
-    using sound_handle = entt::resource_handle<sf::SoundBuffer>;
-    using font_handle = entt::resource_handle<sf::Font>;
+    using texture_handle = entt::handle<sf::Texture>;
+    using music_handle = entt::handle<sf::Music>;
+    using sound_handle = entt::handle<sf::SoundBuffer>;
+    using font_handle = entt::handle<sf::Font>;
 }
