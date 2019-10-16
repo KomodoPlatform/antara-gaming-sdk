@@ -139,12 +139,6 @@ struct tic_tac_toe_world : world::app
         //! Here we load our input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
-        //! Here we want to handle the resize of the window and fit the whole game
-        auto& canvas = entity_registry_.ctx<graphics::canvas_2d>();
-        canvas.current_scaling_mode = graphics::canvas_2d::scale_mode::fit;
-        canvas.reset_canvas();
-        this->dispatcher_.trigger<event::window_resized>();
-
         //! Here we load the scenes manager
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
 
