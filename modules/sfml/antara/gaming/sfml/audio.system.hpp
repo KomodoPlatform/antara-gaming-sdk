@@ -24,14 +24,28 @@
 
 namespace antara::gaming::sfml
 {
+    /**
+     * @class audio_system
+     * @brief This class allows the customization and play of audio.
+     */
     class audio_system final : public ecs::pre_update_system<audio_system>
     {
     public:
         //! Constructors
+        /**
+         * @param registry The entity_registry is provided to the system when it is created.
+         */
         audio_system(entt::registry &registry) noexcept;
 
+        /**
+         * @brief This function receives the sound event and plays the sound within.
+         * @param evt The event that contains the sound and volume to play.
+         */
         void receive_sound_event(const play_sound_event &evt) noexcept;
 
+        /**
+         * @brief This function destroys and cleans up the sounds which are completed playing.
+         */
         void update() noexcept final;
     };
 }
