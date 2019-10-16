@@ -9,3 +9,12 @@ antara::gaming::sfml::audio_system
    :members:
    :protected-members:
    :private-members:
+
+antara::gaming::sfml::component_sound
+----------------------------------
+
+.. doxygenstruct:: antara::gaming::sfml::component_sound
+   :project: antara-gaming-sdk
+   :members:
+   :protected-members:
+   :private-members:
