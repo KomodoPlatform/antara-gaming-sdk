@@ -10,3 +10,4 @@ Antara Gaming API documentation
    core
    ecs
    event
+   sfml
