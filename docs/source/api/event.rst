@@ -9,3 +9,9 @@ antara::gaming::event::key_pressed
    :members:
    :protected-members:
    :private-members:
+
+.. doxygenclass:: antara::gaming::event::key_released
+   :project: antara-gaming-sdk
+   :members:
+   :protected-members:
+   :private-members:

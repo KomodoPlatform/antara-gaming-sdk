@@ -49,7 +49,7 @@ namespace antara::gaming::event
          * @code{cpp}
          *          #include <entt/entity/registry.hpp>
          *          #include <entt/dispatcher/dispatcher.hpp>
-         *          #include <antara/gaming/ecs/system.manager.hpp>
+         *          #include <antara/gaming/event/key.pressed.hpp>
          *
          *          int main()
          *          {

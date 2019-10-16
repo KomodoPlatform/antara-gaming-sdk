@@ -21,20 +21,59 @@
 
 namespace antara::gaming::event
 {
+    /**
+     * @class key_released
+     * @brief triggered when releasing a key on the keyboard.
+     *
+     * @verbatim embed:rst:leading-asterisk
+     *      .. note::
+     *         This class is automatically reflected for scripting systems such as lua, python.
+     * @endverbatim
+     */
     struct key_released
     {
+        /**
+         * constructor with args
+         * @param key_ represents the keyboard key currently released
+         * @param alt_ is true if the alt key on the keyboard is released
+         * @param control_ is true if the keyboard control key is released
+         * @param shift_ is true if the keyboard shift_ key is released
+         * @param system_ is true if the keyboard system key is released
+         *
+         * @verbatim embed:rst:leading-asterisk
+         *      .. note::
+         *         Principal Constructor.
+         * @endverbatim
+         *
+         * Example:
+         * @code{cpp}
+         *          #include <entt/entity/registry.hpp>
+         *          #include <entt/dispatcher/dispatcher.hpp>
+         *          #include <antara/gaming/event/key_released.hpp>
+         *
+         *          int main()
+         *          {
+         *              entt::registry entity_registry;
+         *              entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
+         *              dispatcher.trigger<key_released>(input::key::a, false, false, false, false);
+         *          }
+         * @endcode
+         */
         key_released(input::key key_, bool alt_,
                      bool control_,
                      bool shift_,
                      bool system_) noexcept;
 
+        /**
+         * default constructor (for scripting systems convenience)
+         */
         key_released() noexcept;
 
-        antara::gaming::input::key key;
-        bool alt{false};
-        bool control{false};
-        bool shift{false};
-        bool system{false};
+        antara::gaming::input::key key; ///< key released
+        bool alt{false}; ///< is alt released at the same time.
+        bool control{false}; ///< is ctrl released at the same time.
+        bool shift{false}; ///< is shift released at the same time.
+        bool system{false}; ///< is system released at the same time.
     };
 }
 
