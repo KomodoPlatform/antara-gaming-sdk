@@ -93,7 +93,7 @@ The grid will look like this:
 
 .. image:: ../../assets/tictactoe.grid.jpg
 
-To do this, we will create a game scene thanks to the scene manager, so in order we will include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
+To do this we will create a game scene using the scene manager, so in order we will include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
 
 .. code-block:: cpp
 
