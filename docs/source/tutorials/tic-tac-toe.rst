@@ -282,4 +282,187 @@ We only have two things to do now:
 
 Let's start by coding the logic of the create_grid function.
 
+First we get the canvas size, because that will be the size of our grid.
 
+.. code-block:: cpp
+
+    //! retrieve canvas information
+    auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+
+Second, we create a new entity named grid.
+
+.. code-block:: cpp
+
+    //! entity creation
+    auto grid_entity = registry.create();
+
+A line is represented with two dots that we call vertex. Vertex has a X position and a Y position. Connection of two vertices makes a line. Though that line thickness then would be ``1 px``. ``1 px`` is not very visible if the image gets smaller because of scaling etc. So we want a thick line, like ``20px``. 
+
+A thick line is basically a rectangle, right? For a rectangle, we need 4 vertices because of 4 corners. For a Tic-tac-toe grid, we need ``4 vertical lines`` (2 in middle and 2 at screen borders) and ``4 horizontal lines``. That makes ``8 lines``, and each line is ``4 vertices``, so we need ``8 * 4 = 32`` vertices.
+
+.. code-block:: cpp
+
+    //! our vertices
+    std::vector<geometry::vertex> lines{8 * 4};
+
+We also need information about the grid, 
+
+``nb_cells`` = Number of cells in one axis, 3 in this case.  
+
+``cell_width, cell_height`` = Width and height of a cell.
+
+``grid_thickness`` = Thickness of the line.
+
+We retrieve them from the defined constants:
+
+.. code-block:: cpp
+
+    //! retrieve constants information
+    auto[nb_cells, cell_width, cell_height, grid_thickness] = registry.ctx<tic_tac_toe_constants>();
+
+In calculations we will use half of the thickness more often than the thickness itself so we prepare that earlier for reuse and clarity.
+
+.. code-block:: cpp
+
+    const auto half_thickness = grid_thickness * 0.5f;
+
+Our loop looks complicated but it actually isn't. At each loop we will define one vertical and one horizontal line. We have 4 lines in each axis so we need to loop 4 times, that is ``nb_cells + 1``. Though we need to start from ``0`` because that will be used for the starting coordinate. We also have a variable ``counter`` which will count the vertex indexes, it will increase by ``4 vertices * 2 lines = 8 vertices`` at each iteration.
+
+.. code-block:: cpp
+
+    //! our loop to create the grid
+    for (std::size_t counter = 0, i = 0; i <= nb_cells; ++i, counter += 4 * 2) {
+
+Most important information is this: ``Order of the vertices are always like this: Top Left, Top Right, Bottom Right, Bottom Left. So next neighbour is always the clockwise neighbour.``
+
+Let's draw the vertical line first. Remember the order, we start with Top Left vertex. A vertical line is from top to bottom and ``X`` position will be same for top and bottom, but ``Y`` will change.
+
+We calculate ``X`` first. ``idx`` is currently ``0``, if we multiply that with ``cell_width``, let's say ``cell_width`` is ``300``, in ``4`` iterations these will be the values: ``0, 300, 600, 900``. 
+
+Then we will do ``- half_thickness`` to shift it to a bit left because left and right vertices of a thick vertical line needs to be separate. 
+
+And the Y will be 0 because it's top of the screen. X axis grows from left to right, Y axis grows from top to down.
+
+.. code-block:: cpp
+
+    lines[counter + 0].pos = {idx * cell_width - half_thickness, 0.f};
+
+Now, the Top Right vertex, it is same but it is ``+ half_thickness`` this time to make them stay far away. Y is still ``0`` because it's top of the screen.
+
+.. code-block:: cpp
+
+    lines[counter + 1].pos = {idx * cell_width + half_thickness, 0.f};
+
+Now, the Bottom Right vertex, ``X`` is same with Top Right, but ``Y`` is now canvas_height which is bottom of the screen.
+
+.. code-block:: cpp
+
+    lines[counter + 2].pos = {idx * cell_width + half_thickness, canvas_height};
+
+Now, the last one, Bottom Left vertex, ``Y`` is same as Bottom Right, ``X`` is doing ``- half_thickness`` because it needs to be at left.
+
+.. code-block:: cpp
+
+    lines[counter + 3].pos = {idx * cell_width - half_thickness, canvas_height};
+
+We completed the vertical line! Now we will do horizontal line. Again, always imagine these lines as rectangles. We will fill next 4 vertices now. 
+
+Starting at Top Left again, since line will be from left to right, ``x`` of left is ``0``. And ``Y`` will change like ``X`` did in vertical line, 4 horizontal lines will have ``Y`` values as: ``0, 300, 600, 900``.
+
+Then we do ``- half_thickness`` to Y because Top Left needs to be at Top, we shift it a little bit to top to create the thickness. 
+
+.. code-block:: cpp
+    
+    lines[counter + 4].pos = {0, idx * cell_height - half_thickness};
+
+Then Top Right vertex, is at far right side, ``canvas_width`` pixels away. And ``Y`` is same as Top Left.
+
+.. code-block:: cpp
+
+    lines[counter + 5].pos = {canvas_width, idx * cell_height - half_thickness};
+
+Then Bottom Right vertex, ``X`` stays the same, and this time we add thickness to shift it to bottom, to create the thickness.
+
+.. code-block:: cpp
+
+    lines[counter + 6].pos = {canvas_width, idx * cell_height + half_thickness};
+
+Then the last one, Bottom Left, is at far left, ``0``. We shift ``Y`` to a bit bottom by adding thickness again.
+
+.. code-block:: cpp
+
+    lines[counter + 7].pos = {0, idx * cell_height + half_thickness};
+
+Viola! Both vertical and horizontal lines are ready. Loop ends here.
+
+After the loop, we turn these vertices to a ``geometry::vertex_array`` of quads, which are rectangles. And assign it to the ``grid_entity``.
+
+.. code-block:: cpp
+
+    //! assign the vertex array to the grid entity
+    registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
+
+We tag the grid as ``game_scene``
+
+.. code-block:: cpp
+
+    //! assign the game_scene tag to the grid_entity (_hs means hashed_string)
+    registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
+
+Set it to appear at ``layer 0``, and return the prepared grid!
+
+.. code-block:: cpp
+
+    //! We want to draw the grid on the most deep layer, here 0.
+    registry.assign<graphics::layer<0>>(grid_entity);
+
+    //! we give back our fresh entity
+    return grid_entity;
+
+This will work and look really good. Though maybe you realized, we always add and substract ``half_thickness``. So the top border and left border of the screen are at coordinate ``0``, so subtracting ``half_thickness`` will make half of it to appear out of the screen. Same with bottom border and right border, they are at ``canvas_width`` and ``canvas_height`` which are and of the screen. Adding ``half_thickness`` makes the half of it appear out of the screen again. If you are perfectionist, you don't want that to happen.
+
+To solve this, we need to treat the first and last lines in a special way. We need to push top border a bit down, left border to a bit right, bottom border to a bit up and right border to a bit left to keep them fully inside the screen. We can call that shift ``offset``, we go back to our loop and define it at start.
+
+There is no offset by default, so we set them to ``0``.
+
+.. code-block:: cpp
+
+    auto offset_x = 0.0f;
+    auto offset_y = 0.0f;
+
+If it's the first ones, we add ``half_thickness`` to push them inside. And if it's last ones, we subtract ``half_thickness`` to pull them inside.
+
+.. code-block:: cpp
+
+    if (i == 0) {
+        offset_x += half_thickness;
+        offset_y += half_thickness;
+    } 
+    else if (i == nb_cells) {
+        offset_x -= half_thickness;
+        offset_y -= half_thickness;
+    }
+
+Now let's use the offsets we set.
+
+For the vertical line, we use the ``offset X`` to push them left and right.
+
+.. code-block:: cpp
+
+    //! vertical
+    lines[counter + 0].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
+    lines[counter + 1].pos = {offset_x + idx * cell_width + half_thickness, 0.f};
+    lines[counter + 2].pos = {offset_x + idx * cell_width + half_thickness, canvas_height};
+    lines[counter + 3].pos = {offset_x + idx * cell_width - half_thickness, canvas_height};
+
+For the horizontal line, we use the ``offset Y`` to push them up and down.
+
+.. code-block:: cpp
+
+    //! horizontal
+    lines[counter + 4].pos = {offset_x + 0,            offset_y + idx * cell_height - half_thickness};
+    lines[counter + 5].pos = {offset_x + canvas_width, offset_y + idx * cell_height - half_thickness};
+    lines[counter + 6].pos = {offset_x + canvas_width, offset_y + idx * cell_height + half_thickness};
+    lines[counter + 7].pos = {offset_x + 0,            offset_y + idx * cell_height + half_thickness};
+
+Now our grid must be looking absolutely perfect. You can edit ``grid_thickness`` constant to change the thickness of the lines.
