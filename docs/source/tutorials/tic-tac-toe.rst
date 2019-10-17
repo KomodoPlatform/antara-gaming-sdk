@@ -211,3 +211,75 @@ In the constructor of the gaming scene:
         //! Here i set the constants that will be used in the program
         entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
     }
+
+Now we will go to the creation of our entity representing our grid, so we will add in private member of our game_scene class the ``grid_entity_`` field which is of type ``entt::entity`` which will have the initial value ``entt::null``.
+
+.. code-block:: cpp
+
+    class game_scene final : public scenes::base_scene
+    {
+    public:
+        game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+        {
+            //! Here we retrieve canvas information
+            auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
+
+            //! Here i set the constants that will be used in the program
+            entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
+        }
+
+        //! This function will not be used, because tic tac toe doesn't need an update every frame.
+        void update() noexcept final
+        {}
+
+        //! our scene name
+        std::string scene_name() noexcept final
+        {
+            return "game_scene";
+        }
+
+        ~game_scene() noexcept final
+        {}
+    private:
+        //! Our entity representing the tic-tac-toe grid
+        entt::entity grid_entity_{entt::null};
+    };
+
+Then, we will have to initialize this entity, to do this we create an anonymous namespace with a function create_grid which returns an ``entt::entity`` and take in parameter the ``entity registry``.
+
+.. code-block:: cpp
+
+    //! Contains all the function that will be used for logic  and factory
+    namespace
+    {
+        //! Factory for creating a tic-tac-toe grid
+        entt::entity create_grid(entt::registry &registry) noexcept
+        {
+            return entt::null;
+        }
+    }
+
+Now, we call the function from the game scene constructor and we assign the return value to the field ``grid_entity_``:
+
+.. code-block:: cpp
+
+    game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+    {
+        //! Here we retrieve canvas information
+        auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
+
+        //! Here i set the constants that will be used in the program
+        entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
+
+        //! Here i create the grid of the tic tac toe
+        grid_entity_ = create_grid(entity_registry_);
+    }
+
+We only have two things to do now:
+
+- code the logic of the create_grid function
+- manage the destruction of the entities of our game scene when leaving the program
+
+Let's start by coding the logic of the create_grid function.
+
+
