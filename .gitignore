@@ -491,6 +491,6 @@ examples/sfml/*/assets/sounds/intro2.wav
 /tutorials/*/*/cmake-*
 /tutorials/*/*/.idea
 /tutorials/*/*/Resources
-
+/docs/_build
 
 
