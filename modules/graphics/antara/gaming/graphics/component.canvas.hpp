@@ -62,11 +62,11 @@ namespace antara::gaming::graphics
         rectangle canvas{.size = math::vec2f{1920.f, 1080.f},
                 .position = math::vec2f::scalar(0.f)};
         rectangle canvas_texture;
-        bool custom_canvas_width{false};
-        bool custom_canvas_height{false};
+        bool custom_canvas_width{true};
+        bool custom_canvas_height{true};
         bool native_desktop_mode{false};
         bool is_fullscreen{false};
-        scale_mode current_scaling_mode{crop};
+        scale_mode current_scaling_mode{fit};
         rectangle view_port;
         std::string window_title{"game title"};
         fill_color background_color{graphics::black};

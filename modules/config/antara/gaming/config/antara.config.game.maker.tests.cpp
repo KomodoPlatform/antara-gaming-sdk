@@ -84,6 +84,9 @@ namespace antara::gaming::config::tests
         game_maker_config.window.size = math::vec2f{1921.f, 1081.f};
         game_maker_config.window_title = "tic-tac-toe";
         game_maker_config.background_color = graphics::black;
+        game_maker_config.custom_canvas_width = false;
+        game_maker_config.custom_canvas_height = false;
+        game_maker_config.current_scaling_mode = graphics::canvas_2d::crop;
         nlohmann::json json_data;
                 CHECK_NOTHROW(to_json(json_data, game_maker_config));
                 CHECK_EQ(json_game_cfg, json_data);

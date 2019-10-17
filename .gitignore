@@ -488,5 +488,9 @@ examples/sfml/*/assets/sounds/intro2.wav
 /examples/sfml/*/assets/scripts/lib/lua/*.lua
 /examples/sfml/*/assets/scripts/systems/lua/scenes_system.lua
 /modules/lua/assets/lua_assets/*
+/tutorials/*/*/cmake-*
+/tutorials/*/*/.idea
+/tutorials/*/*/Resources
+
 
 
