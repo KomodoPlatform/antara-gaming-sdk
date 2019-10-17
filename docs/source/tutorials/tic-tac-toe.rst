@@ -174,7 +174,7 @@ If you compile now you should still see the black window from the previous step,
 
     The scene system is very handy when you want to organize your game with different screens, **introduction scene**, **game scene**, **end-of-game scene**, etc.
 
-Now we are going to need several constant data essential for the tick-to-toe, the size of a cell in width, in height, the number of cells per line, the thickness of our grid.
+Now we need several constants that are essential. For the tick-to-toe, the size of a cell in width, in height, the number of cells per line, the thickness of our grid.
 
 For the size of the cells we will use the current size of our canvas divided by the number of cells per line to obtain the size of a cell.
 
