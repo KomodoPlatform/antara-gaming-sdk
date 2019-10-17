@@ -49,7 +49,7 @@ namespace
             //! to avoid narrowing conversion
             auto idx = static_cast<float>(i);
 
-            // First and last ones should be a bit inside, otherwise half of it is out of the screen
+            //! first and last ones should be a bit inside, otherwise half of it is out of the screen
             auto offset_x = 0.0f;
             auto offset_y = 0.0f;
 
@@ -61,15 +61,15 @@ namespace
                 offset_y -= half_thickness;
             }
 
-            // Prepare lines
+            //! prepare lines
 
-            // Vertical
-            lines[counter].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
+            //! vertical
+            lines[counter + 0].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
             lines[counter + 1].pos = {offset_x + idx * cell_width + half_thickness, 0.f};
             lines[counter + 2].pos = {offset_x + idx * cell_width + half_thickness, canvas_height};
             lines[counter + 3].pos = {offset_x + idx * cell_width - half_thickness, canvas_height};
 
-            // Horizontal
+            //! horizontal
             lines[counter + 4].pos = {offset_x + 0, offset_y + idx * cell_height - half_thickness};
             lines[counter + 5].pos = {offset_x + canvas_width, offset_y + idx * cell_height - half_thickness};
             lines[counter + 6].pos = {offset_x + canvas_width, offset_y + idx * cell_height + half_thickness};
