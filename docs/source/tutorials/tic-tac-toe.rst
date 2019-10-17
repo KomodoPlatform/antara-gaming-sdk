@@ -173,3 +173,41 @@ If you compile now you should still see the black window from the previous step,
 .. note::
 
     The scene system is very handy when you want to organize your game with different screens, **introduction scene**, **game scene**, **end-of-game scene**, etc.
+
+Now we are going to need several constant data essential for the tick-to-toe, the size of a cell in width, in height, the number of cells per line, the thickness of our grid.
+
+For the size of the cells we will use the current size of our canvas divided by the number of cells per line to obtain the size of a cell.
+
+So we create a structure tic_tac_toe_constants that will contain these different information.
+
+Then we save it in the entity registry to be able to access from anywhere in the program.
+
+.. code-block:: cpp
+
+    struct tic_tac_toe_constants
+    {
+        tic_tac_toe_constants(std::size_t nb_cells_per_row_, std::size_t width_, std::size_t height_) noexcept :
+                nb_cells_per_row(nb_cells_per_row_),
+                cell_width(width_ / nb_cells_per_row),
+                cell_height(height_ / nb_cells_per_row)
+        {
+        }
+
+        const std::size_t nb_cells_per_row;
+        const std::size_t cell_width;
+        const std::size_t cell_height;
+        const float grid_thickness{20.0f};
+    };
+
+In the constructor of the gaming scene:
+
+.. code-block:: cpp
+
+    game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+    {
+        //! Here we retrieve canvas information
+        auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
+
+        //! Here i set the constants that will be used in the program
+        entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
+    }
