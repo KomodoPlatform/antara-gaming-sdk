@@ -11,7 +11,7 @@ antara::gaming::sfml::audio_system
    :private-members:
 
 antara::gaming::sfml::component_sound
-----------------------------------
+-------------------------------------
 
 .. doxygenstruct:: antara::gaming::sfml::component_sound
    :project: antara-gaming-sdk

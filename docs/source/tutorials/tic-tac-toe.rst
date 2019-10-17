@@ -466,3 +466,100 @@ For the horizontal line, we use the ``offset Y`` to push them up and down.
     lines[counter + 7].pos = {offset_x + 0,            offset_y + idx * cell_height + half_thickness};
 
 Now our grid must be looking absolutely perfect. You can edit ``grid_thickness`` constant to change the thickness of the lines.
+
+Below the complete function:
+
+.. code-block:: cpp
+
+    //! Contains all the function that will be used for logic  and factory
+    namespace
+    {
+        //! Factory for creating a tic-tac-toe grid
+        entt::entity create_grid(entt::registry &registry) noexcept
+        {
+            //! retrieve canvas information
+            auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+
+            //! entity creation
+            auto grid_entity = registry.create();
+
+            //! our vertices
+            std::vector<geometry::vertex> lines{8 * 4};
+
+            //! retrieve constants information
+            auto[nb_cells, cell_width, cell_height, grid_thickness] = registry.ctx<tic_tac_toe_constants>();
+            const auto half_thickness = grid_thickness * 0.5f;
+
+            //! our loop to create the grid
+            for (std::size_t counter = 0, i = 0; i <= nb_cells; ++i, counter += 4 * 2) {
+
+                //! to avoid narrowing conversion
+                auto idx = static_cast<float>(i);
+
+                //! first and last ones should be a bit inside, otherwise half of it is out of the screen
+                auto offset_x = 0.0f;
+                auto offset_y = 0.0f;
+
+                if (i == 0) {
+                    offset_x += half_thickness;
+                    offset_y += half_thickness;
+                } else if (i == nb_cells) {
+                    offset_x -= half_thickness;
+                    offset_y -= half_thickness;
+                }
+
+                //! prepare lines
+
+                //! vertical
+                lines[counter + 0].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
+                lines[counter + 1].pos = {offset_x + idx * cell_width + half_thickness, 0.f};
+                lines[counter + 2].pos = {offset_x + idx * cell_width + half_thickness, canvas_height};
+                lines[counter + 3].pos = {offset_x + idx * cell_width - half_thickness, canvas_height};
+
+                //! horizontal
+                lines[counter + 4].pos = {offset_x + 0, offset_y + idx * cell_height - half_thickness};
+                lines[counter + 5].pos = {offset_x + canvas_width, offset_y + idx * cell_height - half_thickness};
+                lines[counter + 6].pos = {offset_x + canvas_width, offset_y + idx * cell_height + half_thickness};
+                lines[counter + 7].pos = {offset_x + 0, offset_y + idx * cell_height + half_thickness};
+            }
+
+            //! assign the vertex array to the grid entity
+            registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
+
+            //! assign the game_scene tag to the grid_entity (_hs means hashed_string)
+            registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
+
+            //! We want to draw the grid on the most deep layer, here 0.
+            registry.assign<graphics::layer<0>>(grid_entity);
+
+            //! we give back our fresh entity
+            return grid_entity;
+        }
+    }
+
+The last thing to do is the destruction of the entities in the destroyer, we will need it at the time of reset the game.
+
+We will simply in the destructor of the game scene iterate over all the entities that have the tag of the game scene, and destroy each of them.
+
+.. code-block:: cpp
+
+    ~game_scene() noexcept final
+    {
+        //! Here we retrieve the collection of entities from the game scene
+        auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
+
+        //! Here we iterate the collection and destroy each entities
+        entity_registry_.destroy(view.begin(), view.end());
+
+        //! Here we unset the tic tac toe constants
+        entity_registry_.unset<tic_tac_toe_constants>();
+    }
+
+Now if you compile and run your program you should have the following result:
+
+.. image:: ../../assets/tictactoe_real_grid.png
+
+Here is the complete code of the second step:
+
+.. literalinclude:: ../../../tutorials/tic-tac-toe/step_1/tic-tac-toe.cpp
+   :language: cpp
