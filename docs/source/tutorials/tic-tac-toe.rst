@@ -116,7 +116,7 @@ To do this we will create a game scene using the scene manager, so in order we w
 
 Now we are going to create the game_scene class that inherits from the base_scene class. This class will be the entry point of our game scene.
 
-The concrete class must override several functions such as updade, scene_name, and the destructor.
+The concrete class must override several functions such as update, scene_name, and the destructor.
 We will not use the update function because the tictactoe is not a game that needs an update for each frame, so we will leave the function empty.
 For the scene_name function we'll just return the name of the scene.
 
