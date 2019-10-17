@@ -8,7 +8,7 @@ This tutorial is divided into several steps, to help you to follow more simply.
 Step 0: setup the executable and the window
 -------------------------------------------
 
-For this first step we need a ``CMakeLists.txt`` to be able to create our executable and compile it.
+For this first step we need a ``CMakeLists.txt`` for creating and compiling the executable.
 
 In this ``CMakeLists.txt`` file we will have: the name of the project, the creation of the executable, the link with the SDK, the C++ standard that will be used and the extras modules that we want to use, in our case it will be the module  :doc:`antara::sfml<../modules/sfml>` provided by the **SDK**.
 
