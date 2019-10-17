@@ -1,9 +1,9 @@
 Tutorial: How to do a tic-tac-toe in less than 15 minutes with the gaming SDK ?
 ===============================================================================
 
-If you have not read the :doc:`getting started<getting_started>` part yet, I invite you to do it now for the rest of this tutorial.
+If you have not read the :doc:`getting started<getting_started>` part yet, I invite you to read it before reading this one.
 
-This tutorial is divided into several steps, to help you to follow more simply.
+This tutorial is divided into several steps, to help you understanding it.
 
 Step 0: setup the executable and the window
 -------------------------------------------
@@ -397,7 +397,7 @@ Then the last one, Bottom Left, is at far left, ``0``. We shift ``Y`` to a bit b
 
     lines[counter + 7].pos = {0, idx * cell_height + half_thickness};
 
-Viola! Both vertical and horizontal lines are ready. Loop ends here.
+Voilà ! Both vertical and horizontal lines are ready. Loop ends here.
 
 After the loop, we turn these vertices to a ``geometry::vertex_array`` of quads, which are rectangles. And assign it to the ``grid_entity``.
 
