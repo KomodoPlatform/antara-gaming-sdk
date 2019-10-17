@@ -298,6 +298,8 @@ Second, we create a new entity named grid.
 
 A line is represented with two dots that we call vertex. Vertex has a X position and a Y position. Connection of two vertices makes a line. Though that line thickness then would be ``1 px``. ``1 px`` is not very visible if the image gets smaller because of scaling etc. So we want a thick line, like ``20px``. 
 
+.. image:: ../../assets/grid_lines.png
+
 A thick line is basically a rectangle, right? For a rectangle, we need 4 vertices because of 4 corners. For a Tic-tac-toe grid, we need ``4 vertical lines`` (2 in middle and 2 at screen borders) and ``4 horizontal lines``. That makes ``8 lines``, and each line is ``4 vertices``, so we need ``8 * 4 = 32`` vertices.
 
 .. code-block:: cpp
@@ -334,6 +336,8 @@ Our loop looks complicated but it actually isn't. At each loop we will define on
     for (std::size_t counter = 0, i = 0; i <= nb_cells; ++i, counter += 4 * 2) {
 
 Most important information is this: ``Order of the vertices are always like this: Top Left, Top Right, Bottom Right, Bottom Left. So next neighbour is always the clockwise neighbour.``
+
+.. image:: ../../assets/vertex_order.png
 
 Let's draw the vertical line first. Remember the order, we start with Top Left vertex. A vertical line is from top to bottom and ``X`` position will be same for top and bottom, but ``Y`` will change.
 
@@ -420,6 +424,8 @@ Set it to appear at ``layer 0``, and return the prepared grid!
     return grid_entity;
 
 This will work and look really good. Though maybe you realized, we always add and substract ``half_thickness``. So the top border and left border of the screen are at coordinate ``0``, so subtracting ``half_thickness`` will make half of it to appear out of the screen. Same with bottom border and right border, they are at ``canvas_width`` and ``canvas_height`` which are and of the screen. Adding ``half_thickness`` makes the half of it appear out of the screen again. If you are perfectionist, you don't want that to happen.
+
+.. image:: ../../assets/border_problem.png
 
 To solve this, we need to treat the first and last lines in a special way. We need to push top border a bit down, left border to a bit right, bottom border to a bit up and right border to a bit left to keep them fully inside the screen. We can call that shift ``offset``, we go back to our loop and define it at start.
 
