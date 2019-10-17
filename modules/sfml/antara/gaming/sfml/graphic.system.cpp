@@ -83,10 +83,8 @@ namespace antara::gaming::sfml
     template<size_t Layer, typename DrawableType>
     void graphic_system::draw() noexcept
     {
-        this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().each(
-                [this](auto entity,
-                       auto &&drawable,
-                       [[maybe_unused]] auto &&) {
+        this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().less(
+                [this](auto &&drawable) {
                     this->render_texture_.draw(drawable.drawable);
                 });
     }
