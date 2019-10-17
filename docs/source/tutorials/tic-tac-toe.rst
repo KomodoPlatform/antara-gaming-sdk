@@ -543,7 +543,7 @@ Below the complete function:
         }
     }
 
-The last thing to do is the destruction of the entities in the destroyer, we will need it at the time of reset the game.
+The last thing to do is the destruction of the entities in the destructor, we will need it at the time of reset the game.
 
 We will simply in the destructor of the game scene iterate over all the entities that have the tag of the game scene, and destroy each of them.
 
