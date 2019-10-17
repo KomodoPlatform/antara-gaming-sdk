@@ -84,3 +84,92 @@ If you compile now you should see a black window open that you can close by pres
 
 And now, the first step is over. The objectives have been reached: to have a window that opens and can be closed, a basic executable and a CMakeLists.txt to be able to compile our program.
 
+Step 1: The Game Scene, The Grid, Game constants
+------------------------------------------------
+
+For this second step our goal is to draw the grid of the tick toe.
+
+The grid will look like this:
+
+.. image:: ../../assets/tictactoe.grid.jpg
+
+To do this, we will create a game scene thanks to the scene manager, so in order we will include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
+
+.. code-block:: cpp
+
+    struct tic_tac_toe_world : world::app
+    {
+        //! Our game entry point
+        tic_tac_toe_world() noexcept
+        {
+            //! Here we load our graphical system
+            auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
+
+            //! Here we load our input system with the window from the graphical system
+            system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
+
+            //! Here we load the scenes manager
+            auto &scene_manager = system_manager_.create_system<scenes::manager>();
+        }
+    };
+
+
+Now we are going to create the game_scene class that inherits from the base_scene class. This class will be the entry point of our game scene.
+
+The concrete class must override several functions such as updade, scene_name, and the destructor.
+We will not use the update function because the tictactoe is not a game that needs an update for each frame, so we will leave the function empty.
+For the scene_name function we'll just return the name of the scene.
+
+.. code-block:: cpp
+
+    class game_scene final : public scenes::base_scene
+    {
+    public:
+        game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+        {}
+
+        //! This function will not be used, because tic tac toe doesn't need an update every frame.
+        void update() noexcept final
+        {}
+
+        //! our scene name
+        std::string scene_name() noexcept final
+        {
+            return "game_scene";
+        }
+
+        ~game_scene() noexcept final
+        {}
+    private:
+    };
+
+Now we are going to load our game scene into the scene_manager using the change_scene member function
+
+.. code-block:: cpp
+
+    struct tic_tac_toe_world : world::app
+    {
+        //! Our game entry point
+        tic_tac_toe_world() noexcept
+        {
+            //! Here we load our graphical system
+            auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
+
+            //! Here we load our input system with the window from the graphical system
+            system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
+
+            //! Here we load the scenes manager
+            auto &scene_manager = system_manager_.create_system<scenes::manager>();
+
+            //! Here we change the current_scene to "game_scene" by pushing it.
+            scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_), true);
+        }
+    };
+
+If you compile now you should still see the black window from the previous step, but we are now in our game scene.
+
+.. image:: ../../assets/black_window.png
+
+.. note::
+
+    The scene system is very handy when you want to organize your game with different screens, **introduction scene**, **game scene**, **end-of-game scene**, etc.
