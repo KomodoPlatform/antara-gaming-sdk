@@ -38,7 +38,7 @@ If you have followed well until then you should have the following tree:
 
 Before continuing the tutorial check that your program compiles by referring to the build commands available in the tutorial :doc:`getting started<getting_started>`.
 
-Now we are going to need a world representing the world of our game, to do this we are going to need the following header file: ``#include <antara/gaming/world/world.app.hpp>``
+Now we are going to need a world representing the world of our game, to do this we need the following header file: ``#include <antara/gaming/world/world.app.hpp>``
 
 And a basic structure that we name ``tic_tac_toe world`` that will inherit from an ``antara::gaming::world::app``.
 
