@@ -37,7 +37,7 @@ namespace antara::gaming::sfml
 
         sf::Sound sound; ///< This object is SFML's Sound instance which contains the sound data.
         bool is_started{false}; ///< This boolean holds the information if sound started playing. Used later on to check if it should be destroyed or not.
-        std::function<void()> on_finish{[](){}}; ///< This is the function which will be called at destruction of the sound when it finishes.
+        std::function<void()> on_finish; ///< This is the function which will be called at destruction of the sound when it finishes.
         float volume{100.0f}; ///< This is the volume of the sound, ranged between 0-100.
     };
 }
