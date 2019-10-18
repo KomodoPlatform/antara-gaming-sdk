@@ -167,7 +167,10 @@ public:
     void on_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept
     {
         if (current_game_state_ == running) {
+            //! Retrieve game constants.
             auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
+
+            //! Play one turn of the tictactoe
             play_turn(evt.y / constants.cell_height, evt.x / constants.cell_width);
         } else {
             //! Here we reset the game
@@ -179,6 +182,8 @@ public:
     {
         //! stateless system
         this->disable();
+
+        //! subscribe to mouse_button event
         this->dispatcher_.sink<event::mouse_button_pressed>().connect<&tic_tac_toe_logic::on_mouse_button_pressed>(
                 *this);
     }
@@ -232,6 +237,7 @@ private:
     player player_turn_{player::x};
 };
 
+//! Give a name to our system
 REFL_AUTO(type(tic_tac_toe_logic));
 
 class game_scene final : public scenes::base_scene
