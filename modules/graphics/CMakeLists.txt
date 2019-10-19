@@ -10,7 +10,8 @@ if (ANTARA_BUILD_UNIT_TESTS)
     add_executable(antara_graphics_tests)
     target_sources(antara_graphics_tests PUBLIC
             antara/gaming/graphics/antara.graphics.tests.cpp
-            antara/gaming/graphics/antara.graphics.component.color.tests.cpp)
+            antara/gaming/graphics/antara.graphics.component.color.tests.cpp
+            antara/gaming/graphics/antara.graphics.component.text.cpp)
     target_link_libraries(antara_graphics_tests PRIVATE doctest PUBLIC antara::graphics)
     set_target_properties(antara_graphics_tests
             PROPERTIES
