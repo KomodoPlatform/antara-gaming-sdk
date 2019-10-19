@@ -73,6 +73,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/lua.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/box2d.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/ecs.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/resources.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/sfml.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/timer.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/input.rst

@@ -85,6 +85,13 @@ Antara Gaming Modules
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
+   * - :doc:`antara::resources<resources>`
+     - Module allowing us the manipulations of resources (textures, font, sounds)
+     - :doc:`antara::ecs<ecs>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
    * - :doc:`antara::scenes<scenes>`
      - Module allowing us the manipulation of scenes, possibility of adding, removing and changing a scene (Contains a Scene System Manager and an Abstract Scene class)
      - :doc:`antara::ecs<ecs>`
