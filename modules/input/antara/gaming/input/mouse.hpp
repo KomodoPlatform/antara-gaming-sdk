@@ -33,4 +33,6 @@ namespace antara::gaming::input
         vertical_wheel,
         horizontal_wheel
     };
+
+    bool is_mouse_button_pressed(mouse_button button) noexcept;
 }
