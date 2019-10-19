@@ -5,7 +5,7 @@ If you have not read the :doc:`getting started<getting_started>` part yet, Pleas
 
 This tutorial is divided into multiple steps to make it easier to follow.
 
-Step 0: Setup the executable and the window
+Step 1: Setup the executable and the window
 -------------------------------------------
 
 First we need a ``CMakeLists.txt`` to create and compile the executable.
@@ -14,7 +14,7 @@ In this ``CMakeLists.txt`` file we will have: name of the project, creation of t
 
 Below is the ``CMakeLists.txt`` file:
 
-.. literalinclude:: ../../../tutorials/tic-tac-toe/step_0/CMakeLists.txt
+.. literalinclude:: ../../../tutorials/tic-tac-toe/step_1/CMakeLists.txt
    :language: cmake
 
 Then we create our input file for the application and call it ``tic-tac-toe.cpp``.
@@ -72,7 +72,7 @@ The last stage of this first step is to add the graphics side of the application
 
 Now in the body of the constructor of our class tic_tac_toe_world we will load the graphic system. Then we will initialize input system with the window coming from the loaded graphic system.
 
-.. literalinclude:: ../../../tutorials/tic-tac-toe/step_0/tic-tac-toe.cpp
+.. literalinclude:: ../../../tutorials/tic-tac-toe/step_1/tic-tac-toe.cpp
    :language: cpp
 
 If you compile and run now, you should see a black window open. You can close by pressing the close button of the window:
@@ -81,10 +81,10 @@ If you compile and run now, you should see a black window open. You can close by
 
 And now, the first step is over. We have a CMakeLists.txt to be able to compile our program into a basic executable which can create a window.
 
-Step 1: The Game Scene, The Grid, Game constants
+Step 2: The Game Scene, The Grid, Game constants
 ------------------------------------------------
 
-For this second step our goal is to draw the grid of the tick toe.
+For this second step our goal is to draw the grid of Tic-Tac-Toe.
 
 The grid will look like this:
 
@@ -564,5 +564,5 @@ Now if you compile and run your program you should have the following result:
 
 Here is the complete code of the second step:
 
-.. literalinclude:: ../../../tutorials/tic-tac-toe/step_1/tic-tac-toe.cpp
+.. literalinclude:: ../../../tutorials/tic-tac-toe/step_2/tic-tac-toe.cpp
    :language: cpp
