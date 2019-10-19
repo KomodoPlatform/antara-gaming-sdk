@@ -32,3 +32,9 @@ if (ANTARA_BUILD_UNIT_TESTS)
         endif ()
     endif ()
 endif ()
+
+set(get_resources_macro_internal_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
+
+macro(get_resources_basics_assets output_dir)
+    configure_file(${get_resources_macro_internal_dir}/assets/fonts/sansation.ttf ${output_dir}/assets/fonts/sansation.ttf COPYONLY)
+endmacro()
