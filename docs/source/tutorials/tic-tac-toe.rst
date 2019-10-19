@@ -114,7 +114,7 @@ To do this we will create a game scene using the scene manager, so in order we w
 Now we are going to create the game_scene class that inherits from the base_scene class. This class will be the entry point of our game scene.
 
 The concrete class must override several functions such as update, scene_name, and the destructor.
-We will not use the update function because the tictactoe is not a game that needs an update for each frame, so we will leave the function empty.
+We will not use the update function because the Tic-Tac-Toe is not a game that needs an update for each frame, so we will leave the function empty.
 For the scene_name function we'll just return the name of the scene.
 
 .. code-block:: cpp
@@ -125,7 +125,7 @@ For the scene_name function we'll just return the name of the scene.
         game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
         {}
 
-        //! This function will not be used, because tic tac toe doesn't need an update every frame.
+        //! This function will not be used, because Tic-Tac-Toe doesn't need an update every frame.
         void update() noexcept final
         {}
 
@@ -225,7 +225,7 @@ Now we will go to the creation of our entity representing our grid, so we will a
             entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
         }
 
-        //! This function will not be used, because tic tac toe doesn't need an update every frame.
+        //! This function will not be used, because Tic-Tac-Toe doesn't need an update every frame.
         void update() noexcept final
         {}
 
@@ -268,7 +268,7 @@ Now, we call the function from the game scene constructor and we assign the retu
         //! Here i set the constants that will be used in the program
         entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
 
-        //! Here i create the grid of the tic tac toe
+        //! Here i create the grid of the Tic-Tac-Toe
         grid_entity_ = create_grid(entity_registry_);
     }
 
@@ -554,7 +554,7 @@ We will simply in the destructor of the game scene iterate over all the entities
         //! Here we iterate the collection and destroy each entities
         entity_registry_.destroy(view.begin(), view.end());
 
-        //! Here we unset the tic tac toe constants
+        //! Here we unset the Tic-Tac-Toe constants
         entity_registry_.unset<tic_tac_toe_constants>();
     }
 
