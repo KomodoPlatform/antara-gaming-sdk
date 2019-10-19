@@ -26,6 +26,19 @@
 #include "antara/gaming/sfml/input.system.hpp"
 #include "graphic.system.hpp"
 
+namespace antara::gaming::input
+{
+    bool is_key_pressed(input::key key) noexcept
+    {
+        return sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(key));
+    }
+
+    bool is_mouse_button_pressed(input::mouse_button button) noexcept
+    {
+        return sf::Mouse::isButtonPressed(static_cast<sf::Mouse::Button>(button));
+    }
+}
+
 namespace antara::gaming::sfml
 {
     input_system::input_system(entt::registry &registry, sf::RenderWindow &window) noexcept

@@ -122,4 +122,6 @@ namespace antara::gaming::input
         f15,
         pause
     };
+
+    bool is_key_pressed(input::key key) noexcept;
 }
