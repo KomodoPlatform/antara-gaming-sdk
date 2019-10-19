@@ -41,6 +41,10 @@ public:
         entity_registry.assign<transform::position_2d>(text_entity, window_size.x() * 0.5f, window_size.y() * 0.5f);
         entity_registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
         entity_registry.assign<graphics::layer<0>>(text_entity);
+
+        auto another_text_entity = graphics::blueprint_text(entity_registry, {"another text"});
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(another_text_entity);
+        entity_registry.assign<graphics::layer<0>>(another_text_entity);
     }
 
     void update() noexcept final

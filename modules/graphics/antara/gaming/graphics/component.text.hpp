@@ -16,7 +16,11 @@
 
 #pragma once
 
+#include <entt/entity/entity.hpp>
+#include <entt/entity/registry.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
+#include "antara/gaming/graphics/component.color.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 
 namespace antara::gaming::graphics
 {
@@ -31,8 +35,10 @@ namespace antara::gaming::graphics
 
     struct text
     {
-        text(const text& other) = default;
-        text& operator=(const text& other) = default;
+        text(const text &other) = default;
+
+        text &operator=(const text &other) = default;
+
         std::string contents; //! text contents
         std::size_t character_size{30ull}; //! size of each characters
         text_style style{regular}; //! style of the text
@@ -40,6 +46,11 @@ namespace antara::gaming::graphics
         float spacing_letters{1.0f}; //! spacing between letters
         const char *appearance{"sansation.ttf"}; //! font
     };
+
+    entt::entity blueprint_text(entt::registry &registry,
+                                       const text &txt,
+                                       transform::position_2d pos = math::vec2f::scalar(0.f),
+                                       fill_color txt_color = graphics::white) noexcept;
 }
 
 REFL_AUTO(type(antara::gaming::graphics::text), field(appearance), field(contents), field(style), field(character_size),

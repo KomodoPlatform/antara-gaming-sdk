@@ -204,6 +204,7 @@ namespace antara::gaming::sfml
             sf_text.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
-        sf_text.setOrigin(sf_text.getLocalBounds().width * 0.5f, static_cast<float>(sf_text.getCharacterSize()) * 0.7f);
+        //auto [left, top, width, height] = sf_text.getLocalBounds();
+        //sf_text.setOrigin(left + (width * 0.5f), top + (height * 0.5f));
     }
 }
