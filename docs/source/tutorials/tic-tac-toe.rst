@@ -1,25 +1,25 @@
 Tutorial: How to do a tic-tac-toe in less than 15 minutes with the gaming SDK ?
 ===============================================================================
 
-If you have not read the :doc:`getting started<getting_started>` part yet, I invite you to read it before reading this one.
+If you have not read the :doc:`getting started<getting_started>` part yet, Please read it before reading this one.
 
-This tutorial is divided into several steps, to help you understanding it.
+This tutorial is divided into multiple steps to make it easier to follow.
 
-Step 0: setup the executable and the window
+Step 0: Setup the executable and the window
 -------------------------------------------
 
-For this first step we need a ``CMakeLists.txt`` for creating and compiling the executable.
+First we need a ``CMakeLists.txt`` to create and compile the executable.
 
-In this ``CMakeLists.txt`` file we will have: the name of the project, the creation of the executable, the link with the SDK, the C++ standard that will be used and the extras modules that we want to use, in our case it will be the module  :doc:`antara::sfml<../modules/sfml>` provided by the **SDK**.
+In this ``CMakeLists.txt`` file we will have: name of the project, creation of the executable, link with the SDK, C++ standard that will be used and extras modules that we want to use, in our case it will be the module  :doc:`antara::sfml<../modules/sfml>` provided by the **SDK**.
 
 Below is the ``CMakeLists.txt`` file:
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_0/CMakeLists.txt
    :language: cmake
 
-Then we create our input file for the application and call it tic-tac-toe.cpp.
+Then we create our input file for the application and call it ``tic-tac-toe.cpp``.
 
-We add an empty main and a return value:
+We add an empty main function:
 
 .. code-block:: cpp
 
@@ -28,7 +28,7 @@ We add an empty main and a return value:
         return 0;
     }
 
-If you have followed well until then you should have the following tree:
+If you did everything correctly so far, you should have the following tree:
 
 .. code-block:: bash
 
@@ -36,17 +36,17 @@ If you have followed well until then you should have the following tree:
     ├── CMakeLists.txt
     └── tic-tac-toe.cpp
 
-Before continuing the tutorial check that your program compiles by referring to the build commands available in the tutorial :doc:`getting started<getting_started>`.
+Before continuing the tutorial, make sure that your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`.
 
-Now we are going to need a world representing the world of our game, to do this we need the following header file: ``#include <antara/gaming/world/world.app.hpp>``
+Now we need a world representing the world of our game, to do this we need the following header file: ``#include <antara/gaming/world/world.app.hpp>``
 
-And a basic structure that we name ``tic_tac_toe world`` that will inherit from an ``antara::gaming::world::app``.
+And a basic structure that we name ``tic_tac_toe world``. It will inherit from ``antara::gaming::world::app`` class.
 
-As well as a using namespace ``antara::gaming`` to make naming easier.
+And using namespace ``antara::gaming`` to make naming easier.
 
-Finally, we declare our new object in the body of the main function and we replace the return value with the return value of our game returned by the ``run`` function of the ``class world::app``
+Finally, we declare our new object in the body of the main function and we replace the return value with the return value of our game returned by the ``run`` function of the ``class world::app``.
 
-Which gives us the following result:
+It gives us the following result:
 
 .. code-block:: cpp
 
@@ -66,23 +66,20 @@ Which gives us the following result:
         return game.run();
     }
 
-If you compile now and start your executable you have an infinite loop and nothing that happens.
+If you compile now and run your executable, you have an infinite loop and nothing will happen.
 
-The last stage of this first step is to add the graphic side of the application, for that we will need 2 modules: ``antara::gaming::sfml::graphic_system`` and ``antara::gaming::sfml::input::system``.
-Who have the following headers, respectively: ``#include <antara/gaming/sfml/graphic.system.hpp>`` and ``#include <antara/gaming/sfml/input.system.hpp>``.
+The last stage of this first step is to add the graphics side of the application, for that we will need two modules: ``antara::gaming::sfml::graphic_system`` and ``antara::gaming::sfml::input::system`` which have these following headers, respectively: ``#include <antara/gaming/sfml/graphic.system.hpp>`` and ``#include <antara/gaming/sfml/input.system.hpp>``.
 
-Now in the body of the constructor of our class tic_tac_toe_world we will load the graphic system, then the input system with the window coming from the graphic system.
-
-Which gives us the following result:
+Now in the body of the constructor of our class tic_tac_toe_world we will load the graphic system. Then we will initialize input system with the window coming from the loaded graphic system.
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_0/tic-tac-toe.cpp
    :language: cpp
 
-If you compile now you should see a black window open that you can close by pressing the cross:
+If you compile and run now, you should see a black window open. You can close by pressing the close button of the window:
 
 .. image:: ../../assets/black_window.png
 
-And now, the first step is over. The objectives have been reached: to have a window that opens and can be closed, a basic executable and a CMakeLists.txt to be able to compile our program.
+And now, the first step is over. We have a CMakeLists.txt to be able to compile our program into a basic executable which can create a window.
 
 Step 1: The Game Scene, The Grid, Game constants
 ------------------------------------------------
