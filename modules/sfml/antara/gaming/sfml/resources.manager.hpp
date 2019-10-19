@@ -19,8 +19,9 @@
 #include <filesystem>
 #include <utility>
 #include <entt/core/hashed_string.hpp>
-#include "antara/gaming/sfml/resources.loader.hpp"
 #include "antara/gaming/core/real.path.hpp"
+#include "antara/gaming/resources/resources.system.hpp"
+#include "antara/gaming/sfml/resources.loader.hpp"
 
 namespace antara::gaming::sfml
 {
@@ -69,4 +70,6 @@ namespace antara::gaming::sfml
         sounds_cache sounds_cache_;
         fonts_cache fonts_cache_;
     };
+    
+    using resources_system = resources::system<resources_manager>;
 }

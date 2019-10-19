@@ -14,31 +14,5 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/graphics/component.layer.hpp"
-#include "antara/gaming/graphics/component.color.hpp"
-#include "antara/gaming/graphics/component.canvas.hpp"
-#include "antara/gaming/graphics/component.text.hpp"
-
-namespace antara::gaming::graphics
-{
-    using components_list = doom::meta::list<layer_0,
-            layer_1,
-            layer_2,
-            layer_3,
-            layer_4,
-            layer_5,
-            layer_6,
-            layer_7,
-            layer_8,
-            layer_9,
-            layer_10,
-            layer_11,
-            color,
-            outline_color,
-            fill_color,
-            rectangle,
-            canvas_2d>;
-}
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>

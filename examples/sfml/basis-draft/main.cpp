@@ -28,64 +28,19 @@
 #include "antara/gaming/sfml/resources.manager.hpp"
 
 class intro_scene;
-
+using namespace antara::gaming;
 class game_scene final : public antara::gaming::scenes::base_scene
 {
 public:
-
     game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
-        auto handle = resource_mgr.load_font("sansation.ttf");
-        //! Construct dummy entity
-        auto window_info = entity_registry_.ctx<sf::RenderTexture>().getSize();
-        auto dummy_entity = entity_registry_.create();
-        auto &txt_cmp = entity_registry_.assign<antara::gaming::sfml::text>(dummy_entity,
-                                                                            sf::Text("Game scene", handle.get()));
-        sf::Text &txt = txt_cmp.drawable;
-        txt.setFillColor(sf::Color::Blue);
-        txt.setOrigin(txt.getLocalBounds().width / 2.0f, txt.getLocalBounds().height / 2.0f);
-        this->entity_registry_.assign<antara::gaming::transform::position_2d>(dummy_entity,
-                                                                                static_cast<float>(window_info.x) /
-                                                                                2.f,
-                                                                                static_cast<float>(window_info.y) /
-                                                                                2.f);
-        entity_registry_.assign<entt::tag<"game_scene"_hs>>(dummy_entity);
-        this->entity_registry_.assign<antara::gaming::graphics::layer<0>>(dummy_entity);
-
-
-        auto triangle_entity = entity_registry.create();
-        auto &triangle_cmp = entity_registry.assign<antara::gaming::sfml::vertex_array>(triangle_entity,
-                                                                                        sf::VertexArray(sf::Triangles,
-                                                                                                        3));
-        sf::VertexArray &triangle = triangle_cmp.drawable;
-        triangle[0].position = sf::Vector2f(10, 10);
-        triangle[1].position = sf::Vector2f(100, 10);
-        triangle[2].position = sf::Vector2f(100, 100);
-        triangle[0].color = sf::Color::Red;
-        triangle[1].color = sf::Color::Blue;
-        triangle[2].color = sf::Color::Green;
-
-        entity_registry_.assign<entt::tag<"game_scene"_hs>>(triangle_entity);
-        this->entity_registry_.assign<antara::gaming::graphics::layer<0>>(triangle_entity);
-
-        auto cross_entity = entity_registry.create();
-        auto &cross_cmp = entity_registry.assign<antara::gaming::sfml::vertex_array>(cross_entity,
-                                                                                     sf::VertexArray(sf::Lines, 16));
-        sf::VertexArray &lines = cross_cmp.drawable;
-
-        auto nb_cells = 3u;
-        auto cell_width = window_info.x / nb_cells;
-        auto cell_height = window_info.y / nb_cells;
-
-        for (std::size_t counter = 0, i = 0; i < nb_cells; ++i, counter += 4) {
-            lines[counter].position = sf::Vector2f(i * cell_width, 0);
-            lines[counter + 1].position = sf::Vector2f(i * cell_width, window_info.y);
-            lines[counter + 2].position = sf::Vector2f(0, i * cell_height);
-            lines[counter + 3].position = sf::Vector2f(window_info.x, i * cell_height);
-        }
-
-        entity_registry_.assign<entt::tag<"game_scene"_hs>>(cross_entity);
-        this->entity_registry_.assign<antara::gaming::graphics::layer<0>>(cross_entity);
+        auto& window_size = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
+        auto text_entity = entity_registry.create();
+        entity_registry.assign<graphics::fill_color>(text_entity, graphics::green);
+        entity_registry.assign<graphics::text>(text_entity, "Game scene", 144ull);
+        entity_registry.assign<transform::position_2d>(text_entity, window_size.x() * 0.5f, window_size.y() * 0.5f);
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
+        entity_registry.assign<graphics::layer<0>>(text_entity);
     }
 
     void update() noexcept final
@@ -115,7 +70,7 @@ public:
     }
 
 private:
-    antara::gaming::sfml::resources_manager resource_mgr;
+    //antara::gaming::sfml::resources_manager resource_mgr;
 };
 
 class my_world : public antara::gaming::world::app
@@ -124,6 +79,7 @@ public:
     my_world() noexcept
     {
         auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
+        this->entity_registry_.set<antara::gaming::sfml::resources_system>(this->entity_registry_);
         this->system_manager_.create_system<antara::gaming::sfml::audio_system>();
         this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
         auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
