@@ -50,5 +50,6 @@ namespace antara::gaming::resources::tests
         CHECK_EQ(resources_system.load_font("sensation.ttf"), "sensation.ttf");
         CHECK_EQ(resources_system.load_sound("sound.wav"), "sound.wav");
         CHECK_EQ(resources_system.load_texture("picture.png"), "picture.png");
+        resources_system.update();
     }
 }
