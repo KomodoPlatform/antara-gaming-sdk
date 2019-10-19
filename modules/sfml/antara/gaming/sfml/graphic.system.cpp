@@ -22,9 +22,11 @@
 #include "antara/gaming/geometry/component.vertex.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
+#include "antara/gaming/graphics/component.text.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
+#include "resources.manager.hpp"
 
 namespace antara::gaming::sfml
 {
@@ -33,6 +35,9 @@ namespace antara::gaming::sfml
         this->dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
         this->entity_registry_.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(
                 *this);
+
+        this->entity_registry_.on_construct<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
+
         this->entity_registry_.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(
                 *this);
         this->entity_registry_.on_construct<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(
@@ -166,5 +171,39 @@ namespace antara::gaming::sfml
             return true;
         }
         return false;
+    }
+
+    void graphic_system::on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept
+    {
+        auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+        auto handle = resources_system.load_font(text.appearance);
+        sf::Text &sf_text = registry.assign_or_replace<sfml::text>(entity, sf::Text(text.contents, handle.get(),
+                                                                                    text.character_size)).drawable;
+
+        sf_text.setLineSpacing(text.spacing_lines);
+        sf_text.setLetterSpacing(text.spacing_letters);
+        switch (text.style) {
+            case graphics::regular:
+                sf_text.setStyle(sf::Text::Regular);
+                break;
+            case graphics::bold:
+                sf_text.setStyle(sf::Text::Bold);
+                break;
+            case graphics::italic:
+                sf_text.setStyle(sf::Text::Italic);
+                break;
+            case graphics::underlined:
+                sf_text.setStyle(sf::Text::Underlined);
+                break;
+            case graphics::strike_through:
+                sf_text.setStyle(sf::Text::StrikeThrough);
+                break;
+        }
+
+        if (auto fill_color = registry.try_get<graphics::fill_color>(entity); fill_color != nullptr) {
+            sf_text.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
+        }
+
+        sf_text.setOrigin(sf_text.getLocalBounds().width * 0.5f, static_cast<float>(sf_text.getCharacterSize()) * 0.7f);
     }
 }

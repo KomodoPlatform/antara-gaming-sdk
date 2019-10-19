@@ -16,29 +16,31 @@
 
 #pragma once
 
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/graphics/component.layer.hpp"
-#include "antara/gaming/graphics/component.color.hpp"
-#include "antara/gaming/graphics/component.canvas.hpp"
-#include "antara/gaming/graphics/component.text.hpp"
+#include "antara/gaming/core/safe.refl.hpp"
 
 namespace antara::gaming::graphics
 {
-    using components_list = doom::meta::list<layer_0,
-            layer_1,
-            layer_2,
-            layer_3,
-            layer_4,
-            layer_5,
-            layer_6,
-            layer_7,
-            layer_8,
-            layer_9,
-            layer_10,
-            layer_11,
-            color,
-            outline_color,
-            fill_color,
-            rectangle,
-            canvas_2d>;
+    enum text_style : int
+    {
+        regular,
+        bold,
+        italic,
+        underlined,
+        strike_through
+    };
+
+    struct text
+    {
+        text(const text& other) = default;
+        text& operator=(const text& other) = default;
+        std::string contents; //! text contents
+        std::size_t character_size{30ull}; //! size of each characters
+        text_style style{regular}; //! style of the text
+        float spacing_lines{1.0f}; //! spacing between lines
+        float spacing_letters{1.0f}; //! spacing between letters
+        const char *appearance{"sansation.ttf"}; //! font
+    };
 }
+
+REFL_AUTO(type(antara::gaming::graphics::text), field(appearance), field(contents), field(style), field(character_size),
+          field(spacing_lines), field(spacing_letters))

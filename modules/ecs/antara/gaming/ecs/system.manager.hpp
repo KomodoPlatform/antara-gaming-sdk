@@ -714,6 +714,7 @@ namespace antara::gaming::ecs
             return std::make_unique<TSystem>(this->entity_registry_,
                                              std::forward<decltype(args_)>(args_)...);
         };
+        
         system_ptr sys = creator(std::forward<TSystemArgs>(args)...);
         return static_cast<TSystem &>(add_system_(std::move(sys), TSystem::get_system_type()));
     }
