@@ -807,4 +807,9 @@ In the constructor of the game_scene we defined before, we create the board and 
     //! Create our logic game system and give the fresh grid entity and the fresh board.
     this->system_manager_.create_system<tic_tac_toe_logic>(grid_entity, board);
 
-Game logic, board and x o themselves, all of them are now complete.
+Game logic, board and XO, all of them are now complete.
+
+Here is the complete code of the third step:
+
+.. literalinclude:: ../../../tutorials/tic-tac-toe/step_3/tic-tac-toe.cpp
+   :language: cpp
