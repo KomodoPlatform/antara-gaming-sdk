@@ -17,28 +17,42 @@
 #pragma once
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-    #include <sol/sol.hpp>
+
+#include <sol/sol.hpp>
+
 #endif
+
+#include <entt/entity/entity.hpp>
+#include <entt/entity/registry.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/event/event.invoker.hpp"
+#include "antara/gaming/graphics/component.color.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 
 namespace antara::gaming::geometry
 {
     struct circle
     {
-        static constexpr const event::invoker_dispatcher<circle, float> invoker{};
-
         circle(float radius_) noexcept;
-        circle(const circle& other) noexcept = default;
+
+        circle(const circle &other) noexcept = default;
+
         circle() noexcept;
-        circle& operator=(const circle& other) noexcept = default;
+
+        circle &operator=(const circle &other) noexcept = default;
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<circle(), circle(const circle& other), circle(float radius)>;
+        using constructors = sol::constructors<circle(), circle(const circle &other), circle(float radius)>;
 #endif
 
         float radius{0.f};
     };
+
+    entt::entity blueprint_circle(
+            entt::registry &registry,
+            float radius,
+            graphics::fill_color fill_color = graphics::white,
+            transform::position_2d pos = math::vec2f::scalar(0.f),
+            graphics::outline_color out_color = graphics::transparent) noexcept;
 }
 
 REFL_AUTO(type(antara::gaming::geometry::circle), field(radius));
