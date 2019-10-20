@@ -32,5 +32,12 @@ namespace antara::gaming::geometry::tests
             geometry::circle c_circle{42.0f};
             CHECK_EQ(c_circle.radius, 42.0f);
         }
+
+        TEST_CASE("blueprint circle")
+        {
+
+            entt::registry entity_registry;
+            CHECK(entity_registry.valid(geometry::blueprint_circle(entity_registry, 30.f)));
+        }
     }
 }

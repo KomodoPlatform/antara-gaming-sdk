@@ -38,8 +38,9 @@ namespace antara::gaming::transform
         position_2d() noexcept = default;
 
         position_2d(const position_2d &other) noexcept = default;
+        position_2d& operator=(const position_2d &other) noexcept = default;
 
-        position_2d(math::vec2f pos) noexcept : math::vec2f(std::move(pos))
+        position_2d(math::vec2f pos) noexcept : math::vec2f(pos)
         {
         }
 

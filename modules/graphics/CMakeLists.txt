@@ -1,8 +1,8 @@
 ## shared sources between the module and his unit tests
-add_library(antara_graphics_shared_sources INTERFACE)
-#target_sources(antara_graphics_shared_sources PRIVATE )
-target_include_directories(antara_graphics_shared_sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_graphics_shared_sources INTERFACE antara::default_settings antara::event range-v3 antara::math)
+add_library(antara_graphics_shared_sources STATIC)
+target_sources(antara_graphics_shared_sources PRIVATE antara/gaming/graphics/component.text.cpp)
+target_include_directories(antara_graphics_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_graphics_shared_sources PUBLIC antara::default_settings antara::event range-v3 antara::math)
 add_library(antara::graphics ALIAS antara_graphics_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)
@@ -10,7 +10,8 @@ if (ANTARA_BUILD_UNIT_TESTS)
     add_executable(antara_graphics_tests)
     target_sources(antara_graphics_tests PUBLIC
             antara/gaming/graphics/antara.graphics.tests.cpp
-            antara/gaming/graphics/antara.graphics.component.color.tests.cpp)
+            antara/gaming/graphics/antara.graphics.component.color.tests.cpp
+            antara/gaming/graphics/antara.graphics.component.text.cpp)
     target_link_libraries(antara_graphics_tests PRIVATE doctest PUBLIC antara::graphics)
     set_target_properties(antara_graphics_tests
             PROPERTIES

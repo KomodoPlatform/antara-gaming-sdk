@@ -14,28 +14,27 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/geometry/component.circle.hpp"
+#pragma once
 
-namespace antara::gaming::geometry
+#include "antara/gaming/core/safe.refl.hpp"
+#include "antara/gaming/math/vector.hpp"
+
+namespace antara::gaming::graphics
 {
-    circle::circle(float radius_) noexcept : radius(radius_)
+    struct rect
     {
+        math::vec2f pos;
+        math::vec2f size;
+    };
 
-    }
-
-    circle::circle() noexcept : radius(0.f)
+    struct sprite
     {
-
-    }
-
-    entt::entity blueprint_circle(entt::registry &registry, float radius, graphics::fill_color fill_color,
-                                  transform::position_2d pos, graphics::outline_color out_color) noexcept
-    {
-        auto circle_entity = registry.create();
-        registry.assign<graphics::fill_color>(circle_entity, fill_color);
-        registry.assign<graphics::outline_color>(circle_entity, out_color);
-        registry.assign<geometry::circle>(circle_entity, radius);
-        registry.assign<transform::position_2d>(circle_entity, pos);
-        return circle_entity;
-    }
+        const char* appearance; //! texture id
+        bool native_size{true}; //! take the whole size by default
+        rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
+    };
 }
+
+REFL_AUTO(type(antara::gaming::graphics::rect), field(pos), field(size))
+REFL_AUTO(type(antara::gaming::graphics::sprite), field(appearance), field(native_size), field(texture_rec))
+

@@ -38,4 +38,5 @@ if (WIN32)
             )
 endif ()
 
+get_resources_basics_assets(${CMAKE_CURRENT_SOURCE_DIR})
 get_sfml_intro_assets(${CMAKE_CURRENT_SOURCE_DIR})

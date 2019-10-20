@@ -14,28 +14,17 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/geometry/component.circle.hpp"
+#include "antara/gaming/graphics/component.text.hpp"
 
-namespace antara::gaming::geometry
+namespace antara::gaming::graphics
 {
-    circle::circle(float radius_) noexcept : radius(radius_)
+    entt::entity blueprint_text(entt::registry &registry, const text &txt, const transform::position_2d pos,
+                                fill_color txt_color) noexcept
     {
-
-    }
-
-    circle::circle() noexcept : radius(0.f)
-    {
-
-    }
-
-    entt::entity blueprint_circle(entt::registry &registry, float radius, graphics::fill_color fill_color,
-                                  transform::position_2d pos, graphics::outline_color out_color) noexcept
-    {
-        auto circle_entity = registry.create();
-        registry.assign<graphics::fill_color>(circle_entity, fill_color);
-        registry.assign<graphics::outline_color>(circle_entity, out_color);
-        registry.assign<geometry::circle>(circle_entity, radius);
-        registry.assign<transform::position_2d>(circle_entity, pos);
-        return circle_entity;
+        auto text_entity = registry.create();
+        registry.assign<fill_color>(text_entity, txt_color);
+        registry.assign<text>(text_entity, txt);
+        registry.assign<transform::position_2d>(text_entity, pos);
+        return text_entity;
     }
 }
