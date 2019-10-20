@@ -16,6 +16,8 @@
 
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
+#include <antara/gaming/event/key.pressed.hpp>
+#include <meta/detection/detection.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -23,11 +25,36 @@
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "resources.manager.hpp"
 
+namespace
+{
+    using namespace antara::gaming;
+
+    template<typename TSFMLEntity>
+    void fill_properties_sfml_entity(entt::registry &registry, entt::entity entity,
+                                     TSFMLEntity &underlying_entity) noexcept
+    {
+        if (auto properties = registry.try_get<transform::properties>(entity); properties != nullptr) {
+            auto[scale_x, scale_y] = (*properties).scale;
+            underlying_entity.setScale(scale_x, scale_y);
+            underlying_entity.setRotation(properties->rotation);
+            auto[l_left, l_top, l_width, l_height] = underlying_entity.getLocalBounds();
+            auto &local_bounds = (*properties).local_bounds;
+            local_bounds.size = math::vec2f{l_width, l_height};
+            local_bounds.pos = math::vec2f{l_left, l_top};
+            auto[g_left, g_top, g_width, g_height] =  underlying_entity.getGlobalBounds();
+            auto &global_bounds = (*properties).global_bounds;
+            global_bounds.size = math::vec2f{g_width, g_height};
+            global_bounds.pos = math::vec2f{g_left, g_top};
+        }
+    }
+}
+
 namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
         dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
+        dispatcher_.sink<event::key_pressed>().connect<&graphic_system::on_key_pressed>(*this);
         registry.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
         registry.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
         registry.on_construct<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
@@ -82,6 +109,18 @@ namespace antara::gaming::sfml
     {
         this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().less(
                 [this](auto &&drawable) {
+                    if constexpr (doom::meta::is_detected_v<have_global_bounds, DrawableType>) {
+                        if (this->debug_mode_) {
+                            auto[left, top, width, height] = drawable.drawable.getGlobalBounds();
+                            sf::RectangleShape shape_debug(sf::Vector2f(width, height));
+                            shape_debug.setRotation(drawable.drawable.getRotation());
+                            shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
+                            shape_debug.setOutlineThickness(3.0f);
+                            shape_debug.setOutlineColor(sf::Color::Red);
+                            shape_debug.setPosition(left, top);
+                            this->render_texture_.draw(shape_debug);
+                        }
+                    }
                     this->render_texture_.draw(drawable.drawable);
                 });
     }
@@ -122,6 +161,10 @@ namespace antara::gaming::sfml
         if (auto fill_color = registry.try_get<graphics::fill_color>(entity); fill_color != nullptr) {
             sfml_circle.drawable.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
+
+        fill_properties_sfml_entity(entity_registry_, entity, sfml_circle.drawable);
+
+        sfml_circle.drawable.setOrigin(sfml_circle.drawable.getRadius(), sfml_circle.drawable.getRadius());
     }
 
     void graphic_system::on_vertex_array_construct(entt::entity entity, entt::registry &registry,
@@ -196,6 +239,22 @@ namespace antara::gaming::sfml
             sf_text.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
+        if (auto properties = registry.try_get<transform::properties>(entity); properties != nullptr) {
+            auto[scale_x, scale_y] = (*properties).scale;
+            sf_text.setScale(scale_x, scale_y);
+            sf_text.setRotation(properties->rotation);
+            auto[l_left, l_top, l_width, l_height] = sf_text.getLocalBounds();
+            auto &local_bounds = (*properties).local_bounds;
+            local_bounds.size = math::vec2f{l_width, l_height};
+            local_bounds.pos = math::vec2f{l_left, l_top};
+            auto[g_left, g_top, g_width, g_height] = sf_text.getGlobalBounds();
+            auto &global_bounds = (*properties).global_bounds;
+            global_bounds.size = math::vec2f{g_width, g_height};
+            global_bounds.pos = math::vec2f{g_left, g_top};
+        }
+
+        fill_properties_sfml_entity(entity_registry_, entity, sf_text);
+
         //auto [left, top, width, height] = sf_text.getLocalBounds();
         //sf_text.setOrigin(left + (width * 0.5f), top + (height * 0.5f));
     }
@@ -206,6 +265,7 @@ namespace antara::gaming::sfml
         auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto handle = resources_system.load_texture(spr.appearance);
         sf::Sprite &native_sprite = registry.assign<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
+
         if (not spr.native_size) {
             auto[left, top] = spr.texture_rec.pos;
             auto[width, height] = spr.texture_rec.size;
@@ -216,7 +276,16 @@ namespace antara::gaming::sfml
             native_sprite.setColor(sf::Color(r, g, b, a));
         }
 
+        fill_properties_sfml_entity(entity_registry_, entity, native_sprite);
+
         native_sprite.setOrigin(native_sprite.getLocalBounds().width * 0.5f,
                                 native_sprite.getLocalBounds().height * 0.5f);
+    }
+
+    void graphic_system::on_key_pressed(const event::key_pressed &evt) noexcept
+    {
+        if (evt.key == input::key::f4) {
+            debug_mode_ = !debug_mode_;
+        }
     }
 }
