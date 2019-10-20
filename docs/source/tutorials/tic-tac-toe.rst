@@ -666,9 +666,9 @@ To create the O, we create an entity first. Then assign it as a Circle, ``geomet
 .. code-block:: cpp
 
     auto o_entity = entity_registry.create();
-    entity_registry.assign<geometry::circle>(o_entity, half_box_side);
     entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
     entity_registry.assign<graphics::outline_color>(o_entity, constants.grid_thickness, graphics::cyan);
+    entity_registry.assign<geometry::circle>(o_entity, half_box_side);
     entity_registry.assign<transform::position_2d>(o_entity,
                                                     center_x,
                                                     center_y);
