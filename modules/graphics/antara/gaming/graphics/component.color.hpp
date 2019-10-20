@@ -95,10 +95,10 @@ namespace antara::gaming::graphics
 
     struct outline_color : color
     {
-        template<typename ... TArgs>
-        constexpr outline_color(TArgs &&...args) noexcept : graphics::color(std::forward<TArgs>(args)...)
+        constexpr outline_color() noexcept = default;
+        constexpr outline_color(const graphics::color& other) noexcept : graphics::color(other)
         {
-
+            *this = static_cast<const graphics::outline_color &>(other);
         }
 
         template<typename ... TArgs>
