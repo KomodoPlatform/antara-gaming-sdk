@@ -18,6 +18,7 @@
 #include "antara/gaming/world/world.app.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
+#include "antara/gaming/graphics/component.sprite.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
@@ -28,13 +29,15 @@
 #include "antara/gaming/sfml/resources.manager.hpp"
 
 class intro_scene;
+
 using namespace antara::gaming;
+
 class game_scene final : public antara::gaming::scenes::base_scene
 {
 public:
     game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
-        auto& window_size = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
+        auto &window_size = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
         auto text_entity = entity_registry.create();
         entity_registry.assign<graphics::fill_color>(text_entity, graphics::green);
         entity_registry.assign<graphics::text>(text_entity, "Game scene", 144ull);
@@ -45,6 +48,11 @@ public:
         auto another_text_entity = graphics::blueprint_text(entity_registry, {"another text"});
         entity_registry.assign<entt::tag<"game_scene"_hs>>(another_text_entity);
         entity_registry.assign<graphics::layer<0>>(another_text_entity);
+
+        auto sprite_entity = entity_registry.create();
+        entity_registry.assign<graphics::sprite>(sprite_entity, "tileSand1.png");
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(sprite_entity);
+        entity_registry.assign<graphics::layer<0>>(sprite_entity);
     }
 
     void update() noexcept final

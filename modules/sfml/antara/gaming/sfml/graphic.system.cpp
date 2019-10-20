@@ -18,34 +18,26 @@
 #include <range/v3/view/zip.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
-#include "antara/gaming/transform/component.position.hpp"
-#include "antara/gaming/geometry/component.vertex.hpp"
-#include "antara/gaming/graphics/component.color.hpp"
-#include "antara/gaming/graphics/component.layer.hpp"
-#include "antara/gaming/graphics/component.text.hpp"
-#include "antara/gaming/geometry/component.circle.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
+#include "antara/gaming/graphics/component.layer.hpp"
 #include "resources.manager.hpp"
 
 namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
-        this->dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
-        this->entity_registry_.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(
-                *this);
-
-        this->entity_registry_.on_construct<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
-
-        this->entity_registry_.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(
-                *this);
-        this->entity_registry_.on_construct<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(
-                *this);
-        this->entity_registry_.on_replace<geometry::vertex_array>().connect<&graphic_system::on_geometry_vertex_array_construct>(
-                *this);
-        this->entity_registry_.on_construct<geometry::circle>().connect<&graphic_system::on_geometry_circle_construct>(
-                *this);
+        dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
+        registry.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
+        registry.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
+        registry.on_construct<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
+        registry.on_replace<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
+        registry.on_construct<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
+        registry.on_replace<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
+        registry.on_construct<geometry::vertex_array>().connect<&graphic_system::on_vertex_array_construct>(*this);
+        registry.on_replace<geometry::vertex_array>().connect<&graphic_system::on_vertex_array_construct>(*this);
+        registry.on_construct<geometry::circle>().connect<&graphic_system::on_circle_construct>(*this);
+        registry.on_replace<geometry::circle>().connect<&graphic_system::on_circle_construct>(*this);
         refresh_render_texture();
     }
 
@@ -117,11 +109,11 @@ namespace antara::gaming::sfml
         this->dispatcher_.trigger<event::canvas_resized>();
     }
 
-    void graphic_system::on_geometry_circle_construct(entt::entity entity,
-                                                      entt::registry &registry,
-                                                      geometry::circle &circle) noexcept
+    void graphic_system::on_circle_construct(entt::entity entity,
+                                             entt::registry &registry,
+                                             geometry::circle &circle) noexcept
     {
-        auto &sfml_circle = registry.assign<sfml::circle>(entity, sf::CircleShape(circle.radius));
+        auto &sfml_circle = registry.assign_or_replace<sfml::circle>(entity, sf::CircleShape(circle.radius));
         if (auto out_color = registry.try_get<graphics::outline_color>(entity); out_color != nullptr) {
             sfml_circle.drawable.setOutlineColor(sf::Color(out_color->r, out_color->g, out_color->b, out_color->a));
             sfml_circle.drawable.setOutlineThickness(out_color->thickness);
@@ -132,8 +124,8 @@ namespace antara::gaming::sfml
         }
     }
 
-    void graphic_system::on_geometry_vertex_array_construct(entt::entity entity, entt::registry &registry,
-                                                            geometry::vertex_array &cmp_vertex_array) noexcept
+    void graphic_system::on_vertex_array_construct(entt::entity entity, entt::registry &registry,
+                                                   geometry::vertex_array &cmp_vertex_array) noexcept
     {
         auto &sf_vertex_array = registry.assign_or_replace<sfml::vertex_array>(entity, sf::VertexArray(
                 static_cast<sf::PrimitiveType>(cmp_vertex_array.geometry_type),
@@ -206,5 +198,25 @@ namespace antara::gaming::sfml
 
         //auto [left, top, width, height] = sf_text.getLocalBounds();
         //sf_text.setOrigin(left + (width * 0.5f), top + (height * 0.5f));
+    }
+
+    void
+    graphic_system::on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept
+    {
+        auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+        auto handle = resources_system.load_texture(spr.appearance);
+        sf::Sprite &native_sprite = registry.assign<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
+        if (not spr.native_size) {
+            auto[left, top] = spr.texture_rec.pos;
+            auto[width, height] = spr.texture_rec.size;
+            native_sprite.setTextureRect(sf::IntRect(left, top, width, height));
+        }
+        if (auto fill_color = registry.try_get<graphics::fill_color>(entity); fill_color != nullptr) {
+            auto[r, g, b, a] = *fill_color;
+            native_sprite.setColor(sf::Color(r, g, b, a));
+        }
+
+        native_sprite.setOrigin(native_sprite.getLocalBounds().width * 0.5f,
+                                native_sprite.getLocalBounds().height * 0.5f);
     }
 }

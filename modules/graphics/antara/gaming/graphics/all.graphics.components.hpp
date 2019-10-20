@@ -21,6 +21,7 @@
 #include "antara/gaming/graphics/component.color.hpp"
 #include "antara/gaming/graphics/component.canvas.hpp"
 #include "antara/gaming/graphics/component.text.hpp"
+#include "antara/gaming/graphics/component.sprite.hpp"
 
 namespace antara::gaming::graphics
 {
@@ -40,5 +41,7 @@ namespace antara::gaming::graphics
             outline_color,
             fill_color,
             rectangle,
-            canvas_2d>;
+            canvas_2d,
+            rect,
+            sprite>;
 }
