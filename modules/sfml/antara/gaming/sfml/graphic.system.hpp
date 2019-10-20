@@ -20,11 +20,13 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <antara/gaming/geometry/component.vertex.hpp>
-#include <antara/gaming/graphics/component.canvas.hpp>
-#include <antara/gaming/graphics/component.text.hpp>
-#include <antara/gaming/graphics/component.sprite.hpp>
-#include "meta/sequence/list.hpp"
+#include <meta/sequence/list.hpp>
+#include "antara/gaming/transform/component.properties.hpp"
+#include "antara/gaming/geometry/component.vertex.hpp"
+#include "antara/gaming/graphics/component.canvas.hpp"
+#include "antara/gaming/graphics/component.text.hpp"
+#include "antara/gaming/graphics/component.sprite.hpp"
+#include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
@@ -32,6 +34,9 @@
 
 namespace antara::gaming::sfml
 {
+    template <typename T>
+    using have_global_bounds = decltype(std::declval<T&>().drawable.getGlobalBounds());
+
     class graphic_system final : public ecs::post_update_system<graphic_system>
     {
     public:
@@ -62,6 +67,7 @@ namespace antara::gaming::sfml
         sf::RenderWindow &get_window() noexcept;
 
         //! Callback
+        void on_key_pressed(const event::key_pressed& evt) noexcept;
         void on_window_resized_event(const event::window_resized &evt) noexcept;
         void on_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
         void on_position_2d_construct(entt::entity entity, entt::registry &registry, transform::position_2d &pos) noexcept;
@@ -69,6 +75,7 @@ namespace antara::gaming::sfml
         void on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept;
         void on_vertex_array_construct(entt::entity entity, entt::registry &registry, geometry::vertex_array &cmp_vertex_array) noexcept;
     private:
+        bool debug_mode_{false};
         graphics::canvas_2d &canvas_{entity_registry_.ctx<graphics::canvas_2d>()};
         sf::RenderWindow window_{sf::VideoMode(canvas_.window.size.x(), canvas_.window.size.y()),
                                  canvas_.window_title, canvas_.is_fullscreen
