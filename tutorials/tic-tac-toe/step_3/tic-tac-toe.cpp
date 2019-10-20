@@ -143,13 +143,9 @@ namespace
         const auto center_x = static_cast<float>(constants.cell_width * 0.5 + column * constants.cell_width);
         const auto center_y = static_cast<float>(constants.cell_height * 0.5 + row * constants.cell_height);
 
-        auto o_entity = entity_registry.create();
-        entity_registry.assign<geometry::circle>(o_entity, half_box_side);
-        entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
-        entity_registry.assign<graphics::outline_color>(o_entity, constants.grid_thickness, graphics::cyan);
-        entity_registry.assign<transform::position_2d>(o_entity,
-                                                       center_x,
-                                                       center_y);
+        auto o_entity = geometry::blueprint_circle(entity_registry, half_box_side, graphics::transparent,
+                transform::position_2d(center_x, center_y),
+                graphics::outline_color(constants.grid_thickness, graphics::cyan));
 
         entity_registry.assign<entt::tag<"game_scene"_hs>>(o_entity);
         entity_registry.assign<graphics::layer<1>>(o_entity);
