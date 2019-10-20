@@ -566,3 +566,245 @@ Here is the complete code of the second step:
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_2/tic-tac-toe.cpp
    :language: cpp
+
+Step 3: Create Board and X O, Game Logic
+----------------------------------------
+
+First we need ``cell_state`` to tell if the cell is empty, marked x or y. It's good to name these with ``enum``.
+
+.. code-block:: cpp
+
+    enum cell_state
+    {
+        empty,
+        player_x = 1,
+        player_y = 2
+    };
+
+Now we will create the board which is ``3x3``. We store value ``3`` in ``nb_cells_per_axis`` so we will use that. Board is a ``vector`` of 9 ``cell_state`` instances and all of them are marked as empty.
+
+.. code-block:: cpp
+
+    std::vector<cell_state> create_board(std::size_t nb_cells_per_axis)
+    {
+        std::vector<cell_state> board(nb_cells_per_axis * nb_cells_per_axis, cell_state::empty);
+        return board;
+    }
+
+We also need to display X and O, let's prepare X first. Function will have ``row`` and ``column`` parameters. 
+
+.. code-block:: cpp
+
+    void create_x(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept
+
+Now we get the constants like ``nb_cells``, ``cell_width``, ``cell_height`` and ``grid_thickness``. Then create other helpful constants as ``half_box_side``, ``center_x``, ``center_y`` which is the center position of that specific cell.
+
+.. code-block:: cpp
+
+    auto[nb_cells, cell_width, cell_height, grid_thickness] = entity_registry.ctx<tic_tac_toe_constants>();
+    const auto half_box_side = static_cast<float>(std::fmin(cell_width, cell_height) * 0.25f);
+    const auto center_x = static_cast<float>(cell_width * 0.5 + column * cell_width);
+    const auto center_y = static_cast<float>(cell_height * 0.5 + row * cell_height);
+
+We can make a X with two lines. Just like in Step 2, every line is a quad which has 4 vertices.
+
+.. code-block:: cpp
+
+    auto x_entity = entity_registry.create();
+    std::vector<geometry::vertex> lines{2 * 4};
+
+X will have magenta color. We need to set every vertex color for it.
+
+.. code-block:: cpp
+
+    for (auto &&current_vertex: lines) current_vertex.pixel_color = graphics::magenta;
+
+Again, just like in Step 2, we set the position of every single vertex. Order is Top Left, Top Right, Bottom Left, Bottom Right.
+
+.. code-block:: cpp
+
+    // Top-left to Bottom-right
+    lines[0].pos = {center_x - half_box_side - half_thickness, center_y - half_box_side};
+    lines[1].pos = {center_x - half_box_side + half_thickness, center_y - half_box_side};
+    lines[2].pos = {center_x + half_box_side + half_thickness, center_y + half_box_side};
+    lines[3].pos = {center_x + half_box_side - half_thickness, center_y + half_box_side};
+
+
+    // Top-right to Bottom-left
+    lines[4].pos = {center_x + half_box_side - half_thickness, center_y - half_box_side};
+    lines[5].pos = {center_x + half_box_side + half_thickness, center_y - half_box_side};
+    lines[6].pos = {center_x - half_box_side + half_thickness, center_y + half_box_side};
+    lines[7].pos = {center_x - half_box_side - half_thickness, center_y + half_box_side};
+
+Create a ``geometry::vertex_array`` out of it.
+
+.. code-block:: cpp
+
+    entity_registry.assign<geometry::vertex_array>(x_entity, lines, geometry::vertex_geometry_type::quads);
+
+Assign this X entity as ``player_x`` and ``game_scene``. Then set layer 1, because layer 0 is the background. X and O needs to render in front.
+
+.. code-block:: cpp
+
+    entity_registry.assign<entt::tag<"game_scene"_hs>>(x_entity);
+    entity_registry.assign<entt::tag<"player_x"_hs>>(x_entity);
+    entity_registry.assign<graphics::layer<1>>(x_entity);
+
+Now X is complete and it's turn of O. First part is same as X.
+
+.. code-block:: cpp
+
+    void create_o(entt::registry &entity_registry, std::size_t row, std::size_t column) noexcept
+    {
+        auto constants = entity_registry.ctx<tic_tac_toe_constants>();
+        const auto half_box_side = static_cast<float>(std::fmin(constants.cell_width, constants.cell_height) * 0.25f);
+        const auto center_x = static_cast<float>(constants.cell_width * 0.5 + column * constants.cell_width);
+        const auto center_y = static_cast<float>(constants.cell_height * 0.5 + row * constants.cell_height);
+
+To create the O, we create an entity first. Then assign it as a Circle, ``geometry::circle``. After that, set the ``fill_color`` and ``outline_color``. And finally set the entity position to center of the cell.
+
+.. code-block:: cpp
+
+    auto o_entity = entity_registry.create();
+    entity_registry.assign<geometry::circle>(o_entity, half_box_side);
+    entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
+    entity_registry.assign<graphics::outline_color>(o_entity, constants.grid_thickness, graphics::cyan);
+    entity_registry.assign<transform::position_2d>(o_entity,
+                                                    center_x,
+                                                    center_y);
+
+Last part is same as X, assigning to ``game_scene`` and set layer 1.
+
+.. code-block:: cpp
+
+    entity_registry.assign<entt::tag<"game_scene"_hs>>(o_entity);
+    entity_registry.assign<graphics::layer<1>>(o_entity);
+
+Now the last part, we need to create a ecs::logic_update_system, we call it ``tic_tac_toe_logic``.
+
+.. code-block:: cpp
+
+    class tic_tac_toe_logic final : public ecs::logic_update_system<tic_tac_toe_logic>
+    {
+    public:
+        ~tic_tac_toe_logic() noexcept final = default;
+
+        void update() noexcept final
+        {}
+
+As you see above, we don't do anything in update function because Tic-Tac-Toe is a passive game. We need to update only when mouse is clicked. But first let's define the ``play_turn`` function.
+
+.. code-block:: cpp
+
+    //! Game logic
+    void play_turn(std::size_t row, std::size_t column) noexcept
+
+We turn row and column to index. 
+
+.. code-block:: cpp
+
+    //! Retrieve constants
+    auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
+
+    //! Which cell is clicked ?
+    std::size_t index = row * constants.nb_cells_per_axis + column;
+
+
+Then we make sure that index is inside the board and the clicked cell is empty. If so, we set the board as the current ``player_turn_``. If it's X, we call ``create_x`` else we call ``create_o`` for that specific cell. Then change the turn to the other player.
+
+.. code-block:: cpp
+
+        //! Cell is available ?
+        if (index < board_.size() && board_[index] == cell_state::empty) {
+
+            //! Change state of the cell to the current player
+            board_[index] = static_cast<cell_state>(player_turn_);
+
+            //! Create x or o based on the current player
+            player_turn_ == x ? create_x(entity_registry_, row, column) : create_o(entity_registry_, row, column);
+
+            //! Switch player
+            player_turn_ = (player_turn_ == player::x) ? player::o : player::x;
+        }
+    }
+
+We call ``play_turn`` with the position of the mouse click.
+ 
+.. code-block:: cpp
+
+   void on_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept
+    {
+        if (current_game_state_ == running) {
+            //! Retrieve game constants.
+            auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
+
+            //! Play one turn of the Tic-Tac-Toe
+            play_turn(evt.y / constants.cell_height, evt.x / constants.cell_width);
+        } else {
+            //! Here we reset the game
+        }
+    }
+
+Now we assign the ``on_mouse_button_pressed`` event to the mouse click in the constructor.
+
+.. code-block:: cpp
+
+    tic_tac_toe_logic(entt::registry &registry, entt::entity grid_entity, std::vector<cell_state> board) noexcept
+            : system(registry), grid_entity_(grid_entity), board_(std::move(board))
+    {
+        //! stateless system
+        this->disable();
+
+        //! subscribe to mouse_button event
+        this->dispatcher_.sink<event::mouse_button_pressed>().connect<&tic_tac_toe_logic::on_mouse_button_pressed>(
+                *this);
+    }
+
+In the same class, we have enums ``game_state`` and ``player`` too.
+
+.. code-block:: cpp
+
+    //! Private enums
+    enum game_state
+    {
+        running,
+        player_x_won = 1,
+        player_y_won = 2,
+        tie,
+        quit
+    };
+
+    enum player
+    {
+        x = 1,
+        o = 2
+    };
+
+And the other member variables we used such as grid, state board, game state and player turn.
+
+.. code-block:: cpp
+
+    //! Private members variable
+    entt::entity grid_entity_{entt::null};
+    std::vector<cell_state> board_;
+    game_state current_game_state_{game_state::running};
+    player player_turn_{player::x};
+
+After the class definition, we give a name to our system, out of the class scope.
+
+.. code-block:: cpp
+
+    //! Give a name to our system
+    REFL_AUTO(type(tic_tac_toe_logic));
+
+In the constructor of the game_scene we defined before, we create the board and the logic system.
+
+.. code-block:: cpp
+
+    //! Create the board of the tic tac toe
+    auto board = create_board(tictactoe_constants.nb_cells_per_axis);
+
+    //! Create our logic game system and give the fresh grid entity and the fresh board.
+    this->system_manager_.create_system<tic_tac_toe_logic>(grid_entity, board);
+
+Game logic, board and x o themselves, all of them are now complete.

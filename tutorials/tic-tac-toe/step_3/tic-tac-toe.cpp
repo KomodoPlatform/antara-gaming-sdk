@@ -144,9 +144,9 @@ namespace
         const auto center_y = static_cast<float>(constants.cell_height * 0.5 + row * constants.cell_height);
 
         auto o_entity = entity_registry.create();
+        entity_registry.assign<geometry::circle>(o_entity, half_box_side);
         entity_registry.assign<graphics::fill_color>(o_entity, graphics::transparent);
         entity_registry.assign<graphics::outline_color>(o_entity, constants.grid_thickness, graphics::cyan);
-        entity_registry.assign<geometry::circle>(o_entity, half_box_side);
         entity_registry.assign<transform::position_2d>(o_entity,
                                                        center_x,
                                                        center_y);
@@ -170,10 +170,10 @@ public:
             //! Retrieve game constants.
             auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
 
-            //! Play one turn of the tictactoe
+            //! Play one turn of the Tic-Tac-Toe
             play_turn(evt.y / constants.cell_height, evt.x / constants.cell_width);
         } else {
-            //! Here we reset the game
+            //! Reset the game
         }
     }
 
@@ -245,19 +245,19 @@ class game_scene final : public scenes::base_scene
 public:
     game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
-        //! Here we retrieve canvas information
+        //! Retrieve canvas information
         auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
 
-        //! Here i set the constants that will be used in the program
+        //! Set the constants that will be used in the program
         auto &tictactoe_constants = entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
 
-        //! Here i create the grid of the tic tac toe
+        //! Create the grid of the tic tac toe
         auto grid_entity = create_grid(entity_registry_);
 
-        //! Here i create the board of the tic tac toe
+        //! Create the board of the tic tac toe
         auto board = create_board(tictactoe_constants.nb_cells_per_axis);
 
-        //! Here we create our logic game system and give the fresh grid entity and the fresh board.
+        //! Create our logic game system and give the fresh grid entity and the fresh board.
         this->system_manager_.create_system<tic_tac_toe_logic>(grid_entity, board);
     }
 
@@ -274,13 +274,13 @@ public:
 
     ~game_scene() noexcept final
     {
-        //! Here we retrieve the collection of entities from the game scene
+        //! Retrieve the collection of entities from the game scene
         auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
 
-        //! Here we iterate the collection and destroy each entities
+        //! Iterate the collection and destroy each entities
         entity_registry_.destroy(view.begin(), view.end());
 
-        //! Here we unset the tic tac toe constants
+        //! Unset the tic tac toe constants
         entity_registry_.unset<tic_tac_toe_constants>();
     }
 
@@ -294,25 +294,25 @@ struct tic_tac_toe_world : world::app
     //! Our game entry point
     tic_tac_toe_world() noexcept
     {
-        //! Here we load our graphical system
+        //! Load our graphical system
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
-        //! Here we load our input system with the window from the graphical system
+        //! Load our input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
-        //! Here we load the scenes manager
+        //! Load the scenes manager
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
 
-        //! Here we change the current_scene to "game_scene" by pushing it.
+        //! Change the current_scene to "game_scene" by pushing it.
         scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_), true);
     }
 };
 
 int main()
 {
-    //! Here we declare our world
+    //! Declare our world
     tic_tac_toe_world game;
 
-    //! Here we run the game
+    //! Run the game
     return game.run();
 }
