@@ -16,44 +16,25 @@
 
 #pragma once
 
-#ifdef ANTARA_LUA_SCRIPTING_ENABLED
-
-#include <sol/sol.hpp>
-
-#endif
-
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/math/vector.hpp"
 
-namespace antara::gaming::transform
+namespace antara::gaming::graphics
 {
-    struct position_2d : public math::vec2f
+    struct rect
     {
-        template<typename ... Args>
-        position_2d(Args &&...args) noexcept: math::vec2f(std::forward<Args>(args)...)
-        {
+        math::vec2f pos;
+        math::vec2f size;
+    };
 
-        }
-
-        position_2d() noexcept = default;
-
-        position_2d(const position_2d &other) noexcept = default;
-        position_2d& operator=(const position_2d &other) noexcept = default;
-
-        position_2d(math::vec2f pos) noexcept : math::vec2f(pos)
-        {
-        }
-
-        position_2d(float x, float y) noexcept : math::vec2f(x, y)
-        {
-        }
-
-#ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<position_2d(), position_2d(math::vec2f pos), position_2d(float x,
-                                                                                                        float y)>;
-#endif
+    struct sprite
+    {
+        const char* appearance; //! texture id
+        bool native_size{true}; //! take the whole size by default
+        rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
     };
 }
 
-REFL_AUTO(type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size),
-          func(set_x), func(set_y), func(set_xy), func(make_xy))
+REFL_AUTO(type(antara::gaming::graphics::rect), field(pos), field(size))
+REFL_AUTO(type(antara::gaming::graphics::sprite), field(appearance), field(native_size), field(texture_rec))
+

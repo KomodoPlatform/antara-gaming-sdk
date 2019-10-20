@@ -23,6 +23,7 @@
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
 #include <antara/gaming/graphics/component.text.hpp>
+#include <antara/gaming/graphics/component.sprite.hpp>
 #include "meta/sequence/list.hpp"
 #include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
@@ -62,11 +63,11 @@ namespace antara::gaming::sfml
 
         //! Callback
         void on_window_resized_event(const event::window_resized &evt) noexcept;
-        void on_geometry_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
+        void on_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
         void on_position_2d_construct(entt::entity entity, entt::registry &registry, transform::position_2d &pos) noexcept;
         void on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept;
-        void on_geometry_vertex_array_construct(entt::entity entity, entt::registry &registry,
-                geometry::vertex_array &cmp_vertex_array) noexcept;
+        void on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept;
+        void on_vertex_array_construct(entt::entity entity, entt::registry &registry, geometry::vertex_array &cmp_vertex_array) noexcept;
     private:
         graphics::canvas_2d &canvas_{entity_registry_.ctx<graphics::canvas_2d>()};
         sf::RenderWindow window_{sf::VideoMode(canvas_.window.size.x(), canvas_.window.size.y()),
