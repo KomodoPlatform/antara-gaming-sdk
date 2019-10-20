@@ -1,4 +1,4 @@
-Tutorial: How to do a tic-tac-toe in less than 15 minutes with the gaming SDK ?
+Tutorial: How to do a Tic-Tac-Toe in less than 15 minutes with the gaming SDK ?
 ===============================================================================
 
 If you have not read the :doc:`getting started<getting_started>` part yet, Please read it before reading this one.
@@ -84,7 +84,7 @@ And now, the first step is over. We have a CMakeLists.txt to be able to compile 
 Step 2: The Game Scene, The Grid, Game constants
 ------------------------------------------------
 
-For this second step our goal is to draw the grid of Tic-Tac-Toe.
+For this second step, our goal is to draw the grid of Tic-Tac-Toe.
 
 The grid will look like this:
 
@@ -99,13 +99,13 @@ To do this we will create a game scene using the scene manager, so in order we w
         //! Our game entry point
         tic_tac_toe_world() noexcept
         {
-            //! Here we load our graphical system
+            //! Load the graphical system
             auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
-            //! Here we load our input system with the window from the graphical system
+            //! Load the input system with the window from the graphical system
             system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
-            //! Here we load the scenes manager
+            //! Load the scenes manager
             auto &scene_manager = system_manager_.create_system<scenes::manager>();
         }
     };
@@ -149,16 +149,16 @@ Now we are going to load our game scene into the scene_manager using the change_
         //! Our game entry point
         tic_tac_toe_world() noexcept
         {
-            //! Here we load our graphical system
+            //! Load the graphical system
             auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
-            //! Here we load our input system with the window from the graphical system
+            //! Load the input system with the window from the graphical system
             system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
-            //! Here we load the scenes manager
+            //! Load the scenes manager
             auto &scene_manager = system_manager_.create_system<scenes::manager>();
 
-            //! Here we change the current_scene to "game_scene" by pushing it.
+            //! Change scene to game_scene
             scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_), true);
         }
     };
@@ -169,9 +169,9 @@ If you compile now you should still see the black window from the previous step,
 
 .. note::
 
-    The scene system is very handy when you want to organize your game with different screens, **introduction scene**, **game scene**, **end-of-game scene**, etc.
+    The scene system is very handy to organize multiple screens of the game: **introduction scene**, **game scene**, **end-of-game scene**, etc.
 
-Now we need several constants that are essential. For the tick-to-toe, the size of a cell in width, in height, the number of cells per line, the thickness of our grid.
+Now we need several constants that are essential. For Tic-Tac-Toe they are: width and height of a cell, number of cells per line and thickness of the grid.
 
 For the size of the cells we will use the current size of our canvas divided by the number of cells per line to obtain the size of a cell.
 
@@ -202,10 +202,10 @@ In the constructor of the gaming scene:
 
     game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
-        //! Here we retrieve canvas information
+        //! Retrieve canvas information
         auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
 
-        //! Here i set the constants that will be used in the program
+        //! Set the constants that will be used in the program
         entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
     }
 
@@ -218,18 +218,18 @@ Now we will go to the creation of our entity representing our grid, so we will a
     public:
         game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
         {
-            //! Here we retrieve canvas information
+            //! Retrieve canvas information
             auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
 
-            //! Here i set the constants that will be used in the program
+            //! Set the constants that will be used in the program
             entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
         }
 
-        //! This function will not be used, because Tic-Tac-Toe doesn't need an update every frame.
+        //! This function won't be used, because Tic-Tac-Toe doesn't need to update every frame.
         void update() noexcept final
         {}
 
-        //! our scene name
+        //! Return the scene name
         std::string scene_name() noexcept final
         {
             return "game_scene";
@@ -238,18 +238,18 @@ Now we will go to the creation of our entity representing our grid, so we will a
         ~game_scene() noexcept final
         {}
     private:
-        //! Our entity representing the tic-tac-toe grid
+        //! The entity which represents the Tic-Tac-Toe grid
         entt::entity grid_entity_{entt::null};
     };
 
-Then, we will have to initialize this entity, to do this we create an anonymous namespace with a function create_grid which returns an ``entt::entity`` and take in parameter the ``entity registry``.
+Then, we will have to initialize this entity, to do this we create an anonymous namespace with a function ``create_grid`` which returns an ``entt::entity`` and take in parameter ``entity registry``.
 
 .. code-block:: cpp
 
-    //! Contains all the function that will be used for logic  and factory
+    //! Contains all functions which will be used for logic and factory
     namespace
     {
-        //! Factory for creating a tic-tac-toe grid
+        //! Factory for creating a Tic-Tac-Toe grid
         entt::entity create_grid(entt::registry &registry) noexcept
         {
             return entt::null;
@@ -262,51 +262,51 @@ Now, we call the function from the game scene constructor and we assign the retu
 
     game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
     {
-        //! Here we retrieve canvas information
+        //! Retrieve canvas information
         auto[canvas_width, canvas_height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2u>();
 
-        //! Here i set the constants that will be used in the program
+        //! Set the constants that will be used in the program
         entity_registry_.set<tic_tac_toe_constants>(3ull, canvas_width, canvas_height);
 
-        //! Here i create the grid of the Tic-Tac-Toe
+        //! Create the grid of the Tic-Tac-Toe
         grid_entity_ = create_grid(entity_registry_);
     }
 
-We only have two things to do now:
+Only two things left to do now:
 
 - code the logic of the create_grid function
 - manage the destruction of the entities of our game scene when leaving the program
 
-Let's start by coding the logic of the create_grid function.
+Let's start by coding the logic of the ``create_grid`` function.
 
 First we get the canvas size, because that will be the size of our grid.
 
 .. code-block:: cpp
 
-    //! retrieve canvas information
+    //! Retrieve canvas information
     auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
 
 Second, we create a new entity named grid.
 
 .. code-block:: cpp
 
-    //! entity creation
+    //! Entity creation
     auto grid_entity = registry.create();
 
 A line is represented with two dots that we call vertex. Vertex has a X position and a Y position. Connection of two vertices makes a line. Though that line thickness then would be ``1 px``. ``1 px`` is not very visible if the image gets smaller because of scaling etc. So we want a thick line, like ``20px``. 
 
 .. image:: ../../assets/grid_lines.png
 
-A thick line is basically a rectangle, right? For a rectangle, we need 4 vertices because of 4 corners. For a Tic-tac-toe grid, we need ``4 vertical lines`` (2 in middle and 2 at screen borders) and ``4 horizontal lines``. That makes ``8 lines``, and each line is ``4 vertices``, so we need ``8 * 4 = 32`` vertices.
+A thick line is basically a rectangle, right? For a rectangle, we need 4 vertices because of 4 corners. For a Tic-Tac-Toe grid, we need ``4 vertical lines`` (2 in middle and 2 at screen borders) and ``4 horizontal lines``. That makes ``8 lines``, and each line is ``4 vertices``, so we need ``8 * 4 = 32`` vertices.
 
 .. code-block:: cpp
 
-    //! our vertices
+    //! Our vertices
     std::vector<geometry::vertex> lines{8 * 4};
 
 We also need information about the grid, 
 
-``nb_cells`` = Number of cells in one axis, 3 in this case.  
+``nb_cells`` = Number of cells in one axis, 3 in this case.
 
 ``cell_width, cell_height`` = Width and height of a cell.
 
@@ -316,7 +316,7 @@ We retrieve them from the defined constants:
 
 .. code-block:: cpp
 
-    //! retrieve constants information
+    //! Retrieve constants information
     auto[nb_cells, cell_width, cell_height, grid_thickness] = registry.ctx<tic_tac_toe_constants>();
 
 In calculations we will use half of the thickness more often than the thickness itself so we prepare that earlier for reuse and clarity.
@@ -329,7 +329,7 @@ Our loop looks complicated but it actually isn't. At each loop we will define on
 
 .. code-block:: cpp
 
-    //! our loop to create the grid
+    //! Our loop to create the grid
     for (std::size_t counter = 0, i = 0; i <= nb_cells; ++i, counter += 4 * 2) {
 
 Most important information is this: ``Order of the vertices are always like this: Top Left, Top Right, Bottom Right, Bottom Left. So next neighbour is always the clockwise neighbour.``
@@ -400,14 +400,14 @@ After the loop, we turn these vertices to a ``geometry::vertex_array`` of quads,
 
 .. code-block:: cpp
 
-    //! assign the vertex array to the grid entity
+    //! Assign the vertex array to the grid entity
     registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
 
 We tag the grid as ``game_scene``
 
 .. code-block:: cpp
 
-    //! assign the game_scene tag to the grid_entity (_hs means hashed_string)
+    //! Assign the game_scene tag to the grid_entity (_hs means hashed_string)
     registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
 
 Set it to appear at ``layer 0``, and return the prepared grid!
@@ -417,7 +417,7 @@ Set it to appear at ``layer 0``, and return the prepared grid!
     //! We want to draw the grid on the most deep layer, here 0.
     registry.assign<graphics::layer<0>>(grid_entity);
 
-    //! we give back our fresh entity
+    //! We give back our fresh entity
     return grid_entity;
 
 This will work and look really good. Though maybe you realized, we always add and substract ``half_thickness``. So the top border and left border of the screen are at coordinate ``0``, so subtracting ``half_thickness`` will make half of it to appear out of the screen. Same with bottom border and right border, they are at ``canvas_width`` and ``canvas_height`` which are and of the screen. Adding ``half_thickness`` makes the half of it appear out of the screen again. If you are perfectionist, you don't want that to happen.
@@ -452,7 +452,7 @@ For the vertical line, we use the ``offset X`` to push them left and right.
 
 .. code-block:: cpp
 
-    //! vertical
+    //! Vertical
     lines[counter + 0].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
     lines[counter + 1].pos = {offset_x + idx * cell_width + half_thickness, 0.f};
     lines[counter + 2].pos = {offset_x + idx * cell_width + half_thickness, canvas_height};
@@ -462,7 +462,7 @@ For the horizontal line, we use the ``offset Y`` to push them up and down.
 
 .. code-block:: cpp
 
-    //! horizontal
+    //! Horizontal
     lines[counter + 4].pos = {offset_x + 0,            offset_y + idx * cell_height - half_thickness};
     lines[counter + 5].pos = {offset_x + canvas_width, offset_y + idx * cell_height - half_thickness};
     lines[counter + 6].pos = {offset_x + canvas_width, offset_y + idx * cell_height + half_thickness};
@@ -474,32 +474,32 @@ Below the complete function:
 
 .. code-block:: cpp
 
-    //! Contains all the function that will be used for logic  and factory
+    //! Contains all the function that will be used for logic and factory
     namespace
     {
-        //! Factory for creating a tic-tac-toe grid
+        //! Factory for creating a Tic-Tac-Toe grid
         entt::entity create_grid(entt::registry &registry) noexcept
         {
-            //! retrieve canvas information
+            //! Retrieve canvas information
             auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
 
-            //! entity creation
+            //! Entity creation
             auto grid_entity = registry.create();
 
-            //! our vertices
+            //! Our vertices
             std::vector<geometry::vertex> lines{8 * 4};
 
-            //! retrieve constants information
+            //! Retrieve constants information
             auto[nb_cells, cell_width, cell_height, grid_thickness] = registry.ctx<tic_tac_toe_constants>();
             const auto half_thickness = grid_thickness * 0.5f;
 
-            //! our loop to create the grid
+            //! Our loop to create the grid
             for (std::size_t counter = 0, i = 0; i <= nb_cells; ++i, counter += 4 * 2) {
 
-                //! to avoid narrowing conversion
+                //! To avoid narrowing conversion
                 auto idx = static_cast<float>(i);
 
-                //! first and last ones should be a bit inside, otherwise half of it is out of the screen
+                //! First and last ones should be a bit inside, otherwise half of it is out of the screen
                 auto offset_x = 0.0f;
                 auto offset_y = 0.0f;
 
@@ -511,50 +511,50 @@ Below the complete function:
                     offset_y -= half_thickness;
                 }
 
-                //! prepare lines
+                //! Prepare lines
 
-                //! vertical
+                //! Vertical
                 lines[counter + 0].pos = {offset_x + idx * cell_width - half_thickness, 0.f};
                 lines[counter + 1].pos = {offset_x + idx * cell_width + half_thickness, 0.f};
                 lines[counter + 2].pos = {offset_x + idx * cell_width + half_thickness, canvas_height};
                 lines[counter + 3].pos = {offset_x + idx * cell_width - half_thickness, canvas_height};
 
-                //! horizontal
+                //! Horizontal
                 lines[counter + 4].pos = {offset_x + 0, offset_y + idx * cell_height - half_thickness};
                 lines[counter + 5].pos = {offset_x + canvas_width, offset_y + idx * cell_height - half_thickness};
                 lines[counter + 6].pos = {offset_x + canvas_width, offset_y + idx * cell_height + half_thickness};
                 lines[counter + 7].pos = {offset_x + 0, offset_y + idx * cell_height + half_thickness};
             }
 
-            //! assign the vertex array to the grid entity
+            //! Assign the vertex array to the grid entity
             registry.assign<geometry::vertex_array>(grid_entity, lines, geometry::vertex_geometry_type::quads);
 
-            //! assign the game_scene tag to the grid_entity (_hs means hashed_string)
+            //! Assign the game_scene tag to the grid_entity (_hs means hashed_string)
             registry.assign<entt::tag<"game_scene"_hs>>(grid_entity);
 
             //! We want to draw the grid on the most deep layer, here 0.
             registry.assign<graphics::layer<0>>(grid_entity);
 
-            //! we give back our fresh entity
+            //! We give back our fresh entity
             return grid_entity;
         }
     }
 
 The last thing to do is the destruction of the entities in the destructor, we will need it at the time of reset the game.
 
-We will simply in the destructor of the game scene iterate over all the entities that have the tag of the game scene, and destroy each of them.
+In the destructor, we iterate over all the entities that have the tag of the game scene, and destroy each of them.
 
 .. code-block:: cpp
 
     ~game_scene() noexcept final
     {
-        //! Here we retrieve the collection of entities from the game scene
+        //! Retrieve the collection of entities from the game scene
         auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
 
-        //! Here we iterate the collection and destroy each entities
+        //! Iterate the collection and destroy each entities
         entity_registry_.destroy(view.begin(), view.end());
 
-        //! Here we unset the Tic-Tac-Toe constants
+        //! Unset the Tic-Tac-Toe constants
         entity_registry_.unset<tic_tac_toe_constants>();
     }
 
