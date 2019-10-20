@@ -805,6 +805,8 @@ In the constructor of the game_scene we defined before, we create the board and 
 
 Game logic, board and XO, all of them are now complete.
 
+.. image:: ../../assets/tictactoe_board.png
+
 Here is the complete code of the third step:
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_3/tic-tac-toe.cpp
