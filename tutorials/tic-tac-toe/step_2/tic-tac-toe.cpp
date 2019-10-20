@@ -11,14 +11,14 @@ using namespace antara::gaming;
 
 struct tic_tac_toe_constants
 {
-    tic_tac_toe_constants(std::size_t nb_cells_per_row_, std::size_t width_, std::size_t height_) noexcept :
-            nb_cells_per_row(nb_cells_per_row_),
-            cell_width(width_ / nb_cells_per_row),
-            cell_height(height_ / nb_cells_per_row)
+    tic_tac_toe_constants(std::size_t nb_cells_per_axis_, std::size_t width_, std::size_t height_) noexcept :
+            nb_cells_per_axis(nb_cells_per_axis_),
+            cell_width(width_ / nb_cells_per_axis),
+            cell_height(height_ / nb_cells_per_axis)
     {
     }
 
-    const std::size_t nb_cells_per_row;
+    const std::size_t nb_cells_per_axis;
     const std::size_t cell_width;
     const std::size_t cell_height;
     const float grid_thickness{20.0f};
