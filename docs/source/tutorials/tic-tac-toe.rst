@@ -815,7 +815,230 @@ Here is the complete code of the third step:
 Step 4: Win, Tie conditions and reset game
 ------------------------------------------
 
-Here are the screenshots:
+At this final step, for this program to become a real game, we need to add win, tie conditions and the reset game functionality.
+
+Let's create a blank ``reset_event``.
+
+.. code-block:: cpp
+
+    struct reset_event
+    {
+
+    };
+
+And define the reset event callback, it will call the destructor and call the constructor again.
+
+.. code-block:: cpp
+
+    //! Callback
+    void on_reset_event(const reset_event &) noexcept
+    {
+        entt::registry &registry = this->entity_registry_;
+        this->~game_scene();
+        new(this) game_scene(registry);
+    }
+
+We subscribe to this reset event in ``game_scene`` constructor.
+
+.. code-block:: cpp
+
+    class game_scene final : public scenes::base_scene
+    {
+    public:
+        game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+        {
+            //! Subscribe to reset event
+            this->dispatcher_.sink<reset_event>().connect<&game_scene::on_reset_event>(*this);
+
+And we remove this event in the class destructor.
+
+.. code-block:: cpp
+
+    ~tic_tac_toe_logic() noexcept final
+    {
+        this->dispatcher_.sink<event::mouse_button_pressed>().disconnect(*this);
+    }            
+
+Then we trigger this when mouse button is pressed and game state isn't ``running``.
+
+.. code-block:: cpp
+
+    this->dispatcher_.trigger<reset_event>();
+
+    ---------
+
+    void on_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept
+    {
+        if (current_game_state_ == running) {
+            //! Retrieve game constants.
+            auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
+
+            //! Play one turn of the Tic-Tac-Toe
+            play_turn(evt.y / constants.cell_height, evt.x / constants.cell_width);
+        } else {
+            //! Reset the game
+            this->dispatcher_.trigger<reset_event>();
+        }
+    }
+
+We nicely set-up the reset game functionality. 
+
+Now we need to define the checks for win and tie conditions. Let's start with the winning condition. It's enough to check only the current player's win situation. In this function we check every cell and count how many of them are marked as current player, separately in two variables ``row_count`` and ``column_count``. If any of these two reached to ``nb_cells`` which is ``3``, it's a win, we return true. Then we count both diagonal lines and check the same thing. If none of these match 3, it's not a win yet, returning false.
+
+.. code-block:: cpp
+
+    [[nodiscard]] bool did_current_player_win_the_game() const noexcept
+    {
+        std::size_t row_count{0u}, column_count{0u}, diag1_count{0u}, diag2_count{0u};
+        auto[nb_cells, cell_width, cell_height, _] = entity_registry_.ctx<tic_tac_toe_constants>();
+        for (std::size_t i = 0; i < nb_cells; ++i) {
+            for (std::size_t j = 0; j < nb_cells; ++j) {
+                //! Check rows
+                if (board_[i * nb_cells + j] == static_cast<cell_state>(player_turn_))
+                    row_count++;
+
+                //! Check columns
+                if (board_[j * nb_cells + i] == static_cast<cell_state>(player_turn_))
+                    column_count++;
+            }
+
+            //! Check condition
+            if (row_count >= nb_cells || column_count >= nb_cells) {
+                return true;
+            }
+
+            //! Reset rows and columns
+            row_count = 0u, column_count = 0u;
+
+            //! Diag1 count
+            if (board_[i * nb_cells + i] == static_cast<cell_state>(player_turn_))
+                diag1_count++;
+
+            //! Second diag count
+            if (board_[i * nb_cells + nb_cells - i - 1] == static_cast<cell_state>(player_turn_))
+                diag2_count++;
+        }
+
+        //! Condition
+        return diag1_count >= nb_cells || diag2_count >= nb_cells;
+    }
+
+So we will check the winning condition first. If it's not a win, and if all cells are filled, then it's a tie. So tie implementation is really easy.
+
+.. code-block:: cpp
+
+    [[nodiscard]] bool is_tie() const noexcept
+    {
+        return std::count(begin(board_), end(board_), cell_state::empty) == 0;
+    }
+
+Now we will use these two condition check functions in a bigger function which will be called later. 
+
+.. code-block:: cpp
+
+    void check_winning_condition() noexcept
+
+Inside it, we define a functor ``make_screen`` inside, which sets the color of the grid.
+
+.. code-block:: cpp
+
+    auto make_screen = [this](graphics::color clr_winner,
+                                entt::entity entity) {
+        auto &array_cmp = this->entity_registry_.get<geometry::vertex_array>(entity);
+        for (auto &v : array_cmp.vertices) v.pixel_color = clr_winner;
+        entity_registry_.replace<geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
+    };
+
+Using this functor, we make another one ``make_player_win_screen`` which gives the winner's color as an argument.
+
+.. code-block:: cpp
+
+    auto make_player_win_screen = [this, make_screen](entt::entity entity) {
+        auto winning_color = player_turn_ == player::x ? graphics::magenta : graphics::cyan;
+        make_screen(winning_color, entity);
+    };
+
+Same way, another one which feeds another color when it's tie.
+
+.. code-block:: cpp
+
+    auto make_tie_screen = [make_screen](entt::entity entity) {
+        make_screen(graphics::yellow, entity);
+    };
+    
+Now let's use these two. First, we need to check if current player won the game, if not, we check if it isn a tie. Depending on that, we set the game state and call the proper functor we defined earlier.
+
+.. code-block:: cpp
+
+    if (did_current_player_win_the_game()) {
+        current_game_state_ = static_cast<game_state>(player_turn_);
+        make_player_win_screen(grid_entity_);
+    } else if (is_tie()) {
+        current_game_state_ = game_state::tie;
+        make_tie_screen(grid_entity_);
+    }
+
+This function ``check_winning_condition`` looks like this when we sum it up:
+
+.. code-block:: cpp
+
+    void check_winning_condition() noexcept
+    {
+        auto make_screen = [this](graphics::color clr_winner,
+                                  entt::entity entity) {
+            auto &array_cmp = this->entity_registry_.get<geometry::vertex_array>(entity);
+            for (auto &v : array_cmp.vertices) v.pixel_color = clr_winner;
+            entity_registry_.replace<geometry::vertex_array>(entity, array_cmp.vertices, array_cmp.geometry_type);
+        };
+
+        auto make_player_win_screen = [this, make_screen](entt::entity entity) {
+            auto winning_color = player_turn_ == player::x ? graphics::magenta : graphics::cyan;
+            make_screen(winning_color, entity);
+        };
+
+        auto make_tie_screen = [make_screen](entt::entity entity) {
+            make_screen(graphics::yellow, entity);
+        };
+
+        if (did_current_player_win_the_game()) {
+            current_game_state_ = static_cast<game_state>(player_turn_);
+            make_player_win_screen(grid_entity_);
+        } else if (is_tie()) {
+            current_game_state_ = game_state::tie;
+            make_tie_screen(grid_entity_);
+        }
+    }
+
+And finally we call this function in the end of ``play_turn``. 
+
+.. code-block:: cpp
+
+    void play_turn(std::size_t row, std::size_t column) noexcept
+    {
+        //! Retrieve constants
+        auto constants = entity_registry_.ctx<tic_tac_toe_constants>();
+
+        //! Which cell is clicked ?
+        std::size_t index = row * constants.nb_cells_per_axis + column;
+
+        //! Cell is available ?
+        if (index < board_.size() && board_[index] == cell_state::empty) {
+
+            //! Change state of the cell to the current player
+            board_[index] = static_cast<cell_state>(player_turn_);
+
+            //! Create x or o based on the current player
+            player_turn_ == x ? create_x(entity_registry_, row, column) : create_o(entity_registry_, row, column);
+
+            //! Check winning condition
+            check_winning_condition();
+
+            //! Switch player
+            player_turn_ = (player_turn_ == player::x) ? player::o : player::x;
+        }
+    }
+
+That's it! Here are the screenshots:
 
 During the match:
 
