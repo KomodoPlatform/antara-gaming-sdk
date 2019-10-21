@@ -812,8 +812,8 @@ Here is the complete code of the third step:
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_3/tic-tac-toe.cpp
    :language: cpp
 
-Step 4: Win, Tie conditions and reset event
--------------------------------------------
+Step 4: Win, Tie conditions and reset game
+------------------------------------------
 
 Here are the screenshots:
 
@@ -832,3 +832,8 @@ When Player O wins:
 When it's a tie!
 
 .. image:: ../../assets/tictactoe_tie.png
+
+Here is the complete code of the last step:
+
+.. literalinclude:: ../../../tutorials/tic-tac-toe/step_4/tic-tac-toe.cpp
+   :language: cpp
