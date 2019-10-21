@@ -42,6 +42,72 @@ To build the project please follow the instructions below:
    ## Build (Debug / Release available)
    cmake --build . --config Debug
 
+There are also additional options with the CMake that allows to activate certain features of the SDK:
+
+.. role:: raw-html(raw)
+    :format: html
+
+.. list-table:: Modules Tables
+   :header-rows: 1
+   :align: center
+
+   * - Name
+     - Description
+     - How to enable it
+     - Notes
+   * - ``USE_SFML_ANTARA_WRAPPER``
+     - Enable the SFML module of the SDK
+     - ``-DUSE_SFML_ANTARA_WRAPPER=ON``
+     - Requires SFML dependencies on Linux
+   * - ``ANTARA_BUILD_DOCS``
+     - Enable the build of the documentation for the SDK
+     - ``-DANTARA_BUILD_DOCS=ON``
+     - Require Sphinx And Doxygen
+   * - ``USE_LUA_ANTARA_WRAPPER``
+     - Enable the lua module for the SDK
+     - ``-DUSE_LUA_ANTARA_WRAPPER=ON``
+     -
+   * - ``USE_ASAN``
+     - Enable the Address Sanitizer for the Unit tests of the SDK
+     - ``-DUSE_ASAN=ON``
+     - Cannot be mixed with ``USE_TSAN`` and ``USE_UBSAN``
+   * - ``USE_UBSAN``
+     - Enable the Undefined Behavior Sanitizer for the Unit tests of the SDK
+     - ``-DUSE_UBSAN=ON``
+     - Cannot be mixed with ``USE_TSAN`` and ``USE_ASAN``
+   * - ``USE_TSAN``
+     - Enable the Undefined Behavior Sanitizer for the Unit tests of the SDK
+     - ``-DUSE_TSAN=ON``
+     - Cannot be mixed with ``USE_UBSAN`` and ``USE_ASAN``
+   * - ``BUILD_WITH_APPIMAGE``
+     - Enable the AppImage auto-generation on Linux for bundle an executable builded with the SDK
+     - ``-DBUILD_WITH_APPIMAGE=ON``
+     - Work's only on ``Linux``.
+   * - ``ENABLE_HTML_COMPILATION``
+     - Enable the HTML Compilation on Emscripten for an executable builded with the SDK
+     - ``-DENABLE_HTML_COMPILATION=ON``
+     - Work's only on ``Emscripten``.
+   * - ``COVERAGE_CLION_TOOLS``
+     - Enable the Coverage inside CLion IDE.
+     - ``-DCOVERAGE_CLION_TOOLS=ON``
+     - Work's only with CLion IDE and Require ``ENABLE_COVERAGE``
+   * - ``ANTARA_BUILD_EXAMPLES``
+     - Enable the example of the SDK.
+     - ``-DANTARA_BUILD_EXAMPLES=ON``
+     - Some examples need mix of options such as ``USE_SFML_ANTARA_WRAPPER`` + ``ANTARA_BUILD_EXAMPLES``
+   * - ``ANTARA_BUILD_UNIT_TESTS``
+     - Enable the unit tests of the SDK.
+     - ``-DANTARA_BUILD_UNIT_TESTS=ON``
+     - Some examples need mix of options such as ``USE_LUA_ANTARA_WRAPPER`` + ``ANTARA_BUILD_UNIT_TESTS``
+   * - ``USE_BOX2D_ANTARA_WRAPPER``
+     - Enable the Box2D modules of the SDK.
+     - ``-DUSE_BOX2D_ANTARA_WRAPPER=ON``
+     -
+   * - ``ENABLE_COVERAGE``
+     - Enable the coverage macros for the SDK.
+     - ``-DENABLE_COVERAGE=ON``
+     -
+
 Installing
 ^^^^^^^^^^
 
