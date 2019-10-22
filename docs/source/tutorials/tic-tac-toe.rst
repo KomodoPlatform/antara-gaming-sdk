@@ -8,9 +8,9 @@ This tutorial is divided into multiple steps to make it easier to follow.
 Step 1: Setup the executable and the window
 -------------------------------------------
 
-First we need a ``CMakeLists.txt`` to create and compile the executable.
+First, create a folder called ``tic-tac-toe`` for your project, then create a text file and save it as ``CMakeLists.txt`` to create and compile the executable.
 
-In this ``CMakeLists.txt`` file we will have: name of the project, creation of the executable, link with the SDK, C++ standard that will be used and extras modules that we want to use, in our case it will be the module  :doc:`antara::sfml<../modules/sfml>` provided by the **SDK**.
+In this ``CMakeLists.txt`` file we will have: name of the project, creation of the executable, link with the SDK, C++ standard that will be used and extra modules that we want to use - in our case it will be the module  :doc:`antara::sfml<../modules/sfml>` provided by the **SDK**.
 
 Below is the ``CMakeLists.txt`` file:
 
@@ -32,17 +32,17 @@ If you did everything correctly so far, you should have the following tree:
 
 .. code-block:: bash
 
-    .
+    ./tic-tac-toe
     ├── CMakeLists.txt
     └── tic-tac-toe.cpp
 
-Before continuing the tutorial, make sure that your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`.
+Before continuing the tutorial, make sure that you have installed the required dependancies and your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`. If needed, help is available in the `Komodo Discord`_ https://discord.gg/VRtwmR2
 
-Now we need a world representing the world of our game, to do this we need the following header file: ``#include <antara/gaming/world/world.app.hpp>``
+Now we need a world representing the world of our game, to do this we use the following header file: ``#include <antara/gaming/world/world.app.hpp>``
 
 And a basic structure that we name ``tic_tac_toe world``. It will inherit from ``antara::gaming::world::app`` class.
 
-And using namespace ``antara::gaming`` to make naming easier.
+And use the namespace ``antara::gaming`` to make naming easier.
 
 Finally, we declare our new object in the body of the main function and we replace the return value with the return value of our game returned by the ``run`` function of the ``class world::app``.
 
@@ -68,9 +68,9 @@ It gives us the following result:
 
 If you compile now and run your executable, you have an infinite loop and nothing will happen.
 
-The last stage of this first step is to add the graphics side of the application, for that we will need two modules: ``antara::gaming::sfml::graphic_system`` and ``antara::gaming::sfml::input::system`` which have these following headers, respectively: ``#include <antara/gaming/sfml/graphic.system.hpp>`` and ``#include <antara/gaming/sfml/input.system.hpp>``.
+The last stage of this step one is to add the graphics side of the application, for that we will need two modules: ``antara::gaming::sfml::graphic_system`` and ``antara::gaming::sfml::input::system`` which have these following headers, respectively: ``#include <antara/gaming/sfml/graphic.system.hpp>`` and ``#include <antara/gaming/sfml/input.system.hpp>``.
 
-Now in the body of the constructor of our class tic_tac_toe_world we will load the graphic system. Then we will initialize input system with the window coming from the loaded graphic system.
+Now in the body of the constructor of our class tic_tac_toe_world we will load the graphic system, then we will initialize input system with the window coming from the loaded graphic system.
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_1/tic-tac-toe.cpp
    :language: cpp
@@ -79,18 +79,18 @@ If you compile and run now, you should see a black window open. You can close by
 
 .. image:: ../../assets/black_window.png
 
-And now, the first step is over. We have a CMakeLists.txt to be able to compile our program into a basic executable which can create a window.
+And now, the first step is over. We have a CMakeLists.txt to be able to compile our program into a basic executable which can create the game window.
 
 Step 2: The Game Scene, The Grid, Game constants
 ------------------------------------------------
 
-For this second step, our goal is to draw the grid of Tic-Tac-Toe.
+For the second step, our goal is to draw the grid of Tic-Tac-Toe.
 
 The grid will look like this:
 
 .. image:: ../../assets/tictactoe.grid.jpg
 
-To do this we will create a game scene using the scene manager, so in order we will include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
+To do this we will create a game scene using the scene manager. In order to do so we need to include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
 
 .. code-block:: cpp
 
@@ -175,9 +175,7 @@ Now we need several constants that are essential. For Tic-Tac-Toe they are: widt
 
 For the size of the cells we will use the current size of our canvas divided by the number of cells per line to obtain the size of a cell.
 
-So we create a structure tic_tac_toe_constants that will contain these different information.
-
-Then we save it in the entity registry to be able to access from anywhere in the program.
+Now create a structure tic_tac_toe_constants that will contain these different information, then save it in the entity registry to be able to access from anywhere in the program.
 
 .. code-block:: cpp
 
@@ -242,7 +240,7 @@ Now we will go to the creation of our entity representing our grid, so we will a
         entt::entity grid_entity_{entt::null};
     };
 
-Then, we will have to initialize this entity, to do this we create an anonymous namespace with a function ``create_grid`` which returns an ``entt::entity`` and take in parameter ``entity registry``.
+Then, we will have to initialize this entity. To do this we create an anonymous namespace with a function ``create_grid`` which returns an ``entt::entity`` and take in parameter ``entity registry``.
 
 .. code-block:: cpp
 
@@ -279,7 +277,7 @@ Only two things left to do now:
 
 Let's start by coding the logic of the ``create_grid`` function.
 
-First we get the canvas size, because that will be the size of our grid.
+First we get the canvas size, because that will define the size of our grid.
 
 .. code-block:: cpp
 
@@ -293,7 +291,7 @@ Second, we create a new entity named grid.
     //! Entity creation
     auto grid_entity = registry.create();
 
-A line is represented with two dots that we call vertex. Vertex has a X position and a Y position. Connection of two vertices makes a line. Though that line thickness then would be ``1 px``. ``1 px`` is not very visible if the image gets smaller because of scaling etc. So we want a thick line, like ``20px``. 
+A line is represented by joining two dots that we call vertices. Each vertex has a X position and a Y position. Connection of two vertices makes a line. Though that line thickness then would be ``1 px``. ``1 px`` is not very visible if the image gets smaller because of scaling etc. So we want a thick line, like ``20px``. 
 
 .. image:: ../../assets/grid_lines.png
 
@@ -304,9 +302,9 @@ A thick line is basically a rectangle, right? For a rectangle, we need 4 vertice
     //! Our vertices
     std::vector<geometry::vertex> lines{8 * 4};
 
-We also need information about the grid, 
+We also need information about the grid, such as -
 
-``nb_cells`` = Number of cells in one axis, 3 in this case.
+``nb_cells`` = Number of cells in one axis (3 in this case).
 
 ``cell_width, cell_height`` = Width and height of a cell.
 
@@ -319,7 +317,7 @@ We retrieve them from the defined constants:
     //! Retrieve constants information
     auto[nb_cells, cell_width, cell_height, grid_thickness] = registry.ctx<tic_tac_toe_constants>();
 
-In calculations we will use half of the thickness more often than the thickness itself so we prepare that earlier for reuse and clarity.
+In calculations we will use half of the thickness for internal lines, and full thickness for the outer border. We can prepare for that with another constant for reuse and clarity.
 
 .. code-block:: cpp
 
@@ -340,7 +338,7 @@ Let's draw the vertical line first. Remember the order, we start with Top Left v
 
 We calculate ``X`` first. ``idx`` is currently ``0``, if we multiply that with ``cell_width``, let's say ``cell_width`` is ``300``, in ``4`` iterations these will be the values: ``0, 300, 600, 900``. 
 
-Then we will do ``- half_thickness`` to shift it to a bit left because left and right vertices of a thick vertical line needs to be separate. 
+Then we will do ``- half_thickness`` to offset it to a bit left because left and right vertices of a thick vertical line needs to be separate. 
 
 And the Y will be 0 because it's top of the screen. X axis grows from left to right, Y axis grows from top to down.
 
@@ -348,7 +346,7 @@ And the Y will be 0 because it's top of the screen. X axis grows from left to ri
 
     lines[counter + 0].pos = {idx * cell_width - half_thickness, 0.f};
 
-Now, the Top Right vertex, it is same but it is ``+ half_thickness`` this time to make them stay far away. Y is still ``0`` because it's top of the screen.
+Now, the Top Right vertex, it is same but it is ``+ half_thickness`` to offset in the opposite direction. Y is still ``0`` because it's top of the screen.
 
 .. code-block:: cpp
 
@@ -360,7 +358,7 @@ Now, the Bottom Right vertex, ``X`` is same with Top Right, but ``Y`` is now can
 
     lines[counter + 2].pos = {idx * cell_width + half_thickness, canvas_height};
 
-Now, the last one, Bottom Left vertex, ``Y`` is same as Bottom Right, ``X`` is doing ``- half_thickness`` because it needs to be at left.
+Now, the last one, Bottom Left vertex, ``Y`` is same as Bottom Right, ``X`` is doing ``- half_thickness`` because it needs to be aligned to the left.
 
 .. code-block:: cpp
 
