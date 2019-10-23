@@ -14,14 +14,24 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/geometry/component.circle.hpp"
+#include <utility> //! std::move
 #include "antara/gaming/geometry/component.rectangle.hpp"
-#include "antara/gaming/geometry/component.vertex.hpp"
 
 namespace antara::gaming::geometry
 {
-    using components_list = doom::meta::list<circle, vertex, vertex_array, rectangle>;
+    rectangle::rectangle(math::vec2f size_) noexcept : size(std::move(size_))
+    {
+
+    }
+
+    entt::entity blueprint_rectangle(entt::registry &registry, math::vec2f size, graphics::fill_color fill_color,
+                                     transform::position_2d pos, graphics::outline_color out_color) noexcept
+    {
+        auto rectangle_entity = registry.create();
+        registry.assign<graphics::fill_color>(rectangle_entity, fill_color);
+        registry.assign<graphics::outline_color>(rectangle_entity, out_color);
+        registry.assign<geometry::rectangle>(rectangle_entity, size);
+        registry.assign<transform::position_2d>(rectangle_entity, pos);
+        return rectangle_entity;
+    }
 }

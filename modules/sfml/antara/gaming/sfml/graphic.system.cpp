@@ -65,6 +65,8 @@ namespace antara::gaming::sfml
         registry.on_replace<geometry::vertex_array>().connect<&graphic_system::on_vertex_array_construct>(*this);
         registry.on_construct<geometry::circle>().connect<&graphic_system::on_circle_construct>(*this);
         registry.on_replace<geometry::circle>().connect<&graphic_system::on_circle_construct>(*this);
+        registry.on_construct<geometry::rectangle>().connect<&graphic_system::on_rectangle_construct>(*this);
+        registry.on_replace<geometry::rectangle>().connect<&graphic_system::on_rectangle_construct>(*this);
         refresh_render_texture();
     }
 
@@ -165,6 +167,28 @@ namespace antara::gaming::sfml
         fill_properties_sfml_entity(entity_registry_, entity, sfml_circle.drawable);
 
         sfml_circle.drawable.setOrigin(sfml_circle.drawable.getRadius(), sfml_circle.drawable.getRadius());
+    }
+
+    void graphic_system::on_rectangle_construct(entt::entity entity, entt::registry &registry,
+                                                geometry::rectangle &rectangle) noexcept
+    {
+        auto [width, height] = rectangle.size;
+        sf::RectangleShape &sfml_rectangle = registry.assign_or_replace<sfml::rectangle>(entity, sf::RectangleShape()).drawable;
+
+        sfml_rectangle.setSize(sf::Vector2f(width, height));
+        if (auto out_color = registry.try_get<graphics::outline_color>(entity); out_color != nullptr) {
+            sfml_rectangle.setOutlineColor(sf::Color(out_color->r, out_color->g, out_color->b, out_color->a));
+            sfml_rectangle.setOutlineThickness(out_color->thickness);
+        }
+
+        if (auto fill_color = registry.try_get<graphics::fill_color>(entity); fill_color != nullptr) {
+            sfml_rectangle.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
+        }
+
+        fill_properties_sfml_entity(entity_registry_, entity, sfml_rectangle);
+
+        auto [_, __, r_width, r_height] = sfml_rectangle.getGlobalBounds();
+        sfml_rectangle.setOrigin(r_width * 0.5f, r_height * 0.5f);
     }
 
     void graphic_system::on_vertex_array_construct(entt::entity entity, entt::registry &registry,

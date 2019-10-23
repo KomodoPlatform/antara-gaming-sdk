@@ -99,6 +99,7 @@ namespace antara::gaming::graphics
         constexpr outline_color(const graphics::color& other) noexcept : graphics::color(other)
         {
             *this = static_cast<const graphics::outline_color &>(other);
+            this->thickness = 0.f;
         }
 
         template<typename ... TArgs>
@@ -113,7 +114,7 @@ namespace antara::gaming::graphics
 
         constexpr outline_color(const outline_color &other) noexcept = default;
 
-        float thickness{1.f};
+        float thickness{0.f};
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
         using constructors = sol::constructors<outline_color(), outline_color(float, graphics::color), outline_color(
