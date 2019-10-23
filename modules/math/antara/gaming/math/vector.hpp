@@ -278,6 +278,11 @@ namespace antara::gaming::math
             return std::sqrt(square_length());
         }
 
+        constexpr Unit distance(basic_vector const& other) noexcept
+        {
+            return (*this - other).length();
+        }
+
         constexpr basic_vector normalized() const noexcept
         {
             return *this / length();
