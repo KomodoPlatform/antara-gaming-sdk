@@ -36,7 +36,7 @@ If you did everything correctly so far, you should have the following tree:
     ├── CMakeLists.txt
     └── tic-tac-toe.cpp
 
-Before continuing the tutorial, make sure that you have installed the required dependancies and your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`. If needed, help is available in the `Komodo Discord`_ https://discord.gg/VRtwmR2
+Before continuing the tutorial, make sure that you have installed the required dependencies and your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`. If needed, help is available in the Komodo Discord_
 
 Now we need a world representing the world of our game, to do this we use the following header file: ``#include <antara/gaming/world/world.app.hpp>``
 
@@ -1058,3 +1058,5 @@ Here is the complete code of the last step:
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_4/tic-tac-toe.cpp
    :language: cpp
+
+.. _Discord: https://discord.gg/VRtwmR2
