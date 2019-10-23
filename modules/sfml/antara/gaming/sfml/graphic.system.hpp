@@ -29,6 +29,7 @@
 #include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/event/window.resized.hpp"
 #include "antara/gaming/geometry/component.circle.hpp"
+#include "antara/gaming/geometry/component.rectangle.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
@@ -70,6 +71,7 @@ namespace antara::gaming::sfml
         void on_key_pressed(const event::key_pressed& evt) noexcept;
         void on_window_resized_event(const event::window_resized &evt) noexcept;
         void on_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
+        void on_rectangle_construct(entt::entity entity, entt::registry &registry, geometry::rectangle &rectangle) noexcept;
         void on_position_2d_construct(entt::entity entity, entt::registry &registry, transform::position_2d &pos) noexcept;
         void on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept;
         void on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept;

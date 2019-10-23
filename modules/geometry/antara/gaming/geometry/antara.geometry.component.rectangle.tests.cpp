@@ -14,14 +14,30 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/geometry/component.circle.hpp"
+#include <doctest/doctest.h>
 #include "antara/gaming/geometry/component.rectangle.hpp"
-#include "antara/gaming/geometry/component.vertex.hpp"
 
-namespace antara::gaming::geometry
+namespace antara::gaming::geometry::tests
 {
-    using components_list = doom::meta::list<circle, vertex, vertex_array, rectangle>;
+    TEST_SUITE ("test component rectangle")
+    {
+        TEST_CASE ("component rectangle is default constructible")
+        {
+            geometry::rectangle c_rectangle{};
+            CHECK_EQ(c_rectangle.size, math::vec2f{50.0f, 50.0f});
+        }
+
+        TEST_CASE ("component rectangle constructor with value")
+        {
+            geometry::rectangle c_rectangle{{42.0f, 42.0f}};
+            CHECK_EQ(c_rectangle.size, math::vec2f{42.0f, 42.0f});
+        }
+
+        TEST_CASE ("blueprint rectangle")
+        {
+
+            entt::registry entity_registry;
+            CHECK(entity_registry.valid(geometry::blueprint_rectangle(entity_registry, {120.f})));
+        }
+    }
 }

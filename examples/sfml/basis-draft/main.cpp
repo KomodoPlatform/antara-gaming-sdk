@@ -17,6 +17,7 @@
 #include <entt/entity/helper.hpp>
 #include "antara/gaming/world/world.app.hpp"
 #include "antara/gaming/transform/component.position.hpp"
+#include "antara/gaming/geometry/component.rectangle.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/graphics/component.sprite.hpp"
 #include "antara/gaming/sfml/component.drawable.hpp"
@@ -53,6 +54,12 @@ public:
         entity_registry.assign<graphics::sprite>(sprite_entity, "tileSand1.png");
         entity_registry.assign<entt::tag<"game_scene"_hs>>(sprite_entity);
         entity_registry.assign<graphics::layer<0>>(sprite_entity);
+
+
+        auto rect_entity = geometry::blueprint_rectangle(entity_registry, math::vec2f{120.f, 120.f},
+                                                         graphics::magenta, transform::position_2d(200.f, 200.f));
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(rect_entity);
+        entity_registry.assign<graphics::layer<3>>(rect_entity);
     }
 
     void update() noexcept final
