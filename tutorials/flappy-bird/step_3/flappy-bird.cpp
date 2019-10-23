@@ -30,6 +30,14 @@ struct flappy_bird_constants {
     const std::size_t column_count{30};
     const graphics::color pipe_color{92, 181, 61};
     const graphics::outline_color pipe_outline_color{2.0f, graphics::color{76, 47, 61}};
+
+    // Background
+    const float ground_thickness{100.0f};
+    const float grass_thickness{20.0f};
+    const graphics::color background_color{82, 189, 199};
+    const graphics::color ground_color{220, 209, 143};
+    const graphics::color grass_color{132, 227, 90};
+    const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
 };
 
 // A Flappy Bird column which has two pipes
@@ -110,6 +118,52 @@ namespace {
             registry.assign<entt::tag<"column"_hs>>(entity_column);
         }
     }
+
+    //! Factory for creating a Flappy Bird background
+    void create_background(entt::registry &registry) noexcept {
+        //! Retrieve constants
+        const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Create Sky
+        {
+            // Sky is whole canvas so position is middle of it
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
+
+            // And the size is full canvas
+            math::vec2f size{canvas_width, canvas_height};
+
+            auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
+            registry.assign<graphics::layer<5>>(sky);
+        }
+
+        // Create Ground
+        {
+            // Ground expands to whole canvas width so position is middle of it,
+            // But position Y is at bottom of the screen so it's full canvas_height minus half of the ground thickness
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness * 0.5f};
+
+            // Size X is full canvas but the height is defined in constants
+            math::vec2f size{canvas_width, constants.ground_thickness};
+
+            auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
+            registry.assign<graphics::layer<7>>(ground);
+        }
+
+        // Create Grass
+        {
+            // Ground expands to whole canvas width so position is middle of it,
+            // But position Y is at top of the ground, so it's canvas height minus ground thickness
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness};
+
+            // Size X is full canvas but the height is defined in constants
+            // We also make it a bit longer by adding the thickness of the outline to hide the outline at sides
+            math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
+
+            auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
+            registry.assign<graphics::layer<8>>(grass);
+        }
+    }
 }
 
 class game_scene final : public scenes::base_scene {
@@ -120,6 +174,7 @@ public:
 
         //! Create the columns
         create_columns(entity_registry_);
+        create_background(entity_registry_);
     }
 
     //! Update the game every tick
