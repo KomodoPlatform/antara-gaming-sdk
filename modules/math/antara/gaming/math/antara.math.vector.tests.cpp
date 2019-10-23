@@ -104,6 +104,11 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec2_float.length(), 9.f);
         CHECK_EQ(vec2_float.square_length(), 81);
         CHECK_EQ(vec2_float.normalized(), math::vec2f{0.f, 1.f});
+        CHECK_EQ(vec2_float.distance(math::vec2f{0.f, 0.f}), 9.f);
+        math::vec2f another_vec2_float{3.f, 4.f};
+        CHECK_EQ(another_vec2_float.distance(math::vec2f{0.f, 0.f}), 5.f);
+        another_vec2_float = {10.f, 11.f};
+        CHECK_EQ(another_vec2_float.distance(math::vec2f{7.f, 7.f}), 5.f);
     }
 
     TEST_CASE("access")
