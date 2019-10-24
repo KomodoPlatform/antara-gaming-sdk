@@ -101,6 +101,7 @@ namespace {
                 gap_start_pos_y + constants.gap_height + constants.pipe_cap_height * 0.5f
             };
 
+        // Construct the cap
         auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos, constants.pipe_outline_color);
 
         // Set layers, cap should be in front of body
