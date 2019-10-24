@@ -34,6 +34,8 @@ struct flappy_bird_constants {
     const float column_thickness{100.f};
     const float column_distance{400.f};
     const std::size_t column_count{6};
+    const float pipe_cap_extra_width{10.f};
+    const float pipe_cap_height{50.f};
     const graphics::color pipe_color{92, 181, 61};
     const graphics::outline_color pipe_outline_color{2.0f, graphics::color{76, 47, 61}};
     const float scroll_speed{200.f};
@@ -49,22 +51,28 @@ struct flappy_bird_constants {
 };
 
 // A Flappy Bird column which has two pipes
+struct pipe {
+    entt::entity body{entt::null};
+    entt::entity cap{entt::null};
+};
+
 struct column {
     //! Entities representing the Flappy Bird pipes
-    entt::entity top_pipe{entt::null};
-    entt::entity bottom_pipe{entt::null};
+    pipe top_pipe{entt::null};
+    pipe bottom_pipe{entt::null};
 };
 
 //! Contains all the function that will be used for logic  and factory
 namespace {
     // Factory for pipes, requires to know if it's a top one, position x of the column, and the gap starting position Y
-    entt::entity create_pipe(entt::registry &registry, bool is_top, float pos_x, float gap_start_pos_y) {
+    pipe create_pipe(entt::registry &registry, bool is_top, float pos_x, float gap_start_pos_y) {
         // Retrieve constants
         const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
         const auto constants = registry.ctx<flappy_bird_constants>();
 
+        // PIPE BODY
         // Top pipe is at Y: 0 and bottom pipe is at canvas_height, bottom of the canvas
-        transform::position_2d pos{pos_x, is_top ? 0.f : canvas_height};
+        transform::position_2d body_pos{pos_x, is_top ? 0.f : canvas_height};
 
         // Size X is the column thickness,
         // Size Y is the important part.
@@ -73,16 +81,34 @@ namespace {
         // If it's the bottom pipe, top of the rectangle will be at gap_start_pos_y + gap_height
         //  So half size should be canvas_height - (gap_start_pos_y + gap_height)
         // Since these are half-sizes, and the position is at the screen border, we multiply these sizes by two
-        math::vec2f size{constants.column_thickness,
+        math::vec2f body_size{constants.column_thickness,
             is_top ?
                 gap_start_pos_y * 2.0f :
                 (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
 
-        auto pipe = geometry::blueprint_rectangle(registry, size, constants.pipe_color, pos, constants.pipe_outline_color);
+        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos, constants.pipe_outline_color);
 
-        registry.assign<graphics::layer<2>>(pipe);
+        // PIPE CAP
+        // Let's prepare the pipe cap
+        // Size of the cap is defined in constants
+        math::vec2f cap_size{constants.column_thickness + constants.pipe_cap_extra_width, constants.pipe_cap_height};
 
-        return pipe;
+        // Position, X is same as the body. Bottom of the cap is aligned with bottom of the body,
+        // or start of the gap, we will use start of the gap here, minus half of the cap height
+        transform::position_2d cap_pos{body_pos.x(),
+            is_top ?
+                gap_start_pos_y - constants.pipe_cap_height * 0.5f :
+                gap_start_pos_y + constants.gap_height + constants.pipe_cap_height * 0.5f
+            };
+
+        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos, constants.pipe_outline_color);
+
+        // Set layers, cap should be in front of body
+        registry.assign<graphics::layer<2>>(body);
+        registry.assign<graphics::layer<3>>(cap);
+
+        // Construct a pipe with body and cap and return it
+        return {body, cap};
     }
 
     // Returns a random gap start position Y
@@ -222,8 +248,10 @@ public:
             // If column is out of the screen
             if(col_out_of_screen) {
                 // Remove this column
-                registry.destroy(col.top_pipe);
-                registry.destroy(col.bottom_pipe);
+                registry.destroy(col.top_pipe.body);
+                registry.destroy(col.top_pipe.cap);
+                registry.destroy(col.bottom_pipe.body);
+                registry.destroy(col.bottom_pipe.cap);
                 registry.destroy(entity);
 
                 // Create a new column at far end
@@ -241,7 +269,7 @@ private:
 
         for(auto entity : view) {
             auto& col = registry.get<column>(entity);
-            float x = entity_registry_.get<transform::position_2d>(col.top_pipe).x();
+            float x = entity_registry_.get<transform::position_2d>(col.top_pipe.body).x();
             if(x > furthest) furthest = x;
         }
 
@@ -249,19 +277,23 @@ private:
     }
 
     // Move the pipe and return if it's out of the screen
-    bool move_pipe(entt::registry &registry, entt::entity pipe) {
+    bool move_pipe(entt::registry &registry, pipe& pipe) {
         // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Get current position of the pipe
-        auto pos = registry.get<transform::position_2d>(pipe);
+        auto pos = registry.get<transform::position_2d>(pipe.body);
 
         // Shift pos X to left by scroll_speed but multiplying with dt because we do this so many times a second,
         // Delta time makes sure that it's applying over time, so in one second it will move scroll_speed pixels
         auto new_pos_x = pos.x() - constants.scroll_speed * timer::time_step::get_fixed_delta_time();
 
         // Set the new position value
-        registry.assign_or_replace<transform::position_2d>(pipe, new_pos_x, pos.y());
+        registry.assign_or_replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
+
+        // Set cap position too
+        auto cap_pos = registry.get<transform::position_2d>(pipe.cap);
+        registry.assign_or_replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
 
         // Return the info about if this pipe is out of the screen
         return new_pos_x < -constants.column_thickness * 2.0f;
