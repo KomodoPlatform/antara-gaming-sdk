@@ -491,7 +491,7 @@ examples/sfml/*/assets/sounds/intro2.wav
 /modules/lua/assets/lua_assets/*
 /tutorials/*/*/cmake-*
 /tutorials/*/*/.idea
-/tutorials/*/*/Resources
+/tutorials/*/*/Resources/assets/config
 /docs/_build
 
 
