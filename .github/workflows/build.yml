@@ -188,8 +188,9 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           dir
-          echo ${GITHUB_WORKSPACE}
-          cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DUSE_SFML_ANTARA_WRAPPER=ON -DUSE_BOX2D_ANTARA_WRAPPER=ON
+          echo "salut" "${GITHUB_WORKSPACE}"
+          echo "salut" "%GITHUB_WORKSPACE%"
+          cmake -B build -S %GITHUB_WORKSPACE% -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DUSE_SFML_ANTARA_WRAPPER=ON -DUSE_BOX2D_ANTARA_WRAPPER=ON
 
       - name: TSan (Linux)
         if: matrix.name == 'ubuntu-18-04-clang-8-debug-tsan'
