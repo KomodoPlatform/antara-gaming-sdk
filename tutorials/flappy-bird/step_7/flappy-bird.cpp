@@ -109,8 +109,8 @@ namespace {
         auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos, constants.pipe_outline_color);
 
         // Set layers, cap should be in front of body
-        registry.assign<graphics::layer<2>>(body);
-        registry.assign<graphics::layer<3>>(cap);
+        registry.assign<graphics::layer<4>>(cap);
+        registry.assign<graphics::layer<3>>(body);
 
         // Construct a pipe with body and cap and return it
         return {body, cap};
@@ -181,19 +181,6 @@ namespace {
             registry.assign<graphics::layer<1>>(sky);
         }
 
-        // Create Ground
-        {
-            // Ground expands to whole canvas width so position is middle of it,
-            // But position Y is at bottom of the screen so it's full canvas_height minus half of the ground thickness
-            transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness * 0.5f};
-
-            // Size X is full canvas but the height is defined in constants
-            math::vec2f size{canvas_width, constants.ground_thickness};
-
-            auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
-            registry.assign<graphics::layer<3>>(ground);
-        }
-
         // Create Grass
         {
             // Ground expands to whole canvas width so position is middle of it,
@@ -205,7 +192,20 @@ namespace {
             math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
 
             auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
-            registry.assign<graphics::layer<4>>(grass);
+            registry.assign<graphics::layer<3>>(grass);
+        }
+
+        // Create Ground
+        {
+            // Ground expands to whole canvas width so position is middle of it,
+            // But position Y is at bottom of the screen so it's full canvas_height minus half of the ground thickness
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness * 0.5f};
+
+            // Size X is full canvas but the height is defined in constants
+            math::vec2f size{canvas_width, constants.ground_thickness};
+
+            auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
+            registry.assign<graphics::layer<3>>(ground);
         }
     }
 
@@ -375,8 +375,10 @@ public:
         // TODO: Remove this when transform::properties is implemented
         set_global_bounds<sfml::sprite>(player);
 
+        // Check collision with the ground
+        set_global_bounds<sfml::sprite>(player);
 
-        // Loop all columns
+        // Loop all columns to check collisions with the pipes
         for(auto entity : registry.view<column>()) {
             auto& col = registry.get<column>(entity);
 
@@ -411,8 +413,8 @@ public:
         registry.set<flappy_bird_constants>();
 
         //! Create the columns
-        create_columns(registry);
         create_background(registry);
+        create_columns(registry);
 
         auto player = create_player(registry, resource_mgr);
 
