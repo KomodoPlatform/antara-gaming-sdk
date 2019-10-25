@@ -1,16 +1,14 @@
-#include <antara/gaming/world/world.app.hpp>
+#include <random>
+#include <antara/gaming/collisions/basic.collision.system.hpp>
+#include <antara/gaming/graphics/component.layer.hpp>
+#include <antara/gaming/graphics/component.canvas.hpp>
+#include <antara/gaming/math/vector.hpp>
+#include <antara/gaming/scenes/scene.manager.hpp>
 #include <antara/gaming/sfml/graphic.system.hpp>
 #include <antara/gaming/sfml/input.system.hpp>
-#include <antara/gaming/scenes/scene.manager.hpp>
-#include <antara/gaming/math/vector.hpp>
-#include <antara/gaming/graphics/component.canvas.hpp>
-#include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/sfml/component.drawable.hpp>
-// TODO: antara/gaming/collisions/basic.collision.system.hpp not found
-#include "cmake-build-debug/_deps/antara-gaming-sdk-src/modules/collisions/antara/gaming/collisions/basic.collision.system.hpp"
-#include <random>
-#include <iostream>
+#include <antara/gaming/world/world.app.hpp>
 
 //! For convenience
 using namespace antara::gaming;
@@ -486,8 +484,9 @@ private:
 
     void reset_game() {
         entt::registry &registry = this->entity_registry_;
+        ecs::system_manager& system_mgr = this->system_manager;
         this->~game_scene();
-        new(this) game_scene(registry, system_manager);
+        new(this) game_scene(registry, system_mgr);
     }
 };
 

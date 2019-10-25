@@ -43,4 +43,4 @@ init_apple_env()
 add_executable(${PROJECT_NAME} flappy-bird.cpp)
 
 ##! We link the SDK modules that we want to use to our executable
-target_link_libraries(${PROJECT_NAME} PUBLIC antara::world antara::sfml)
+target_link_libraries(${PROJECT_NAME} PUBLIC antara::world antara::sfml antara::collisions)
