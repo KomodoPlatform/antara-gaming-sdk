@@ -5,8 +5,10 @@
 #include <antara/gaming/math/vector.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
-#include "antara/gaming/sfml/resources.manager.hpp"
-#include "antara/gaming/sfml/component.drawable.hpp"
+#include <antara/gaming/sfml/resources.manager.hpp>
+#include <antara/gaming/sfml/component.drawable.hpp>
+// TODO: antara/gaming/collisions/basic.collision.system.hpp not found
+#include "cmake-build-debug/_deps/antara-gaming-sdk-src/modules/collisions/antara/gaming/collisions/basic.collision.system.hpp"
 #include <random>
 #include <iostream>
 
@@ -347,6 +349,61 @@ private:
 //! Give a name to our system
 REFL_AUTO(type(player_logic));
 
+class collision_logic final : public ecs::logic_update_system<collision_logic> {
+public:
+    collision_logic(entt::registry &registry, entt::entity player_, bool& player_died_) noexcept : system(registry), player(player_), player_died(player_died_) { }
+
+    // TODO: transform::properties of sprite and rectangle is NULL, so they fail at query_rect. Implement this internally
+    template<class T>
+    void set_global_bounds(entt::entity entity) {
+        auto& registry = entity_registry_;
+
+        sf::FloatRect global_bounds = registry.get<T>(entity).drawable.getGlobalBounds();
+        transform::properties prop;
+        prop.global_bounds.pos.set_xy(global_bounds.left, global_bounds.top);
+        prop.global_bounds.size.set_xy(global_bounds.width, global_bounds.height);
+        registry.assign_or_replace<transform::properties>(entity, prop);
+    }
+
+    void update() noexcept final {
+        auto& registry = entity_registry_;
+
+        // Do not check anything if player is already dead
+        if(player_died) return;
+
+        // Set player global bounds manually
+        // TODO: Remove this when transform::properties is implemented
+        set_global_bounds<sfml::sprite>(player);
+
+
+        // Loop all columns
+        for(auto entity : registry.view<column>()) {
+            auto& col = registry.get<column>(entity);
+
+            // Set pipe global bounds manually
+            // TODO: transform::properties of sprite is NULL, so they fail at query_rect do this internally
+            set_global_bounds<sfml::rectangle>(col.top_pipe.body);
+            set_global_bounds<sfml::rectangle>(col.bottom_pipe.body);
+
+            // Check collision between player and two pipes at this column
+            if(collisions::basic_collision_system::query_rect(registry, player, col.top_pipe.body) ||
+               collisions::basic_collision_system::query_rect(registry, player, col.bottom_pipe.body)) {
+                std::cout << "Collision with a pipe" << std::endl;
+                player_died = true;
+            }
+        }
+    }
+
+private:
+    entt::entity player;
+    math::vec2f movement_speed;
+    bool& player_died;
+    bool jump_key_pressed_last_tick = false;
+};
+
+//! Give a name to our system
+REFL_AUTO(type(collision_logic));
+
 class game_scene final : public scenes::base_scene {
 public:
     game_scene(entt::registry &registry, ecs::system_manager& system_manager_) noexcept : base_scene(registry), system_manager(system_manager_) {
@@ -364,7 +421,18 @@ public:
         system_manager.create_system<player_logic>(player);
 
         // Disable physics and everything at start
+        pause_physics();
+
+        // Collision system
+        system_manager.create_system<collision_logic>(player, player_died);
+    }
+
+    void pause_physics() {
         system_manager.disable_systems<column_logic, player_logic>();
+    }
+
+    void resume_physics() {
+        system_manager.enable_systems<column_logic, player_logic>();
     }
 
     //! Update the game every tick
@@ -382,8 +450,14 @@ public:
             // If jump key is tapped, game starts, player started playing
             if(jump_key_tapped) {
                 started_playing = true;
-                system_manager.enable_systems<column_logic, player_logic>();
+                resume_physics();
             }
+        }
+
+        if(player_died) {
+            player_died = false;
+            started_playing = false;
+            pause_physics();
         }
     }
 
@@ -406,7 +480,11 @@ public:
 private:
     sfml::resources_manager resource_mgr;
     ecs::system_manager& system_manager;
+
+    // States
     bool started_playing = false;
+    bool player_died = false;
+
     bool jump_key_pressed_last_tick = false;
 };
 
