@@ -20,7 +20,7 @@
 #include "antara/gaming/geometry/component.rectangle.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/graphics/component.sprite.hpp"
-#include "antara/gaming/sfml/component.drawable.hpp"
+//#include "antara/gaming/sfml/component.drawable.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
 #include "antara/gaming/sfml/input.system.hpp"
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
@@ -50,8 +50,12 @@ public:
         entity_registry.assign<entt::tag<"game_scene"_hs>>(another_text_entity);
         entity_registry.assign<graphics::layer<0>>(another_text_entity);
 
-        auto sprite_entity = entity_registry.create();
-        entity_registry.assign<graphics::sprite>(sprite_entity, "tileSand1.png");
+        auto sprite_entity = graphics::blueprint_sprite(entity_registry,
+                graphics::sprite{"tileSand1.png"},
+                transform::position_2d{400.f, 400.f},
+                graphics::white,
+                transform::properties{.scale = 2.f, .rotation = 45.f});
+        //entity_registry.assign<graphics::sprite>(sprite_entity, "tileSand1.png");
         entity_registry.assign<entt::tag<"game_scene"_hs>>(sprite_entity);
         entity_registry.assign<graphics::layer<0>>(sprite_entity);
 

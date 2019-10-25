@@ -37,6 +37,7 @@ namespace
             auto[scale_x, scale_y] = (*properties).scale;
             underlying_entity.setScale(scale_x, scale_y);
             underlying_entity.setRotation(properties->rotation);
+            underlying_entity.getTransform();
             auto[l_left, l_top, l_width, l_height] = underlying_entity.getLocalBounds();
             auto &local_bounds = (*properties).local_bounds;
             local_bounds.size = math::vec2f{l_width, l_height};
@@ -112,15 +113,38 @@ namespace antara::gaming::sfml
         this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().less(
                 [this](auto &&drawable) {
                     if constexpr (doom::meta::is_detected_v<have_global_bounds, DrawableType>) {
-                        if (this->debug_mode_) {
-                            auto[left, top, width, height] = drawable.drawable.getGlobalBounds();
-                            sf::RectangleShape shape_debug(sf::Vector2f(width, height));
+                        if (this->debug_mode_)
+                        {
+                            auto[capsule_left, capsule_top, capsule_width, capsule_height] = drawable.drawable.getGlobalBounds();
+                            auto[_, __, width, height] = drawable.drawable.getLocalBounds();
+
+                            sf::RectangleShape shape_debug{sf::Vector2f(width, height)};
+                            sf::RectangleShape aabb_shape_debug{sf::Vector2f(capsule_width, capsule_height)};
+
+                            // Set origin for the new size as middle
+                            shape_debug.setOrigin(width * 0.5f, height * 0.5f);
+
+                            // Move to the middle of the encapsulating bounds
+                            shape_debug.setPosition(capsule_left + capsule_width*0.5f, capsule_top + capsule_height*0.5f);
+                            aabb_shape_debug.setPosition(capsule_left, capsule_top);
+
+                            // Change the scale
+                            shape_debug.setScale(drawable.drawable.getScale());
+
+                            // Rotate
                             shape_debug.setRotation(drawable.drawable.getRotation());
+
+                            // Cosmetic
                             shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
                             shape_debug.setOutlineThickness(3.0f);
                             shape_debug.setOutlineColor(sf::Color::Red);
-                            shape_debug.setPosition(left, top);
+
+                            aabb_shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
+                            aabb_shape_debug.setOutlineThickness(3.0f);
+                            aabb_shape_debug.setOutlineColor(sf::Color::Blue);
+
                             this->render_texture_.draw(shape_debug);
+                            this->render_texture_.draw(aabb_shape_debug);
                         }
                     }
                     this->render_texture_.draw(drawable.drawable);
@@ -227,6 +251,7 @@ namespace antara::gaming::sfml
     {
         if (auto cmp = this->entity_registry_.try_get<DrawableType>(entity); cmp != nullptr) {
             cmp->drawable.setPosition(pos.x(), pos.y());
+            fill_properties_sfml_entity(entity_registry_, entity, cmp->drawable);
             return true;
         }
         return false;
