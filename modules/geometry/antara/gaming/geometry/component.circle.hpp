@@ -54,7 +54,7 @@ namespace antara::gaming::geometry
             graphics::fill_color fill_color = graphics::white,
             transform::position_2d pos = math::vec2f::scalar(0.f),
             graphics::outline_color out_color = graphics::transparent,
-            transform::properties prop = {}) noexcept;
+            const transform::properties& prop = {}) noexcept;
 }
 
 REFL_AUTO(type(antara::gaming::geometry::circle), field(radius));
