@@ -430,28 +430,31 @@ public:
 
     //! Update the game every tick
     void update() noexcept final {
-        // If game is not started yet
-        if(!started_playing) {
-            // Retrieve constants
-            const auto constants = entity_registry_.ctx<flappy_bird_constants>();
+        // Retrieve constants
+        const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
-            // Check if jump key is tapped
-            bool jump_key_pressed = input::is_key_pressed(constants.jump_button);
-            bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
-            jump_key_pressed_last_tick = jump_key_pressed;
+        // Check if jump key is tapped
+        bool jump_key_pressed = input::is_key_pressed(constants.jump_button);
+        bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
+        jump_key_pressed_last_tick = jump_key_pressed;
 
-            // If jump key is tapped, game starts, player started playing
-            if(jump_key_tapped) {
-                started_playing = true;
-                resume_physics();
-            }
+        // If game is not started yet and jump key is tapped
+        if(!started_playing && jump_key_tapped) {
+            // Game starts, player started playing
+            started_playing = true;
+            resume_physics();
         }
 
+        // If player died, game over, and pause physics
         if(player_died) {
             player_died = false;
-            started_playing = false;
+            game_over = true;
             pause_physics();
         }
+
+        // If game is over, and jump key is pressed, reset game
+        if(game_over && jump_key_pressed)
+            reset_game();
     }
 
     //! Scene name
@@ -477,8 +480,15 @@ private:
     // States
     bool started_playing = false;
     bool player_died = false;
+    bool game_over = false;
 
     bool jump_key_pressed_last_tick = false;
+
+    void reset_game() {
+        entt::registry &registry = this->entity_registry_;
+        this->~game_scene();
+        new(this) game_scene(registry, system_manager);
+    }
 };
 
 //! Game world
@@ -496,7 +506,6 @@ struct flappy_bird_world : world::app {
 
         //! Change the current_scene to "game_scene" by pushing it.
         scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_, this->system_manager_), true);
-
     }
 };
 
