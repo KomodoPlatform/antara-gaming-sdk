@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "antara/gaming/transform/component.properties.hpp"
+#include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/math/vector.hpp"
 
@@ -29,10 +31,24 @@ namespace antara::gaming::graphics
 
     struct sprite
     {
-        const char* appearance; //! texture id
+        const char *appearance; //! texture id
         bool native_size{true}; //! take the whole size by default
         rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
     };
+
+    inline entt::entity blueprint_sprite(entt::registry &registry,
+                                         const sprite &spr,
+                                         transform::position_2d pos = math::vec2f::scalar(0.f),
+                                         fill_color spr_color = graphics::white,
+                                         const transform::properties &prop = {}) noexcept
+    {
+        auto spr_entity = registry.create();
+        registry.assign<fill_color>(spr_entity, spr_color);
+        registry.assign<transform::properties>(spr_entity, prop);
+        registry.assign<sprite>(spr_entity, spr);
+        registry.assign<transform::position_2d>(spr_entity, pos);
+        return spr_entity;
+    }
 }
 
 REFL_AUTO(type(antara::gaming::graphics::rect), field(pos), field(size))
