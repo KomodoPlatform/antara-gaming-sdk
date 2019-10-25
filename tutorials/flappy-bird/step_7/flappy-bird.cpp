@@ -372,25 +372,18 @@ public:
         if(player_died) return;
 
         // Set player global bounds manually
-        // TODO: Remove this when transform::properties is implemented
-        set_global_bounds<sfml::sprite>(player);
-
-        // Check collision with the ground
+        // TODO: transform::properties of sprite is NULL, so they fail at query_rect do this internally
         set_global_bounds<sfml::sprite>(player);
 
         // Loop all columns to check collisions with the pipes
-        for(auto entity : registry.view<column>()) {
-            auto& col = registry.get<column>(entity);
-
+        for(auto entity : registry.view<graphics::layer<3>>()) {
             // Set pipe global bounds manually
-            // TODO: transform::properties of sprite is NULL, so they fail at query_rect do this internally
-            set_global_bounds<sfml::rectangle>(col.top_pipe.body);
-            set_global_bounds<sfml::rectangle>(col.bottom_pipe.body);
+            // TODO: Remove this when transform::properties is implemented
+            set_global_bounds<sfml::rectangle>(entity);
 
-            // Check collision between player and two pipes at this column
-            if(collisions::basic_collision_system::query_rect(registry, player, col.top_pipe.body) ||
-               collisions::basic_collision_system::query_rect(registry, player, col.bottom_pipe.body)) {
-                std::cout << "Collision with a pipe" << std::endl;
+            // Check collision between player and a collidable object
+            if(collisions::basic_collision_system::query_rect(registry, player, entity)) {
+                // Mark player died as true
                 player_died = true;
             }
         }
@@ -398,9 +391,7 @@ public:
 
 private:
     entt::entity player;
-    math::vec2f movement_speed;
     bool& player_died;
-    bool jump_key_pressed_last_tick = false;
 };
 
 //! Give a name to our system
