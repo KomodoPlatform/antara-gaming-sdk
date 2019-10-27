@@ -44,6 +44,8 @@ namespace antara::gaming::scenes
         //!
         void update() noexcept final;
 
+        void post_update() noexcept final;
+
         //! Public member function
         void change_scene(scene_ptr &&scene, bool just_push_scene = false) noexcept;
 

@@ -113,4 +113,11 @@ namespace antara::gaming::scenes
         this->dispatcher_.sink<event::change_scene>().disconnect<&manager::receive_change_scene>(*this);
     }
 
+    void manager::post_update() noexcept
+    {
+        if (not scenes_.empty()) {
+            scenes_.top()->post_update();
+        }
+    }
+
 }
