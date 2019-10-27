@@ -20,6 +20,19 @@ macro(configure_icon_osx icon_path icon_variable icon_name)
     endif ()
 endmacro()
 
+macro(init_windows_env)
+    if (WIN32)
+        message(STATUS "${CMAKE_CXX_COMPILER_ID} x${CMAKE_CXX_SIMULATE_ID} ${CMAKE_CXX_COMPILER}")
+        get_filename_component(real_compiler ${CMAKE_CXX_COMPILER} NAME_WE)
+        if (${real_compiler} STREQUAL "clang-cl")
+            set(ClangCL ON)
+            message(STATUS "clang cl detected")
+        endif()
+    endif()
+endmacro()
+
+init_windows_env()
+
 include(compiler_targets)
 include(dependencies)
 

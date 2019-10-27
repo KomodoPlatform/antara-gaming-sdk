@@ -11,8 +11,11 @@ target_compile_options(
         INTERFACE
         $<$<AND:$<PLATFORM_ID:Linux>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
         $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
-        $<$<AND:$<PLATFORM_ID:Windows>,$<CXX_COMPILER_ID:Clang>>:/W4 /permissive->)
+        $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
+        $<$<AND:$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>,$<CXX_COMPILER_ID:Clang>>:/W4 /permissive->)
 
+# $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
+# $<$<AND:$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>,$<CXX_COMPILER_ID:Clang>>:/W4 /permissive->
 ##! We are using C++ 17 for all of our targets
 add_library(antara_defaults_features INTERFACE)
 add_library(antara::defaults_features ALIAS antara_defaults_features)
@@ -34,8 +37,10 @@ target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Linux>>:-O2 -march=native>
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Darwin>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Darwin>>:-O2 -march=native>
-        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/Zi /FS /DEBUG /Od /MDd /Oy->
-        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>>:/O2 -DNDEBUG>
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>>:-O0 -g>
+        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>>:-O2 -march=native>
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/Zi /FS /DEBUG /Od /MDd /Oy->
+        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/O2 -DNDEBUG>
         )
 
 ## Cross filesystem
