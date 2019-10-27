@@ -24,12 +24,17 @@ namespace antara::gaming::geometry
 
     }
 
-    entt::entity blueprint_rectangle(entt::registry &registry, math::vec2f size, graphics::fill_color fill_color,
-                                     transform::position_2d pos, graphics::outline_color out_color) noexcept
+    entt::entity blueprint_rectangle(entt::registry &registry,
+                                     math::vec2f size,
+                                     graphics::fill_color fill_color,
+                                     transform::position_2d pos,
+                                     graphics::outline_color out_color,
+                                     const transform::properties &prop) noexcept
     {
         auto rectangle_entity = registry.create();
         registry.assign<graphics::fill_color>(rectangle_entity, fill_color);
         registry.assign<graphics::outline_color>(rectangle_entity, out_color);
+        registry.assign<transform::properties>(rectangle_entity, prop);
         registry.assign<geometry::rectangle>(rectangle_entity, size);
         registry.assign<transform::position_2d>(rectangle_entity, pos);
         return rectangle_entity;

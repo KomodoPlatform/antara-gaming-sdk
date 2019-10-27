@@ -152,7 +152,7 @@ jobs:
           brew install llvm@${{ matrix.version}}
           echo "::set-env name=CC::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang"
           echo "::set-env name=CXX::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang++"
-          sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+          #sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target / -allowUntrusted
 
       - name: Install (Windows)
         if: runner.os == 'Windows'
@@ -187,7 +187,10 @@ jobs:
           ANTARA_BUILD_TYPE: ${{matrix.cmake_build_type}}
         if: runner.os == 'Windows'
         run: |
-          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=${ANTARA_BUILD_TYPE} -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DUSE_SFML_ANTARA_WRAPPER=ON -DUSE_BOX2D_ANTARA_WRAPPER=ON
+          dir
+          echo %GITHUB_WORKSPACE%
+          cmake -B build -S %GITHUB_WORKSPACE% -G Ninja -DCMAKE_BUILD_TYPE=%ANTARA_BUILD_TYPE% -DANTARA_BUILD_EXAMPLES=ON -DUSE_LUA_ANTARA_WRAPPER=ON -DANTARA_BUILD_UNIT_TESTS=ON -DUSE_SFML_ANTARA_WRAPPER=ON -DUSE_BOX2D_ANTARA_WRAPPER=ON
+        shell: cmd
 
       - name: TSan (Linux)
         if: matrix.name == 'ubuntu-18-04-clang-8-debug-tsan'

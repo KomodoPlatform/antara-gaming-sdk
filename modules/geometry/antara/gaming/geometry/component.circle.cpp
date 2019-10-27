@@ -29,11 +29,13 @@ namespace antara::gaming::geometry
     }
 
     entt::entity blueprint_circle(entt::registry &registry, float radius, graphics::fill_color fill_color,
-                                  transform::position_2d pos, graphics::outline_color out_color) noexcept
+                                  transform::position_2d pos, graphics::outline_color out_color,
+                                  const transform::properties& prop) noexcept
     {
         auto circle_entity = registry.create();
         registry.assign<graphics::fill_color>(circle_entity, fill_color);
         registry.assign<graphics::outline_color>(circle_entity, out_color);
+        registry.assign<transform::properties>(circle_entity,  prop);
         registry.assign<geometry::circle>(circle_entity, radius);
         registry.assign<transform::position_2d>(circle_entity, pos);
         return circle_entity;

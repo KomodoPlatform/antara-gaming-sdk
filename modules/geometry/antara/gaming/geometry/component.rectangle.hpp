@@ -20,6 +20,7 @@
 #include <entt/entity/registry.hpp>
 #include "antara/gaming/graphics/component.color.hpp"
 #include "antara/gaming/transform/component.position.hpp"
+#include "antara/gaming/transform/component.properties.hpp"
 #include "antara/gaming/math/vector.hpp"
 
 namespace antara::gaming::geometry
@@ -44,7 +45,8 @@ namespace antara::gaming::geometry
             math::vec2f size,
             graphics::fill_color fill_color = graphics::white,
             transform::position_2d pos = math::vec2f::scalar(0.f),
-            graphics::outline_color out_color = graphics::transparent) noexcept;
+            graphics::outline_color out_color = graphics::transparent,
+            const transform::properties& prop = {}) noexcept;
 }
 
 REFL_AUTO(type(antara::gaming::geometry::rectangle), field(size));
