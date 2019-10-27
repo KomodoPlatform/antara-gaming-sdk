@@ -111,6 +111,8 @@ namespace {
         registry.assign<graphics::layer<3>>(body);
         registry.assign<entt::tag<"game_scene"_hs>>(cap);
         registry.assign<entt::tag<"game_scene"_hs>>(body);
+        registry.assign<entt::tag<"dynamic"_hs>>(cap);
+        registry.assign<entt::tag<"dynamic"_hs>>(body);
 
         // Construct a pipe with body and cap and return it
         return {body, cap};
@@ -144,6 +146,7 @@ namespace {
         registry.assign<column>(entity_column, top_pipe, bottom_pipe);
         registry.assign<entt::tag<"column"_hs>>(entity_column);
         registry.assign<entt::tag<"game_scene"_hs>>(entity_column);
+        registry.assign<entt::tag<"dynamic"_hs>>(entity_column);
     }
 
     //! Factory for creating a Flappy Bird columns
@@ -224,6 +227,7 @@ namespace {
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
         registry.assign<entt::tag<"game_scene"_hs>>(entity);
+        registry.assign<entt::tag<"dynamic"_hs>>(entity);
 
         return entity;
     }
@@ -382,6 +386,10 @@ public:
 
         //! Create the columns
         create_background(registry);
+        init_dynamic_objects(registry);
+    }
+
+    void init_dynamic_objects(entt::registry &registry) {
         create_columns(registry);
 
         auto player = create_player(registry);
@@ -395,6 +403,12 @@ public:
 
         // Collision system
         system_manager.create_system<collision_logic>(player, player_died);
+
+        // Reset state values
+        started_playing = false;
+        player_died = false;
+        game_over = false;
+        jump_key_pressed_last_tick = false;
     }
 
     void pause_physics() {
@@ -451,26 +465,30 @@ public:
     }
 
 private:
-    sfml::resources_manager resource_mgr;
     ecs::system_manager& system_manager;
 
     // States
-    bool started_playing = false;
-    bool player_died = false;
-    bool game_over = false;
+    bool started_playing;
+    bool player_died;
+    bool game_over;
 
-    bool jump_key_pressed_last_tick = false;
+    bool jump_key_pressed_last_tick;
 
     void destroy_all() {
         //! Retrieve the collection of entities from the game scene
-        auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
+        auto view = entity_registry_.view<entt::tag<"dynamic"_hs>>();
 
         //! Iterate the collection and destroy each entities
         entity_registry_.destroy(view.begin(), view.end());
+
+        //! Delete systems
+        system_manager.mark_systems<player_logic, collision_logic>();
+        system_manager.update();
     }
 
     void reset_game() {
         destroy_all();
+        init_dynamic_objects(entity_registry_);
     }
 };
 
