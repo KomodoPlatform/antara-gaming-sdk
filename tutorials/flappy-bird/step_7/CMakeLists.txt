@@ -44,3 +44,28 @@ add_executable(${PROJECT_NAME} flappy-bird.cpp)
 
 ##! We link the SDK modules that we want to use to our executable
 target_link_libraries(${PROJECT_NAME} PUBLIC antara::world antara::sfml antara::collisions)
+
+##! Move assets
+if (WIN32)
+    file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/)
+    ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/bin/"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
+
+    ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${SFML_SOURCE_DIR}/extlibs/bin/x64/openal32.dll" "${CMAKE_BINARY_DIR}/bin/openal32.dll"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
+endif ()
+
+if (APPLE)
+    file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}.app/Contents/Resources)
+endif()
+
+set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
+        )

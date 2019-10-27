@@ -7,8 +7,8 @@
 #include <antara/gaming/sfml/graphic.system.hpp>
 #include <antara/gaming/sfml/input.system.hpp>
 #include <antara/gaming/sfml/resources.manager.hpp>
-#include <antara/gaming/sfml/component.drawable.hpp>
 #include <antara/gaming/world/world.app.hpp>
+#include <antara/gaming/graphics/component.sprite.hpp>
 
 //! For convenience
 using namespace antara::gaming;
@@ -109,6 +109,8 @@ namespace {
         // Set layers, cap should be in front of body
         registry.assign<graphics::layer<4>>(cap);
         registry.assign<graphics::layer<3>>(body);
+        registry.assign<entt::tag<"game_scene"_hs>>(cap);
+        registry.assign<entt::tag<"game_scene"_hs>>(body);
 
         // Construct a pipe with body and cap and return it
         return {body, cap};
@@ -141,6 +143,7 @@ namespace {
         // Make a column from these two pipes and mark it as "column"
         registry.assign<column>(entity_column, top_pipe, bottom_pipe);
         registry.assign<entt::tag<"column"_hs>>(entity_column);
+        registry.assign<entt::tag<"game_scene"_hs>>(entity_column);
     }
 
     //! Factory for creating a Flappy Bird columns
@@ -177,6 +180,7 @@ namespace {
 
             auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
             registry.assign<graphics::layer<1>>(sky);
+            registry.assign<entt::tag<"game_scene"_hs>>(sky);
         }
 
         // Create Grass
@@ -191,6 +195,7 @@ namespace {
 
             auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
             registry.assign<graphics::layer<3>>(grass);
+            registry.assign<entt::tag<"game_scene"_hs>>(grass);
         }
 
         // Create Ground
@@ -204,27 +209,21 @@ namespace {
 
             auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
             registry.assign<graphics::layer<3>>(ground);
+            registry.assign<entt::tag<"game_scene"_hs>>(ground);
         }
     }
 
-    entt::entity create_player(entt::registry &registry, sfml::resources_manager &resource_mgr) {
+    entt::entity create_player(entt::registry &registry) {
         //! Retrieve constants
         const auto [canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
-        //! Texture loading
-        auto texture = resource_mgr.load_texture(std::string(constants.player_image_name).c_str());
-        texture.get().setSmooth(true);
-
-        //! Entity creation
-        auto entity = registry.create();
-
-        //! Entity components
-        registry.assign<sfml::sprite>(entity, sf::Sprite(*texture));
-        registry.assign_or_replace<transform::position_2d>(entity, canvas_width * 0.2f, canvas_height * 0.2f);
+        auto entity = graphics::blueprint_sprite(registry,
+                                                        graphics::sprite{constants.player_image_name.c_str()},
+                                                        transform::position_2d{canvas_width * 0.2f, canvas_height * 0.2f});
+        registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
         registry.assign<entt::tag<"game_scene"_hs>>(entity);
-        registry.assign<antara::gaming::graphics::layer<5>>(entity);
 
         return entity;
     }
@@ -351,34 +350,14 @@ class collision_logic final : public ecs::logic_update_system<collision_logic> {
 public:
     collision_logic(entt::registry &registry, entt::entity player_, bool& player_died_) noexcept : system(registry), player(player_), player_died(player_died_) { }
 
-    // TODO: transform::properties of sprite and rectangle is NULL, so they fail at query_rect. Implement this internally
-    template<class T>
-    void set_global_bounds(entt::entity entity) {
-        auto& registry = entity_registry_;
-
-        sf::FloatRect global_bounds = registry.get<T>(entity).drawable.getGlobalBounds();
-        transform::properties prop;
-        prop.global_bounds.pos.set_xy(global_bounds.left, global_bounds.top);
-        prop.global_bounds.size.set_xy(global_bounds.width, global_bounds.height);
-        registry.assign_or_replace<transform::properties>(entity, prop);
-    }
-
     void update() noexcept final {
         auto& registry = entity_registry_;
 
         // Do not check anything if player is already dead
         if(player_died) return;
 
-        // Set player global bounds manually
-        // TODO: transform::properties of sprite is NULL, so they fail at query_rect do this internally
-        set_global_bounds<sfml::sprite>(player);
-
         // Loop all columns to check collisions with the pipes
         for(auto entity : registry.view<graphics::layer<3>>()) {
-            // Set pipe global bounds manually
-            // TODO: Remove this when transform::properties is implemented
-            set_global_bounds<sfml::rectangle>(entity);
-
             // Check collision between player and a collidable object
             if(collisions::basic_collision_system::query_rect(registry, player, entity)) {
                 // Mark player died as true
@@ -405,7 +384,7 @@ public:
         create_background(registry);
         create_columns(registry);
 
-        auto player = create_player(registry, resource_mgr);
+        auto player = create_player(registry);
 
         //! Create systems
         system_manager.create_system<column_logic>();
@@ -482,11 +461,16 @@ private:
 
     bool jump_key_pressed_last_tick = false;
 
+    void destroy_all() {
+        //! Retrieve the collection of entities from the game scene
+        auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
+
+        //! Iterate the collection and destroy each entities
+        entity_registry_.destroy(view.begin(), view.end());
+    }
+
     void reset_game() {
-        entt::registry &registry = this->entity_registry_;
-        ecs::system_manager& system_mgr = this->system_manager;
-        this->~game_scene();
-        new(this) game_scene(registry, system_mgr);
+        destroy_all();
     }
 };
 
@@ -497,6 +481,9 @@ struct flappy_bird_world : world::app {
         //! Load our graphical system
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
+        //! Load our resources system
+        entity_registry_.set<antara::gaming::sfml::resources_system>(entity_registry_);
+
         //! Load our input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
@@ -504,7 +491,7 @@ struct flappy_bird_world : world::app {
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
 
         //! Change the current_scene to "game_scene" by pushing it.
-        scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_, this->system_manager_), true);
+        scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_, system_manager_), true);
     }
 };
 
