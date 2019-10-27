@@ -56,12 +56,23 @@ struct flappy_bird_constants {
 struct pipe {
     entt::entity body{entt::null};
     entt::entity cap{entt::null};
+
+    void destroy(entt::registry &registry) {
+        registry.destroy(body);
+        registry.destroy(cap);
+    }
 };
 
 struct column {
     //! Entities representing the Flappy Bird pipes
     pipe top_pipe{entt::null};
     pipe bottom_pipe{entt::null};
+
+    void destroy(entt::registry &registry, entt::entity entity) {
+        top_pipe.destroy(registry);
+        bottom_pipe.destroy(registry);
+        registry.destroy(entity);
+    }
 };
 
 //! Contains all the function that will be used for logic  and factory
@@ -216,6 +227,7 @@ namespace {
         }
     }
 
+    //! Factory for creating the player
     entt::entity create_player(entt::registry &registry) {
         //! Retrieve constants
         const auto [canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
@@ -235,7 +247,7 @@ namespace {
 
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    column_logic(entt::registry &registry) noexcept : system(registry) { }
+    explicit column_logic(entt::registry &registry) noexcept : system(registry) { }
 
     void update() noexcept final {
         auto& registry = entity_registry_;
@@ -244,9 +256,7 @@ public:
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Loop all columns
-        auto view = registry.view<column>();
-
-        for(auto entity : view) {
+        for(auto entity : registry.view<column>()) {
             auto& col = registry.get<column>(entity);
 
             // Move pipes, and check if they are out of the screen
@@ -255,11 +265,7 @@ public:
             // If column is out of the screen
             if(col_out_of_screen) {
                 // Remove this column
-                registry.destroy(col.top_pipe.body);
-                registry.destroy(col.top_pipe.cap);
-                registry.destroy(col.bottom_pipe.body);
-                registry.destroy(col.bottom_pipe.cap);
-                registry.destroy(entity);
+                col.destroy(registry, entity);
 
                 // Create a new column at far end
                 create_column(registry, furthest_pipe_position(registry) + constants.column_distance);
@@ -343,7 +349,7 @@ public:
 
 private:
     entt::entity player;
-    math::vec2f movement_speed;
+    math::vec2f movement_speed{0.f, 0.f};
     bool jump_key_pressed_last_tick = false;
 };
 
@@ -468,8 +474,7 @@ private:
         this->need_reset = true;
     }
 
-    void post_update() noexcept final
-    {
+    void post_update() noexcept final {
         if(need_reset) {
             //! Reinitialize all these
             init_dynamic_objects(entity_registry_);
@@ -480,10 +485,10 @@ private:
     ecs::system_manager& system_manager;
 
     // States
-    bool started_playing;
-    bool player_died;
-    bool game_over;
-    bool jump_key_pressed_last_tick;
+    bool started_playing{false};
+    bool player_died{false};
+    bool game_over{false};
+    bool jump_key_pressed_last_tick{false};
     bool need_reset{false};
 };
 
