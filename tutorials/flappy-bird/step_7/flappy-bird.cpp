@@ -389,36 +389,12 @@ public:
         init_dynamic_objects(registry);
     }
 
-    void init_dynamic_objects(entt::registry &registry) {
-        create_columns(registry);
-
-        auto player = create_player(registry);
-
-        //! Create systems
-        system_manager.create_system<column_logic>();
-        system_manager.create_system<player_logic>(player);
-
-        // Disable physics and everything at start
-        pause_physics();
-
-        // Collision system
-        system_manager.create_system<collision_logic>(player, player_died);
-
-        // Reset state values
-        started_playing = false;
-        player_died = false;
-        game_over = false;
-        jump_key_pressed_last_tick = false;
+    //! Scene name
+    std::string scene_name() noexcept final {
+        return "game_scene";
     }
 
-    void pause_physics() {
-        system_manager.disable_systems<column_logic, player_logic>();
-    }
-
-    void resume_physics() {
-        system_manager.enable_systems<column_logic, player_logic>();
-    }
-
+private:
     //! Update the game every tick
     void update() noexcept final {
         // Retrieve constants
@@ -444,45 +420,47 @@ public:
         }
 
         // If game is over, and jump key is pressed, reset game
-        if(game_over && jump_key_pressed)
-            reset_game();
+        if(game_over && jump_key_pressed) reset_game();
     }
 
     void post_update() noexcept final
     {
-        if(this->need_reset) {
+        if(need_reset) {
+            //! Reinitialize all these
             init_dynamic_objects(entity_registry_);
             need_reset = false;
         }
     }
 
-    //! Scene name
-    std::string scene_name() noexcept final {
-        return "game_scene";
+    void init_dynamic_objects(entt::registry &registry) {
+        create_columns(registry);
+
+        auto player = create_player(registry);
+
+        //! Create systems
+        system_manager.create_system<column_logic>();
+        system_manager.create_system<player_logic>(player);
+
+        // Disable physics and everything at start
+        pause_physics();
+
+        // Collision system
+        system_manager.create_system<collision_logic>(player, player_died);
+
+        // Reset state values
+        started_playing = false;
+        player_died = false;
+        game_over = false;
     }
 
-    ~game_scene() noexcept final {
-        //! Retrieve the collection of entities from the game scene
-        auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
-
-        //! Iterate the collection and destroy each entities
-        entity_registry_.destroy(view.begin(), view.end());
-
-        //! Unset the tic tac toe constants
-        entity_registry_.unset<flappy_bird_constants>();
+    void pause_physics() {
+        system_manager.disable_systems<column_logic, player_logic>();
     }
 
-private:
-    ecs::system_manager& system_manager;
+    void resume_physics() {
+        system_manager.enable_systems<column_logic, player_logic>();
+    }
 
-    // States
-    bool started_playing;
-    bool player_died;
-    bool game_over;
-    bool jump_key_pressed_last_tick;
-    bool need_reset{false};
-
-private:
     void destroy_all() {
         //! Retrieve the collection of entities from the game scene
         auto view = entity_registry_.view<entt::tag<"dynamic"_hs>>();
@@ -492,14 +470,21 @@ private:
 
         //! Delete systems
         system_manager.mark_systems<player_logic, collision_logic>();
-        //system_manager.update();
     }
 
     void reset_game() {
         destroy_all();
         this->need_reset = true;
-        //init_dynamic_objects(entity_registry_);
     }
+
+    ecs::system_manager& system_manager;
+
+    // States
+    bool started_playing;
+    bool player_died;
+    bool game_over;
+    bool jump_key_pressed_last_tick;
+    bool need_reset{false};
 };
 
 //! Game world
