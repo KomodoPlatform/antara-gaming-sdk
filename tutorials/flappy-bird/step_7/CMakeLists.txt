@@ -39,8 +39,18 @@ FetchContent_MakeAvailable(antara-gaming-sdk)
 ##! Calling this macros provided by the sdk will if you are on Apple init the environment for this OS (std::filesystem).
 init_apple_env()
 
+##! Osx bundle icon
+set(ICON)
+configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
+
 ##! We create the executable with the project name
-add_executable(${PROJECT_NAME} flappy-bird.cpp)
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${ICON} flappy-bird.cpp)
+
+##! Setting output directory
+set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
+        )
 
 ##! We link the SDK modules that we want to use to our executable
 target_link_libraries(${PROJECT_NAME} PUBLIC antara::world antara::sfml antara::collisions)
@@ -64,8 +74,3 @@ endif ()
 if (APPLE)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}.app/Contents/Resources)
 endif()
-
-set_target_properties(${PROJECT_NAME}
-        PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
-        )
