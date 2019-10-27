@@ -423,15 +423,6 @@ private:
         if(game_over && jump_key_pressed) reset_game();
     }
 
-    void post_update() noexcept final
-    {
-        if(need_reset) {
-            //! Reinitialize all these
-            init_dynamic_objects(entity_registry_);
-            need_reset = false;
-        }
-    }
-
     void init_dynamic_objects(entt::registry &registry) {
         create_columns(registry);
 
@@ -475,6 +466,15 @@ private:
     void reset_game() {
         destroy_all();
         this->need_reset = true;
+    }
+
+    void post_update() noexcept final
+    {
+        if(need_reset) {
+            //! Reinitialize all these
+            init_dynamic_objects(entity_registry_);
+            need_reset = false;
+        }
     }
 
     ecs::system_manager& system_manager;
