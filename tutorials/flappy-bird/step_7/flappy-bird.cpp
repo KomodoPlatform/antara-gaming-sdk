@@ -448,6 +448,14 @@ public:
             reset_game();
     }
 
+    void post_update() noexcept final
+    {
+        if(this->need_reset) {
+            init_dynamic_objects(entity_registry_);
+            need_reset = false;
+        }
+    }
+
     //! Scene name
     std::string scene_name() noexcept final {
         return "game_scene";
@@ -471,9 +479,10 @@ private:
     bool started_playing;
     bool player_died;
     bool game_over;
-
     bool jump_key_pressed_last_tick;
+    bool need_reset{false};
 
+private:
     void destroy_all() {
         //! Retrieve the collection of entities from the game scene
         auto view = entity_registry_.view<entt::tag<"dynamic"_hs>>();
@@ -483,12 +492,13 @@ private:
 
         //! Delete systems
         system_manager.mark_systems<player_logic, collision_logic>();
-        system_manager.update();
+        //system_manager.update();
     }
 
     void reset_game() {
         destroy_all();
-        init_dynamic_objects(entity_registry_);
+        this->need_reset = true;
+        //init_dynamic_objects(entity_registry_);
     }
 };
 
