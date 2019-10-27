@@ -24,7 +24,7 @@ namespace {
 
 struct flappy_bird_constants {
     // Controls
-    const input::key jump_button{input::space};
+    const input::mouse_button jump_button{input::mouse_button::left};
     // Player
     const float gravity{2000.f};
     const float jump_force{500.f};
@@ -327,7 +327,7 @@ public:
         movement_speed.set_y(movement_speed.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
 
         // Check if jump key is tapped
-        bool jump_key_pressed = input::is_key_pressed(constants.jump_button);
+        bool jump_key_pressed = input::is_mouse_button_pressed(constants.jump_button);
         bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
         jump_key_pressed_last_tick = jump_key_pressed;
 
@@ -425,7 +425,7 @@ public:
         const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
         // Check if jump key is tapped
-        bool jump_key_pressed = input::is_key_pressed(constants.jump_button);
+        bool jump_key_pressed = input::is_mouse_button_pressed(constants.jump_button);
         bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
         jump_key_pressed_last_tick = jump_key_pressed;
 
