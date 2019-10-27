@@ -79,6 +79,10 @@ namespace antara::gaming::ecs
             sweep_systems_();
         }
 
+        for (auto &&current_sys_vec : systems_)
+            for (auto&& current_sys: current_sys_vec)
+                current_sys->post_update();
+
         //LCOV_EXCL_START
         if (not systems_to_add_.empty()) {
             while (not systems_to_add_.empty()) {

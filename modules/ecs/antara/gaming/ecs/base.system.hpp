@@ -33,6 +33,7 @@ namespace antara::gaming::ecs
 
         //! Pure virtual functions
         virtual void update() noexcept = 0;
+        virtual void post_update() noexcept {};
         [[nodiscard]] virtual std::string get_name() const noexcept = 0;
         [[nodiscard]] virtual system_type get_system_type_rtti() const noexcept = 0;
 
