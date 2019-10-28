@@ -26,7 +26,7 @@ namespace antara::gaming::sdl
 
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
-        if (auto res = SDL_Init(SDL_INIT_VIDEO); res < 0) {
+        if (auto res = SDL_Init(SDL_INIT_EVERYTHING); res < 0) {
             this->dispatcher_.trigger<event::fatal_error>(std::error_code(res, std::generic_category()));
         }
     }
