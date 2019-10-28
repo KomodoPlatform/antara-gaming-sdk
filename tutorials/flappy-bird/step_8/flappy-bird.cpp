@@ -9,6 +9,7 @@
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/graphics/component.sprite.hpp>
+#include <iostream>
 
 //! For convenience
 using namespace antara::gaming;
@@ -26,6 +27,7 @@ struct flappy_bird_constants {
     // Controls
     const input::mouse_button jump_button{input::mouse_button::left};
     // Player
+    const float player_pos_x{400.0f};
     const float gravity{2000.f};
     const float jump_force{500.f};
 
@@ -63,10 +65,14 @@ struct pipe {
     }
 };
 
+// Column is made of two pipes
 struct column {
     //! Entities representing the Flappy Bird pipes
     pipe top_pipe{entt::null};
     pipe bottom_pipe{entt::null};
+
+    // Is score taken from this column
+    bool scored{false};
 
     void destroy(entt::registry &registry, entt::entity entity) {
         top_pipe.destroy(registry);
@@ -75,8 +81,27 @@ struct column {
     }
 };
 
+// Score
+struct score {
+    int value;
+    int max_score;
+};
+
 //! Contains all the function that will be used for logic  and factory
 namespace {
+    // Factory to create score entity
+    entt::entity create_score(entt::registry &registry) {
+        // Create a fresh entity for a new column
+        auto entity = registry.create();
+
+        // Create score
+        registry.assign<score>(entity, 0, 0);
+        registry.assign<entt::tag<"high_score"_hs>>(entity);
+        registry.assign<entt::tag<"game_scene"_hs>>(entity);
+
+        return entity;
+    }
+
     // Factory for pipes, requires to know if it's a top one, position x of the column, and the gap starting position Y
     pipe create_pipe(entt::registry &registry, bool is_top, float pos_x, float gap_start_pos_y) {
         // Retrieve constants
@@ -235,7 +260,7 @@ namespace {
 
         auto entity = graphics::blueprint_sprite(registry,
                                                         graphics::sprite{constants.player_image_name.c_str()},
-                                                        transform::position_2d{canvas_width * 0.2f, canvas_height * 0.2f});
+                                                        transform::position_2d{constants.player_pos_x, canvas_height * 0.2f});
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
         registry.assign<entt::tag<"game_scene"_hs>>(entity);
@@ -247,7 +272,7 @@ namespace {
 
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    explicit column_logic(entt::registry &registry) noexcept : system(registry) { }
+    explicit column_logic(entt::registry &registry, entt::entity score_) noexcept : system(registry), score_entity(score_) { }
 
     void update() noexcept final {
         auto& registry = entity_registry_;
@@ -260,10 +285,21 @@ public:
             auto& col = registry.get<column>(entity);
 
             // Move pipes, and check if they are out of the screen
-            bool col_out_of_screen = move_pipe(registry, col.top_pipe) || move_pipe(registry, col.bottom_pipe);
+            float column_pos_x = move_pipe(registry, col.top_pipe);
+            move_pipe(registry, col.bottom_pipe);
+
+            // Increase score by one
+            if(!col.scored && column_pos_x < constants.player_pos_x) {
+                score& sc = registry.get<score>(score_entity);
+                if(++sc.value > sc.max_score) sc.max_score = sc.value;
+                registry.assign_or_replace<score>(score_entity, sc);
+
+                // Set column as scored
+                col.scored = true;
+            }
 
             // If column is out of the screen
-            if(col_out_of_screen) {
+            if(column_pos_x < -constants.column_distance) {
                 // Remove this column
                 col.destroy(registry, entity);
 
@@ -274,6 +310,8 @@ public:
     }
 
 private:
+    entt::entity score_entity;
+
     // Find the most far pipe's position X
     float furthest_pipe_position(entt::registry &registry) {
         float furthest = 0.f;
@@ -290,7 +328,7 @@ private:
     }
 
     // Move the pipe and return if it's out of the screen
-    bool move_pipe(entt::registry &registry, pipe& pipe) {
+    float move_pipe(entt::registry &registry, pipe& pipe) {
         // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
@@ -309,7 +347,7 @@ private:
         registry.assign_or_replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
 
         // Return the info about if this pipe is out of the screen
-        return new_pos_x < -constants.column_thickness * 2.0f;
+        return new_pos_x;
     }
 };
 
@@ -391,6 +429,7 @@ public:
         registry.set<flappy_bird_constants>();
 
         //! Create the columns
+        score_entity = create_score(registry);
         create_background(registry);
         init_dynamic_objects(registry);
     }
@@ -435,7 +474,7 @@ private:
         auto player = create_player(registry);
 
         //! Create systems
-        system_manager.create_system<column_logic>();
+        system_manager.create_system<column_logic>(score_entity);
         system_manager.create_system<player_logic>(player);
 
         // Disable physics and everything at start
@@ -470,6 +509,12 @@ private:
     }
 
     void reset_game() {
+        // Reset score
+        score& sc = entity_registry_.get<score>(score_entity);
+        sc.value = 0;
+        entity_registry_.assign_or_replace<score>(score_entity, sc);
+
+        // Destroy all
         destroy_all();
         this->need_reset = true;
     }
@@ -485,6 +530,7 @@ private:
     ecs::system_manager& system_manager;
 
     // States
+    entt::entity score_entity;
     bool started_playing{false};
     bool player_died{false};
     bool game_over{false};
@@ -500,7 +546,7 @@ struct flappy_bird_world : world::app {
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
         //! Load our resources system
-        entity_registry_.set<antara::gaming::sfml::resources_system>(entity_registry_);
+        entity_registry_.set<sfml::resources_system>(entity_registry_);
 
         //! Load our input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
