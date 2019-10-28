@@ -34,7 +34,8 @@ struct flappy_bird_constants {
     const float player_pos_x{400.0f};
     const float gravity{2000.f};
     const float jump_force{650.f};
-    const float max_angle{100.f};
+    const float rotate_speed{100.f};
+    const float max_angle{60.f};
 
     // Pipes
     const float gap_height{200.f};
@@ -426,12 +427,26 @@ public:
 
         // Set the new position value
         registry.assign_or_replace<transform::position_2d>(player, pos);
+
+        // Update the rotation
+        const auto& props = registry.get<transform::properties>(player);
+
+        float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
+
+        // If jump button is pressed, reset rotation,
+        // If rotation is higher than the max angle, set it to max angle
+        if(jump_key_tapped)
+            new_rotation = 0.f;
+        else if(props.rotation > constants.max_angle)
+            new_rotation = constants.max_angle;
+
+        registry.assign_or_replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
     }
 
 private:
     entt::entity player;
     math::vec2f movement_speed{0.f, 0.f};
-    bool jump_key_pressed_last_tick = false;
+    bool jump_key_pressed_last_tick{false};
 };
 
 //! Give a name to our system
