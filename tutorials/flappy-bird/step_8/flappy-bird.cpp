@@ -26,6 +26,10 @@ namespace {
 struct flappy_bird_constants {
     // Controls
     const input::mouse_button jump_button{input::mouse_button::left};
+
+    // UI
+    const unsigned long long font_size{32ull};
+
     // Player
     const float player_pos_x{400.0f};
     const float gravity{2000.f};
@@ -85,17 +89,51 @@ struct column {
 struct score {
     int value;
     int max_score;
+    entt::entity text;
 };
 
 //! Contains all the function that will be used for logic  and factory
 namespace {
+    std::string score_ui_text(int score = 0, int best_score = 0) {
+        return std::string("Score: ") + std::to_string(score) +
+               std::string("\nBest: ") + std::to_string(best_score) +
+               std::string("\n\nSpace / Mouse Button to FLAP");
+    }
+
+    void update_score(entt::registry &registry, entt::entity entity, bool reset = false) {
+        score& sc = registry.get<score>(entity);
+        if(reset) {
+            sc.value = 0;
+        }
+        else {
+            if(++sc.value > sc.max_score) sc.max_score = sc.value;
+        }
+
+        registry.assign_or_replace<score>(entity, sc);
+
+        // Update the UI
+        registry.assign_or_replace<graphics::text>(sc.text, score_ui_text(sc.value, sc.max_score));
+    }
+
     // Factory to create score entity
     entt::entity create_score(entt::registry &registry) {
+        //! Retrieve constants
+        const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
         // Create a fresh entity for a new column
         auto entity = registry.create();
 
+        // Create text
+        auto text_entity = registry.create();
+        registry.assign<graphics::fill_color>(text_entity, graphics::white);
+        registry.assign<graphics::text>(text_entity, score_ui_text(), constants.font_size);
+        registry.assign<transform::position_2d>(text_entity, canvas_width * 0.01f, canvas_height * 0.01f);
+        registry.assign<graphics::layer<9>>(text_entity);
+        registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
+
         // Create score
-        registry.assign<score>(entity, 0, 0);
+        registry.assign<score>(entity, 0, 0, text_entity);
         registry.assign<entt::tag<"high_score"_hs>>(entity);
         registry.assign<entt::tag<"game_scene"_hs>>(entity);
 
@@ -255,12 +293,12 @@ namespace {
     //! Factory for creating the player
     entt::entity create_player(entt::registry &registry) {
         //! Retrieve constants
-        const auto [canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto [_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         auto entity = graphics::blueprint_sprite(registry,
                                                         graphics::sprite{constants.player_image_name.c_str()},
-                                                        transform::position_2d{constants.player_pos_x, canvas_height * 0.2f});
+                                                        transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
         registry.assign<entt::tag<"game_scene"_hs>>(entity);
@@ -290,9 +328,7 @@ public:
 
             // Increase score by one
             if(!col.scored && column_pos_x < constants.player_pos_x) {
-                score& sc = registry.get<score>(score_entity);
-                if(++sc.value > sc.max_score) sc.max_score = sc.value;
-                registry.assign_or_replace<score>(score_entity, sc);
+                update_score(registry, score_entity);
 
                 // Set column as scored
                 col.scored = true;
@@ -509,14 +545,12 @@ private:
     }
 
     void reset_game() {
-        // Reset score
-        score& sc = entity_registry_.get<score>(score_entity);
-        sc.value = 0;
-        entity_registry_.assign_or_replace<score>(score_entity, sc);
-
         // Destroy all
         destroy_all();
         this->need_reset = true;
+
+        // Reset score
+        update_score(entity_registry_, score_entity, true);
     }
 
     void post_update() noexcept final {
