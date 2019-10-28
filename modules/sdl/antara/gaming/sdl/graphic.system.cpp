@@ -13,10 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#ifdef _WIN32
+    #pragma comment(lib, "Shcore.lib")
+    #define NOMINMAX
+    #include <windows.h>
+    #include <ShellScalingApi.h>
+#endif
 
-#include <iostream>
 #include <SDL2/SDL.h>
 #include <antara/gaming/event/quit.game.hpp>
+
 #include "antara/gaming/graphics/component.canvas.hpp"
 #include "antara/gaming/event/fatal.error.hpp"
 #include "antara/gaming/sdl/graphic.system.hpp"
@@ -32,7 +38,7 @@ namespace
         SDL_Window *window = nullptr;
         auto[screen_width, screen_height] = canvas_2d.window.size.to<math::vec2i>();
         auto[screen_pos_x, screen_pos_y] = canvas_2d.window.position.to<math::vec2i>();
-        SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
+
         Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
         if (canvas_2d.is_fullscreen) {
             flags |= SDL_WINDOW_FULLSCREEN;
@@ -57,6 +63,9 @@ namespace antara::gaming::sdl
 
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
+#ifdef _WIN32
+        SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+#endif
         if (auto res = SDL_Init(SDL_INIT_EVERYTHING); res < 0) {
             this->dispatcher_.trigger<event::fatal_error>(std::error_code(res, sdl::sdl_error_category()));
         }
