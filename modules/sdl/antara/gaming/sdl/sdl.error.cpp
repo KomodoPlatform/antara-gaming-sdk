@@ -14,23 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <SDL2/SDL_error.h>
+#include "antara/gaming/sdl/sdl.error.hpp"
 
-#include <SDL2/SDL_video.h>
-#include <entt/entity/registry.hpp>
-#include "antara/gaming/ecs/system.hpp"
-
-namespace antara::gaming::sdl
+const char *antara::gaming::sdl::sdl_error_category::name() const noexcept
 {
-    class graphic_system final : public ecs::post_update_system<graphic_system>
-    {
-    public:
-        graphic_system(entt::registry& registry) noexcept;
-        ~graphic_system() noexcept final;
-        void update() noexcept final;
-    private:
-        SDL_Window* window_;
-    };
+    return "sdl_error";
 }
 
-REFL_AUTO(type(antara::gaming::sdl::graphic_system));
+std::string antara::gaming::sdl::sdl_error_category::message(int) const noexcept
+{
+    return SDL_GetError();
+}
