@@ -54,7 +54,7 @@ if (USE_BOX2D_ANTARA_WRAPPER)
             box2d
             URL https://github.com/erincatto/Box2D/archive/master.zip
     )
-endif()
+endif ()
 
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_Declare(
@@ -76,11 +76,18 @@ if (USE_SFML_ANTARA_WRAPPER)
 endif ()
 
 if (USE_SDL_ANTARA_WRAPPER)
-    FetchContent_Declare(
-            sdl
-            URL https://github.com/SDL-mirror/SDL/archive/release-2.0.10.zip
-    )
-endif()
+    if (WIN32)
+        FetchContent_Declare(
+                sdl
+                URL https://github.com/KomodoPlatform/antara-gaming-sdk/releases/download/1.0.0-alpha/antara_windows_x64_sdl_msvc.zip
+        )
+    else ()
+        FetchContent_Declare(
+                sdl
+                URL https://github.com/SDL-mirror/SDL/archive/release-2.0.10.zip
+        )
+    endif ()
+endif ()
 
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes)
 if (USE_SFML_ANTARA_WRAPPER)
@@ -89,7 +96,16 @@ endif ()
 
 if (USE_SDL_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(sdl)
-endif()
+    add_library(antara_sdl_import INTERFACE)
+    add_library(antara::sdl_import ALIAS antara_sdl_import)
+    if (WIN32)
+        set(SDL2_DIR "${sdl_SOURCE_DIR}/cmake")
+        find_package(SDL2 REQUIRED)
+        target_link_libraries(antara_sdl_import INTERFACE SDL2::SDL2)
+    else()
+        target_link_libraries(antara_sdl_import INTERFACE SDL2)
+    endif()
+endif ()
 
 add_library(nlohmann_json INTERFACE)
 target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR})
@@ -104,7 +120,7 @@ if (USE_BOX2D_ANTARA_WRAPPER)
     target_include_directories(Box2D PUBLIC ${box2d_SOURCE_DIR})
     target_compile_features(Box2D PRIVATE cxx_std_11)
     add_library(antara::box2d_wrapper ALIAS Box2D)
-endif()
+endif ()
 
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(lua sol2)
