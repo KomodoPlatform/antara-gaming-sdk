@@ -1,0 +1,5 @@
+add_library(antara_sdl STATIC)
+target_sources(antara_sdl PRIVATE antara/gaming/sdl/graphic.system.cpp)
+target_include_directories(antara_sdl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_sdl PUBLIC antara::sdl_import antara::ecs antara::event)
+add_library(antara::sdl ALIAS antara_sdl)
