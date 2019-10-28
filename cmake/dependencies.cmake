@@ -75,10 +75,21 @@ if (USE_SFML_ANTARA_WRAPPER)
     )
 endif ()
 
+if (USE_SDL_ANTARA_WRAPPER)
+    FetchContent_Declare(
+            sdl
+            URL https://github.com/SDL-mirror/SDL/archive/release-2.0.10.zip
+    )
+endif()
+
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
+
+if (USE_SDL_ANTARA_WRAPPER)
+    FetchContent_MakeAvailable(sdl)
+endif()
 
 add_library(nlohmann_json INTERFACE)
 target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR})
