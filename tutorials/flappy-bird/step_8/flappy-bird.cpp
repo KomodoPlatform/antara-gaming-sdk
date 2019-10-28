@@ -417,6 +417,12 @@ public:
         // Add movement speed to position, but apply over time with delta time
         pos += movement_speed * timer::time_step::get_fixed_delta_time();
 
+        // Do not let player to go out of the screen to top
+        if(pos.y() <= 0.f) {
+            pos.set_y(0.f);
+            movement_speed.set_y(0.f);
+        }
+
         // Set the new position value
         registry.assign_or_replace<transform::position_2d>(player, pos);
     }
