@@ -115,7 +115,9 @@ namespace {
         registry.assign_or_replace<score>(entity, sc);
 
         // Update the UI
-        registry.assign_or_replace<graphics::text>(sc.text, score_ui_text(sc.value, sc.max_score));
+        auto& text = registry.get<graphics::text>(sc.text);
+        text.contents = score_ui_text(sc.value, sc.max_score);
+        registry.assign_or_replace<graphics::text>(sc.text, text);
     }
 
     // Factory to create score entity
@@ -131,7 +133,7 @@ namespace {
         auto text_entity = registry.create();
         registry.assign<graphics::fill_color>(text_entity, graphics::white);
         registry.assign<graphics::text>(text_entity, score_ui_text(), constants.font_size);
-        registry.assign<transform::position_2d>(text_entity, canvas_width * 0.01f, canvas_height * 0.01f);
+        registry.assign<transform::position_2d>(text_entity, canvas_width * 0.03f, canvas_height * 0.03f);
         registry.assign<graphics::layer<9>>(text_entity);
         registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
 
