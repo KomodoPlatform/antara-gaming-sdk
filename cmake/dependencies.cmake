@@ -76,17 +76,14 @@ if (USE_SFML_ANTARA_WRAPPER)
 endif ()
 
 if (USE_SDL_ANTARA_WRAPPER)
-    if (WIN32)
-        FetchContent_Declare(
-                sdl
-                URL https://github.com/KomodoPlatform/antara-gaming-sdk/releases/download/1.0.0-alpha/antara_windows_x64_sdl_msvc.zip
-        )
-    else ()
-        FetchContent_Declare(
-                sdl
-                URL https://github.com/SDL-mirror/SDL/archive/release-2.0.10.zip
-        )
-    endif ()
+        include(ExternalProject)
+        ExternalProject_Add(external_sdl
+                PREFIX "${CMAKE_CURRENT_BINARY_DIR}/external"
+                URL "https://www.libsdl.org/release/SDL2-2.0.10.tar.gz"
+                URL_HASH SHA256=b4656c13a1f0d0023ae2f4a9cf08ec92fffb464e0f24238337784159b8b91d57
+                CMAKE_ARGS -DSDL_STATIC=ON -DSDL_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/external/installed
+                )
+        set_target_properties(external_sdl PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif ()
 
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes)
@@ -95,16 +92,15 @@ if (USE_SFML_ANTARA_WRAPPER)
 endif ()
 
 if (USE_SDL_ANTARA_WRAPPER)
-    FetchContent_MakeAvailable(sdl)
     add_library(antara_sdl_import INTERFACE)
     add_library(antara::sdl_import ALIAS antara_sdl_import)
-    if (WIN32)
-        set(SDL2_DIR "${sdl_SOURCE_DIR}/cmake")
-        find_package(SDL2 REQUIRED)
-        target_link_libraries(antara_sdl_import INTERFACE SDL2::SDL2)
-    else()
-        target_link_libraries(antara_sdl_import INTERFACE SDL2)
-    endif()
+    add_dependencies(antara_sdl_import external_sdl)
+    include(GNUInstallDirs)
+    target_link_directories(antara_sdl_import INTERFACE ${CMAKE_BINARY_DIR}/external/installed/${CMAKE_INSTALL_LIBDIR})
+    target_include_directories(antara_sdl_import
+            INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/external/installed/${CMAKE_INSTALL_INCLUDEDIR}>
+            )
 endif ()
 
 add_library(nlohmann_json INTERFACE)
