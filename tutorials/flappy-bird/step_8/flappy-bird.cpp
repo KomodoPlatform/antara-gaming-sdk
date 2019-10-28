@@ -429,7 +429,7 @@ public:
         registry.assign_or_replace<transform::position_2d>(player, pos);
 
         // Update the rotation
-        const auto& props = registry.get<transform::properties>(player);
+        auto& props = registry.get<transform::properties>(player);
 
         float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
 
@@ -440,7 +440,13 @@ public:
         else if(props.rotation > constants.max_angle)
             new_rotation = constants.max_angle;
 
-        registry.assign_or_replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
+        // Set the properties
+        // registry.assign_or_replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
+
+        // TODO: remove this part and enable above, but this part is also bugged atm
+        props.rotation = new_rotation;
+        const auto& sprite = registry.get<graphics::sprite>(player);
+        registry.assign_or_replace<graphics::sprite>(player, sprite);
     }
 
 private:
