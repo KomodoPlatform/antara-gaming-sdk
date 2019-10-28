@@ -16,21 +16,14 @@
 
 #pragma once
 
-#include <SDL2/SDL_video.h>
-#include <entt/entity/registry.hpp>
-#include "antara/gaming/ecs/system.hpp"
+#include <string>
+#include <system_error>
 
 namespace antara::gaming::sdl
 {
-    class graphic_system final : public ecs::post_update_system<graphic_system>
+    struct sdl_error_category final : std::error_category
     {
-    public:
-        graphic_system(entt::registry& registry) noexcept;
-        ~graphic_system() noexcept final;
-        void update() noexcept final;
-    private:
-        SDL_Window* window_;
+        [[nodiscard]] const char *name() const noexcept final;
+        [[nodiscard]] std::string message(int) const noexcept final;
     };
 }
-
-REFL_AUTO(type(antara::gaming::sdl::graphic_system));

@@ -14,23 +14,45 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <antara/gaming/world/world.app.hpp>
+#include <antara/gaming/scenes/scene.manager.hpp>
+#include <antara/gaming/sdl/graphic.system.hpp>
 
-#include <SDL2/SDL_video.h>
-#include <entt/entity/registry.hpp>
-#include "antara/gaming/ecs/system.hpp"
-
-namespace antara::gaming::sdl
+class my_world : public antara::gaming::world::app
 {
-    class graphic_system final : public ecs::post_update_system<graphic_system>
+public:
+    my_world() noexcept
     {
-    public:
-        graphic_system(entt::registry& registry) noexcept;
-        ~graphic_system() noexcept final;
-        void update() noexcept final;
-    private:
-        SDL_Window* window_;
-    };
+        auto &graphic_system = this->system_manager_.create_system<antara::gaming::sdl::graphic_system>();
+        //this->entity_registry_.set<antara::gaming::sfml::resources_system>(this->entity_registry_);
+        //this->system_manager_.create_system<antara::gaming::sfml::audio_system>();
+        //this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
+
+    }
+};
+
+int main()
+{
+    my_world game_app;
+    return game_app.run();
 }
 
-REFL_AUTO(type(antara::gaming::sdl::graphic_system));
+
+/*
+#include <SDL2/SDL.h>
+
+int main()
+{
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
+    //SDL_Event ev;
+    while (true)
+    {
+        SDL_PollEvent(&ev);
+        if (ev.type == SDL_QUIT)
+        {
+            break;
+        }
+    }
+    SDL_Quit();
+}*/
