@@ -33,10 +33,12 @@ struct flappy_bird_constants {
     // Player
     const float player_pos_x{400.0f};
     const float gravity{2000.f};
-    const float jump_force{500.f};
+    const float jump_force{650.f};
+    const float max_angle{100.f};
 
     // Pipes
     const float gap_height{200.f};
+    const float column_start_distance{700.f};
     const float column_min{0.2f};
     const float column_max{0.8f};
     const float column_thickness{100.f};
@@ -226,11 +228,10 @@ namespace {
     //! Factory for creating a Flappy Bird columns
     void create_columns(entt::registry &registry) noexcept {
         //! Retrieve constants
-        const auto canvas_width = registry.ctx<graphics::canvas_2d>().canvas.size.x();
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Spawn columns out of the screen, out of the canvas
-        const float column_pos_offset = canvas_width + constants.column_thickness * 2.0f;
+        const float column_pos_offset = constants.column_start_distance + constants.column_thickness * 2.0f;
 
         // Create the columns
         for(std::size_t i = 0; i < constants.column_count; ++i) {
