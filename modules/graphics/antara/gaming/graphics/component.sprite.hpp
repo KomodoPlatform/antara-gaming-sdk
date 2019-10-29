@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <string> //! std::string
 #include "antara/gaming/transform/component.properties.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/core/safe.refl.hpp"
@@ -31,7 +32,7 @@ namespace antara::gaming::graphics
 
     struct sprite
     {
-        const char *appearance; //! texture id
+        std::string appearance; //! texture id
         bool native_size{true}; //! take the whole size by default
         rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
     };
