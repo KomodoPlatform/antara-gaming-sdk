@@ -312,8 +312,8 @@ namespace antara::gaming::sfml
     graphic_system::on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept
     {
         auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
-        auto handle = resources_system.load_texture(spr.appearance);
-        sf::Sprite &native_sprite = registry.assign<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
+        auto handle = resources_system.load_texture(spr.appearance.c_str());
+        sf::Sprite &native_sprite = registry.assign_or_replace<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
 
         if (not spr.native_size) {
             auto[left, top] = spr.texture_rec.pos;
