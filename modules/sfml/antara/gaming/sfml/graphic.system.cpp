@@ -288,18 +288,8 @@ namespace antara::gaming::sfml
             sf_text.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
-        if (auto properties = registry.try_get<transform::properties>(entity); properties != nullptr) {
-            auto[scale_x, scale_y] = (*properties).scale;
-            sf_text.setScale(scale_x, scale_y);
-            sf_text.setRotation(properties->rotation);
-            auto[l_left, l_top, l_width, l_height] = sf_text.getLocalBounds();
-            auto &local_bounds = (*properties).local_bounds;
-            local_bounds.size = math::vec2f{l_width, l_height};
-            local_bounds.pos = math::vec2f{l_left, l_top};
-            auto[g_left, g_top, g_width, g_height] = sf_text.getGlobalBounds();
-            auto &global_bounds = (*properties).global_bounds;
-            global_bounds.size = math::vec2f{g_width, g_height};
-            global_bounds.pos = math::vec2f{g_left, g_top};
+        if (auto position = registry.try_get<transform::position_2d>(entity); position != nullptr) {
+            sf_text.setPosition(position->x(), position->y());
         }
 
         fill_properties_sfml_entity(entity_registry_, entity, sf_text);
