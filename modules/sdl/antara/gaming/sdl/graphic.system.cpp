@@ -21,8 +21,7 @@
 #endif
 
 #include <SDL2/SDL.h>
-#include <antara/gaming/event/quit.game.hpp>
-
+#include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/graphics/component.canvas.hpp"
 #include "antara/gaming/event/fatal.error.hpp"
 #include "antara/gaming/sdl/graphic.system.hpp"
