@@ -188,9 +188,8 @@ namespace antara::gaming::sfml
             sfml_circle.drawable.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
-        fill_properties_sfml_entity(entity_registry_, entity, sfml_circle.drawable);
-
         sfml_circle.drawable.setOrigin(sfml_circle.drawable.getRadius(), sfml_circle.drawable.getRadius());
+        fill_properties_sfml_entity(entity_registry_, entity, sfml_circle.drawable);
     }
 
     void graphic_system::on_rectangle_construct(entt::entity entity, entt::registry &registry,
@@ -209,10 +208,9 @@ namespace antara::gaming::sfml
             sfml_rectangle.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
-        fill_properties_sfml_entity(entity_registry_, entity, sfml_rectangle);
-
         auto [_, __, r_width, r_height] = sfml_rectangle.getGlobalBounds();
         sfml_rectangle.setOrigin(r_width * 0.5f, r_height * 0.5f);
+        fill_properties_sfml_entity(entity_registry_, entity, sfml_rectangle);
     }
 
     void graphic_system::on_vertex_array_construct(entt::entity entity, entt::registry &registry,
@@ -292,10 +290,9 @@ namespace antara::gaming::sfml
             sf_text.setPosition(position->x(), position->y());
         }
 
-        fill_properties_sfml_entity(entity_registry_, entity, sf_text);
-
         //auto [left, top, width, height] = sf_text.getLocalBounds();
         //sf_text.setOrigin(left + (width * 0.5f), top + (height * 0.5f));
+        fill_properties_sfml_entity(entity_registry_, entity, sf_text);
     }
 
     void
@@ -315,10 +312,9 @@ namespace antara::gaming::sfml
             native_sprite.setColor(sf::Color(r, g, b, a));
         }
 
-        fill_properties_sfml_entity(entity_registry_, entity, native_sprite);
-
         native_sprite.setOrigin(native_sprite.getLocalBounds().width * 0.5f,
                                 native_sprite.getLocalBounds().height * 0.5f);
+        fill_properties_sfml_entity(entity_registry_, entity, native_sprite);
     }
 
     void graphic_system::on_key_pressed(const event::key_pressed &evt) noexcept
