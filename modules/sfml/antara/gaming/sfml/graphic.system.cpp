@@ -288,18 +288,8 @@ namespace antara::gaming::sfml
             sf_text.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
-        if (auto properties = registry.try_get<transform::properties>(entity); properties != nullptr) {
-            auto[scale_x, scale_y] = (*properties).scale;
-            sf_text.setScale(scale_x, scale_y);
-            sf_text.setRotation(properties->rotation);
-            auto[l_left, l_top, l_width, l_height] = sf_text.getLocalBounds();
-            auto &local_bounds = (*properties).local_bounds;
-            local_bounds.size = math::vec2f{l_width, l_height};
-            local_bounds.pos = math::vec2f{l_left, l_top};
-            auto[g_left, g_top, g_width, g_height] = sf_text.getGlobalBounds();
-            auto &global_bounds = (*properties).global_bounds;
-            global_bounds.size = math::vec2f{g_width, g_height};
-            global_bounds.pos = math::vec2f{g_left, g_top};
+        if (auto position = registry.try_get<transform::position_2d>(entity); position != nullptr) {
+            sf_text.setPosition(position->x(), position->y());
         }
 
         fill_properties_sfml_entity(entity_registry_, entity, sf_text);
@@ -312,8 +302,8 @@ namespace antara::gaming::sfml
     graphic_system::on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept
     {
         auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
-        auto handle = resources_system.load_texture(spr.appearance);
-        sf::Sprite &native_sprite = registry.assign<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
+        auto handle = resources_system.load_texture(spr.appearance.c_str());
+        sf::Sprite &native_sprite = registry.assign_or_replace<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
 
         if (not spr.native_size) {
             auto[left, top] = spr.texture_rec.pos;

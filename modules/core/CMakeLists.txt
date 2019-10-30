@@ -1,8 +1,15 @@
 ##! shared sources between the module and his unit tests
 add_library(antara_core_shared_sources STATIC)
-target_sources(antara_core_shared_sources PRIVATE antara/gaming/core/real.path.cpp)
-target_include_directories(antara_core_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_core_shared_sources PUBLIC antara::default_settings EnTT antara::refl-cpp)
+target_sources(antara_core_shared_sources PRIVATE antara/gaming/core/real.path.cpp antara/gaming/core/api.scaling.cpp
+        $<$<PLATFORM_ID:Darwin>:antara/gaming/core/details/osx/api.scaling.mm>
+        )
+if (APPLE)
+    find_library(APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+    find_path(APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR NAMES NSBundle.h)
+    mark_as_advanced(APPLE_FOUNDATION_FRAMEWORK_LIBRARY APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
+endif()
+target_include_directories(antara_core_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR}>)
+target_link_libraries(antara_core_shared_sources PUBLIC antara::default_settings EnTT antara::refl-cpp $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_LIBRARY}>)
 add_library(antara::core ALIAS antara_core_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)

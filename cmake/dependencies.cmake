@@ -54,7 +54,7 @@ if (USE_BOX2D_ANTARA_WRAPPER)
             box2d
             URL https://github.com/erincatto/Box2D/archive/master.zip
     )
-endif()
+endif ()
 
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_Declare(
@@ -75,9 +75,41 @@ if (USE_SFML_ANTARA_WRAPPER)
     )
 endif ()
 
+if (USE_SDL_ANTARA_WRAPPER)
+    # The first external project will be built at *configure stage*
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/sdl)
+    execute_process(
+            COMMAND ${CMAKE_COMMAND} -B . -S ${CMAKE_SOURCE_DIR}/cmake/sdl
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/sdl
+    )
+
+    execute_process(
+            COMMAND ${CMAKE_COMMAND} --build . --target external_sdl
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/sdl
+    )
+endif ()
+
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
+endif ()
+
+if (USE_SDL_ANTARA_WRAPPER)
+    add_library(antara_sdl_import INTERFACE)
+    add_library(antara::sdl_import ALIAS antara_sdl_import)
+    #add_dependencies(antara_sdl_import external_sdl)
+    #include(GNUInstallDirs)
+    if (WIN32)
+        set(SDL2_DIR ${CMAKE_BINARY_DIR}/sdl/external/installed/cmake/)
+    else ()
+        set(SDL2_DIR ${CMAKE_BINARY_DIR}/sdl/external/installed/lib/cmake/SDL2)
+    endif ()
+    find_package(SDL2 REQUIRED)
+    target_link_libraries(antara_sdl_import INTERFACE SDL2::SDL2-static)
+    target_include_directories(antara_sdl_import
+            INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/sdl/external/installed/${CMAKE_INSTALL_INCLUDEDIR}>
+            )
 endif ()
 
 add_library(nlohmann_json INTERFACE)
@@ -93,7 +125,7 @@ if (USE_BOX2D_ANTARA_WRAPPER)
     target_include_directories(Box2D PUBLIC ${box2d_SOURCE_DIR})
     target_compile_features(Box2D PRIVATE cxx_std_11)
     add_library(antara::box2d_wrapper ALIAS Box2D)
-endif()
+endif ()
 
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(lua sol2)
