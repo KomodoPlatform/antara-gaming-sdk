@@ -312,6 +312,10 @@ namespace antara::gaming::sfml
             native_sprite.setColor(sf::Color(r, g, b, a));
         }
 
+        if (auto pos = registry.try_get<transform::position_2d>(entity); pos != nullptr) {
+            native_sprite.setPosition(pos->x(), pos->y());
+        }
+
         native_sprite.setOrigin(native_sprite.getLocalBounds().width * 0.5f,
                                 native_sprite.getLocalBounds().height * 0.5f);
         fill_properties_sfml_entity(entity_registry_, entity, native_sprite);
