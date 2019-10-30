@@ -14,13 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 #ifdef _WIN32
-    #pragma comment(lib, "Shcore.lib")
-    #define NOMINMAX
-    #include <windows.h>
-    #include <ShellScalingApi.h>
+#pragma comment(lib, "Shcore.lib")
+#define NOMINMAX
+#include <windows.h>
+#include <ShellScalingApi.h>
 #endif
 
 #include <SDL2/SDL.h>
+#include <iostream>
+#include "antara/gaming/core/api.scaling.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/graphics/component.canvas.hpp"
 #include "antara/gaming/event/fatal.error.hpp"
@@ -35,14 +37,17 @@ namespace
     {
         auto &canvas_2d = registry.ctx<graphics::canvas_2d>();
         SDL_Window *window = nullptr;
-        auto[screen_width, screen_height] = canvas_2d.window.size.to<math::vec2i>();
-        auto[screen_pos_x, screen_pos_y] = canvas_2d.window.position.to<math::vec2i>();
-
+        if (!core::is_high_dpi_capable()) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_SYSTEM, "Your system is not high dpi capable, physical dpi used instead");
+        }
         Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
         if (canvas_2d.is_fullscreen) {
             flags |= SDL_WINDOW_FULLSCREEN;
         }
-        window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, flags);
+        auto[real_width, real_height] = canvas_2d.window.size.to<math::vec2i>() /
+                                            math::vec2f{core::get_scaling_factor().first,
+                                                        core::get_scaling_factor().second}.to<math::vec2i>();
+        window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, real_width, real_height, flags);
         return window;
     }
 }
@@ -54,8 +59,7 @@ namespace antara::gaming::sdl
     {
         SDL_Event ev;
         SDL_PollEvent(&ev);
-        if (ev.type == SDL_QUIT)
-        {
+        if (ev.type == SDL_QUIT) {
             this->dispatcher_.trigger<event::quit_game>(0);
         }
     }
@@ -68,6 +72,7 @@ namespace antara::gaming::sdl
         if (auto res = SDL_Init(SDL_INIT_EVERYTHING); res < 0) {
             this->dispatcher_.trigger<event::fatal_error>(std::error_code(res, sdl::sdl_error_category()));
         }
+        SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
         window_ = create_window(registry);
         assert(window_ != nullptr);
     }
