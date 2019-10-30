@@ -17,6 +17,7 @@
 #pragma once
 
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_render.h>
 #include <entt/entity/registry.hpp>
 #include "antara/gaming/ecs/system.hpp"
 
@@ -30,6 +31,8 @@ namespace antara::gaming::sdl
         void update() noexcept final;
     private:
         SDL_Window* window_;
+        SDL_Renderer* renderer_;
+        SDL_Texture* canvas_texture_;
     };
 }
 
