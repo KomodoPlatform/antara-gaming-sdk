@@ -50,6 +50,17 @@ namespace
         window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, real_width, real_height, flags);
         return window;
     }
+
+    SDL_Renderer* create_renderer(SDL_Window* window) noexcept
+    {
+        return SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    }
+
+    SDL_Texture* create_texture(entt::registry& registry, SDL_Renderer *renderer) noexcept
+    {
+        auto [width, height] = registry.ctx<graphics::canvas_2d>().canvas_texture.size;
+        return SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+    }
 }
 
 
@@ -62,6 +73,29 @@ namespace antara::gaming::sdl
         if (ev.type == SDL_QUIT) {
             this->dispatcher_.trigger<event::quit_game>(0);
         }
+
+        //! Set target to texture
+        SDL_SetRenderTarget(renderer_, canvas_texture_);
+
+        //! Black background
+        SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255 );
+
+        //! Blit the black blackground
+        SDL_RenderClear(renderer_);
+
+        //! TODO: Blit everything here on every layer
+
+        //! Set render back to the window
+        SDL_SetRenderTarget(renderer_, nullptr);
+
+        //! Copy the whole texture to the renderer
+        SDL_RenderCopy(renderer_, canvas_texture_, nullptr, nullptr);
+
+        //! Blit
+        SDL_RenderPresent(renderer_);
+
+        //! Flush
+        SDL_RenderFlush(renderer_);
     }
 
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
@@ -75,6 +109,10 @@ namespace antara::gaming::sdl
         SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
         window_ = create_window(registry);
         assert(window_ != nullptr);
+        renderer_ = create_renderer(window_);
+        assert(renderer_);
+        canvas_texture_ = create_texture(registry, renderer_);
+        assert(canvas_texture_);
     }
 
     graphic_system::~graphic_system() noexcept
