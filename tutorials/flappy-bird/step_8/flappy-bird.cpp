@@ -14,19 +14,7 @@
 //! For convenience
 using namespace antara::gaming;
 
-namespace {
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    float random_float(float lower, float higher) {
-        std::uniform_real_distribution<float> dist(lower, higher);
-        return dist(gen);
-    }
-}
-
 struct flappy_bird_constants {
-    // Controls
-    const input::mouse_button jump_button{input::mouse_button::left};
-
     // UI
     const unsigned long long font_size{32ull};
 
@@ -60,6 +48,30 @@ struct flappy_bird_constants {
     const graphics::color grass_color{132, 227, 90};
     const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
 };
+
+namespace {
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    float random_float(float lower, float higher) {
+        std::uniform_real_distribution<float> dist(lower, higher);
+        return dist(gen);
+    }
+}
+
+// Input handling
+namespace {
+    std::map<std::string, bool> button_map_last_tick;
+    std::map<std::string, bool> button_pressed;
+    std::map<std::string, bool> button_tapped;
+
+    // Update button states every frame
+    void update_buttons() {
+        // Update Jump button
+        button_pressed["jump"] = input::is_mouse_button_pressed(input::mouse_button::left) || input::is_key_pressed(input::key::space);
+        button_tapped["jump"] = button_pressed["jump"] && !button_map_last_tick["jump"];
+        button_map_last_tick["jump"] = button_pressed["jump"];
+    }
+}
 
 // A Flappy Bird column which has two pipes
 struct pipe {
@@ -411,9 +423,7 @@ public:
         movement_speed.set_y(movement_speed.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
 
         // Check if jump key is tapped
-        bool jump_key_pressed = input::is_mouse_button_pressed(constants.jump_button);
-        bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
-        jump_key_pressed_last_tick = jump_key_pressed;
+        bool jump_key_tapped = button_tapped["jump"];
 
         // If jump is tapped, add jump force to the movement speed
         if (jump_key_tapped) movement_speed.set_y(-constants.jump_force);
@@ -435,7 +445,7 @@ public:
 
         float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
 
-        // If jump button is pressed, reset rotation,
+        // If jump button is tapped, reset rotation,
         // If rotation is higher than the max angle, set it to max angle
         if(jump_key_tapped)
             new_rotation = 0.f;
@@ -454,7 +464,6 @@ public:
 private:
     entt::entity player;
     math::vec2f movement_speed{0.f, 0.f};
-    bool jump_key_pressed_last_tick{false};
 };
 
 //! Give a name to our system
@@ -508,13 +517,13 @@ public:
 private:
     //! Update the game every tick
     void update() noexcept final {
+        update_buttons();
+
         // Retrieve constants
         const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
         // Check if jump key is tapped
-        bool jump_key_pressed = input::is_mouse_button_pressed(constants.jump_button);
-        bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
-        jump_key_pressed_last_tick = jump_key_pressed;
+        bool jump_key_tapped = button_tapped["jump"];
 
         // If game is not started yet and jump key is tapped
         if(!started_playing && jump_key_tapped) {
@@ -531,7 +540,7 @@ private:
         }
 
         // If game is over, and jump key is pressed, reset game
-        if(game_over && jump_key_pressed) reset_game();
+        if(game_over && jump_key_tapped) reset_game();
     }
 
     void init_dynamic_objects(entt::registry &registry) {
@@ -598,7 +607,6 @@ private:
     bool started_playing{false};
     bool player_died{false};
     bool game_over{false};
-    bool jump_key_pressed_last_tick{false};
     bool need_reset{false};
 };
 
