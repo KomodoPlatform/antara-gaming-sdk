@@ -72,32 +72,6 @@ namespace antara::gaming::graphics
         fill_color background_color{graphics::black};
         math::vec2f canvas_texture_scaling{1.0f, 1.0f};
 
-        bool operator==(const canvas_2d &rhs) const
-        {
-            return window == rhs.window &&
-                   canvas == rhs.canvas &&
-                   current_scaling_mode == rhs.current_scaling_mode &&
-                   view_port == rhs.view_port &&
-                   window_title == rhs.window_title &&
-                   background_color == rhs.background_color;
-        }
-
-        friend inline std::ostream &operator<<(std::ostream &os, const canvas_2d &d)
-        {
-            os << "window: " << d.window << " canvas: " << d.canvas << " canvas_texture: " << d.canvas_texture
-               << " custom_canvas_width: " << d.custom_canvas_width << " custom_canvas_height: "
-               << d.custom_canvas_height << " native_desktop_mode: " << d.native_desktop_mode << " is_fullscreen: "
-               << d.is_fullscreen << " current_scaling_mode: " << d.current_scaling_mode << " view_port: "
-               << d.view_port << " window_title: " << d.window_title << " background_color: " << d.background_color
-               << " canvas_texture_scaling: " << d.canvas_texture_scaling;
-            return os;
-        }
-
-        bool operator!=(const canvas_2d &rhs) const
-        {
-            return !(rhs == *this);
-        }
-
         void reset_canvas() noexcept
         {
             auto&&[window_width, window_height] = window.size;
@@ -138,6 +112,34 @@ namespace antara::gaming::graphics
             }
             canvas_texture.position = math::vec2f{window_width * 0.5f, window_height * 0.5f};
         }
+
+        bool operator==(const canvas_2d &rhs) const
+        {
+            return window == rhs.window &&
+                   canvas == rhs.canvas &&
+                   current_scaling_mode == rhs.current_scaling_mode &&
+                   view_port == rhs.view_port &&
+                   window_title == rhs.window_title &&
+                   background_color == rhs.background_color;
+        }
+
+        friend inline std::ostream &operator<<(std::ostream &os, const canvas_2d &d)
+        {
+            os << "window: " << d.window << " canvas: " << d.canvas << " canvas_texture: " << d.canvas_texture
+               << " custom_canvas_width: " << d.custom_canvas_width << " custom_canvas_height: "
+               << d.custom_canvas_height << " native_desktop_mode: " << d.native_desktop_mode << " is_fullscreen: "
+               << d.is_fullscreen << " current_scaling_mode: " << d.current_scaling_mode << " view_port: "
+               << d.view_port << " window_title: " << d.window_title << " background_color: " << d.background_color
+               << " canvas_texture_scaling: " << d.canvas_texture_scaling;
+            return os;
+        }
+
+        bool operator!=(const canvas_2d &rhs) const
+        {
+            return !(rhs == *this);
+        }
+
+
 
         canvas_2d() = default;
 
