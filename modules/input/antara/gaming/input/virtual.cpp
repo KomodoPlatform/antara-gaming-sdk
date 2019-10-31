@@ -17,6 +17,7 @@
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
 #include <range/v3/algorithm/any_of.hpp>
+#include <antara/gaming/event/mouse.button.pressed.hpp>
 #include "antara/gaming/input/virtual.hpp"
 
 namespace antara::gaming::input {
@@ -26,6 +27,30 @@ namespace antara::gaming::input {
         entt::dispatcher &dispatcher = registry.ctx<entt::dispatcher>();
         dispatcher.sink<event::key_pressed>().connect<&virtual_input::on_key_pressed>();
         dispatcher.sink<event::key_released>().connect<&virtual_input::on_key_released>();
+        dispatcher.sink<event::mouse_button_pressed>().connect<&virtual_input::on_mouse_button_pressed>();
+        dispatcher.sink<event::mouse_button_released>().connect<&virtual_input::on_mouse_button_released>();
+    }
+
+    void virtual_input::on_mouse_button_released(const event::mouse_button_released &evt) noexcept {
+        using ranges::views::zip;
+        using ranges::views::ints;
+        for (auto &&[current_states, current_idx]: zip(cached_states_, ints(0u, ranges::unreachable))) {
+            auto &states = current_states.second;
+            if (states.buttons.count(evt.button)) {
+                states.held[current_idx] = false;
+            }
+        }
+    }
+
+    void virtual_input::on_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept {
+        using ranges::views::zip;
+        using ranges::views::ints;
+        for (auto &&[current_states, current_idx]: zip(cached_states_, ints(0u, ranges::unreachable))) {
+            auto &states = current_states.second;
+            if (states.buttons.count(evt.button)) {
+                states.held[current_idx] = true;
+            }
+        }
     }
 
     void virtual_input::on_key_released(const event::key_released &evt) noexcept {

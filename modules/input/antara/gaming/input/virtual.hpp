@@ -25,6 +25,8 @@
 #include <antara/gaming/event/key.released.hpp>
 #include <antara/gaming/input/keyboard.hpp>
 #include <antara/gaming/input/mouse.hpp>
+#include <antara/gaming/event/mouse.button.pressed.hpp>
+#include <antara/gaming/event/mouse.button.released.hpp>
 
 namespace antara::gaming::input {
     class virtual_input {
@@ -33,6 +35,8 @@ namespace antara::gaming::input {
         using bunch_of = std::unordered_set<T>;
         static void on_key_pressed(const event::key_pressed& evt) noexcept;
         static void on_key_released(const event::key_released& evt) noexcept;
+        static void on_mouse_button_pressed(const event::mouse_button_pressed& evt) noexcept;
+        static void on_mouse_button_released(const event::mouse_button_released& evt) noexcept;
 
         static void init(entt::registry &registry) noexcept;
 
