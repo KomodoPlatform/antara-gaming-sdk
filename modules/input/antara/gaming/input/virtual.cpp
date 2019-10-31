@@ -75,8 +75,8 @@ namespace antara::gaming::input {
         }
     }
 
-    void virtual_input::create_input(const char *name, virtual_input::bunch_of<key> keys,
-                                     virtual_input::bunch_of<mouse_button> buttons) noexcept {
+    void virtual_input::create(const char *name, virtual_input::bunch_of<key> keys,
+                               virtual_input::bunch_of<mouse_button> buttons) noexcept {
         auto size = keys.size() + buttons.size();
         cached_states_[name] = {
                 .keys = std::move(keys),
@@ -85,9 +85,9 @@ namespace antara::gaming::input {
         };
     }
 
-    void virtual_input::create_input(const std::string &name, virtual_input::bunch_of<key> keys,
-                                     virtual_input::bunch_of<mouse_button> buttons) noexcept {
-        return create_input(name.c_str(), std::move(keys), std::move(buttons));
+    void virtual_input::create(const std::string &name, virtual_input::bunch_of<key> keys,
+                               virtual_input::bunch_of<mouse_button> buttons) noexcept {
+        return create(name.c_str(), std::move(keys), std::move(buttons));
     }
 
     bool virtual_input::is_held(const char *name) noexcept {
@@ -125,5 +125,13 @@ namespace antara::gaming::input {
 
     bool virtual_input::is_released(const std::string &name) noexcept {
         return is_released(name.c_str());
+    }
+
+    void virtual_input::remove(const char *name) noexcept {
+        cached_states_.erase(name);
+    }
+
+    void virtual_input::remove(const std::string &name) noexcept {
+        remove(name.c_str());
     }
 }
