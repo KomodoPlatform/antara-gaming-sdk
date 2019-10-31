@@ -1,3 +1,5 @@
-add_library(antara_input INTERFACE)
-target_include_directories(antara_input INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(antara_input STATIC)
+target_include_directories(antara_input PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(antara_input PUBLIC EnTT::EnTT antara::event range-v3)
+target_sources(antara_input PRIVATE antara/gaming/input/virtual.cpp)
 add_library(antara::input ALIAS antara_input)
