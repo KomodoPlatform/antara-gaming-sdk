@@ -20,6 +20,8 @@
 #include "antara/gaming/input/virtual.hpp"
 
 namespace antara::gaming::input {
+    input::virtual_input::input_state_collection input::virtual_input::cached_states_ = {};
+
     void virtual_input::init(entt::registry &registry) noexcept {
         entt::dispatcher &dispatcher = registry.ctx<entt::dispatcher>();
         dispatcher.sink<event::key_pressed>().connect<&virtual_input::on_key_pressed>();

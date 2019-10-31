@@ -3,9 +3,10 @@ add_library(antara_ecs_shared_sources STATIC)
 target_sources(antara_ecs_shared_sources PRIVATE
         antara/gaming/ecs/base.system.cpp
         antara/gaming/ecs/system.manager.cpp
-        antara/gaming/ecs/event.add.base.system.cpp)
+        antara/gaming/ecs/event.add.base.system.cpp
+        antara/gaming/ecs/virtual.input.system.cpp)
 target_include_directories(antara_ecs_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_ecs_shared_sources PUBLIC antara::core antara::math antara::transform antara::geometry antara::graphics EnTT strong_type expected range-v3 antara::default_settings antara::timer antara::event doom::meta)
+target_link_libraries(antara_ecs_shared_sources PUBLIC antara::core antara::input antara::math antara::transform antara::geometry antara::graphics EnTT strong_type expected range-v3 antara::default_settings antara::timer antara::event doom::meta)
 add_library(antara::ecs ALIAS antara_ecs_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)
