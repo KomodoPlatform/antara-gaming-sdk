@@ -52,10 +52,11 @@ namespace antara::gaming::input {
 
     void virtual_input::create_input(const char *name, virtual_input::bunch_of<key> keys,
                                      virtual_input::bunch_of<mouse_button> buttons) noexcept {
+        auto size = keys.size() + buttons.size();
         cached_states_[name] = {
                 .keys = std::move(keys),
                 .buttons = std::move(buttons),
-                .held = std::vector<bool>(keys.size() + buttons.size(), false)
+                .held = std::vector<bool>(size, false)
         };
     }
 
