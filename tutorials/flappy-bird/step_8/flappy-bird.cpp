@@ -1,4 +1,5 @@
 #include <random>
+#include <antara/gaming/ecs/virtual.input.system.hpp>
 #include <antara/gaming/collisions/basic.collision.system.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
@@ -9,7 +10,6 @@
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/graphics/component.sprite.hpp>
-#include <iostream>
 #include <antara/gaming/input/virtual.hpp>
 
 //! For convenience
@@ -62,8 +62,8 @@ namespace {
 // Input handling
 namespace {
     void init_buttons() {
-        input::virtual_input::create_input("jump", {input::key::space, input::key::w, input::key::up},
-                                           {input::mouse_button::left, input::mouse_button::right});
+        input::virtual_input::create("jump", {input::key::space, input::key::w, input::key::up},
+                                     {input::mouse_button::left, input::mouse_button::right});
     }
     /*std::map<std::string, bool> button_map_last_tick;
     std::map<std::string, bool> button_pressed;
@@ -150,13 +150,13 @@ namespace {
         registry.assign<graphics::fill_color>(text_entity, graphics::white);
         registry.assign<graphics::text>(text_entity, score_ui_text(), constants.font_size);
         registry.assign<transform::position_2d>(text_entity, canvas_width * 0.03f, canvas_height * 0.03f);
-        registry.assign<graphics::layer<9>>(text_entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
+        registry.assign < graphics::layer < 9 >> (text_entity);
+        registry.assign < entt::tag < "game_scene"_hs >> (text_entity);
 
         // Create score
         registry.assign<score>(entity, 0, 0, text_entity);
-        registry.assign<entt::tag<"high_score"_hs>>(entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity);
+        registry.assign < entt::tag < "high_score"_hs >> (entity);
+        registry.assign < entt::tag < "game_scene"_hs >> (entity);
 
         return entity;
     }
@@ -204,12 +204,12 @@ namespace {
                                                  constants.pipe_outline_color);
 
         // Set layers, cap should be in front of body
-        registry.assign<graphics::layer<4>>(cap);
-        registry.assign<graphics::layer<3>>(body);
-        registry.assign<entt::tag<"game_scene"_hs>>(cap);
-        registry.assign<entt::tag<"game_scene"_hs>>(body);
-        registry.assign<entt::tag<"dynamic"_hs>>(cap);
-        registry.assign<entt::tag<"dynamic"_hs>>(body);
+        registry.assign < graphics::layer < 4 >> (cap);
+        registry.assign < graphics::layer < 3 >> (body);
+        registry.assign < entt::tag < "game_scene"_hs >> (cap);
+        registry.assign < entt::tag < "game_scene"_hs >> (body);
+        registry.assign < entt::tag < "dynamic"_hs >> (cap);
+        registry.assign < entt::tag < "dynamic"_hs >> (body);
 
         // Construct a pipe with body and cap and return it
         return {body, cap};
@@ -241,9 +241,9 @@ namespace {
 
         // Make a column from these two pipes and mark it as "column"
         registry.assign<column>(entity_column, top_pipe, bottom_pipe);
-        registry.assign<entt::tag<"column"_hs>>(entity_column);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity_column);
-        registry.assign<entt::tag<"dynamic"_hs>>(entity_column);
+        registry.assign < entt::tag < "column"_hs >> (entity_column);
+        registry.assign < entt::tag < "game_scene"_hs >> (entity_column);
+        registry.assign < entt::tag < "dynamic"_hs >> (entity_column);
     }
 
     //! Factory for creating a Flappy Bird columns
@@ -278,8 +278,8 @@ namespace {
             math::vec2f size{canvas_width, canvas_height};
 
             auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
-            registry.assign<graphics::layer<1>>(sky);
-            registry.assign<entt::tag<"game_scene"_hs>>(sky);
+            registry.assign < graphics::layer < 1 >> (sky);
+            registry.assign < entt::tag < "game_scene"_hs >> (sky);
         }
 
         // Create Grass
@@ -294,8 +294,8 @@ namespace {
 
             auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos,
                                                        constants.grass_outline_color);
-            registry.assign<graphics::layer<3>>(grass);
-            registry.assign<entt::tag<"game_scene"_hs>>(grass);
+            registry.assign < graphics::layer < 3 >> (grass);
+            registry.assign < entt::tag < "game_scene"_hs >> (grass);
         }
 
         // Create Ground
@@ -308,8 +308,8 @@ namespace {
             math::vec2f size{canvas_width, constants.ground_thickness};
 
             auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
-            registry.assign<graphics::layer<3>>(ground);
-            registry.assign<entt::tag<"game_scene"_hs>>(ground);
+            registry.assign < graphics::layer < 3 >> (ground);
+            registry.assign < entt::tag < "game_scene"_hs >> (ground);
         }
     }
 
@@ -322,10 +322,10 @@ namespace {
         auto entity = graphics::blueprint_sprite(registry,
                                                  graphics::sprite{constants.player_image_name.c_str()},
                                                  transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
-        registry.assign<antara::gaming::graphics::layer<5>>(entity);
-        registry.assign<entt::tag<"player"_hs>>(entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity);
-        registry.assign<entt::tag<"dynamic"_hs>>(entity);
+        registry.assign < antara::gaming::graphics::layer < 5 >> (entity);
+        registry.assign < entt::tag < "player"_hs >> (entity);
+        registry.assign < entt::tag < "game_scene"_hs >> (entity);
+        registry.assign < entt::tag < "dynamic"_hs >> (entity);
 
         return entity;
     }
@@ -412,7 +412,7 @@ private:
 };
 
 //! Give a name to our system
-REFL_AUTO(type(column_logic));
+REFL_AUTO (type(column_logic));
 
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
@@ -433,12 +433,6 @@ public:
 
         // Check if jump key is tapped
         bool jump_key_tapped = input::virtual_input::is_tapped("jump");
-
-        if (jump_key_tapped)
-            std::cout << "true" << std::endl;
-        if (input::virtual_input::is_released("jump"))
-            std::cout << "false" << std::endl;
-
 
         // If jump is tapped, add jump force to the movement speed
         if (jump_key_tapped) movement_speed.set_y(-constants.jump_force);
@@ -482,7 +476,7 @@ private:
 };
 
 //! Give a name to our system
-REFL_AUTO(type(player_logic));
+REFL_AUTO (type(player_logic));
 
 class collision_logic final : public ecs::logic_update_system<collision_logic> {
 public:
@@ -498,7 +492,7 @@ public:
         if (player_died) return;
 
         // Loop all columns to check collisions with the pipes
-        for (auto entity : registry.view<graphics::layer<3>>()) {
+        for (auto entity : registry.view < graphics::layer < 3 >> ()) {
             // Check collision between player and a collidable object
             if (collisions::basic_collision_system::query_rect(registry, player, entity)) {
                 // Mark player died as true
@@ -513,7 +507,7 @@ private:
 };
 
 //! Give a name to our system
-REFL_AUTO(type(collision_logic));
+REFL_AUTO (type(collision_logic));
 
 class game_scene final : public scenes::base_scene {
 public:
@@ -595,7 +589,7 @@ private:
 
     void destroy_all() {
         //! Retrieve the collection of entities from the game scene
-        auto view = entity_registry_.view<entt::tag<"dynamic"_hs>>();
+        auto view = entity_registry_.view < entt::tag < "dynamic"_hs >> ();
 
         //! Iterate the collection and destroy each entities
         entity_registry_.destroy(view.begin(), view.end());
@@ -631,26 +625,12 @@ private:
     bool need_reset{false};
 };
 
-input::virtual_input::input_state_collection input::virtual_input::cached_states_ = {};
-
-struct virtual_input_system final : ecs::logic_update_system<virtual_input_system> {
-    virtual_input_system(entt::registry &registry) noexcept : system(registry) {
-        input::virtual_input::init(registry);
-    }
-
-    void update() noexcept final {
-        input::virtual_input::update();
-    }
-};
-
-REFL_AUTO(type(virtual_input_system))
-
 //! Game world
 struct flappy_bird_world : world::app {
     //! Game entry point
     flappy_bird_world() noexcept {
         //! Load our graphical system
-        system_manager_.create_system<virtual_input_system>();
+        system_manager_.create_system<ecs::virtual_input_system>();
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
         //! Load our resources system
