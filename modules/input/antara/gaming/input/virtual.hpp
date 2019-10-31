@@ -51,9 +51,11 @@ namespace antara::gaming::input {
         static bool is_released(const char* name) noexcept;
         static bool is_released(const std::string &name) noexcept;
 
-        static void create_input(const char* name, bunch_of<input::key> keys, bunch_of<input::mouse_button> buttons) noexcept;
-        static void create_input(const std::string& name, bunch_of<input::key> keys, bunch_of<input::mouse_button> buttons) noexcept;
+        static void create(const char* name, bunch_of<input::key> keys, bunch_of<input::mouse_button> buttons) noexcept;
+        static void create(const std::string& name, bunch_of<input::key> keys, bunch_of<input::mouse_button> buttons) noexcept;
 
+        static void remove(const char* name) noexcept;
+        static void remove(const std::string& name) noexcept;
     private:
         struct input_internal_collections
         {
