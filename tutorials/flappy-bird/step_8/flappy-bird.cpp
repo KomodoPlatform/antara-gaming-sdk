@@ -10,6 +10,7 @@
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/graphics/component.sprite.hpp>
 #include <iostream>
+#include <antara/gaming/input/virtual.hpp>
 
 //! For convenience
 using namespace antara::gaming;
@@ -60,7 +61,11 @@ namespace {
 
 // Input handling
 namespace {
-    std::map<std::string, bool> button_map_last_tick;
+    void init_buttons() {
+        input::virtual_input::create_input("jump", {input::key::space, input::key::w, input::key::up},
+                                           {input::mouse_button::left, input::mouse_button::right});
+    }
+    /*std::map<std::string, bool> button_map_last_tick;
     std::map<std::string, bool> button_pressed;
     std::map<std::string, bool> button_tapped;
 
@@ -70,7 +75,7 @@ namespace {
         button_pressed["jump"] = input::is_mouse_button_pressed(input::mouse_button::left) || input::is_key_pressed(input::key::space);
         button_tapped["jump"] = button_pressed["jump"] && !button_map_last_tick["jump"];
         button_map_last_tick["jump"] = button_pressed["jump"];
-    }
+    }*/
 }
 
 // A Flappy Bird column which has two pipes
@@ -116,18 +121,17 @@ namespace {
     }
 
     void update_score(entt::registry &registry, entt::entity entity, bool reset = false) {
-        score& sc = registry.get<score>(entity);
-        if(reset) {
+        score &sc = registry.get<score>(entity);
+        if (reset) {
             sc.value = 0;
-        }
-        else {
-            if(++sc.value > sc.max_score) sc.max_score = sc.value;
+        } else {
+            if (++sc.value > sc.max_score) sc.max_score = sc.value;
         }
 
         registry.assign_or_replace<score>(entity, sc);
 
         // Update the UI
-        auto& text = registry.get<graphics::text>(sc.text);
+        auto &text = registry.get<graphics::text>(sc.text);
         text.contents = score_ui_text(sc.value, sc.max_score);
         registry.assign_or_replace<graphics::text>(sc.text, text);
     }
@@ -179,7 +183,8 @@ namespace {
                               gap_start_pos_y * 2.0f :
                               (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
 
-        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos, constants.pipe_outline_color);
+        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos,
+                                                  constants.pipe_outline_color);
 
         // PIPE CAP
         // Let's prepare the pipe cap
@@ -195,7 +200,8 @@ namespace {
         };
 
         // Construct the cap
-        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos, constants.pipe_outline_color);
+        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos,
+                                                 constants.pipe_outline_color);
 
         // Set layers, cap should be in front of body
         registry.assign<graphics::layer<4>>(cap);
@@ -249,7 +255,7 @@ namespace {
         const float column_pos_offset = constants.column_start_distance + constants.column_thickness * 2.0f;
 
         // Create the columns
-        for(std::size_t i = 0; i < constants.column_count; ++i) {
+        for (std::size_t i = 0; i < constants.column_count; ++i) {
             // Horizontal position (X) increases for every column, keeping the distance
             float pos_x = column_pos_offset + i * constants.column_distance;
 
@@ -286,7 +292,8 @@ namespace {
             // We also make it a bit longer by adding the thickness of the outline to hide the outline at sides
             math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
 
-            auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
+            auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos,
+                                                       constants.grass_outline_color);
             registry.assign<graphics::layer<3>>(grass);
             registry.assign<entt::tag<"game_scene"_hs>>(grass);
         }
@@ -309,12 +316,12 @@ namespace {
     //! Factory for creating the player
     entt::entity create_player(entt::registry &registry) {
         //! Retrieve constants
-        const auto [_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto[_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         auto entity = graphics::blueprint_sprite(registry,
-                                                        graphics::sprite{constants.player_image_name.c_str()},
-                                                        transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
+                                                 graphics::sprite{constants.player_image_name.c_str()},
+                                                 transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
         registry.assign<entt::tag<"game_scene"_hs>>(entity);
@@ -326,24 +333,25 @@ namespace {
 
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    explicit column_logic(entt::registry &registry, entt::entity score_) noexcept : system(registry), score_entity(score_) { }
+    explicit column_logic(entt::registry &registry, entt::entity score_) noexcept : system(registry),
+                                                                                    score_entity(score_) {}
 
     void update() noexcept final {
-        auto& registry = entity_registry_;
+        auto &registry = entity_registry_;
 
         //! Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Loop all columns
-        for(auto entity : registry.view<column>()) {
-            auto& col = registry.get<column>(entity);
+        for (auto entity : registry.view<column>()) {
+            auto &col = registry.get<column>(entity);
 
             // Move pipes, and check if they are out of the screen
             float column_pos_x = move_pipe(registry, col.top_pipe);
             move_pipe(registry, col.bottom_pipe);
 
             // Increase score by one
-            if(!col.scored && column_pos_x < constants.player_pos_x) {
+            if (!col.scored && column_pos_x < constants.player_pos_x) {
                 update_score(registry, score_entity);
 
                 // Set column as scored
@@ -351,7 +359,7 @@ public:
             }
 
             // If column is out of the screen
-            if(column_pos_x < -constants.column_distance) {
+            if (column_pos_x < -constants.column_distance) {
                 // Remove this column
                 col.destroy(registry, entity);
 
@@ -370,17 +378,17 @@ private:
 
         auto view = registry.view<column>();
 
-        for(auto entity : view) {
-            auto& col = registry.get<column>(entity);
+        for (auto entity : view) {
+            auto &col = registry.get<column>(entity);
             float x = entity_registry_.get<transform::position_2d>(col.top_pipe.body).x();
-            if(x > furthest) furthest = x;
+            if (x > furthest) furthest = x;
         }
 
         return furthest;
     }
 
     // Move the pipe and return if it's out of the screen
-    float move_pipe(entt::registry &registry, pipe& pipe) {
+    float move_pipe(entt::registry &registry, pipe &pipe) {
         // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
@@ -408,10 +416,11 @@ REFL_AUTO(type(column_logic));
 
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
-    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player(player_) { }
+    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player(player_) {
+    }
 
     void update() noexcept final {
-        auto& registry = entity_registry_;
+        auto &registry = entity_registry_;
 
         //! Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
@@ -423,7 +432,13 @@ public:
         movement_speed.set_y(movement_speed.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
 
         // Check if jump key is tapped
-        bool jump_key_tapped = button_tapped["jump"];
+        bool jump_key_tapped = input::virtual_input::is_tapped("jump");
+
+        if (jump_key_tapped)
+            std::cout << "true" << std::endl;
+        if (input::virtual_input::is_released("jump"))
+            std::cout << "false" << std::endl;
+
 
         // If jump is tapped, add jump force to the movement speed
         if (jump_key_tapped) movement_speed.set_y(-constants.jump_force);
@@ -432,7 +447,7 @@ public:
         pos += movement_speed * timer::time_step::get_fixed_delta_time();
 
         // Do not let player to go out of the screen to top
-        if(pos.y() <= 0.f) {
+        if (pos.y() <= 0.f) {
             pos.set_y(0.f);
             movement_speed.set_y(0.f);
         }
@@ -441,15 +456,15 @@ public:
         registry.assign_or_replace<transform::position_2d>(player, pos);
 
         // Update the rotation
-        auto& props = registry.get<transform::properties>(player);
+        auto &props = registry.get<transform::properties>(player);
 
         float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
 
         // If jump button is tapped, reset rotation,
         // If rotation is higher than the max angle, set it to max angle
-        if(jump_key_tapped)
+        if (jump_key_tapped)
             new_rotation = 0.f;
-        else if(props.rotation > constants.max_angle)
+        else if (props.rotation > constants.max_angle)
             new_rotation = constants.max_angle;
 
         // Set the properties
@@ -457,7 +472,7 @@ public:
 
         // TODO: remove this part and enable above, but this part is also bugged atm
         props.rotation = new_rotation;
-        const auto& sprite = registry.get<graphics::sprite>(player);
+        const auto &sprite = registry.get<graphics::sprite>(player);
         registry.assign_or_replace<graphics::sprite>(player, sprite);
     }
 
@@ -471,18 +486,21 @@ REFL_AUTO(type(player_logic));
 
 class collision_logic final : public ecs::logic_update_system<collision_logic> {
 public:
-    collision_logic(entt::registry &registry, entt::entity player_, bool& player_died_) noexcept : system(registry), player(player_), player_died(player_died_) { }
+    collision_logic(entt::registry &registry, entt::entity player_, bool &player_died_) noexcept : system(registry),
+                                                                                                   player(player_),
+                                                                                                   player_died(
+                                                                                                           player_died_) {}
 
     void update() noexcept final {
-        auto& registry = entity_registry_;
+        auto &registry = entity_registry_;
 
         // Do not check anything if player is already dead
-        if(player_died) return;
+        if (player_died) return;
 
         // Loop all columns to check collisions with the pipes
-        for(auto entity : registry.view<graphics::layer<3>>()) {
+        for (auto entity : registry.view<graphics::layer<3>>()) {
             // Check collision between player and a collidable object
-            if(collisions::basic_collision_system::query_rect(registry, player, entity)) {
+            if (collisions::basic_collision_system::query_rect(registry, player, entity)) {
                 // Mark player died as true
                 player_died = true;
             }
@@ -491,7 +509,7 @@ public:
 
 private:
     entt::entity player;
-    bool& player_died;
+    bool &player_died;
 };
 
 //! Give a name to our system
@@ -499,8 +517,11 @@ REFL_AUTO(type(collision_logic));
 
 class game_scene final : public scenes::base_scene {
 public:
-    game_scene(entt::registry &registry, ecs::system_manager& system_manager_) noexcept : base_scene(registry), system_manager(system_manager_) {
+    game_scene(entt::registry &registry, ecs::system_manager &system_manager_) noexcept : base_scene(registry),
+                                                                                          system_manager(
+                                                                                                  system_manager_) {
         //! Set the constants that will be used in the program
+        init_buttons();
         registry.set<flappy_bird_constants>();
 
         //! Create the columns
@@ -517,30 +538,30 @@ public:
 private:
     //! Update the game every tick
     void update() noexcept final {
-        update_buttons();
+        //update_buttons();
 
         // Retrieve constants
         const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
         // Check if jump key is tapped
-        bool jump_key_tapped = button_tapped["jump"];
+        bool jump_key_tapped = input::virtual_input::is_tapped("jump");
 
         // If game is not started yet and jump key is tapped
-        if(!started_playing && jump_key_tapped) {
+        if (!started_playing && jump_key_tapped) {
             // Game starts, player started playing
             started_playing = true;
             resume_physics();
         }
 
         // If player died, game over, and pause physics
-        if(player_died) {
+        if (player_died) {
             player_died = false;
             game_over = true;
             pause_physics();
         }
 
         // If game is over, and jump key is pressed, reset game
-        if(game_over && jump_key_tapped) reset_game();
+        if (game_over && jump_key_tapped) reset_game();
     }
 
     void init_dynamic_objects(entt::registry &registry) {
@@ -593,14 +614,14 @@ private:
     }
 
     void post_update() noexcept final {
-        if(need_reset) {
+        if (need_reset) {
             //! Reinitialize all these
             init_dynamic_objects(entity_registry_);
             need_reset = false;
         }
     }
 
-    ecs::system_manager& system_manager;
+    ecs::system_manager &system_manager;
 
     // States
     entt::entity score_entity;
@@ -610,11 +631,26 @@ private:
     bool need_reset{false};
 };
 
+input::virtual_input::input_state_collection input::virtual_input::cached_states_ = {};
+
+struct virtual_input_system final : ecs::logic_update_system<virtual_input_system> {
+    virtual_input_system(entt::registry &registry) noexcept : system(registry) {
+        input::virtual_input::init(registry);
+    }
+
+    void update() noexcept final {
+        input::virtual_input::update();
+    }
+};
+
+REFL_AUTO(type(virtual_input_system))
+
 //! Game world
 struct flappy_bird_world : world::app {
     //! Game entry point
     flappy_bird_world() noexcept {
         //! Load our graphical system
+        system_manager_.create_system<virtual_input_system>();
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
         //! Load our resources system

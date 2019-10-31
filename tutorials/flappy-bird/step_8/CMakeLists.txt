@@ -13,7 +13,9 @@ project(flappy-bird DESCRIPTION "An awesome flappy-bird" LANGUAGES CXX)
 
 ##! The SDK need's clang as main compiler.
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
+    if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+        message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
+    endif()
 endif ()
 
 ##! We will let know the SDK if our on Linux
@@ -27,7 +29,9 @@ include(FetchContent)
 ##! We declare information about the dependance that we want to fetch.
 FetchContent_Declare(
         antara-gaming-sdk
-        URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/master.zip
+        URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/4e27acbe8f549f7817f1489402afcdff98e39212.zip
+
+        #https://github.com/KomodoPlatform/antara-gaming-sdk/archive/master.zip
 )
 
 ##! We set extras modules from the SDK that we want to use, here we will use the SFML module.
