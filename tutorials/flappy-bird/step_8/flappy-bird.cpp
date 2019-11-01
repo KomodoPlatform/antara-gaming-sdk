@@ -150,10 +150,9 @@ namespace {
         auto entity = registry.create();
 
         // Create text
-        auto text_entity = registry.create();
-        registry.assign<graphics::fill_color>(text_entity, graphics::white);
-        registry.assign<graphics::text>(text_entity, score_ui_text(), constants.font_size);
-        registry.assign<transform::position_2d>(text_entity, canvas_width * 0.03f, canvas_height * 0.03f);
+        auto text_entity =  graphics::blueprint_text(registry, graphics::text{score_ui_text(), constants.font_size},
+            transform::position_2d{canvas_width * 0.03f, canvas_height * 0.03f}, graphics::white);
+
         registry.assign<graphics::layer<9>>(text_entity);
         registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
 
