@@ -14,6 +14,7 @@
 
 // For convenience
 using namespace antara::gaming;
+using namespace std::string_literals;
 
 // Constants
 struct flappy_bird_constants {
@@ -101,9 +102,9 @@ struct score {
 namespace {
     // Create the UI string
     std::string score_ui_text(int score = 0, int best_score = 0) {
-        return std::string("Score: ") + std::to_string(score) +
-               std::string("\nBest: ") + std::to_string(best_score) +
-               std::string("\n\nW / UP / Space / Mouse to FLAP");
+        return "Score: "s + std::to_string(score) +
+               "\nBest: "s + std::to_string(best_score) +
+               "\n\nW / UP / Space / Mouse to FLAP"s;
     }
 
     // Update score
