@@ -53,6 +53,12 @@ namespace antara::gaming::sfml
         template<typename ... DrawableType>
         void set_position(entt::entity entity, transform::position_2d &pos, doom::meta::list<DrawableType...>) noexcept;
 
+        template<typename DrawableType>
+        bool set_properties(entt::entity entity, transform::properties &props) noexcept;
+
+        template<typename ... DrawableType>
+        void set_properties(entt::entity entity, transform::properties &props, doom::meta::list<DrawableType...>) noexcept;
+
         template<size_t Layer, typename DrawableType>
         void draw() noexcept;
 
@@ -76,6 +82,7 @@ namespace antara::gaming::sfml
         void on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept;
         void on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept;
         void on_vertex_array_construct(entt::entity entity, entt::registry &registry, geometry::vertex_array &cmp_vertex_array) noexcept;
+        void on_properties_replaced(entt::entity entity, entt::registry &registry, transform::properties &props) noexcept;
     private:
         bool debug_mode_{false};
         graphics::canvas_2d &canvas_{entity_registry_.ctx<graphics::canvas_2d>()};
