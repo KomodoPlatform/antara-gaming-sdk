@@ -530,20 +530,18 @@ private:
         // Retrieve constants
         const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
-        // Check if jump key is tapped
-        bool jump_key_tapped = input::virtual_input::is_tapped("jump");
-
         // If game is not started yet and jump key is tapped
-        if (!started_playing_ && jump_key_tapped) {
+        if (!started_playing_ && input::virtual_input::is_tapped("jump")) {
             // Game starts, player started playing
             started_playing_ = true;
             resume_physics();
         }
 
+        // Check if player died
         check_death();
 
-        // If game is over, and jump key is pressed, reset game
-        if (game_over_ && jump_key_tapped) reset_game();
+        // Check if player requested reset after death
+        check_reset_request();
     }
 
     // Check if player died
@@ -554,6 +552,12 @@ private:
             game_over_ = true;
             pause_physics();
         }
+    }
+
+    // Check if reset is requested at game over state
+    void check_reset_request() {
+        // If game is over, and jump key is pressed, reset game
+        if (game_over_ && input::virtual_input::is_tapped("jump")) reset_game();
     }
 
     // Initialize dynamic objects, this function is called at start and resets
