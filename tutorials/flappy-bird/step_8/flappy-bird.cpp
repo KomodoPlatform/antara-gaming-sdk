@@ -418,7 +418,7 @@ public:
         // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
-        // Get current position of the pipe
+        // Get current position of the player
         auto pos = registry.get<transform::position_2d>(player);
 
         // Add gravity to movement speed, multiply with delta time to apply it over time
