@@ -20,6 +20,7 @@
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/ecs/virtual.input.system.hpp"
 
 namespace antara::gaming::ecs::tests
 {
@@ -208,6 +209,14 @@ namespace antara::gaming::ecs::tests
                         CHECK_EQ(dummy_system.get_name(), "antara::gaming::ecs::tests::logic_concrete_system");
                     }
         }
+    }
+
+    TEST_CASE("virtual input")
+    {
+        entt::registry registry;
+        registry.set<entt::dispatcher>();
+        ecs::virtual_input_system system{registry};
+        system.update();
     }
 }
 
