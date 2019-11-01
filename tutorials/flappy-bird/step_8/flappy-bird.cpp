@@ -481,7 +481,13 @@ public:
         // Do not check anything if player is already dead
         if (player_died_) return;
 
-        // Loop all columns to check collisions between player and the pipes
+        // Check collision
+        check_player_pipe_collision(registry);
+    }
+
+private:
+    // Loop all columns to check collisions between player and the pipes
+    void check_player_pipe_collision(entt::registry &registry) {
         for (auto entity : registry.view<graphics::layer<3>>()) {
             // Check collision between player and a collidable object
             if (collisions::basic_collision_system::query_rect(registry, player_, entity)) {
@@ -491,7 +497,6 @@ public:
         }
     }
 
-private:
     entt::entity player_;
     bool &player_died_;
 };
@@ -612,7 +617,7 @@ private:
     }
 
     // System manager reference
-    ecs::system_manager &system_manager_; 
+    ecs::system_manager &system_manager_;
 
     // States
     entt::entity score_entity_;
