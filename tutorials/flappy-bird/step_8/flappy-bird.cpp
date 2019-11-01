@@ -327,7 +327,7 @@ namespace {
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
     explicit column_logic(entt::registry &registry, entt::entity score_) noexcept : system(registry),
-                                                                                    score_entity(score_) {}
+                                                                                    score_entity_(score_) {}
     // Update, this will be called every tick
     void update() noexcept final {
         auto &registry = entity_registry_;
@@ -346,7 +346,7 @@ public:
             // If this column is not scored, and player passed this column
             if (!col.scored && column_pos_x < constants.player_pos_x) {
                 // Increase the score
-                update_score(registry, score_entity);
+                update_score(registry, score_entity_);
 
                 // Set column as scored
                 col.scored = true;
@@ -364,7 +364,7 @@ public:
     }
 
 private:
-    entt::entity score_entity;
+    entt::entity score_entity_;
 
     // Find the furthest pipe's position X
     float furthest_pipe_position(entt::registry &registry) {
@@ -409,7 +409,7 @@ REFL_AUTO (type(column_logic));
 // Player Logic System
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
-    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player(player_) {}
+    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {}
 
     // Update, this will be called every tick
     void update() noexcept final {
@@ -419,32 +419,32 @@ public:
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Get current position of the player
-        auto pos = registry.get<transform::position_2d>(player);
+        auto pos = registry.get<transform::position_2d>(player_);
 
         // Add gravity to movement speed, multiply with delta time to apply it over time
-        movement_speed.set_y(movement_speed.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
+        movement_speed_.set_y(movement_speed_.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
 
         // Check if jump key is tapped
         bool jump_key_tapped = input::virtual_input::is_tapped("jump");
 
         // If jump is tapped, jump by adding jump force to the movement speed Y
-        if (jump_key_tapped) movement_speed.set_y(-constants.jump_force);
+        if (jump_key_tapped) movement_speed_.set_y(-constants.jump_force);
 
         // Add movement speed to position to make the character move, but apply over time with delta time
-        pos += movement_speed * timer::time_step::get_fixed_delta_time();
+        pos += movement_speed_ * timer::time_step::get_fixed_delta_time();
 
         // Do not let player to go out of the screen to top
         if (pos.y() <= 0.f) {
             pos.set_y(0.f);
-            movement_speed.set_y(0.f);
+            movement_speed_.set_y(0.f);
         }
 
         // Set the new position value
-        registry.replace<transform::position_2d>(player, pos);
+        registry.replace<transform::position_2d>(player_, pos);
 
         // ROTATION
         // Retrieve props of the player
-        auto &props = registry.get<transform::properties>(player);
+        auto &props = registry.get<transform::properties>(player_);
 
         // Increase the rotation a little by applying delta time
         float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
@@ -457,12 +457,12 @@ public:
             new_rotation = constants.max_angle;
 
         // Set the properties
-        registry.replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
+        registry.replace<transform::properties>(player_, transform::properties{.rotation = new_rotation});
     }
 
 private:
-    entt::entity player;
-    math::vec2f movement_speed{0.f, 0.f};
+    entt::entity player_;
+    math::vec2f movement_speed_{0.f, 0.f};
 };
 
 // Name this system
@@ -472,28 +472,28 @@ REFL_AUTO (type(player_logic));
 class collision_logic final : public ecs::logic_update_system<collision_logic> {
 public:
     collision_logic(entt::registry &registry, entt::entity player_, bool &player_died_) noexcept : system(registry),
-                                                                                                   player(player_),
-                                                                                                   player_died(player_died_) {}
+                                                                                                   player_(player_),
+                                                                                                   player_died_(player_died_) {}
     // Update, this will be called every tick
     void update() noexcept final {
         auto &registry = entity_registry_;
 
         // Do not check anything if player is already dead
-        if (player_died) return;
+        if (player_died_) return;
 
         // Loop all columns to check collisions between player and the pipes
         for (auto entity : registry.view<graphics::layer<3>>()) {
             // Check collision between player and a collidable object
-            if (collisions::basic_collision_system::query_rect(registry, player, entity)) {
+            if (collisions::basic_collision_system::query_rect(registry, player_, entity)) {
                 // Mark player died as true
-                player_died = true;
+                player_died_ = true;
             }
         }
     }
 
 private:
-    entt::entity player;
-    bool &player_died;
+    entt::entity player_;
+    bool &player_died_;
 };
 
 // Name this system
@@ -502,14 +502,14 @@ REFL_AUTO (type(collision_logic));
 // Game Scene
 class game_scene final : public scenes::base_scene {
 public:
-    game_scene(entt::registry &registry, ecs::system_manager &system_manager_) noexcept : base_scene(registry),
-                                                                                          system_manager(
-                                                                                                  system_manager_) {
+    game_scene(entt::registry &registry, ecs::system_manager &system_manager) noexcept : base_scene(registry),
+                                                                                          system_manager_(
+                                                                                                  system_manager) {
         // Set the constants that will be used in the program
         registry.set<flappy_bird_constants>();
 
         // Create everything
-        score_entity = create_score(registry);
+        score_entity_ = create_score(registry);
         create_background(registry);
         init_dynamic_objects(registry);
     }
@@ -529,21 +529,21 @@ private:
         bool jump_key_tapped = input::virtual_input::is_tapped("jump");
 
         // If game is not started yet and jump key is tapped
-        if (!started_playing && jump_key_tapped) {
+        if (!started_playing_ && jump_key_tapped) {
             // Game starts, player started playing
-            started_playing = true;
+            started_playing_ = true;
             resume_physics();
         }
 
         // If player died, game over, and pause physics
-        if (player_died) {
-            player_died = false;
-            game_over = true;
+        if (player_died_) {
+            player_died_ = false;
+            game_over_ = true;
             pause_physics();
         }
 
         // If game is over, and jump key is pressed, reset game
-        if (game_over && jump_key_tapped) reset_game();
+        if (game_over_ && jump_key_tapped) reset_game();
     }
 
     // Initialize dynamic objects, this function is called at start and resets
@@ -554,27 +554,27 @@ private:
         auto player = create_player(registry);
 
         // Create systems
-        system_manager.create_system<column_logic>(score_entity);
-        system_manager.create_system<player_logic>(player);
-        system_manager.create_system<collision_logic>(player, player_died);
+        system_manager_.create_system<column_logic>(score_entity_);
+        system_manager_.create_system<player_logic>(player);
+        system_manager_.create_system<collision_logic>(player, player_died_);
 
         // Disable physics and everything at start to pause the game
         pause_physics();
 
         // Reset state values
-        started_playing = false;
-        player_died = false;
-        game_over = false;
+        started_playing_ = false;
+        player_died_ = false;
+        game_over_ = false;
     }
 
     // Pause physics
     void pause_physics() {
-        system_manager.disable_systems<column_logic, player_logic>();
+        system_manager_.disable_systems<column_logic, player_logic>();
     }
 
     // Resume physics
     void resume_physics() {
-        system_manager.enable_systems<column_logic, player_logic>();
+        system_manager_.enable_systems<column_logic, player_logic>();
     }
 
     // Destroy dynamic objects
@@ -586,7 +586,7 @@ private:
         entity_registry_.destroy(view.begin(), view.end());
 
         // Delete systems
-        system_manager.mark_systems<player_logic, collision_logic>();
+        system_manager_.mark_systems<player_logic, collision_logic>();
     }
 
     // Reset game
@@ -595,31 +595,31 @@ private:
         destroy_dynamic_objects();
 
         // Queue reset to reinitialize
-        this->need_reset = true;
+        this->need_reset_ = true;
 
         // Reset current score, but keep the max score
-        update_score(entity_registry_, score_entity, true);
+        update_score(entity_registry_, score_entity_, true);
     }
 
     // Post update
     void post_update() noexcept final {
         // If reset is requested
-        if (need_reset) {
+        if (need_reset_) {
             // Reinitialize all these
             init_dynamic_objects(entity_registry_);
-            need_reset = false;
+            need_reset_ = false;
         }
     }
 
     // System manager reference
-    ecs::system_manager &system_manager;
+    ecs::system_manager &system_manager_; 
 
     // States
-    entt::entity score_entity;
-    bool started_playing{false};
-    bool player_died{false};
-    bool game_over{false};
-    bool need_reset{false};
+    entt::entity score_entity_;
+    bool started_playing_{false};
+    bool player_died_{false};
+    bool game_over_{false};
+    bool need_reset_{false};
 };
 
 // Game world
