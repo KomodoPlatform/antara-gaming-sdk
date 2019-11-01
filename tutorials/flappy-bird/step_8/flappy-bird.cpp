@@ -579,10 +579,8 @@ private:
         // Disable physics and everything at start to pause the game
         pause_physics();
 
-        // Reset state values
-        started_playing_ = false;
-        player_died_ = false;
-        game_over_ = false;
+        // Reset state variables
+        reset_state_variables();
     }
 
     // Create logic systems
@@ -590,6 +588,13 @@ private:
         system_manager_.create_system<column_logic>(score_entity_);
         system_manager_.create_system<player_logic>(player);
         system_manager_.create_system<collision_logic>(player, player_died_);
+    }
+
+    // Reset state values
+    void reset_state_variables() {
+        started_playing_ = false;
+        player_died_ = false;
+        game_over_ = false;
     }
 
     // Pause physics
