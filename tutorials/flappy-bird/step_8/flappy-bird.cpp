@@ -117,12 +117,12 @@ namespace {
         else if (++sc.value > sc.max_score) sc.max_score = sc.value;
 
         // Update the score entity
-        registry.assign_or_replace<score>(entity, sc);
+        registry.replace<score>(entity, sc);
 
         // Update the UI text entity with the current values
         auto &text = registry.get<graphics::text>(sc.text);
         text.contents = score_ui_text(sc.value, sc.max_score);
-        registry.assign_or_replace<graphics::text>(sc.text, text);
+        registry.replace<graphics::text>(sc.text, text);
     }
 
     // Returns a random gap start position Y
@@ -392,11 +392,11 @@ private:
         auto new_pos_x = pos.x() - constants.scroll_speed * timer::time_step::get_fixed_delta_time();
 
         // Set the new position value
-        registry.assign_or_replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
+        registry.replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
 
         // Set cap position too
         auto cap_pos = registry.get<transform::position_2d>(pipe.cap);
-        registry.assign_or_replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
+        registry.replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
 
         // Return the info about if this pipe is out of the screen
         return new_pos_x;
@@ -440,7 +440,7 @@ public:
         }
 
         // Set the new position value
-        registry.assign_or_replace<transform::position_2d>(player, pos);
+        registry.replace<transform::position_2d>(player, pos);
 
         // ROTATION
         // Retrieve props of the player
@@ -457,7 +457,7 @@ public:
             new_rotation = constants.max_angle;
 
         // Set the properties
-        registry.assign_or_replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
+        registry.replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
     }
 
 private:
