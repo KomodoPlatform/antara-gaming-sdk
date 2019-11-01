@@ -530,18 +530,24 @@ private:
         // Retrieve constants
         const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
-        // If game is not started yet and jump key is tapped
-        if (!started_playing_ && input::virtual_input::is_tapped("jump")) {
-            // Game starts, player started playing
-            started_playing_ = true;
-            resume_physics();
-        }
+        // Check if player requested to start the game
+        check_start_game_request();
 
         // Check if player died
         check_death();
 
         // Check if player requested reset after death
         check_reset_request();
+    }
+
+    // Check if start game is requested at the pause state
+    void check_start_game_request() {
+        // If game is not started yet and jump key is tapped
+        if (!started_playing_ && input::virtual_input::is_tapped("jump")) {
+            // Game starts, player started playing
+            started_playing_ = true;
+            resume_physics();
+        }
     }
 
     // Check if player died
