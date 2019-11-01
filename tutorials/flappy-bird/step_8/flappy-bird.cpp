@@ -126,7 +126,7 @@ namespace {
     }
 
     // Returns a random gap start position Y
-    float get_random_gap_start_pos(entt::registry &registry) {
+    float get_random_gap_start_pos(const entt::registry &registry) {
         // Retrieve constants
         const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
         const auto constants = registry.ctx<flappy_bird_constants>();
