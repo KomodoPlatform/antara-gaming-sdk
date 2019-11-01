@@ -457,12 +457,7 @@ public:
             new_rotation = constants.max_angle;
 
         // Set the properties
-        // registry.assign_or_replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
-
-        // TODO: remove this part and enable above, but this part is also bugged atm
-        props.rotation = new_rotation;
-        const auto &sprite = registry.get<graphics::sprite>(player);
-        registry.assign_or_replace<graphics::sprite>(player, sprite);
+        registry.assign_or_replace<transform::properties>(player, transform::properties{.rotation = new_rotation});
     }
 
 private:
