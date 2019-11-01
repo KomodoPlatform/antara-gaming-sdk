@@ -100,6 +100,14 @@ struct score {
 
 // Logic functions
 namespace {
+    void tag_game_scene(entt::registry &registry, entt::entity entity, bool dynamic = false) {
+        // Tag game scene
+        registry.assign<entt::tag<"game_scene"_hs>>(entity);
+
+        // Tag dynamic
+        if(dynamic) registry.assign<entt::tag<"dynamic"_hs>>(entity);
+    }
+
     // Create the UI string
     std::string score_ui_text(int score = 0, int best_score = 0) {
         return "Score: "s + std::to_string(score) +
@@ -155,12 +163,12 @@ namespace {
             transform::position_2d{canvas_width * 0.03f, canvas_height * 0.03f}, graphics::white);
 
         registry.assign<graphics::layer<9>>(text_entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
+        tag_game_scene(registry, text_entity);
 
         // Create score
         registry.assign<score>(entity, 0, 0, text_entity);
         registry.assign<entt::tag<"high_score"_hs>>(entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity);
+        tag_game_scene(registry, entity);
 
         return entity;
     }
@@ -210,10 +218,8 @@ namespace {
         // Set layers, cap should be in front of body
         registry.assign<graphics::layer<4>>(cap);
         registry.assign<graphics::layer<3>>(body);
-        registry.assign<entt::tag<"game_scene"_hs>>(cap);
-        registry.assign<entt::tag<"game_scene"_hs>>(body);
-        registry.assign<entt::tag<"dynamic"_hs>>(cap);
-        registry.assign<entt::tag<"dynamic"_hs>>(body);
+        tag_game_scene(registry, cap, true);
+        tag_game_scene(registry, body, true);
 
         // Construct a pipe with body and cap and return it
         return {body, cap};
@@ -234,8 +240,7 @@ namespace {
         // Make a column from these two pipes and mark it as "column"
         registry.assign<column>(entity_column, top_pipe, bottom_pipe);
         registry.assign<entt::tag<"column"_hs>>(entity_column);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity_column);
-        registry.assign<entt::tag<"dynamic"_hs>>(entity_column);
+        tag_game_scene(registry, entity_column, true);
     }
 
     // Factory for creating a Flappy Bird columns
@@ -271,7 +276,7 @@ namespace {
 
             auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
             registry.assign<graphics::layer<1>>(sky);
-            registry.assign<entt::tag<"game_scene"_hs>>(sky);
+            tag_game_scene(registry, sky);
         }
 
         // Create Grass
@@ -287,7 +292,7 @@ namespace {
             auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos,
                                                        constants.grass_outline_color);
             registry.assign<graphics::layer<3>>(grass);
-            registry.assign<entt::tag<"game_scene"_hs>>(grass);
+            tag_game_scene(registry, grass);
         }
 
         // Create Ground
@@ -301,7 +306,7 @@ namespace {
 
             auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
             registry.assign<graphics::layer<3>>(ground);
-            registry.assign<entt::tag<"game_scene"_hs>>(ground);
+            tag_game_scene(registry, ground);
         }
     }
 
@@ -316,8 +321,7 @@ namespace {
                                                  transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity);
-        registry.assign<entt::tag<"dynamic"_hs>>(entity);
+        tag_game_scene(registry, entity, true);
 
         return entity;
     }
