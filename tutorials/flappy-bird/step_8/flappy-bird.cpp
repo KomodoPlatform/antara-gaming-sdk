@@ -540,15 +540,20 @@ private:
             resume_physics();
         }
 
+        check_death();
+
+        // If game is over, and jump key is pressed, reset game
+        if (game_over_ && jump_key_tapped) reset_game();
+    }
+
+    // Check if player died
+    void check_death() {
         // If player died, game over, and pause physics
         if (player_died_) {
             player_died_ = false;
             game_over_ = true;
             pause_physics();
         }
-
-        // If game is over, and jump key is pressed, reset game
-        if (game_over_ && jump_key_tapped) reset_game();
     }
 
     // Initialize dynamic objects, this function is called at start and resets
