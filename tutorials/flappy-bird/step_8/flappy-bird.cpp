@@ -573,10 +573,8 @@ private:
         // Create player
         auto player = create_player(registry);
 
-        // Create systems
-        system_manager_.create_system<column_logic>(score_entity_);
-        system_manager_.create_system<player_logic>(player);
-        system_manager_.create_system<collision_logic>(player, player_died_);
+        // Create logic systems
+        create_logic_systems(player);
 
         // Disable physics and everything at start to pause the game
         pause_physics();
@@ -585,6 +583,13 @@ private:
         started_playing_ = false;
         player_died_ = false;
         game_over_ = false;
+    }
+
+    // Create logic systems
+    void create_logic_systems(entt::entity player) {
+        system_manager_.create_system<column_logic>(score_entity_);
+        system_manager_.create_system<player_logic>(player);
+        system_manager_.create_system<collision_logic>(player, player_died_);
     }
 
     // Pause physics
