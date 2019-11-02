@@ -17,9 +17,6 @@ using namespace std::string_literals;
 
 // Constants
 struct flappy_bird_constants {
-    // UI
-    const unsigned long long font_size{32ull};
-
     // Player
     const float player_pos_x{400.0f};
     const float gravity{2000.f};
