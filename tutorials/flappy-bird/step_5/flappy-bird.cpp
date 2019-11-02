@@ -360,9 +360,6 @@ private:
 
         // Create logic systems
         create_logic_systems();
-
-        // Reset state variables
-        reset_state_variables();
     }
 
     // Create logic systems
@@ -370,16 +367,8 @@ private:
         system_manager_.create_system<column_logic>();
     }
 
-    // Reset state values
-    void reset_state_variables() {
-        started_playing_ = false;
-    }
-
     // System manager reference
     ecs::system_manager &system_manager_;
-
-    // States
-    bool started_playing_{false};
 };
 
 // Game world
