@@ -18,6 +18,7 @@ using namespace std::string_literals;
 // Constants
 struct flappy_bird_constants {
     // Player
+    const std::string player_image_name{"player.png"};
     const float player_pos_x{400.0f};
     const float gravity{2000.f};
     const float jump_force{650.f};
@@ -37,7 +38,6 @@ struct flappy_bird_constants {
     const graphics::color pipe_color{92, 181, 61};
     const graphics::outline_color pipe_outline_color{2.0f, graphics::color{76, 47, 61}};
     const float scroll_speed{200.f};
-    const std::string player_image_name{"player.png"};
 
     // Background
     const float ground_thickness{100.0f};
