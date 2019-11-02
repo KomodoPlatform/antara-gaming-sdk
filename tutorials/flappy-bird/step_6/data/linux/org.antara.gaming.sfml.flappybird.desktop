@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=flappy-bird
+Exec=flappy-bird
+Icon=komodo_icon
+Categories=Game;
