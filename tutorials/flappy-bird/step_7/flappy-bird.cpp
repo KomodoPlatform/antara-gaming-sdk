@@ -1,4 +1,5 @@
 #include <random>
+#include <antara/gaming/ecs/virtual.input.system.hpp>
 #include <antara/gaming/collisions/basic.collision.system.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
@@ -9,28 +10,27 @@
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/graphics/component.sprite.hpp>
+#include <antara/gaming/input/virtual.hpp>
 
-//! For convenience
+// For convenience
 using namespace antara::gaming;
+using namespace std::string_literals;
 
-namespace {
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    float random_float(float lower, float higher) {
-        std::uniform_real_distribution<float> dist(lower, higher);
-        return dist(gen);
-    }
-}
-
+// Constants
 struct flappy_bird_constants {
-    // Controls
-    const input::mouse_button jump_button{input::mouse_button::left};
+    // UI
+    const unsigned long long font_size{32ull};
+
     // Player
+    const float player_pos_x{400.0f};
     const float gravity{2000.f};
-    const float jump_force{500.f};
+    const float jump_force{650.f};
+    const float rotate_speed{100.f};
+    const float max_angle{60.f};
 
     // Pipes
-    const float gap_height{200.f};
+    const float gap_height{265.f};
+    const float column_start_distance{700.f};
     const float column_min{0.2f};
     const float column_max{0.8f};
     const float column_thickness{100.f};
@@ -52,22 +52,35 @@ struct flappy_bird_constants {
     const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
 };
 
+// Random number generator
+namespace {
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    float random_float(float lower, float higher) {
+        std::uniform_real_distribution<float> dist(lower, higher);
+        return dist(gen);
+    }
+}
+
 // A Flappy Bird column which has two pipes
 struct pipe {
     entt::entity body{entt::null};
     entt::entity cap{entt::null};
 
+    // Destroy pipe
     void destroy(entt::registry &registry) {
         registry.destroy(body);
         registry.destroy(cap);
     }
 };
 
+// Column is made of two pipes
 struct column {
-    //! Entities representing the Flappy Bird pipes
+    // Entities representing the Flappy Bird pipes
     pipe top_pipe{entt::null};
     pipe bottom_pipe{entt::null};
 
+    // Destroy pipes and this column
     void destroy(entt::registry &registry, entt::entity entity) {
         top_pipe.destroy(registry);
         bottom_pipe.destroy(registry);
@@ -75,7 +88,30 @@ struct column {
     }
 };
 
-//! Contains all the function that will be used for logic  and factory
+// Logic functions
+namespace {
+    void tag_game_scene(entt::registry &registry, entt::entity entity, bool dynamic = false) {
+        // Tag game scene
+        registry.assign<entt::tag<"game_scene"_hs>>(entity);
+
+        // Tag dynamic
+        if(dynamic) registry.assign<entt::tag<"dynamic"_hs>>(entity);
+    }
+
+    // Returns a random gap start position Y
+    float get_random_gap_start_pos(const entt::registry &registry) {
+        // Retrieve constants
+        const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        float top_limit = canvas_height * constants.column_min;
+        float bottom_limit = canvas_height * constants.column_max - constants.gap_height;
+
+        return random_float(top_limit, bottom_limit);
+    }
+}
+
+// Factory functions
 namespace {
     // Factory for pipes, requires to know if it's a top one, position x of the column, and the gap starting position Y
     pipe create_pipe(entt::registry &registry, bool is_top, float pos_x, float gap_start_pos_y) {
@@ -99,7 +135,8 @@ namespace {
                               gap_start_pos_y * 2.0f :
                               (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
 
-        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos, constants.pipe_outline_color);
+        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos,
+                                                  constants.pipe_outline_color);
 
         // PIPE CAP
         // Let's prepare the pipe cap
@@ -115,30 +152,17 @@ namespace {
         };
 
         // Construct the cap
-        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos, constants.pipe_outline_color);
+        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos,
+                                                 constants.pipe_outline_color);
 
         // Set layers, cap should be in front of body
         registry.assign<graphics::layer<4>>(cap);
         registry.assign<graphics::layer<3>>(body);
-        registry.assign<entt::tag<"game_scene"_hs>>(cap);
-        registry.assign<entt::tag<"game_scene"_hs>>(body);
-        registry.assign<entt::tag<"dynamic"_hs>>(cap);
-        registry.assign<entt::tag<"dynamic"_hs>>(body);
+        tag_game_scene(registry, cap, true);
+        tag_game_scene(registry, body, true);
 
         // Construct a pipe with body and cap and return it
         return {body, cap};
-    }
-
-    // Returns a random gap start position Y
-    float get_random_gap_start_pos(entt::registry &registry) {
-        //! Retrieve constants
-        const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
-        const auto constants = registry.ctx<flappy_bird_constants>();
-
-        float top_limit = canvas_height * constants.column_min;
-        float bottom_limit = canvas_height * constants.column_max - constants.gap_height;
-
-        return random_float(top_limit, bottom_limit);
     }
 
     // Factory to create single column
@@ -156,21 +180,19 @@ namespace {
         // Make a column from these two pipes and mark it as "column"
         registry.assign<column>(entity_column, top_pipe, bottom_pipe);
         registry.assign<entt::tag<"column"_hs>>(entity_column);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity_column);
-        registry.assign<entt::tag<"dynamic"_hs>>(entity_column);
+        tag_game_scene(registry, entity_column, true);
     }
 
-    //! Factory for creating a Flappy Bird columns
+    // Factory for creating a Flappy Bird columns
     void create_columns(entt::registry &registry) noexcept {
-        //! Retrieve constants
-        const auto canvas_width = registry.ctx<graphics::canvas_2d>().canvas.size.x();
+        // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Spawn columns out of the screen, out of the canvas
-        const float column_pos_offset = canvas_width + constants.column_thickness * 2.0f;
+        const float column_pos_offset = constants.column_start_distance + constants.column_thickness * 2.0f;
 
         // Create the columns
-        for(std::size_t i = 0; i < constants.column_count; ++i) {
+        for (std::size_t i = 0; i < constants.column_count; ++i) {
             // Horizontal position (X) increases for every column, keeping the distance
             float pos_x = column_pos_offset + i * constants.column_distance;
 
@@ -178,9 +200,9 @@ namespace {
         }
     }
 
-    //! Factory for creating a Flappy Bird background
+    // Factory for creating a Flappy Bird background
     void create_background(entt::registry &registry) noexcept {
-        //! Retrieve constants
+        // Retrieve constants
         const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
@@ -194,7 +216,7 @@ namespace {
 
             auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
             registry.assign<graphics::layer<1>>(sky);
-            registry.assign<entt::tag<"game_scene"_hs>>(sky);
+            tag_game_scene(registry, sky);
         }
 
         // Create Grass
@@ -207,9 +229,10 @@ namespace {
             // We also make it a bit longer by adding the thickness of the outline to hide the outline at sides
             math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
 
-            auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
+            auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos,
+                                                       constants.grass_outline_color);
             registry.assign<graphics::layer<3>>(grass);
-            registry.assign<entt::tag<"game_scene"_hs>>(grass);
+            tag_game_scene(registry, grass);
         }
 
         // Create Ground
@@ -223,47 +246,49 @@ namespace {
 
             auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
             registry.assign<graphics::layer<3>>(ground);
-            registry.assign<entt::tag<"game_scene"_hs>>(ground);
+            tag_game_scene(registry, ground);
         }
     }
 
-    //! Factory for creating the player
+    // Factory for creating the player
     entt::entity create_player(entt::registry &registry) {
-        //! Retrieve constants
-        const auto [canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        // Retrieve constants
+        const auto[_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         auto entity = graphics::blueprint_sprite(registry,
-                                                        graphics::sprite{constants.player_image_name.c_str()},
-                                                        transform::position_2d{canvas_width * 0.2f, canvas_height * 0.2f});
+                                                 graphics::sprite{constants.player_image_name.c_str()},
+                                                 transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
-        registry.assign<entt::tag<"game_scene"_hs>>(entity);
-        registry.assign<entt::tag<"dynamic"_hs>>(entity);
+        tag_game_scene(registry, entity, true);
 
         return entity;
     }
 }
 
+// Column Logic System
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    explicit column_logic(entt::registry &registry) noexcept : system(registry) { }
+    explicit column_logic(entt::registry &registry) noexcept : system(registry) {}
 
+    // Update, this will be called every tick
     void update() noexcept final {
-        auto& registry = entity_registry_;
+        auto &registry = entity_registry_;
 
-        //! Retrieve constants
+        // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
         // Loop all columns
-        for(auto entity : registry.view<column>()) {
-            auto& col = registry.get<column>(entity);
+        for (auto entity : registry.view<column>()) {
+            auto &col = registry.get<column>(entity);
 
-            // Move pipes, and check if they are out of the screen
-            bool col_out_of_screen = move_pipe(registry, col.top_pipe) || move_pipe(registry, col.bottom_pipe);
+            // Move pipes, and retrieve column position x
+            float column_pos_x = move_pipe(registry, col.top_pipe);
+            move_pipe(registry, col.bottom_pipe);
 
             // If column is out of the screen
-            if(col_out_of_screen) {
+            if (column_pos_x < -constants.column_distance) {
                 // Remove this column
                 col.destroy(registry, entity);
 
@@ -274,23 +299,21 @@ public:
     }
 
 private:
-    // Find the most far pipe's position X
+    // Find the furthest pipe's position X
     float furthest_pipe_position(entt::registry &registry) {
         float furthest = 0.f;
 
-        auto view = registry.view<column>();
-
-        for(auto entity : view) {
-            auto& col = registry.get<column>(entity);
+        for (auto entity : registry.view<column>()) {
+            auto &col = registry.get<column>(entity);
             float x = entity_registry_.get<transform::position_2d>(col.top_pipe.body).x();
-            if(x > furthest) furthest = x;
+            if (x > furthest) furthest = x;
         }
 
         return furthest;
     }
 
-    // Move the pipe and return if it's out of the screen
-    bool move_pipe(entt::registry &registry, pipe& pipe) {
+    // Move the pipe and return the x position
+    float move_pipe(entt::registry &registry, pipe &pipe) {
         // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
@@ -302,221 +325,294 @@ private:
         auto new_pos_x = pos.x() - constants.scroll_speed * timer::time_step::get_fixed_delta_time();
 
         // Set the new position value
-        registry.assign_or_replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
+        registry.replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
 
         // Set cap position too
         auto cap_pos = registry.get<transform::position_2d>(pipe.cap);
-        registry.assign_or_replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
+        registry.replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
 
         // Return the info about if this pipe is out of the screen
-        return new_pos_x < -constants.column_thickness * 2.0f;
+        return new_pos_x;
     }
 };
 
-//! Give a name to our system
-REFL_AUTO(type(column_logic));
+// Name this system
+REFL_AUTO (type(column_logic));
 
+// Player Logic System
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
-    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player(player_) { }
+    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {}
 
+    // Update, this will be called every tick
     void update() noexcept final {
-        auto& registry = entity_registry_;
+        auto &registry = entity_registry_;
 
-        //! Retrieve constants
+        // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
-        // Get current position of the pipe
-        auto pos = registry.get<transform::position_2d>(player);
+        // Get current position of the player
+        auto pos = registry.get<transform::position_2d>(player_);
 
         // Add gravity to movement speed, multiply with delta time to apply it over time
-        movement_speed.set_y(movement_speed.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
+        movement_speed_.set_y(movement_speed_.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
 
         // Check if jump key is tapped
-        bool jump_key_pressed = input::is_mouse_button_pressed(constants.jump_button);
-        bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
-        jump_key_pressed_last_tick = jump_key_pressed;
+        bool jump_key_tapped = input::virtual_input::is_tapped("jump");
 
-        // If jump is tapped, add jump force to the movement speed
-        if (jump_key_tapped) movement_speed.set_y(-constants.jump_force);
+        // If jump is tapped, jump by adding jump force to the movement speed Y
+        if (jump_key_tapped) movement_speed_.set_y(-constants.jump_force);
 
-        // Add movement speed to position, but apply over time with delta time
-        pos += movement_speed * timer::time_step::get_fixed_delta_time();
+        // Add movement speed to position to make the character move, but apply over time with delta time
+        pos += movement_speed_ * timer::time_step::get_fixed_delta_time();
+
+        // Do not let player to go out of the screen to top
+        if (pos.y() <= 0.f) {
+            pos.set_y(0.f);
+            movement_speed_.set_y(0.f);
+        }
 
         // Set the new position value
-        registry.assign_or_replace<transform::position_2d>(player, pos);
+        registry.replace<transform::position_2d>(player_, pos);
+
+        // ROTATION
+        // Retrieve props of the player
+        auto &props = registry.get<transform::properties>(player_);
+
+        // Increase the rotation a little by applying delta time
+        float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
+
+        // If jump button is tapped, reset rotation,
+        // If rotation is higher than the max angle, set it to max angle
+        if (jump_key_tapped)
+            new_rotation = 0.f;
+        else if (props.rotation > constants.max_angle)
+            new_rotation = constants.max_angle;
+
+        // Set the properties
+        registry.replace<transform::properties>(player_, transform::properties{.rotation = new_rotation});
     }
 
 private:
-    entt::entity player;
-    math::vec2f movement_speed{0.f, 0.f};
-    bool jump_key_pressed_last_tick = false;
+    entt::entity player_;
+    math::vec2f movement_speed_{0.f, 0.f};
 };
 
-//! Give a name to our system
-REFL_AUTO(type(player_logic));
+// Name this system
+REFL_AUTO (type(player_logic));
 
+// Collision Logic System
 class collision_logic final : public ecs::logic_update_system<collision_logic> {
 public:
-    collision_logic(entt::registry &registry, entt::entity player_, bool& player_died_) noexcept : system(registry), player(player_), player_died(player_died_) { }
-
+    collision_logic(entt::registry &registry, entt::entity player_, bool &player_died_) noexcept : system(registry),
+                                                                                                   player_(player_),
+                                                                                                   player_died_(player_died_) {}
+    // Update, this will be called every tick
     void update() noexcept final {
-        auto& registry = entity_registry_;
+        auto &registry = entity_registry_;
 
         // Do not check anything if player is already dead
-        if(player_died) return;
+        if (player_died_) return;
 
-        // Loop all columns to check collisions with the pipes
-        for(auto entity : registry.view<graphics::layer<3>>()) {
+        // Check collision
+        check_player_pipe_collision(registry);
+    }
+
+private:
+    // Loop all columns to check collisions between player and the pipes
+    void check_player_pipe_collision(entt::registry &registry) {
+        for (auto entity : registry.view<graphics::layer<3>>()) {
             // Check collision between player and a collidable object
-            if(collisions::basic_collision_system::query_rect(registry, player, entity)) {
+            if (collisions::basic_collision_system::query_rect(registry, player_, entity)) {
                 // Mark player died as true
-                player_died = true;
+                player_died_ = true;
             }
         }
     }
 
-private:
-    entt::entity player;
-    bool& player_died;
+    entt::entity player_;
+    bool &player_died_;
 };
 
-//! Give a name to our system
-REFL_AUTO(type(collision_logic));
+// Name this system
+REFL_AUTO (type(collision_logic));
 
+// Game Scene
 class game_scene final : public scenes::base_scene {
 public:
-    game_scene(entt::registry &registry, ecs::system_manager& system_manager_) noexcept : base_scene(registry), system_manager(system_manager_) {
-        //! Set the constants that will be used in the program
+    game_scene(entt::registry &registry, ecs::system_manager &system_manager) noexcept : base_scene(registry),
+                                                                                         system_manager_(
+                                                                                                 system_manager) {
+        // Set the constants that will be used in the program
         registry.set<flappy_bird_constants>();
 
-        //! Create the columns
+        // Create everything
         create_background(registry);
         init_dynamic_objects(registry);
     }
 
-    //! Scene name
+    // Scene name
     std::string scene_name() noexcept final {
         return "game_scene";
     }
 
 private:
-    //! Update the game every tick
+    // Update the game every tick
     void update() noexcept final {
         // Retrieve constants
         const auto constants = entity_registry_.ctx<flappy_bird_constants>();
 
-        // Check if jump key is tapped
-        bool jump_key_pressed = input::is_mouse_button_pressed(constants.jump_button);
-        bool jump_key_tapped = jump_key_pressed && !jump_key_pressed_last_tick;
-        jump_key_pressed_last_tick = jump_key_pressed;
+        // Check if player requested to start the game
+        check_start_game_request();
 
-        // If game is not started yet and jump key is tapped
-        if(!started_playing && jump_key_tapped) {
-            // Game starts, player started playing
-            started_playing = true;
-            resume_physics();
-        }
+        // Check if player died
+        check_death();
 
-        // If player died, game over, and pause physics
-        if(player_died) {
-            player_died = false;
-            game_over = true;
-            pause_physics();
-        }
-
-        // If game is over, and jump key is pressed, reset game
-        if(game_over && jump_key_pressed) reset_game();
+        // Check if player requested reset after death
+        check_reset_request();
     }
 
+    // Check if start game is requested at the pause state
+    void check_start_game_request() {
+        // If game is not started yet and jump key is tapped
+        if (!started_playing_ && input::virtual_input::is_tapped("jump")) {
+            // Game starts, player started playing
+            started_playing_ = true;
+            resume_physics();
+        }
+    }
+
+    // Check if player died
+    void check_death() {
+        // If player died, game over, and pause physics
+        if (player_died_) {
+            player_died_ = false;
+            game_over_ = true;
+            pause_physics();
+        }
+    }
+
+    // Check if reset is requested at game over state
+    void check_reset_request() {
+        // If game is over, and jump key is pressed, reset game
+        if (game_over_ && input::virtual_input::is_tapped("jump")) reset_game();
+    }
+
+    // Initialize dynamic objects, this function is called at start and resets
     void init_dynamic_objects(entt::registry &registry) {
         create_columns(registry);
 
+        // Create player
         auto player = create_player(registry);
 
-        //! Create systems
-        system_manager.create_system<column_logic>();
-        system_manager.create_system<player_logic>(player);
+        // Create logic systems
+        create_logic_systems(player);
 
-        // Disable physics and everything at start
+        // Disable physics and everything at start to pause the game
         pause_physics();
 
-        // Collision system
-        system_manager.create_system<collision_logic>(player, player_died);
-
-        // Reset state values
-        started_playing = false;
-        player_died = false;
-        game_over = false;
+        // Reset state variables
+        reset_state_variables();
     }
 
+    // Create logic systems
+    void create_logic_systems(entt::entity player) {
+        system_manager_.create_system<column_logic>();
+        system_manager_.create_system<player_logic>(player);
+        system_manager_.create_system<collision_logic>(player, player_died_);
+    }
+
+    // Reset state values
+    void reset_state_variables() {
+        started_playing_ = false;
+        player_died_ = false;
+        game_over_ = false;
+    }
+
+    // Pause physics
     void pause_physics() {
-        system_manager.disable_systems<column_logic, player_logic>();
+        system_manager_.disable_systems<column_logic, player_logic>();
     }
 
+    // Resume physics
     void resume_physics() {
-        system_manager.enable_systems<column_logic, player_logic>();
+        system_manager_.enable_systems<column_logic, player_logic>();
     }
 
-    void destroy_all() {
-        //! Retrieve the collection of entities from the game scene
+    // Destroy dynamic objects
+    void destroy_dynamic_objects() {
+        // Retrieve the collection of entities from the game scene
         auto view = entity_registry_.view<entt::tag<"dynamic"_hs>>();
 
-        //! Iterate the collection and destroy each entities
+        // Iterate the collection and destroy each entities
         entity_registry_.destroy(view.begin(), view.end());
 
-        //! Delete systems
-        system_manager.mark_systems<player_logic, collision_logic>();
+        // Delete systems
+        system_manager_.mark_systems<player_logic, collision_logic>();
     }
 
+    // Reset game
     void reset_game() {
-        destroy_all();
-        this->need_reset = true;
+        // Destroy all dynamic objects
+        destroy_dynamic_objects();
+
+        // Queue reset to reinitialize
+        this->need_reset_ = true;
     }
 
+    // Post update
     void post_update() noexcept final {
-        if(need_reset) {
-            //! Reinitialize all these
+        // If reset is requested
+        if (need_reset_) {
+            // Reinitialize all these
             init_dynamic_objects(entity_registry_);
-            need_reset = false;
+            need_reset_ = false;
         }
     }
 
-    ecs::system_manager& system_manager;
+    // System manager reference
+    ecs::system_manager &system_manager_;
 
     // States
-    bool started_playing{false};
-    bool player_died{false};
-    bool game_over{false};
-    bool jump_key_pressed_last_tick{false};
-    bool need_reset{false};
+    bool started_playing_{false};
+    bool player_died_{false};
+    bool game_over_{false};
+    bool need_reset_{false};
 };
 
-//! Game world
+// Game world
 struct flappy_bird_world : world::app {
-    //! Game entry point
+    // Game entry point
     flappy_bird_world() noexcept {
-        //! Load our graphical system
+        // Load the graphical system
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
-        //! Load our resources system
-        entity_registry_.set<antara::gaming::sfml::resources_system>(entity_registry_);
+        // Load the resources system
+        entity_registry_.set<sfml::resources_system>(entity_registry_);
 
-        //! Load our input system with the window from the graphical system
+        // Load the input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
-        //! Load the scenes manager
+        // Create virtual input system
+        system_manager_.create_system<ecs::virtual_input_system>();
+
+        // Define the buttons for the jump action
+        input::virtual_input::create("jump",
+                                     {input::key::space, input::key::w, input::key::up},
+                                     {input::mouse_button::left, input::mouse_button::right});
+
+        // Load the scenes manager
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
 
-        //! Change the current_scene to "game_scene" by pushing it.
+        // Change the current_scene to "game_scene" by pushing it.
         scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_, system_manager_), true);
     }
 };
 
 int main() {
-    //! Declare our world
+    // Declare the world
     flappy_bird_world game;
 
-    //! Run the game
+    // Run the game
     return game.run();
 }
