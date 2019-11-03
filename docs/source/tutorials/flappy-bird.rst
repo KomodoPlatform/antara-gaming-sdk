@@ -319,7 +319,7 @@ We will have many entities and we need to tag them with ``game_scene`` name. And
 
 During the creation of the pipes, we will need another function, to get a random starting position of the gap. That's how we will know to start and end the top pipe, have a gap, then start and end the bottom pipe.
 
-This function will access to the constants, there are ``column_min`` and ``column_max``. ``column_min`` is for the top limit, ``0.2`` of the canvas height. And ``column_max`` is for the bottom limit, ``0.8`` of the canvas height. Though we also need to subtract ``gap_height`` from the ``bottom_limit`` because this will be the starting position, or the top position of the gap. When the limits are set, function returns a random float value between those two, using the random function we defined before. We add this function into the same namespace.
+This function will also access to the constants, there are ``column_min`` and ``column_max``. ``column_min`` is for the top limit, ``0.2`` of the canvas height. And ``column_max`` is for the bottom limit, ``0.8`` of the canvas height. Though we also need to subtract ``gap_height`` from the ``bottom_limit`` because this will be the starting position, or the top position of the gap. When the limits are set, function returns a random float value between those two, using the random function we defined before. We add this function into the same namespace.
 
 .. code-block:: cpp
 
@@ -334,3 +334,45 @@ This function will access to the constants, there are ``column_min`` and ``colum
 
         return random_float(top_limit, bottom_limit);
     }
+
+Now we can finally start constructing a pipe. There will be some math here about position and size.
+
+``create_pipe`` function will have ``bool is_top, float pos_x, float gap_start_pos_y`` parameters. ``is_top`` indicates if it's the top pipe or the bottom. ``pos_x`` is the horizontal position of the pipe. ``gap_start_pos_y`` is the vertical start position of the gap, which will be bottom edge of the top pipe for example. 
+
+We can start with retrieving ``canvas_height`` and the constants. 
+
+.. code-block:: cpp
+
+    // Retrieve constants
+    const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
+    const auto constants = registry.ctx<flappy_bird_constants>();
+
+Remember that pipe is made of two parts: body and cap. Let's construct the body first. It will be a rectangle so we will need center position and size. Just to avoid more complicated math, we can have center of the rectangle at the screen edge. Half of the pipe will be out of the view but it does not really matter, we don't need that optimization for this basic game. 
+
+X will be ``pos_x``, and the Y will be top of the screen if it's the top pipe, which is 0. If it's a bottom one, then Y will be bottom edge of the screen, which is ``canvas_height``.
+
+.. code-block:: cpp
+
+    // PIPE BODY
+    // Top pipe is at Y: 0 and bottom pipe is at canvas_height, bottom of the canvas
+    transform::position_2d body_pos{pos_x, is_top ? 0.f : canvas_height};
+
+Body size however, is pretty tricky. Size X will be the column thickness, that's easy. But the Size Y, it changes depending on if it's the top pipe or the bottom.
+
+If it's the top pipe, start of the gap ``gap_start_pos_y`` should be bottom of the rectangle. So half size should be ``gap_start_pos_y`` since the center of the rectangle is at 0. Full size will be ``gap_start_pos_y * 2.0f``.
+
+If it's the bottom pipe, top of the rectangle will be the end of the gap, ``gap_start_pos_y + gap_height``. So half size should be ``canvas_height - (gap_start_pos_y + gap_height)``. And we need to double it for the full size. That makes ``(canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f``.
+
+.. code-block:: cpp
+
+    // Size X is the column thickness,
+    // Size Y is the important part.
+    // If it's a top pipe, gap_start_pos_y should be bottom of the rectangle
+    //  So half size should be gap_start_pos_y since center of the rectangle is at 0.
+    // If it's the bottom pipe, top of the rectangle will be at gap_start_pos_y + gap_height
+    //  So half size should be canvas_height - (gap_start_pos_y + gap_height)
+    // Since these are half-sizes, and the position is at the screen border, we multiply these sizes by two
+    math::vec2f body_size{constants.column_thickness,
+                            is_top ?
+                            gap_start_pos_y * 2.0f :
+                            (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
