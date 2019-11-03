@@ -409,3 +409,85 @@ If it's the bottom cap, bottom of the gap will be the same line as top of the ca
                                     gap_start_pos_y - constants.pipe_cap_height * 0.5f :
                                     gap_start_pos_y + constants.gap_height + constants.pipe_cap_height * 0.5f
     };
+
+
+To construct the rectangle entity, we can use blueprint function ``geometry::blueprint_rectangle``. We will also feed ``pipe_color`` and ``pipe_outline_color`` again, colors are same as the body.
+
+.. code-block:: cpp
+
+    auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos, constants.pipe_outline_color);
+
+To make cap appear in front of the body, we need to define the draw order. We will use ``graphics::layer`` for that. Higher is front, lower is back. We set ``cap`` as ``layer<4>`` and ``body`` as ``layer<3>``.
+
+.. code-block:: cpp
+
+    // Set layers, cap should be in front of body
+    registry.assign<graphics::layer<4>>(cap);
+    registry.assign<graphics::layer<3>>(body);
+
+Then tag both entities as ``game_scene`` and ``dynamic`` with the ``tag_game_scene`` function we defined before. Then return both inside ``{ }`` that will automatically construct a ``struct pipe``.
+
+.. code-block:: cpp
+
+    tag_game_scene(registry, cap, true);
+    tag_game_scene(registry, body, true);
+
+    // Construct a pipe with body and cap and return it
+    return {body, cap};
+
+Whole function looks like this:
+
+.. code-block:: cpp
+
+    // Factory for pipes, requires to know if it's a top one, position x of the column, and the gap starting position Y
+    pipe create_pipe(entt::registry &registry, bool is_top, float pos_x, float gap_start_pos_y) {
+        // Retrieve constants
+        const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // PIPE BODY
+        // Top pipe is at Y: 0 and bottom pipe is at canvas_height, bottom of the canvas
+        transform::position_2d body_pos{pos_x, is_top ? 0.f : canvas_height};
+
+        // Size X is the column thickness,
+        // Size Y is the important part.
+        // If it's a top pipe, gap_start_pos_y should be bottom of the rectangle
+        //  So half size should be gap_start_pos_y since center of the rectangle is at 0.
+        // If it's the bottom pipe, top of the rectangle will be at gap_start_pos_y + gap_height
+        //  So half size should be canvas_height - (gap_start_pos_y + gap_height)
+        // Since these are half-sizes, and the position is at the screen border, we multiply these sizes by two
+        math::vec2f body_size{constants.column_thickness,
+                              is_top ?
+                              gap_start_pos_y * 2.0f :
+                              (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
+
+        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos,
+                                                  constants.pipe_outline_color);
+
+        // PIPE CAP
+        // Let's prepare the pipe cap
+        // Size of the cap is defined in constants
+        math::vec2f cap_size{constants.column_thickness + constants.pipe_cap_extra_width, constants.pipe_cap_height};
+
+        // Position, X is same as the body. Bottom of the cap is aligned with bottom of the body,
+        // or start of the gap, we will use start of the gap here, minus half of the cap height
+        transform::position_2d cap_pos{body_pos.x(),
+                                       is_top ?
+                                       gap_start_pos_y - constants.pipe_cap_height * 0.5f :
+                                       gap_start_pos_y + constants.gap_height + constants.pipe_cap_height * 0.5f
+        };
+
+        // Construct the cap
+        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos,
+                                                 constants.pipe_outline_color);
+
+        // Set layers, cap should be in front of body
+        registry.assign<graphics::layer<4>>(cap);
+        registry.assign<graphics::layer<3>>(body);
+        tag_game_scene(registry, cap, true);
+        tag_game_scene(registry, body, true);
+
+        // Construct a pipe with body and cap and return it
+        return {body, cap};
+    }
+
