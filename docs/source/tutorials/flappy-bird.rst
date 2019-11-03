@@ -693,3 +693,141 @@ Here is how the whole sky creation snippet looks like:
         registry.assign<graphics::layer<1>>(sky);
         tag_game_scene(registry, sky);
     }
+
+Now we do the same thing, but for grass. X position is middle of the canvas, Y position is canvas height minus ground thickness because grass is on top of the ground. 
+
+.. code-block:: cpp
+
+    // Ground expands to whole canvas width so position is middle of it,
+    // But position Y is at top of the ground, so it's canvas height minus ground thickness
+    transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness};
+
+Size Y is constant ``grass_thickness`` and Size X is full ``canvas_width`` plus the outline thickness because we don't wanna see the left and right edges, by making it bigger edges will be out of the canvas.
+
+.. code-block:: cpp
+
+    // Size X is full canvas but the height is defined in constants
+    // We also make it a bit longer by adding the thickness of the outline to hide the outline at sides
+    math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
+
+We use ``geometry::blueprint_rectangle`` again, and assign ``layer<3>``, then tag it.
+
+.. code-block:: cpp
+
+    auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
+    registry.assign<graphics::layer<3>>(grass);
+    tag_game_scene(registry, grass);
+    
+Here is how the whole grass creation snippet looks like:
+
+.. code-block:: cpp
+
+    // Create Grass
+    {
+        // Ground expands to whole canvas width so position is middle of it,
+        // But position Y is at top of the ground, so it's canvas height minus ground thickness
+        transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness};
+
+        // Size X is full canvas but the height is defined in constants
+        // We also make it a bit longer by adding the thickness of the outline to hide the outline at sides
+        math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
+
+        auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos, constants.grass_outline_color);
+        registry.assign<graphics::layer<3>>(grass);
+        tag_game_scene(registry, grass);
+    }
+
+Now we create the ground, it's the easiest. 
+
+X position is middle of canvas, height is canvas height minus half of the ground thickness because position is center of the rectangle.
+
+Size X is canvas width, Size Y is ground thickness. Rest are the same.
+
+.. code-block:: cpp
+
+    // Create Ground
+    {
+        // Ground expands to whole canvas width so position is middle of it,
+        // But position Y is at bottom of the screen so it's full canvas_height minus half of the ground thickness
+        transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness * 0.5f};
+
+        // Size X is full canvas but the height is defined in constants
+        math::vec2f size{canvas_width, constants.ground_thickness};
+
+        auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
+        registry.assign<graphics::layer<3>>(ground);
+        tag_game_scene(registry, ground);
+    }
+
+Notice that we didn't tag any of these ``dynamic``. They will be static and permanent.
+
+Background is complete, whole function looks like this:
+
+.. code-block:: cpp
+
+    // Factory for creating a Flappy Bird background
+    void create_background(entt::registry &registry) noexcept {
+        // Retrieve constants
+        const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Create Sky
+        {
+            // Sky is whole canvas so position is middle of it
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
+
+            // And the size is full canvas
+            math::vec2f size{canvas_width, canvas_height};
+
+            auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
+            registry.assign<graphics::layer<1>>(sky);
+            tag_game_scene(registry, sky);
+        }
+
+        // Create Grass
+        {
+            // Ground expands to whole canvas width so position is middle of it,
+            // But position Y is at top of the ground, so it's canvas height minus ground thickness
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness};
+
+            // Size X is full canvas but the height is defined in constants
+            // We also make it a bit longer by adding the thickness of the outline to hide the outline at sides
+            math::vec2f size{canvas_width + constants.grass_outline_color.thickness * 2.0f, constants.grass_thickness};
+
+            auto grass = geometry::blueprint_rectangle(registry, size, constants.grass_color, pos,
+                                                       constants.grass_outline_color);
+            registry.assign<graphics::layer<3>>(grass);
+            tag_game_scene(registry, grass);
+        }
+
+        // Create Ground
+        {
+            // Ground expands to whole canvas width so position is middle of it,
+            // But position Y is at bottom of the screen so it's full canvas_height minus half of the ground thickness
+            transform::position_2d pos{canvas_width * 0.5f, canvas_height - constants.ground_thickness * 0.5f};
+
+            // Size X is full canvas but the height is defined in constants
+            math::vec2f size{canvas_width, constants.ground_thickness};
+
+            auto ground = geometry::blueprint_rectangle(registry, size, constants.ground_color, pos);
+            registry.assign<graphics::layer<3>>(ground);
+            tag_game_scene(registry, ground);
+        }
+    }
+
+Let's call it inside the ``game_scene`` constructor.
+
+.. code-block:: cpp
+
+    game_scene(entt::registry &registry) noexcept : base_scene(registry) {
+        // Set the constants that will be used in the program
+        registry.set<flappy_bird_constants>();
+
+        // Create everything
+        create_background(registry);
+        init_dynamic_objects(registry);
+    }
+
+Now we have a pretty background, at least as pretty as it can get with three rectangles.
+
+.. image:: ../../assets/fb_background.png
