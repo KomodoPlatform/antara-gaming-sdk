@@ -214,3 +214,43 @@ Step 1 is complete, here is the full code.
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_1/flappy-bird.cpp
    :language: cpp
+
+
+Step 2: Creation of Pipes
+-------------------------
+
+At this step, we will add the pipes which Flappy Bird dies when it touches them. At the image below, you'll see two pipes with a gap between them. We will call this a ``column``. 
+
+.. image:: ../../assets/fb_column.png
+
+Let's start with the constant values that we will use. We will keep them in a struct. There are many of them:
+
+.. code-block:: cpp
+
+    // Constants
+    struct flappy_bird_constants {
+        // Pipes
+        const float gap_height{265.f};
+        const float column_start_distance{700.f};
+        const float column_min{0.2f};
+        const float column_max{0.8f};
+        const float column_thickness{100.f};
+        const float column_distance{400.f};
+        const std::size_t column_count{6};
+        const float pipe_cap_extra_width{10.f};
+        const float pipe_cap_height{50.f};
+        const graphics::color pipe_color{92, 181, 61};
+        const graphics::outline_color pipe_outline_color{2.0f, graphics::color{76, 47, 61}};
+    };
+
+Then we will add this to the ``registry`` in the ``game_scene`` constructor.
+
+.. code-block:: cpp
+
+    // Game Scene
+    class game_scene final : public scenes::base_scene {
+    public:
+        game_scene(entt::registry &registry) noexcept : base_scene(registry) {
+            // Set the constants that will be used in the program
+            registry.set<flappy_bird_constants>();
+        }
