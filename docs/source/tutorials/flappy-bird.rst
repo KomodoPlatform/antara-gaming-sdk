@@ -383,4 +383,29 @@ To construct the rectangle entity, we can use blueprint function ``geometry::blu
 
     auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos, constants.pipe_outline_color);
 
-That's it for the body!
+That's it for the body! Now we need to construct the cap of the pipe.
+
+Size of the cap will be ``column_thickness`` plus ``pipe_cap_extra_width`` because we want the cap to look like the mario pipe, cap needs to be a little bit wider. And the height is pre-defined ``pipe_cap_height``. Easy!
+
+.. code-block:: cpp
+
+    // PIPE CAP
+    // Let's prepare the pipe cap
+    // Size of the cap is defined in constants
+    math::vec2f cap_size{constants.column_thickness + constants.pipe_cap_extra_width, constants.pipe_cap_height};
+
+Cap position is a bit trickier, X position will be same as the body, ``body_pos.x()`` since it's centered. But the Y position changes depending on if it's a top one or bottom.
+
+If it's the top cap, bottom line of the cap is alligned with bottom of the body or start of the gap which is the same line. We will use start of the gap here, minus half of the cap height, because position is the center of the rectangle. It makes ``gap_start_pos_y - constants.pipe_cap_height * 0.5f``.
+
+If it's the bottom cap, bottom of the gap will be the same line as top of the cap. Bottom of the gap is gap start position plus the gap height, ``gap_start_pos_y + constants.gap_height``. Then we need to add half of the pipe height again because we want the shift a little bit down since the position we define is the center of the cap and we want the top to be alligned with top of the body.
+
+.. code-block:: cpp
+
+    // Position, X is same as the body. Bottom of the cap is aligned with bottom of the body,
+    // or start of the gap, we will use start of the gap here, minus half of the cap height
+    transform::position_2d cap_pos{body_pos.x(),
+                                    is_top ?
+                                    gap_start_pos_y - constants.pipe_cap_height * 0.5f :
+                                    gap_start_pos_y + constants.gap_height + constants.pipe_cap_height * 0.5f
+    };
