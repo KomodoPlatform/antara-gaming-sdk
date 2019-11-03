@@ -85,6 +85,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/ecs.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/event.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/flappy-bird.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tic-tac-toe.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/getting_started.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/basic_setup.rst
