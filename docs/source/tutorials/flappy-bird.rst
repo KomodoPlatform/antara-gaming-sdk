@@ -254,3 +254,21 @@ Then we will add this to the ``registry`` in the ``game_scene`` constructor.
             // Set the constants that will be used in the program
             registry.set<flappy_bird_constants>();
         }
+
+Now let's make a struct which will represent a single ``pipe``. Instead of using a sprite, we will make graphics with basic shapes. For example, a pipe has two parts as you see in the image above: ``body`` and ``cap``. Body is being the long part of the pipe and the cap is the tip of it. Both will be green rectangle entities but with different sizes. We also prepare a destroy function which will destroy ``body`` and ``cap`` entities.
+
+.. code-block:: cpp
+
+    // A Flappy Bird column which has two pipes
+    struct pipe {
+        entt::entity body{entt::null};
+        entt::entity cap{entt::null};
+
+        // Destroy pipe
+        void destroy(entt::registry &registry) {
+            registry.destroy(body);
+            registry.destroy(cap);
+        }
+    };
+
+    
