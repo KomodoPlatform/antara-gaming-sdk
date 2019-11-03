@@ -288,3 +288,17 @@ And like we mentioned before, two of these pipes will be called a ``column``. He
             registry.destroy(entity);
         }
     };
+
+We will need some functions for creation of the pipes. First one is a function which returns a random number, we will use this to randomly position the gap between the pipes. We will use ``std::random_device``, ``std::mt19937``  and ``std::uniform_real_distribution<float>`` for this.
+
+.. code-block:: cpp
+
+    // Random number generator
+    namespace {
+        std::random_device rd;  // Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+        float random_float(float lower, float higher) {
+            std::uniform_real_distribution<float> dist(lower, higher);
+            return dist(gen);
+        }
+    }
