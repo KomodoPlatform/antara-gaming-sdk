@@ -547,3 +547,76 @@ Whole function looks like this:
         registry.assign<entt::tag<"column"_hs>>(entity_column);
         tag_game_scene(registry, entity_column, true);
     }
+
+We want many of these columns, so we need to make a ``create_columns`` function. 
+
+We will need constants again, retrieve them.
+
+.. code-block:: cpp
+
+    // Retrieve constants
+    const auto constants = registry.ctx<flappy_bird_constants>();
+
+Columns at Flappy Bird start coming from far away, so we have a ``column_start_distance`` to add that offset. And an additional ``constants.column_thickness * 2.0f`` to make sure they are out of the screen if ``column_start_distance`` is set as ``canvas_width``.
+
+.. code-block:: cpp
+
+    // Spawn columns far away
+    const float column_pos_offset = constants.column_start_distance + constants.column_thickness * 2.0f;
+
+Then very easily create columns using ``create_column`` function in a ``for loop``. For count, we use ``column_count`` constant. And to add distance between every column, we can use the counter ``i`` which increments by one, multiplying ``i`` with ``column_distance`` puts each column further than the previous one. Finally, add the ``column_pos_offset`` offset and the loop will look like this:
+
+.. code-block:: cpp
+
+    // Create the columns
+    for (std::size_t i = 0; i < constants.column_count; ++i) {
+        // Horizontal position (X) increases for every column, keeping the distance
+        float pos_x = column_pos_offset + i * constants.column_distance;
+
+        create_column(registry, pos_x);
+    }
+
+Whole function looks like this:
+
+.. code-block:: cpp
+
+    // Factory for creating a Flappy Bird columns
+    void create_columns(entt::registry &registry) noexcept {
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Spawn columns out of the screen, out of the canvas
+        const float column_pos_offset = constants.column_start_distance + constants.column_thickness * 2.0f;
+
+        // Create the columns
+        for (std::size_t i = 0; i < constants.column_count; ++i) {
+            // Horizontal position (X) increases for every column, keeping the distance
+            float pos_x = column_pos_offset + i * constants.column_distance;
+
+            create_column(registry, pos_x);
+        }
+    }
+
+We need to call this ``create_columns`` function at initialization. Let's make an initialization function for dynamic objects.
+
+.. code-block:: cpp
+
+    // Initialize dynamic objects, this function is called at start and resets
+    void init_dynamic_objects(entt::registry &registry) {
+        create_columns(registry);
+    }
+
+And call it in the ``game_scene`` constructor:
+
+.. code-block:: cpp
+
+    game_scene(entt::registry &registry) noexcept : base_scene(registry) {
+        // Set the constants that will be used in the program
+        registry.set<flappy_bird_constants>();
+
+        // Create everything
+        init_dynamic_objects(registry);
+    }
+
+That's it! Now we have many columns being drawn:
+
