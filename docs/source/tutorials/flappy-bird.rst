@@ -620,3 +620,76 @@ And call it in the ``game_scene`` constructor:
 
 That's it! Now we have many columns being drawn:
 
+.. image:: ../../assets/fb_column.png
+
+Background is still black as you noticed. Now we will make it prettier. We will add sky, ground and grass. This is how we want it to look like:
+
+.. image:: ../../assets/fb_background.png
+
+Let's add the constants to ``struct flappy_bird_constants``: thickness and colors.
+
+.. code-block:: cpp
+
+    // Background
+    const float ground_thickness{100.0f};
+    const float grass_thickness{20.0f};
+    const graphics::color background_color{82, 189, 199};
+    const graphics::color ground_color{220, 209, 143};
+    const graphics::color grass_color{132, 227, 90};
+    const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
+
+Now we need to make a function, ``create_background``.
+
+Retrieve the constants and canvas size:
+
+.. code-block:: cpp
+
+    // Retrieve constants
+    const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+    const auto constants = registry.ctx<flappy_bird_constants>();
+
+Let's create the sky first, it's a blue rectangle which is whole canvas.
+
+Position is center of the canvas. 
+
+.. code-block:: cpp
+
+    // Sky is whole canvas so position is middle of it
+    transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
+
+Size is whole canvas.
+
+.. code-block:: cpp
+
+    // And the size is full canvas
+    math::vec2f size{canvas_width, canvas_height};
+
+Use the ``geometry::blueprint_rectangle`` again and use ``background_color`` from defined constants.
+
+.. code-block:: cpp
+
+    auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
+
+Set it to appear at ``layer<1>`` and tag ``game_scene``:
+
+.. code-block:: cpp
+
+    registry.assign<graphics::layer<1>>(sky);
+    tag_game_scene(registry, sky);
+
+Here is how the whole sky creation snippet looks like:
+
+.. code-block:: cpp
+
+    // Create Sky
+    {
+        // Sky is whole canvas so position is middle of it
+        transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
+
+        // And the size is full canvas
+        math::vec2f size{canvas_width, canvas_height};
+
+        auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
+        registry.assign<graphics::layer<1>>(sky);
+        tag_game_scene(registry, sky);
+    }
