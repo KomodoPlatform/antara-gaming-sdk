@@ -376,3 +376,11 @@ If it's the bottom pipe, top of the rectangle will be the end of the gap, ``gap_
                             is_top ?
                             gap_start_pos_y * 2.0f :
                             (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
+
+To construct the rectangle entity, we can use blueprint function ``geometry::blueprint_rectangle``. We will also feed ``pipe_color`` and ``pipe_outline_color`` which also has thickness info in it.
+
+.. code-block:: cpp
+
+    auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos, constants.pipe_outline_color);
+
+That's it for the body!
