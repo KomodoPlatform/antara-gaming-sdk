@@ -317,3 +317,20 @@ We will have many entities and we need to tag them with ``game_scene`` name. And
         }
     }
 
+During the creation of the pipes, we will need another function, to get a random starting position of the gap. That's how we will know to start and end the top pipe, have a gap, then start and end the bottom pipe.
+
+This function will access to the constants, there are ``column_min`` and ``column_max``. ``column_min`` is for the top limit, ``0.2`` of the canvas height. And ``column_max`` is for the bottom limit, ``0.8`` of the canvas height. Though we also need to subtract ``gap_height`` from the ``bottom_limit`` because this will be the starting position, or the top position of the gap. When the limits are set, function returns a random float value between those two, using the random function we defined before. We add this function into the same namespace.
+
+.. code-block:: cpp
+
+    // Returns a random gap start position Y
+    float get_random_gap_start_pos(const entt::registry &registry) {
+        // Retrieve constants
+        const auto canvas_height = registry.ctx<graphics::canvas_2d>().canvas.size.y();
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        float top_limit = canvas_height * constants.column_min;
+        float bottom_limit = canvas_height * constants.column_max - constants.gap_height;
+
+        return random_float(top_limit, bottom_limit);
+    }
