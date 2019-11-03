@@ -302,3 +302,18 @@ We will need some functions for creation of the pipes. First one is a function w
             return dist(gen);
         }
     }
+
+We will have many entities and we need to tag them with ``game_scene`` name. And the dynamic ones will have ``dynamic`` tag, so we can easily query the dynamic ones to destroy them at reset game for example. Since this tagging will be repeated a lot, we better have a function for it. Also we'd like to have this kind of helper functions in a namespace.
+
+.. code-block:: cpp
+
+    namespace {
+        void tag_game_scene(entt::registry &registry, entt::entity entity, bool dynamic = false) {
+            // Tag game scene
+            registry.assign<entt::tag<"game_scene"_hs>>(entity);
+
+            // Tag dynamic
+            if(dynamic) registry.assign<entt::tag<"dynamic"_hs>>(entity);
+        }
+    }
+
