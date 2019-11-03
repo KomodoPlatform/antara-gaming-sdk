@@ -255,7 +255,7 @@ Then we will add this to the ``registry`` in the ``game_scene`` constructor.
             registry.set<flappy_bird_constants>();
         }
 
-Now let's make a struct which will represent a single ``pipe``. Instead of using a sprite, we will make graphics with basic shapes. For example, a pipe has two parts as you see in the image above: ``body`` and ``cap``. Body is being the long part of the pipe and the cap is the tip of it. Both will be green rectangle entities but with different sizes. We also prepare a destroy function which will destroy ``body`` and ``cap`` entities.
+Now let's make a struct which will represent a single ``pipe``. Instead of using a sprite, we will make graphics with basic shapes. For example, a pipe has two parts as you see in the image above: ``body`` and ``cap``. Body is being the long part of the pipe and the cap is the tip of it. Both will be green rectangle entities but with different sizes. We also prepare a ``destroy`` function which will destroy ``body`` and ``cap`` entities.
 
 .. code-block:: cpp
 
@@ -271,4 +271,20 @@ Now let's make a struct which will represent a single ``pipe``. Instead of using
         }
     };
 
-    
+And like we mentioned before, two of these pipes will be called a ``column``. Here we make another struct which uses the ``struct pipe``. One is ``top_pipe``, another one is ``bottom_pipe``. Again, we have the ``destroy`` function. But this time ``destroy`` function also has an entity parameter which will be this ``column`` entity itself.
+
+.. code-block:: cpp
+
+    // Column is made of two pipes
+    struct column {
+        // Entities representing the Flappy Bird pipes
+        pipe top_pipe{entt::null};
+        pipe bottom_pipe{entt::null};
+
+        // Destroy pipes and this column
+        void destroy(entt::registry &registry, entt::entity entity) {
+            top_pipe.destroy(registry);
+            bottom_pipe.destroy(registry);
+            registry.destroy(entity);
+        }
+    };
