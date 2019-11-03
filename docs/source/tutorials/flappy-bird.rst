@@ -491,3 +491,59 @@ Whole function looks like this:
         return {body, cap};
     }
 
+Since we are able to make a single pipe now, we can build a full column which has two pipes.
+
+Let's make the function ``void create_column(entt::registry &registry, float pos_x)``. Only parameter it will have is the X position of the column, ``pos_x``.
+
+We start with creating an empty entity.
+
+.. code-block:: cpp
+
+    // Create a fresh entity for a new column
+    auto entity_column = registry.create();
+
+Then get a random vertical position for start of the gap with the function we made before, ``get_random_gap_start_pos``.
+
+.. code-block:: cpp
+
+    // Get a random gap start position Y, between pipes
+    float gap_start_pos_y = get_random_gap_start_pos(registry);
+
+Create ``top_pipe`` and ``bottom_pipe`` with the ``create_pipe`` function we made, only parameter that varies between two is ``is_top`` boolean is true for the ``top_pipe``.
+
+.. code-block:: cpp
+
+    // Create pipes, is_top variable is false for bottom one
+    auto top_pipe = create_pipe(registry, true, pos_x, gap_start_pos_y);
+    auto bottom_pipe = create_pipe(registry, false, pos_x, gap_start_pos_y);
+    
+Now we can construct a ``struct column`` with these two, tag it with ``column`` name. Then use the ``tag_game_scene`` function to tag it with ``game_scene`` and ``dynamic``.
+
+.. code-block:: cpp
+
+    // Make a column from these two pipes and mark it as "column"
+    registry.assign<column>(entity_column, top_pipe, bottom_pipe);
+    registry.assign<entt::tag<"column"_hs>>(entity_column);
+    tag_game_scene(registry, entity_column, true);
+
+Whole function looks like this:
+
+.. code-block:: cpp
+
+    // Factory to create single column
+    void create_column(entt::registry &registry, float pos_x) noexcept {
+        // Create a fresh entity for a new column
+        auto entity_column = registry.create();
+
+        // Get a random gap start position Y, between pipes
+        float gap_start_pos_y = get_random_gap_start_pos(registry);
+
+        // Create pipes, is_top variable is false for bottom one
+        auto top_pipe = create_pipe(registry, true, pos_x, gap_start_pos_y);
+        auto bottom_pipe = create_pipe(registry, false, pos_x, gap_start_pos_y);
+
+        // Make a column from these two pipes and mark it as "column"
+        registry.assign<column>(entity_column, top_pipe, bottom_pipe);
+        registry.assign<entt::tag<"column"_hs>>(entity_column);
+        tag_game_scene(registry, entity_column, true);
+    }
