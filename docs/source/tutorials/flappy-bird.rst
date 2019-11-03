@@ -620,7 +620,7 @@ And call it in the ``game_scene`` constructor:
 
 That's it! Now we have many columns being drawn:
 
-.. image:: ../../assets/fb_column.png
+.. image:: ../../assets/fb_columns.png
 
 Background is still black as you noticed. Now we will make it prettier. We will add sky, ground and grass. This is how we want it to look like:
 
