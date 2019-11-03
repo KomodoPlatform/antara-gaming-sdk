@@ -40,7 +40,7 @@ Before continuing the tutorial, make sure that you have installed the required d
 
 Now we need a world representing the world of our game, to do this we use the following header file: ``#include <antara/gaming/world/world.app.hpp>``
 
-And a basic structure that we name ``tic_tac_toe world``. It will inherit from ``antara::gaming::world::app`` class.
+And a basic structure that we name ``tic_tac_toe_world``. It will inherit from ``antara::gaming::world::app`` class.
 
 And use the namespace ``antara::gaming`` to make naming easier.
 
@@ -70,7 +70,7 @@ If you compile now and run your executable, you have an infinite loop and nothin
 
 The last stage of this step one is to add the graphics side of the application, for that we will need two modules: ``antara::gaming::sfml::graphic_system`` and ``antara::gaming::sfml::input::system`` which have these following headers, respectively: ``#include <antara/gaming/sfml/graphic.system.hpp>`` and ``#include <antara/gaming/sfml/input.system.hpp>``.
 
-Now in the body of the constructor of our class tic_tac_toe_world we will load the graphic system, then we will initialize input system with the window coming from the loaded graphic system.
+Now in the body of the constructor of our class ``tic_tac_toe_world`` we will load the graphic system, then we will initialize input system with the window coming from the loaded graphic system.
 
 .. literalinclude:: ../../../tutorials/tic-tac-toe/step_1/tic-tac-toe.cpp
    :language: cpp
@@ -79,7 +79,7 @@ If you compile and run now, you should see a black window open. You can close by
 
 .. image:: ../../assets/black_window.png
 
-And now, the first step is over. We have a CMakeLists.txt to be able to compile our program into a basic executable which can create the game window.
+And now, the first step is over. We have a ``CMakeLists.txt`` to be able to compile our program into a basic executable which can create the game window.
 
 Step 2: The Game Scene, The Grid, Game constants
 ------------------------------------------------
@@ -111,7 +111,7 @@ To do this we will create a game scene using the scene manager. In order to do s
     };
 
 
-Now we are going to create the game_scene class that inherits from the base_scene class. This class will be the entry point of our game scene.
+Now we are going to create the ``game_scene`` class that inherits from the ``base_scene`` class. This class will be the entry point of our game scene.
 
 The concrete class must override several functions such as update, scene_name, and the destructor.
 We will not use the update function because the Tic-Tac-Toe is not a game that needs an update for each frame, so we will leave the function empty.
@@ -140,7 +140,7 @@ For the scene_name function we'll just return the name of the scene.
     private:
     };
 
-Now we are going to load our game scene into the scene_manager using the change_scene member function
+Now we are going to load our game scene into the ``scene_manager`` using the ``change_scene`` member function
 
 .. code-block:: cpp
 
@@ -175,7 +175,7 @@ Now we need several constants that are essential. For Tic-Tac-Toe they are: widt
 
 For the size of the cells we will use the current size of our canvas divided by the number of cells per line to obtain the size of a cell.
 
-Now create a structure tic_tac_toe_constants that will contain these different information, then save it in the entity registry to be able to access from anywhere in the program.
+Now create a structure ``tic_tac_toe_constants`` that will contain these different information, then save it in the entity registry to be able to access from anywhere in the program.
 
 .. code-block:: cpp
 
@@ -272,7 +272,7 @@ Now, we call the function from the game scene constructor and we assign the retu
 
 Only two things left to do now:
 
-- code the logic of the create_grid function
+- code the logic of the ``create_grid`` function
 - manage the destruction of the entities of our game scene when leaving the program
 
 Let's start by coding the logic of the ``create_grid`` function.
