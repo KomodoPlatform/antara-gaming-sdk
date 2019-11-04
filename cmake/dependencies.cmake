@@ -128,7 +128,7 @@ message(${loguru_SOURCE_DIR})
 target_include_directories(antara_log INTERFACE ${loguru_SOURCE_DIR})
 find_package(Threads)
 target_compile_definitions(antara_log INTERFACE -DLOGURU_USE_FMTLIB=1)
-target_link_libraries(antara_log INTERFACE fmt::fmt Threads::Threads)
+target_link_libraries(antara_log INTERFACE fmt::fmt Threads::Threads ${CMAKE_DL_LIBS})
 add_library(antara::log ALIAS antara_log)
 
 add_library(nlohmann_json INTERFACE)
