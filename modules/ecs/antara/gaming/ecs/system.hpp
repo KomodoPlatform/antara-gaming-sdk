@@ -17,6 +17,7 @@
 #pragma once
 
 #include <type_traits>
+#include <loguru.hpp>
 
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/base.system.hpp"
@@ -33,7 +34,7 @@ namespace antara::gaming::ecs
         template<typename ...TArgs>
         explicit system(TArgs &&...args) noexcept;
 
-        ~system() noexcept override = default;
+        ~system() noexcept override;;
 
         //! Pure virtual functions
         void update() noexcept override = 0;
@@ -72,6 +73,8 @@ namespace antara::gaming::ecs
     template<typename ... TArgs>
     system<TSystemDerived, TSystemType>::system(TArgs &&... args) noexcept : base_system(std::forward<TArgs>(args)...)
     {
+        LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_INFO, "creating system {}", this->get_name());
     }
 
     template<typename TSystemDerived, typename TSystemType>
@@ -103,6 +106,13 @@ namespace antara::gaming::ecs
     std::string system<TSystemDerived, TSystemType>::get_class_name() noexcept
     {
         return refl::reflect<TSystemDerived>().name.str();
+    }
+
+    template<typename TSystemDerived, typename TSystemType>
+    system<TSystemDerived, TSystemType>::~system() noexcept
+    {
+        LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_INFO, "destroying system {}", this->get_name());
     }
 }
 

@@ -21,17 +21,14 @@
 #include <antara/gaming/core/real.path.hpp>
 #include <antara/gaming/ecs/system.hpp>
 
+namespace fs = std::filesystem;
+
 namespace antara::gaming::blockchain {
     class nspv final : public ecs::logic_update_system<nspv> {
     public:
-        nspv(entt::registry &registry,
-             std::filesystem::path tools_path = antara::gaming::core::assets_real_path() / "tools") noexcept
-                : system(registry), tools_path_(std::move(tools_path)) {
-            this->disable();
-        }
-
-        void update() noexcept final {}
-
+        nspv(entt::registry &registry, fs::path tools_path = core::assets_real_path() / "tools") noexcept;
+        void update() noexcept final;
+        ~nspv() noexcept final;
     private:
         std::filesystem::path tools_path_;
     };

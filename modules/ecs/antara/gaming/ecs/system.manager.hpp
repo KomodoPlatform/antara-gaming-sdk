@@ -25,6 +25,7 @@
 #include <range/v3/algorithm/find_if.hpp>
 #include <range/v3/algorithm/any_of.hpp>
 #include <entt/signal/dispatcher.hpp>
+#include <loguru.hpp>
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.type.hpp"
@@ -708,6 +709,7 @@ namespace antara::gaming::ecs
     template<typename TSystem, typename... TSystemArgs>
     TSystem &system_manager::create_system(TSystemArgs &&... args) noexcept
     {
+        LOG_SCOPE_FUNCTION(INFO);
         if (has_system<TSystem>()) {
             return get_system<TSystem>();
         }
