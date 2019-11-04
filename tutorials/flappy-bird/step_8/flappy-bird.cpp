@@ -531,9 +531,6 @@ public:
 private:
     // Update the game every tick
     void update() noexcept final {
-        // Retrieve constants
-        const auto constants = entity_registry_.ctx<flappy_bird_constants>();
-
         // Check if player requested to start the game
         check_start_game_request();
 
