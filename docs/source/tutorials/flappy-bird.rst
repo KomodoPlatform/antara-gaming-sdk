@@ -215,7 +215,6 @@ Step 1 is complete, here is the full code.
 .. literalinclude:: ../../../tutorials/flappy-bird/step_1/flappy-bird.cpp
    :language: cpp
 
-
 Step 2: Creation of Pipes
 -------------------------
 
@@ -622,6 +621,14 @@ That's it! Now we have many columns being drawn:
 
 .. image:: ../../assets/fb_columns.png
 
+Step 2 is complete, here is the full code.
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_2/flappy-bird.cpp
+   :language: cpp
+
+Step 3: Creation of the background
+-------------------------
+
 Background is still black as you noticed. Now we will make it prettier. We will add sky, ground and grass. This is how we want it to look like:
 
 .. image:: ../../assets/fb_background.png
@@ -831,3 +838,239 @@ Let's call it inside the ``game_scene`` constructor.
 Now we have a pretty background, at least as pretty as it can get with three rectangles.
 
 .. image:: ../../assets/fb_background.png
+
+Step 3 is complete, here is the full code.
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_3/flappy-bird.cpp
+   :language: cpp
+
+Step 4: Move, destroy and respawn pipes
+---------------------------------------
+
+We will create an illusion to implement the movement easier. Instead of moving Flappy Bird to right, Flappy Bird will stay still and pipes will move to left. That way, we don't need to make a camera which follows Flappy Bird. 
+
+Let's define a constant into ``flappy_bird_constants`` named ``scroll_speed``, it will be the movement speed of pipes moving left.
+
+.. code-block:: cpp
+
+    const float scroll_speed{200.f};
+
+Smooth movement requires a position update at every tick. So we need a ``ecs::logic_update_system``, let's call it ``column_logic``.
+
+.. code-block:: cpp
+
+    // Column Logic System
+    class column_logic final : public ecs::logic_update_system<column_logic> {
+    public:
+        explicit column_logic(entt::registry &registry) noexcept : system(registry) {}
+
+And make a ``move_pipe`` function, has a parameter of ``struct pipe`` reference. Also retrieve constants, to access the scroll speed.
+
+.. code-block:: cpp
+
+    // Move the pipe and return the x position
+    float move_pipe(entt::registry &registry, pipe &pipe) {
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+To move the pipe, first we need to get the current position of it. We retrieve the body position of the pipe, cap is also the same so body will be enough. Pipes move only in X axis, horizontally. So we are interested in the X position.
+
+.. code-block:: cpp
+
+    // Get current position of the pipe
+    auto pos = registry.get<transform::position_2d>(pipe.body);
+
+Now we calculate the new position X, by adding ``scroll_speed``, but we use ``-`` instead because lower position value is left side, higher position value is right side. That's why we actually subtract to make the pipe move to left side. We also multiply ``scroll_speed`` with delta time ``timer::time_step::get_fixed_delta_time()``, so it will spread over time, will look smoother. ``scroll_speed`` is actually amount of pixels the object will move in ``1 second``.
+
+.. code-block:: cpp
+
+    // Shift pos X to left by scroll_speed but multiplying with dt because we do this so many times a second,
+    // Delta time makes sure that it's applying over time, so in one second it will move scroll_speed pixels
+    auto new_pos_x = pos.x() - constants.scroll_speed * timer::time_step::get_fixed_delta_time();
+
+Update both body and cap positions by replacing entity's ``transform::position_2d``.
+
+.. code-block:: cpp
+
+    // Set the new position value
+    registry.replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
+
+    // Set cap position too
+    auto cap_pos = registry.get<transform::position_2d>(pipe.cap);
+    registry.replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
+
+And finally, return the new position, we will use it later.
+
+.. code-block:: cpp
+
+    // Return the info about if this pipe is out of the screen
+    return new_pos_x;
+
+Whole function looks like this:
+
+.. code-block:: cpp
+
+    // Move the pipe and return the x position
+    float move_pipe(entt::registry &registry, pipe &pipe) {
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Get current position of the pipe
+        auto pos = registry.get<transform::position_2d>(pipe.body);
+
+        // Shift pos X to left by scroll_speed but multiplying with dt because we do this so many times a second,
+        // Delta time makes sure that it's applying over time, so in one second it will move scroll_speed pixels
+        auto new_pos_x = pos.x() - constants.scroll_speed * timer::time_step::get_fixed_delta_time();
+
+        // Set the new position value
+        registry.replace<transform::position_2d>(pipe.body, new_pos_x, pos.y());
+
+        // Set cap position too
+        auto cap_pos = registry.get<transform::position_2d>(pipe.cap);
+        registry.replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
+
+        // Return the info about if this pipe is out of the screen
+        return new_pos_x;
+    }
+
+In the update function, we will move all the columns every tick, and the ones which gets out of the screen will be destroyed. A new column will be spawned far right side, after the last or furthest column. Let's make a very basic function which will return the X position of the furthest pipe.
+
+This basic function simply loops over all columns and check if the column's X position is higher than the previous maximum.
+
+.. code-block:: cpp
+
+    // Find the furthest pipe's position X
+    float furthest_pipe_position(entt::registry &registry) {
+        float furthest = 0.f;
+
+        for (auto entity : registry.view<column>()) {
+            auto &col = registry.get<column>(entity);
+            float x = entity_registry_.get<transform::position_2d>(col.top_pipe.body).x();
+            if (x > furthest) furthest = x;
+        }
+
+        return furthest;
+    }
+
+Now we can make the update function which will be called every single tick.
+
+It will retrieve constants and all columns, then loop all the columns.
+
+.. code-block:: cpp
+
+    // Update, this will be called every tick
+    void update() noexcept final {
+        auto &registry = entity_registry_;
+
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Loop all columns
+        for (auto entity : registry.view<column>()) {
+
+Inside the loop, we get the ``struct column`` from the column ``entt::entity``. 
+
+.. code-block:: cpp
+
+    auto &col = registry.get<column>(entity);
+
+Then call the ``move_pipe`` function twice, one for top pipe, one for the bottom one. They are at the same X position, so to know the column position, we save the return value of one of them into ``column_pos_x``.
+
+.. code-block:: cpp
+
+    // Move pipes, and retrieve column position x
+    float column_pos_x = move_pipe(registry, col.top_pipe);
+    move_pipe(registry, col.bottom_pipe);
+
+Now we know the column position. As we said before, we need to destroy it if it's out of the screen. Position of left side of the screen is ``0``. To make sure column is out of the screen, we can use the ``column_distance`` value, but negative. For example, it will be ``-400``. We can compare column position against this value to know if it's out of the screen.
+
+.. code-block:: cpp
+
+    // If column is out of the screen
+    if (column_pos_x < -constants.column_distance) {
+
+Inside, we destroy this column, then create a new column using the ``create_column`` function. As the new column position, we use the ``furthest_pipe_position`` then add ``column_distance`` so it will spawn a little bit further than the last column.
+
+.. code-block:: cpp
+
+    // If column is out of the screen
+    if (column_pos_x < -constants.column_distance) {
+        // Remove this column
+        col.destroy(registry, entity);
+
+        // Create a new column at far end
+        create_column(registry, furthest_pipe_position(registry) + constants.column_distance);
+    }
+
+That's it, the ``update`` function looks like this:
+
+.. code-block:: cpp
+
+    // Update, this will be called every tick
+    void update() noexcept final {
+        auto &registry = entity_registry_;
+
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Loop all columns
+        for (auto entity : registry.view<column>()) {
+            auto &col = registry.get<column>(entity);
+
+            // Move pipes, and retrieve column position x
+            float column_pos_x = move_pipe(registry, col.top_pipe);
+            move_pipe(registry, col.bottom_pipe);
+
+            // If column is out of the screen
+            if (column_pos_x < -constants.column_distance) {
+                // Remove this column
+                col.destroy(registry, entity);
+
+                // Create a new column at far end
+                create_column(registry, furthest_pipe_position(registry) + constants.column_distance);
+            }
+        }
+    }
+
+``column_logic`` class is fully ready. 
+
+To create a logic system, we need to access ``ecs::system_manager`` inside the ``game_scene``.
+
+We add a member variable to store the reference inside the ``game_scene``.
+
+.. code-block:: cpp
+
+    // System manager reference
+    ecs::system_manager &system_manager_;
+
+And add a parameter to the constructor which sets this reference.
+
+.. code-block:: cpp
+
+    game_scene(entt::registry &registry, ecs::system_manager &system_manager) noexcept : base_scene(registry), system_manager_(system_manager) {
+
+Now we will make a function which will create logic systems, inside we use the ``system_manager_``.
+
+.. code-block:: cpp
+
+    // Create logic systems
+    void create_logic_systems() {
+        system_manager_.create_system<column_logic>();
+    }
+
+And finally call this in the ``init_dynamic_objects`` function.
+
+.. code-block:: cpp
+
+    // Initialize dynamic objects, this function is called at start and resets
+    void init_dynamic_objects(entt::registry &registry) {
+        create_columns(registry);
+
+        // Create logic systems
+        create_logic_systems();
+    }
+
+Step 4 is complete, here is the full code.
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_4/flappy-bird.cpp
+   :language: cpp
