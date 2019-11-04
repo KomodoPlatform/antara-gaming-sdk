@@ -10,6 +10,7 @@ add_subdirectory(geometry)
 add_subdirectory(ecs)
 add_subdirectory(collisions)
 add_subdirectory(resources)
+add_subdirectory(blockchain)
 add_subdirectory(scenes)
 add_subdirectory(world)
 

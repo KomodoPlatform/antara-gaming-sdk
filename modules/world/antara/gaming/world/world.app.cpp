@@ -18,6 +18,9 @@
 #include <emscripten.h>
 #endif
 
+#define LOGURU_USE_FMTLIB 1
+
+#include <loguru.hpp>
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/config/config.loading.hpp"
 #include "antara/gaming/config/config.game.maker.hpp"
@@ -25,16 +28,14 @@
 #include "antara/gaming/world/world.app.hpp"
 
 //LCOV_EXCL_START
-void emscripten_antara_loop(void *world)
-{
+void emscripten_antara_loop(void *world) {
     static_cast<antara::gaming::world::app *>(world)->process_one_frame();
 }
 //LCOV_EXCL_STOP
-namespace antara::gaming::world
-{
+namespace antara::gaming::world {
     //! Constructor
-    app::app(std::string config_maker_name) noexcept
-    {
+    app::app(std::string config_maker_name) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
         auto cfg_maker = config::load_configuration<graphics::canvas_2d>(core::assets_real_path() / "config",
                                                                          std::move(config_maker_name));
         auto &canvas_2d_cmp = this->entity_registry_.set<graphics::canvas_2d>(cfg_maker);
@@ -43,8 +44,8 @@ namespace antara::gaming::world
     }
 
     //! Public callbacks
-    void app::receive_quit_game(const event::quit_game &evt) noexcept
-    {
+    void app::receive_quit_game(const event::quit_game &evt) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
         this->is_running_ = false;
         this->game_return_value_ = evt.return_value_;
         //LCOV_EXCL_START
@@ -54,8 +55,8 @@ namespace antara::gaming::world
         //LCOV_EXCL_STOP
     }
 
-    int app::run() noexcept
-    {
+    int app::run() noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
         if (not system_manager_.nb_systems()) {
             return this->game_return_value_;
         }
@@ -74,8 +75,11 @@ namespace antara::gaming::world
         return this->game_return_value_;
     }
 
-    void app::process_one_frame()
-    {
+    void app::process_one_frame() {
         this->system_manager_.update();
+    }
+
+    app::~app() noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
     }
 }
