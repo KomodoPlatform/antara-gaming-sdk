@@ -47,6 +47,8 @@ namespace antara::gaming::ecs
     base_system &
     system_manager::add_system_(system_manager::system_ptr &&system, antara::gaming::ecs::system_type sys_type) noexcept
     {
+        LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
         return *systems_[sys_type].emplace_back(std::move(system));
     }
 
@@ -110,6 +112,7 @@ namespace antara::gaming::ecs
 
     void system_manager::receive_add_base_system(const ecs::event::add_base_system &evt) noexcept
     {
+        LOG_SCOPE_FUNCTION(INFO);
         assert(evt.system_ptr != nullptr);
         ecs::system_type sys_type = evt.system_ptr->get_system_type_rtti();
         if (not game_is_running) {

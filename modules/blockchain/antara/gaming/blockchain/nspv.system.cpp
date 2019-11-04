@@ -14,8 +14,20 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <loguru.hpp>
 #include <antara/gaming/blockchain/nspv.system.hpp>
 
-namespace antara::gaming::blockchain
-{
+namespace antara::gaming::blockchain {
+    nspv::nspv(entt::registry &registry, fs::path tools_path) noexcept :
+            system(registry), tools_path_(std::move(tools_path)) {
+        LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_INFO, "assets tool path: {}", tools_path_.string());
+        this->disable();
+    }
+
+    void nspv::update() noexcept {}
+
+    nspv::~nspv() noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+    }
 }
