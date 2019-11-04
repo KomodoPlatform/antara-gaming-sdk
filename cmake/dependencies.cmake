@@ -13,6 +13,16 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+        loguru
+        URL https://github.com/emilk/loguru/archive/v2.1.0.zip
+)
+
+FetchContent_Declare(
+        fmt
+        URL https://github.com/fmtlib/fmt/releases/download/6.0.0/fmt-6.0.0.zip
+)
+
+FetchContent_Declare(
         doom_st
         URL https://github.com/doom/strong_type/archive/1.0.2.tar.gz
 )
@@ -89,7 +99,7 @@ if (USE_SDL_ANTARA_WRAPPER)
     )
 endif ()
 
-FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes)
+FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes loguru fmt)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
@@ -111,6 +121,12 @@ if (USE_SDL_ANTARA_WRAPPER)
             $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/sdl/external/installed/${CMAKE_INSTALL_INCLUDEDIR}>
             )
 endif ()
+
+add_library(antara_log INTERFACE)
+target_sources(antara_log INTERFACE  ${loguru_SOURCE_DIR}/loguru.cpp)
+target_include_directories(antara_log INTERFACE ${loguru_SOURCE_DIR})
+target_link_libraries(antara_log INTERFACE fmt::fmt)
+add_library(antara::log ALIAS antara_log)
 
 add_library(nlohmann_json INTERFACE)
 target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR})

@@ -16,30 +16,25 @@
 
 #pragma once
 
-#include <string>
-#include <entt/core/utility.hpp>
+#include <filesystem>
 #include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/quit.game.hpp"
+#include <antara/gaming/core/real.path.hpp>
+#include <antara/gaming/ecs/system.hpp>
 
-namespace antara::gaming::world
-{
-    class app
-    {
+namespace antara::gaming::blockchain {
+    class nspv final : public ecs::logic_update_system<nspv> {
     public:
-        app(std::string config_maker_name = "game.config.maker.json") noexcept;
-        ~app() noexcept;
-        //! Public callbacks
-        void receive_quit_game(const event::quit_game &evt) noexcept;
-        int run() noexcept;
-        void process_one_frame();
+        nspv(entt::registry &registry,
+             std::filesystem::path tools_path = antara::gaming::core::assets_real_path() / "tools") noexcept
+                : system(registry), tools_path_(std::move(tools_path)) {
+            this->disable();
+        }
+
+        void update() noexcept final {}
+
     private:
-        bool is_running_{false};
-        int game_return_value_{0};
-    protected:
-        entt::registry entity_registry_;
-        entt::dispatcher& dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
-        ecs::system_manager system_manager_{entity_registry_};
+        std::filesystem::path tools_path_;
     };
 }
+
+REFL_AUTO(type(antara::gaming::blockchain::nspv))

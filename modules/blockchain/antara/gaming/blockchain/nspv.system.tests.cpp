@@ -14,32 +14,18 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include <antara/gaming/ecs/system.manager.hpp>
+#include "nspv.system.hpp"
 
-#include <string>
-#include <entt/core/utility.hpp>
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/quit.game.hpp"
-
-namespace antara::gaming::world
+namespace antara::gaming::blockchain::tests
 {
-    class app
+    TEST_CASE("nspv system creation")
     {
-    public:
-        app(std::string config_maker_name = "game.config.maker.json") noexcept;
-        ~app() noexcept;
-        //! Public callbacks
-        void receive_quit_game(const event::quit_game &evt) noexcept;
-        int run() noexcept;
-        void process_one_frame();
-    private:
-        bool is_running_{false};
-        int game_return_value_{0};
-    protected:
-        entt::registry entity_registry_;
-        entt::dispatcher& dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
-        ecs::system_manager system_manager_{entity_registry_};
-    };
+        entt::registry entity_registry;
+        [[ maybe_unused ]] entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        antara::gaming::ecs::system_manager mgr{entity_registry};
+
+        auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
+    }
 }
