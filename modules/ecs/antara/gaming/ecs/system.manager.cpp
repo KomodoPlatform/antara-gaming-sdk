@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <loguru.hpp>
 #include <range/v3/numeric.hpp>
 #include <range/v3/action/remove_if.hpp>
 #include <range/v3/view/filter.hpp>
@@ -24,6 +25,7 @@ namespace antara::gaming::ecs
     system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept : entity_registry_(
             registry), dispatcher_(this->entity_registry_.ctx<entt::dispatcher>())
     {
+        LOG_SCOPE_FUNCTION(INFO);
         if (susbscribe_to_internal_events) {
             this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
             assert(not dispatcher_.sink<event::add_base_system>().empty());
@@ -119,6 +121,11 @@ namespace antara::gaming::ecs
 
     void system_manager::start() noexcept
     {
+        LOG_SCOPE_FUNCTION(INFO);
         game_is_running = true;
+    }
+
+    system_manager::~system_manager() noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
     }
 }
