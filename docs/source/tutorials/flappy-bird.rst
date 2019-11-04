@@ -1157,7 +1157,12 @@ Finally we call this function inside ``init_dynamic_objects``.
         create_logic_systems();
     }
 
+Now you should be able to see the character and moving pipes.
+
+.. image:: ../../assets/fb_player_creation.png
+
 Step 5 is complete, here is the full code.
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_5/flappy-bird.cpp
    :language: cpp
+
