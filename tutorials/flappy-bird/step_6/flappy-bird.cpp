@@ -338,7 +338,7 @@ REFL_AUTO (type(column_logic));
 // Player Logic System
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
-    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {}
+    player_logic(entt::registry &registry, entt::entity player) noexcept : system(registry), player_(player) {}
 
     // Update, this will be called every tick
     void update() noexcept final {
