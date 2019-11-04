@@ -17,9 +17,6 @@
 #if defined(__EMSCRIPTEN__) && defined(EMSCRIPTEN_ONLY_WEB)
 #include <emscripten.h>
 #endif
-
-#define LOGURU_USE_FMTLIB 1
-
 #include <loguru.hpp>
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/config/config.loading.hpp"
@@ -46,6 +43,7 @@ namespace antara::gaming::world {
     //! Public callbacks
     void app::receive_quit_game(const event::quit_game &evt) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_WARNING, "Received quit game event");
         this->is_running_ = false;
         this->game_return_value_ = evt.return_value_;
         //LCOV_EXCL_START
@@ -81,5 +79,6 @@ namespace antara::gaming::world {
 
     app::~app() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_INFO, "Quitting game with value: {}", game_return_value_);
     }
 }
