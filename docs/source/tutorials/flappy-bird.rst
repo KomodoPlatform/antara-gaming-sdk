@@ -627,7 +627,7 @@ Step 2 is complete, here is the full code.
    :language: cpp
 
 Step 3: Creation of the background
--------------------------
+----------------------------------
 
 Background is still black as you noticed. Now we will make it prettier. We will add sky, ground and grass. This is how we want it to look like:
 
@@ -1073,4 +1073,91 @@ And finally call this in the ``init_dynamic_objects`` function.
 Step 4 is complete, here is the full code.
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_4/flappy-bird.cpp
+   :language: cpp
+
+
+
+
+Step 5: Creation of Flappy Bird
+-----------------------------------
+
+Now we will create the Flappy Bird. Instead of using a rectangle as a character, we will use an image file. This is called a ``character sprite``. We can call Flappy Bird, player from now on.
+
+We need two constants, one for the player position, and another one for the image file name.
+
+.. code-block:: cpp
+
+    struct flappy_bird_constants {
+        // Player
+        const std::string player_image_name{"player.png"};
+        const float player_pos_x{400.0f};
+
+Let's make a ``create_player`` function which will construct the player entity and return it.
+
+We retrieve the constants as always.
+
+.. code-block:: cpp
+
+    // Factory for creating the player
+    entt::entity create_player(entt::registry &registry) {
+        // Retrieve constants
+        const auto[_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+Then we use the ``graphics::blueprint_sprite`` which is really easy to use. It requires two parameters, ``graphics::sprite`` and ``transform::position_2d``. ``graphics::sprite`` gets the image path, and ``transform::position_2d`` gets the ``player_pos_x`` constant as X position, half of the canvas height as Y position.
+
+.. code-block:: cpp
+
+    auto entity = graphics::blueprint_sprite(registry,
+                                                graphics::sprite{constants.player_image_name.c_str()},
+                                                transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
+
+We assign ``layer<5>`` for draw order, tag ``player``, ``game_scene`` and ``dynamic``. Then return the entity.
+
+.. code-block:: cpp
+
+    registry.assign<antara::gaming::graphics::layer<5>>(entity);
+    registry.assign<entt::tag<"player"_hs>>(entity);
+    tag_game_scene(registry, entity, true);
+
+    return entity;
+
+Whole ``create_player`` function looks like this:
+
+.. code-block:: cpp
+
+    // Factory for creating the player
+    entt::entity create_player(entt::registry &registry) {
+        // Retrieve constants
+        const auto[_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        auto entity = graphics::blueprint_sprite(registry,
+                                                 graphics::sprite{constants.player_image_name.c_str()},
+                                                 transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});
+        registry.assign<antara::gaming::graphics::layer<5>>(entity);
+        registry.assign<entt::tag<"player"_hs>>(entity);
+        tag_game_scene(registry, entity, true);
+
+        return entity;
+    }
+
+Finally we call this function inside ``init_dynamic_objects``.
+
+.. code-block:: cpp
+
+    // Initialize dynamic objects, this function is called at start and resets
+    void init_dynamic_objects(entt::registry &registry) {
+        create_columns(registry);
+
+        // Create player
+        create_player(registry);
+
+        // Create logic systems
+        create_logic_systems();
+    }
+
+Step 5 is complete, here is the full code.
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_5/flappy-bird.cpp
    :language: cpp
