@@ -1032,6 +1032,13 @@ That's it, the ``update`` function looks like this:
         }
     }
 
+We also need to name this logic system, after the class.
+
+.. code-block:: cpp
+
+    // Name this system
+    REFL_AUTO (type(column_logic));
+
 ``column_logic`` class is fully ready. 
 
 To create a logic system, we need to access ``ecs::system_manager`` inside the ``game_scene``.
@@ -1166,3 +1173,303 @@ Step 5 is complete, here is the full code.
 .. literalinclude:: ../../../tutorials/flappy-bird/step_5/flappy-bird.cpp
    :language: cpp
 
+
+Step 6: Player input and character physics
+------------------------------------------
+
+In this step, we will read user input and apply physics to the character.
+
+We need to include two headers for input, ``<antara/gaming/input/virtual.hpp>`` and ``<antara/gaming/ecs/virtual.input.system.hpp>``.
+
+We will also need some constants for physics. ``gravity`` is the force which will pull Flappy Bird down. ``jump_force`` will be the force which will be applied instantly when user presses the jump button. ``rotate_speed`` is for the rotating animation, and ``max_angle`` is the rotation limit.
+
+.. code-block:: cpp
+
+    const float gravity{2000.f};
+    const float jump_force{650.f};
+    const float rotate_speed{100.f};
+    const float max_angle{60.f};
+
+Let's initialize virtual input system and add ``jump`` action. Keyboard keys will be: ``space``, ``w``, ``up``; mouse buttons will be ``left`` and ``right``.
+
+.. code-block:: cpp
+
+    // Create virtual input system
+    system_manager_.create_system<ecs::virtual_input_system>();
+
+    // Define the buttons for the jump action
+    input::virtual_input::create("jump",
+                                    {input::key::space, input::key::w, input::key::up},
+                                    {input::mouse_button::left, input::mouse_button::right});
+
+Now we will make another ``ecs::logic_update_system`` like ``column_logic``, but this time for player.
+
+.. code-block:: cpp
+
+    // Player Logic System
+    class player_logic final : public ecs::logic_update_system<player_logic> {
+    public:
+        player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {}
+
+As you see in the constructor, we will keep the player entity as a member. Also we want a 2D vector for movement speed, ``math::vec2f``.
+
+.. code-block:: cpp
+
+    private:
+        entt::entity player_;
+        math::vec2f movement_speed_{0.f, 0.f};
+
+Now we can make the update function which will be called every tick.
+
+.. code-block:: cpp
+
+    // Update, this will be called every tick
+    void update() noexcept final {
+        auto &registry = entity_registry_;
+
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Get current position of the player
+        auto pos = registry.get<transform::position_2d>(player_);
+
+Adding gravity is really easy. As you know, gravity is acceleration, so instead of adding it to the position, we add it to the movement speed. We multiply it with delta time to spread it over time.
+
+Updating Y of ``movement_speed_`` with Y plus gravity. 
+
+.. code-block:: cpp
+
+    // Add gravity to movement speed, multiply with delta time to apply it over time
+    movement_speed_.set_y(movement_speed_.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
+
+For jump, we check if jump button is tapped.
+
+.. code-block:: cpp
+
+    // Check if jump key is tapped
+    bool jump_key_tapped = input::virtual_input::is_tapped("jump");
+
+If jump is tapped, we set Y of ``movement_speed_`` as negative ``jump_force``. Negative because low values are up and high values are down, negative is being up. 
+
+Here we do a direct set instead of adding it on top of the previous value because we don't want player to spam jump button and infinitely speed up. Another problem could be movement speed Y is 900 and player presses jump button, adding -650, player still will have 250 movement speed Y, which is going down. We definitely do not want this, that's why we set instead of add. 
+
+.. code-block:: cpp
+
+    // If jump is tapped, jump by adding jump force to the movement speed Y
+    if (jump_key_tapped) movement_speed_.set_y(-constants.jump_force);
+
+Movement speed is ready. Now we move the position with the movement speed. Multiplying it with delta time as always to spread it over time. 
+
+    // Add movement speed to position to make the character move, but apply over time with delta time
+    pos += movement_speed_ * timer::time_step::get_fixed_delta_time();
+
+Player can keep jumping and go out of the screen, so we need to limit the character position to stay inside.
+
+If position Y is equal or lower than zero, we reset both position and speed Y to 0. That will keep the player inside no matter how many times jump is pressed.
+
+.. code-block:: cpp
+
+    // Do not let player to go out of the screen to top
+    if (pos.y() <= 0.f) {
+        pos.set_y(0.f);
+        movement_speed_.set_y(0.f);
+    }
+
+And set the modified position to the player entity.
+
+.. code-block:: cpp
+
+    // Set the new position value
+    registry.replace<transform::position_2d>(player_, pos);
+
+Now player can jump, and fall down with gravity and forced to stay inside the screen.
+
+.. code-block:: cpp
+
+    // Set the new position value
+    registry.replace<transform::position_2d>(player_, pos);
+
+All good, but if you played Flappy Bird, character is rotating, looking down when it's falling. Let's have the same rotation trick.
+
+Retrieve the properties of the player, then add ``rotate_speed`` to the ``props.rotation``, also apply delta time. This way, character will rotate.
+
+.. code-block:: cpp
+
+    // ROTATION
+    // Retrieve props of the player
+    auto &props = registry.get<transform::properties>(player_);
+
+    // Increase the rotation a little by applying delta time
+    float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
+
+When player jumps, we need to reset the rotation so character will be straight again before rotating back down. Also we don't want character to rotate forever, we limit it with ``max_angle``.
+
+.. code-block:: cpp
+
+    // If jump button is tapped, reset rotation,
+    // If rotation is higher than the max angle, set it to max angle
+    if (jump_key_tapped)
+        new_rotation = 0.f;
+    else if (props.rotation > constants.max_angle)
+        new_rotation = constants.max_angle;
+
+Finally, set the ``transform::properties`` to apply the rotation change.
+
+.. code-block:: cpp
+
+    // Set the properties
+    registry.replace<transform::properties>(player_, transform::properties{.rotation = new_rotation});
+
+Update function is done, this is how it looks like:
+
+.. code-block:: cpp
+
+    // Update, this will be called every tick
+    void update() noexcept final {
+        auto &registry = entity_registry_;
+
+        // Retrieve constants
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
+        // Get current position of the player
+        auto pos = registry.get<transform::position_2d>(player_);
+
+        // Add gravity to movement speed, multiply with delta time to apply it over time
+        movement_speed_.set_y(movement_speed_.y() + constants.gravity * timer::time_step::get_fixed_delta_time());
+
+        // Check if jump key is tapped
+        bool jump_key_tapped = input::virtual_input::is_tapped("jump");
+
+        // If jump is tapped, jump by adding jump force to the movement speed Y
+        if (jump_key_tapped) movement_speed_.set_y(-constants.jump_force);
+
+        // Add movement speed to position to make the character move, but apply over time with delta time
+        pos += movement_speed_ * timer::time_step::get_fixed_delta_time();
+
+        // Do not let player to go out of the screen to top
+        if (pos.y() <= 0.f) {
+            pos.set_y(0.f);
+            movement_speed_.set_y(0.f);
+        }
+
+        // Set the new position value
+        registry.replace<transform::position_2d>(player_, pos);
+
+        // ROTATION
+        // Retrieve props of the player
+        auto &props = registry.get<transform::properties>(player_);
+
+        // Increase the rotation a little by applying delta time
+        float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
+
+        // If jump button is tapped, reset rotation,
+        // If rotation is higher than the max angle, set it to max angle
+        if (jump_key_tapped)
+            new_rotation = 0.f;
+        else if (props.rotation > constants.max_angle)
+            new_rotation = constants.max_angle;
+
+        // Set the properties
+        registry.replace<transform::properties>(player_, transform::properties{.rotation = new_rotation});
+    }
+
+We also need to name this logic system, after the class.
+
+.. code-block:: cpp
+
+    // Name this system
+    REFL_AUTO (type(player_logic));
+
+``player_logic`` is now ready. Let's use it in ``game_scene``.
+
+We made a function before, called ``create_logic_systems``, we will create ``player_logic`` in it. Though ``player_logic`` requires ``player`` entity as argument. Let's modify the function like this:
+
+.. code-block:: cpp
+
+    // Create logic systems
+    void create_logic_systems(entt::entity player) {
+        system_manager_.create_system<column_logic>();
+        system_manager_.create_system<player_logic>(player);
+    }
+
+When we launch the game, we want physics to pause because we don't want game to start before we press the jump button.
+
+We make two functions which enables and disables both logic functions we made.
+
+.. code-block:: cpp
+
+    // Pause physics
+    void pause_physics() {
+        system_manager_.disable_systems<column_logic, player_logic>();
+    }
+
+    // Resume physics
+    void resume_physics() {
+        system_manager_.enable_systems<column_logic, player_logic>();
+    }
+
+Also, let's have a boolean which indicates if player started playing.
+
+.. code-block:: cpp
+
+    // States
+    bool started_playing_{false};
+
+And a function which resets state values like that.
+
+.. code-block:: cpp
+
+    // Reset state values
+    void reset_state_variables() {
+        started_playing_ = false;
+    }
+
+In the ``init_dynamic_objects`` function, we feed ``player`` entity to the ``create_logic_systems`` function, pause physics, and reset state variables.
+
+.. code-block:: cpp
+
+    // Initialize dynamic objects, this function is called at start and resets
+    void init_dynamic_objects(entt::registry &registry) {
+        create_columns(registry);
+
+        // Create player
+        auto player = create_player(registry);
+
+        // Create logic systems
+        create_logic_systems(player);
+
+        // Disable physics and everything at start to pause the game
+        pause_physics();
+
+        // Reset state variables
+        reset_state_variables();
+    }
+
+Final thing we need to do is, to check that jump button press which will start the game. We do this check only if player didn't start playing yet.
+
+.. code-block:: cpp
+
+    // Check if start game is requested at the pause state
+    void check_start_game_request() {
+        // If game is not started yet and jump key is tapped
+        if (!started_playing_ && input::virtual_input::is_tapped("jump")) {
+            // Game starts, player started playing
+            started_playing_ = true;
+            resume_physics();
+        }
+    }
+
+And call this function in the update function which gets called every tick.
+
+.. code-block:: cpp
+
+    // Update the game every tick
+    void update() noexcept final {
+        // Check if player requested to start the game
+        check_start_game_request();
+    }
+
+Step 6 is complete, here is the full code.
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_6/flappy-bird.cpp
+   :language: cpp
