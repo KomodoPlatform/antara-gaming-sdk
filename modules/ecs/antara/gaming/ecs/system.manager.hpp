@@ -73,6 +73,7 @@ namespace antara::gaming::ecs
          * @endcode
          */
         explicit system_manager(entt::registry &registry, bool subscribe_to_internal_events = true) noexcept;
+        ~system_manager() noexcept;
 
         /**
          * @param evt The event that contains the system to add

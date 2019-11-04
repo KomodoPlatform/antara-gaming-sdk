@@ -27,5 +27,6 @@ namespace antara::gaming::blockchain::tests
         antara::gaming::ecs::system_manager mgr{entity_registry};
 
         auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
+        nspv_system.update();
     }
 }

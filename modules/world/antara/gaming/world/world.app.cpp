@@ -17,6 +17,7 @@
 #if defined(__EMSCRIPTEN__) && defined(EMSCRIPTEN_ONLY_WEB)
 #include <emscripten.h>
 #endif
+
 #include <loguru.hpp>
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/config/config.loading.hpp"
