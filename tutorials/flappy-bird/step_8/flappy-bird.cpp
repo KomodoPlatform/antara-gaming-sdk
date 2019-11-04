@@ -330,8 +330,8 @@ namespace {
 // Column Logic System
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    explicit column_logic(entt::registry &registry, entt::entity score_) noexcept : system(registry),
-                                                                                    score_entity_(score_) {}
+    explicit column_logic(entt::registry &registry, entt::entity score) noexcept : system(registry),
+                                                                                    score_entity_(score) {}
     // Update, this will be called every tick
     void update() noexcept final {
         auto &registry = entity_registry_;
@@ -413,7 +413,7 @@ REFL_AUTO (type(column_logic));
 // Player Logic System
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
-    player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {}
+    player_logic(entt::registry &registry, entt::entity player) noexcept : system(registry), player_(player) {}
 
     // Update, this will be called every tick
     void update() noexcept final {
@@ -475,9 +475,9 @@ REFL_AUTO (type(player_logic));
 // Collision Logic System
 class collision_logic final : public ecs::logic_update_system<collision_logic> {
 public:
-    collision_logic(entt::registry &registry, entt::entity player_, bool &player_died_) noexcept : system(registry),
-                                                                                                   player_(player_),
-                                                                                                   player_died_(player_died_) {}
+    collision_logic(entt::registry &registry, entt::entity player, bool &player_died) noexcept : system(registry),
+                                                                                                   player_(player),
+                                                                                                   player_died_(player_died) {}
     // Update, this will be called every tick
     void update() noexcept final {
         auto &registry = entity_registry_;
@@ -512,8 +512,7 @@ REFL_AUTO (type(collision_logic));
 class game_scene final : public scenes::base_scene {
 public:
     game_scene(entt::registry &registry, ecs::system_manager &system_manager) noexcept : base_scene(registry),
-                                                                                          system_manager_(
-                                                                                                  system_manager) {
+                                                                                          system_manager_(system_manager) {
         // Set the constants that will be used in the program
         registry.set<flappy_bird_constants>();
 
