@@ -58,5 +58,5 @@ target_compile_options(antara_cross_filesystem INTERFACE
 
 add_library(antara_default_settings INTERFACE)
 add_library(antara::default_settings ALIAS antara_default_settings)
-target_link_libraries(antara_default_settings INTERFACE antara::error_settings antara::optimize_settings antara::defaults_features antara::cross_filesystem)
-
+find_package(Threads)
+target_link_libraries(antara_default_settings INTERFACE antara::error_settings antara::optimize_settings antara::defaults_features antara::cross_filesystem Threads::Threads)
