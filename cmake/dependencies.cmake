@@ -44,7 +44,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         reproc
-        URL https://github.com/DaanDeMeyer/reproc/archive/v9.0.0.zip
+        URL https://github.com/DaanDeMeyer/reproc/archive/master.zip
 )
 
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)

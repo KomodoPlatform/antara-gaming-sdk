@@ -27,24 +27,73 @@
 namespace fs = std::filesystem;
 
 namespace antara::gaming::blockchain {
+    class thread_safe_string_sink {
+        std::string &out_;
+        std::string &err_;
+        std::mutex &mutex_;
+    public:
+        thread_safe_string_sink(std::string &out, std::string& err, std::mutex &mutex)
+                : out_(out), err_(err), mutex_(mutex)
+        {}
 
-    /*struct nspv_output
-    {
-        nspv_output(reproc::process& background) noexcept;
-        std::string output;
-        std::mutex output_mutex;
-        std::future<std::error_code> async_drain;
-    };*/
+        bool
+        operator()(reproc::stream stream, const uint8_t *buffer, unsigned int size)
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            switch (stream) {
+                case reproc::stream::out:
+                    out_.append(reinterpret_cast<const char *>(buffer), size);
+                    break;
+                case reproc::stream::err:
+                    err_.append(reinterpret_cast<const char *>(buffer), size);
+                    break;
+                case reproc::stream::in:
+                    break;
+            }
+            return true;
+        }
+    };
+
+    struct nspv_process {
+        nspv_process(reproc::process background_) noexcept:
+                background(std::move(background_)) {
+            sink_thread = std::thread([this]() { this->background.drain(thread_safe_string_sink(out, err, process_mutex)); });
+        }
+
+
+        ~nspv_process() {
+            auto ec = background.stop(reproc::cleanup::terminate, reproc::milliseconds(2000),
+                                              reproc::cleanup::kill,
+                                              reproc::infinite);
+            if (ec) {
+                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
+            }
+
+            if (sink_thread.joinable()) {
+                sink_thread.join();
+            }
+        }
+
+        reproc::process background;
+        std::string out;
+        std::string err;
+        std::mutex process_mutex;
+        std::thread sink_thread;
+    };
 
     class nspv final : public ecs::logic_update_system<nspv> {
     public:
         nspv(entt::registry &registry, fs::path tools_path = core::assets_real_path() / "tools") noexcept;
+
         void update() noexcept final;
-        bool spawn_nspv_instance(const std::string& coin) noexcept;
+
+        bool spawn_nspv_instance(const std::string &coin) noexcept;
+
         ~nspv() noexcept final;
+
     private:
         std::filesystem::path tools_path_;
-        using nspv_registry = std::unordered_map<std::string, reproc::process>;
+        using nspv_registry = std::unordered_map<std::string, nspv_process>;
         nspv_registry registry_;
     };
 }
