@@ -12,6 +12,9 @@ FetchContent_Declare(
         URL https://github.com/skypjack/entt/archive/master.zip
 )
 
+set(BUILD_TESTING OFF CACHE BOOL "Override option" FORCE)
+set(REPROC++ ON CACHE BOOL "" FORCE)
+
 FetchContent_Declare(
         loguru
         URL https://github.com/emilk/loguru/archive/v2.1.0.zip
@@ -37,6 +40,11 @@ SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
 FetchContent_Declare(
         nlohmann_json
         URL https://github.com/nlohmann/json/releases/download/v3.7.0/include.zip
+)
+
+FetchContent_Declare(
+        reproc
+        URL https://github.com/DaanDeMeyer/reproc/archive/v9.0.0.zip
 )
 
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)
@@ -99,7 +107,7 @@ if (USE_SDL_ANTARA_WRAPPER)
     )
 endif ()
 
-FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes loguru fmt)
+FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes loguru fmt reproc)
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
@@ -107,8 +115,6 @@ endif ()
 if (USE_SDL_ANTARA_WRAPPER)
     add_library(antara_sdl_import INTERFACE)
     add_library(antara::sdl_import ALIAS antara_sdl_import)
-    #add_dependencies(antara_sdl_import external_sdl)
-    #include(GNUInstallDirs)
     if (WIN32)
         set(SDL2_DIR ${CMAKE_BINARY_DIR}/sdl/external/installed/cmake/)
     else ()

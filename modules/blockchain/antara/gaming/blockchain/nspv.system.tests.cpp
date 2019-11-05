@@ -16,11 +16,12 @@
 
 #include <doctest/doctest.h>
 #include <antara/gaming/ecs/system.manager.hpp>
+#include <chrono>
 #include "nspv.system.hpp"
 
 namespace antara::gaming::blockchain::tests
 {
-    TEST_CASE("nspv system creation")
+    /*TEST_CASE("nspv system creation")
     {
         entt::registry entity_registry;
         [[ maybe_unused ]] entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
@@ -28,5 +29,19 @@ namespace antara::gaming::blockchain::tests
 
         auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
         nspv_system.update();
+    }*/
+
+    TEST_CASE("nspv system spawn")
+    {
+        entt::registry entity_registry;
+        [[ maybe_unused ]] entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        antara::gaming::ecs::system_manager mgr{entity_registry};
+
+        auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
+        nspv_system.spawn_nspv_instance("RICK");
+        /*for (auto start = std::chrono::steady_clock::now(), now = start; now < start + std::chrono::seconds{15}; now = std::chrono::steady_clock::now())
+        {
+            nspv_system.update();
+        }*/
     }
 }
