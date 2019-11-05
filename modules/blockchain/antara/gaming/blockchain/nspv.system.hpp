@@ -28,13 +28,13 @@ namespace fs = std::filesystem;
 
 namespace antara::gaming::blockchain {
 
-    struct nspv_output
+    /*struct nspv_output
     {
         nspv_output(reproc::process& background) noexcept;
         std::string output;
         std::mutex output_mutex;
         std::future<std::error_code> async_drain;
-    };
+    };*/
 
     class nspv final : public ecs::logic_update_system<nspv> {
     public:
@@ -45,9 +45,7 @@ namespace antara::gaming::blockchain {
     private:
         std::filesystem::path tools_path_;
         using nspv_registry = std::unordered_map<std::string, reproc::process>;
-        using async_drain_registry = std::unordered_map<std::string, nspv_output>;
         nspv_registry registry_;
-        async_drain_registry output_registry_;
     };
 }
 
