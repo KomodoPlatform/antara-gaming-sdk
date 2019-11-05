@@ -28,32 +28,44 @@ namespace antara::gaming::blockchain {
     }
 
     void nspv::update() noexcept {
-        for (auto &&[coin, background] : registry_) {
-            std::stringstream ss;
-            background.drain(reproc::stream::out, reproc::sink::ostream(ss));
-            DVLOG_F(loguru::Verbosity_INFO, "nspv output: {}", ss.str());
+        for (auto &&[coin, process] : registry_) {
+            std::lock_guard<std::mutex> lock(process.process_mutex);
+            if (not process.out.empty()) {
+                DVLOG_F(loguru::Verbosity_INFO, "nspv output: \n{}", process.out);
+                process.out.clear();
+            }
+            if (not process.err.empty()) {
+                DVLOG_F(loguru::Verbosity_ERROR, "nspv err output: \n{}", process.err);
+                process.err.clear();
+            }
         }
     }
 
     nspv::~nspv() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
-        for (auto &&[coin, background] : registry_) {
-            auto ec = background.stop(reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
-                                      reproc::infinite);
-            if (ec) {
-                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
-            }
-        }
     }
 
     bool nspv::spawn_nspv_instance(const std::string &coin) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
-        registry_[coin] = reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
-                                          reproc::cleanup::kill, reproc::infinite);
+        auto bg = reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
+                                  reproc::cleanup::kill, reproc::infinite);
+
+
+        auto res = registry_.try_emplace(coin, reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
+                                                               reproc::cleanup::kill, reproc::infinite)).second;
+        if (not res) {
+            return false;
+        }
         std::array<std::string, 1> args = {tools_path_ / "nspv"};
-        auto ec = registry_[coin].start(args, tools_path_.string().c_str());
+        auto ec = registry_.at(coin).background.start(args, tools_path_.string().c_str());
         if (ec) {
             DVLOG_F(loguru::Verbosity_ERROR, "error: {}", ec.message());
+            return false;
+        }
+        using namespace std::chrono_literals;
+        auto error = registry_.at(coin).background.wait(2s);
+        if (error != reproc::error::wait_timeout) {
+            DVLOG_F(loguru::Verbosity_ERROR, "error: {}", error.message());
             return false;
         }
         return true;
