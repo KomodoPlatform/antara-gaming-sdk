@@ -39,7 +39,7 @@ In the OSX folder we need four files:
 - Packaging_CMakeDMGSetup.scpt (OSX Apple script for the packaging)
 - sfml_flappybird_install.cmake (CMake script for the bundling)
 
-Here is the kmd_logo.icns (if the image is not appearing it's normal, just right click and click download image):
+Here is the kmd_logo.icns (if the image is not appearing it's normal, just right click from Safari and click download image):
 
 .. image:: ../../../tutorials/flappy-bird/step_1/data/osx/kmd_logo.icns
 
