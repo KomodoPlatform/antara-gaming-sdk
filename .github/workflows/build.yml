@@ -15,7 +15,7 @@ jobs:
           ubuntu-18-04-clang-8-debug-tsan,
           ubuntu-18-04-clang-8-debug-asan,
           ubuntu-18-04-clang-8-debug-ubsan,
-          ubuntu-18-04-emcc-latest-debug,
+          #ubuntu-18-04-emcc-latest-debug,
           windows-2019-clang-cl-debug,
           windows-2019-clang-debug,
           macos-10-14-clang-8-debug,
@@ -28,9 +28,9 @@ jobs:
         ]
 
         include:
-          - name: ubuntu-18-04-emcc-latest-debug
-            os: ubuntu-18.04
-            cmake_build_type: Debug
+          #- name: ubuntu-18-04-emcc-latest-debug
+          #  os: ubuntu-18.04
+          #  cmake_build_type: Debug
 
           - name: ubuntu-18-04-clang-8-debug
             os: ubuntu-18.04
