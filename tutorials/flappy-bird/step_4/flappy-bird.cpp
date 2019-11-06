@@ -240,7 +240,9 @@ namespace {
 // Column Logic System
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    explicit column_logic(entt::registry &registry) noexcept : system(registry) {}
+    explicit column_logic(entt::registry &registry) noexcept : system(registry) {
+        disable();
+    }
 
     // Update, this will be called every tick
     void update() noexcept final {
@@ -341,7 +343,7 @@ private:
 
     // Create logic systems
     void create_logic_systems() {
-        system_manager_.create_system<column_logic>();
+        system_manager_.create_system_rt<column_logic>();
     }
 
     // System manager reference
