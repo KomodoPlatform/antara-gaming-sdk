@@ -39,17 +39,9 @@ In the OSX folder we need four files:
 - Packaging_CMakeDMGSetup.scpt (OSX Apple script for the packaging)
 - sfml_flappybird_install.cmake (CMake script for the bundling)
 
-For downloading kmd_logo.icns it:
+Click :download:`here <../../../tutorials/flappy-bird/step_1/data/osx/kmd_logo.icns>` to download kmd_logo.icns.
 
-ClickHere_
-
-.. _ClickHere: https://antara-gaming-sdk.readthedocs.io/en/latest/_images/kmd_logo.icns
-
-Here is the Packaging_CMakeDMGBackground.tif:
-
-Click_
-
-.. _Click: https://antara-gaming-sdk.readthedocs.io/en/latest/_images/Packaging_CMakeDMGBackground.tif
+Click :download:`here <../../../tutorials/flappy-bird/step_1/data/osx/Packaging_CMakeDMGBackground.tif>` to download Packaging_CMakeDMGBackground.tif.
 
 Here is the AppleScript:
 
