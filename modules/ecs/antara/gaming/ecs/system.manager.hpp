@@ -615,6 +615,10 @@ namespace antara::gaming::ecs
         template<typename TSystem, typename ... TSystemArgs>
         TSystem &create_system(TSystemArgs &&...args) noexcept;
 
+        //! TODO: Document it
+        template<typename TSystem, typename ... TSystemArgs>
+        void create_system_rt(TSystemArgs &&... args) noexcept;
+
         /**
          * @brief This function load a bunch os systems
          * @tparam TSystems represents a list of systems to be loaded
@@ -720,6 +724,20 @@ namespace antara::gaming::ecs
         
         system_ptr sys = creator(std::forward<TSystemArgs>(args)...);
         return static_cast<TSystem &>(add_system_(std::move(sys), TSystem::get_system_type()));
+    }
+
+    template<typename TSystem, typename... TSystemArgs>
+    void system_manager::create_system_rt(TSystemArgs &&... args) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+        if (has_system<TSystem>()) {
+            return ;
+        }
+        auto creator = [this](auto &&... args_) {
+            return std::make_unique<TSystem>(this->entity_registry_,
+                                             std::forward<decltype(args_)>(args_)...);
+        };
+
+        this->dispatcher_.trigger<event::add_base_system>(creator(std::forward<TSystemArgs>(args)...));
     }
 
     template<typename... TSystems, typename... TArgs>

@@ -20,11 +20,10 @@
 #include <range/v3/view/filter.hpp>
 #include "antara/gaming/ecs/system.manager.hpp"
 
-namespace antara::gaming::ecs
-{
-    system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept : entity_registry_(
-            registry), dispatcher_(this->entity_registry_.ctx<entt::dispatcher>())
-    {
+namespace antara::gaming::ecs {
+    system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept
+            : entity_registry_(
+            registry), dispatcher_(this->entity_registry_.ctx<entt::dispatcher>()) {
         LOG_SCOPE_FUNCTION(INFO);
         if (susbscribe_to_internal_events) {
             this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
@@ -32,28 +31,25 @@ namespace antara::gaming::ecs
         }
     }
 
-    std::size_t system_manager::nb_systems(system_type sys_type) const noexcept
-    {
+    std::size_t system_manager::nb_systems(system_type sys_type) const noexcept {
         return systems_[sys_type].size();
     }
 
-    std::size_t system_manager::nb_systems() const noexcept
-    {
+    std::size_t system_manager::nb_systems() const noexcept {
         return ranges::accumulate(systems_, size_t{0u}, [](size_t accumulator, auto &&vec) {
             return accumulator + vec.size();
         });
     }
 
     base_system &
-    system_manager::add_system_(system_manager::system_ptr &&system, antara::gaming::ecs::system_type sys_type) noexcept
-    {
+    system_manager::add_system_(system_manager::system_ptr &&system,
+                                antara::gaming::ecs::system_type sys_type) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
         return *systems_[sys_type].emplace_back(std::move(system));
     }
 
-    void system_manager::sweep_systems_() noexcept
-    {
+    void system_manager::sweep_systems_() noexcept {
         ranges::for_each(systems_, [](auto &&vec_system) -> void {
             ranges::actions::remove_if(vec_system, &base_system::is_marked);
         });
@@ -61,8 +57,7 @@ namespace antara::gaming::ecs
         this->need_to_sweep_systems_ = false;
     }
 
-    std::size_t system_manager::update() noexcept
-    {
+    std::size_t system_manager::update() noexcept {
         if (not nb_systems() || not game_is_running)
             return 0u;
 
@@ -84,7 +79,7 @@ namespace antara::gaming::ecs
         }
 
         for (auto &&current_sys_vec : systems_)
-            for (auto&& current_sys: current_sys_vec)
+            for (auto &&current_sys: current_sys_vec)
                 current_sys->post_update();
 
         //LCOV_EXCL_START
@@ -100,8 +95,7 @@ namespace antara::gaming::ecs
         return nb_systems_updated;
     }
 
-    std::size_t system_manager::update_systems(system_type system_type_to_update) noexcept
-    {
+    std::size_t system_manager::update_systems(system_type system_type_to_update) noexcept {
         std::size_t nb_systems_updated = 0ull;
         for (auto &&current_sys : systems_[system_type_to_update] | ranges::views::filter(&base_system::is_enabled)) {
             current_sys->update();
@@ -110,8 +104,7 @@ namespace antara::gaming::ecs
         return nb_systems_updated;
     }
 
-    void system_manager::receive_add_base_system(const ecs::event::add_base_system &evt) noexcept
-    {
+    void system_manager::receive_add_base_system(const ecs::event::add_base_system &evt) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         assert(evt.system_ptr != nullptr);
         ecs::system_type sys_type = evt.system_ptr->get_system_type_rtti();
@@ -122,8 +115,7 @@ namespace antara::gaming::ecs
         }
     }
 
-    void system_manager::start() noexcept
-    {
+    void system_manager::start() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         game_is_running = true;
     }
