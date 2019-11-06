@@ -47,7 +47,9 @@ ClickHere_
 
 Here is the Packaging_CMakeDMGBackground.tif:
 
-.. image:: ../../../tutorials/flappy-bird/step_1/data/osx/Packaging_CMakeDMGBackground.tif
+Click_
+
+.. _Click: https://antara-gaming-sdk.readthedocs.io/en/latest/_images/Packaging_CMakeDMGBackground.tif
 
 Here is the AppleScript:
 
