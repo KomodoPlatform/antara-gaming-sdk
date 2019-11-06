@@ -41,6 +41,9 @@ FetchContent_MakeAvailable(antara-gaming-sdk)
 ##! Calling this macros provided by the sdk will if you are on Apple init the environment for this OS (std::filesystem).
 init_apple_env()
 
+##! Get basis assets (default fonts, etc)
+get_resources_basics_assets(${CMAKE_CURRENT_SOURCE_DIR})
+
 ##! Osx bundle icon
 set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)

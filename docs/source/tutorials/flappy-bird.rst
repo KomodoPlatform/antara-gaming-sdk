@@ -1264,6 +1264,8 @@ Here we do a direct set instead of adding it on top of the previous value becaus
 
 Movement speed is ready. Now we move the position with the movement speed. Multiplying it with delta time as always to spread it over time. 
 
+.. code-block:: cpp
+
     // Add movement speed to position to make the character move, but apply over time with delta time
     pos += movement_speed_ * timer::time_step::get_fixed_delta_time();
 
