@@ -266,7 +266,9 @@ namespace {
 // Column Logic System
 class column_logic final : public ecs::logic_update_system<column_logic> {
 public:
-    explicit column_logic(entt::registry &registry) noexcept : system(registry) {}
+    explicit column_logic(entt::registry &registry) noexcept : system(registry) {
+        disable();
+    }
 
     // Update, this will be called every tick
     void update() noexcept final {
@@ -338,7 +340,9 @@ REFL_AUTO (type(column_logic));
 // Player Logic System
 class player_logic final : public ecs::logic_update_system<player_logic> {
 public:
-    player_logic(entt::registry &registry, entt::entity player) noexcept : system(registry), player_(player) {}
+    player_logic(entt::registry &registry, entt::entity player) noexcept : system(registry), player_(player) {
+        disable();
+    }
 
     // Update, this will be called every tick
     void update() noexcept final {
@@ -441,17 +445,14 @@ private:
         // Create logic systems
         create_logic_systems(player);
 
-        // Disable physics and everything at start to pause the game
-        pause_physics();
-
         // Reset state variables
         reset_state_variables();
     }
 
     // Create logic systems
     void create_logic_systems(entt::entity player) {
-        system_manager_.create_system<column_logic>();
-        system_manager_.create_system<player_logic>(player);
+        system_manager_.create_system_rt<column_logic>();
+        system_manager_.create_system_rt<player_logic>(player);
     }
 
     // Reset state values

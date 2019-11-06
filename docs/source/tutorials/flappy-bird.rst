@@ -862,7 +862,9 @@ Smooth movement requires a position update at every tick. So we need a ``ecs::lo
     // Column Logic System
     class column_logic final : public ecs::logic_update_system<column_logic> {
     public:
-        explicit column_logic(entt::registry &registry) noexcept : system(registry) {}
+        explicit column_logic(entt::registry &registry) noexcept : system(registry) {
+            disable();
+        }
 
 And make a ``move_pipe`` function, has a parameter of ``struct pipe`` reference. Also retrieve constants, to access the scroll speed.
 
@@ -1062,7 +1064,7 @@ Now we will make a function which will create logic systems, inside we use the `
 
     // Create logic systems
     void create_logic_systems() {
-        system_manager_.create_system<column_logic>();
+        system_manager_.create_system_rt<column_logic>();
     }
 
 And finally call this in the ``init_dynamic_objects`` function.
@@ -1209,7 +1211,9 @@ Now we will make another ``ecs::logic_update_system`` like ``column_logic``, but
     // Player Logic System
     class player_logic final : public ecs::logic_update_system<player_logic> {
     public:
-        player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {}
+        player_logic(entt::registry &registry, entt::entity player_) noexcept : system(registry), player_(player_) {
+            disable();
+        }
 
 As you see in the constructor, we will keep the player entity as a member. Also we want a 2D vector for movement speed, ``math::vec2f``.
 
@@ -1388,8 +1392,8 @@ We made a function before, called ``create_logic_systems``, we will create ``pla
 
     // Create logic systems
     void create_logic_systems(entt::entity player) {
-        system_manager_.create_system<column_logic>();
-        system_manager_.create_system<player_logic>(player);
+        system_manager_.create_system_rt<column_logic>();
+        system_manager_.create_system_rt<player_logic>(player);
     }
 
 When we launch the game, we want physics to pause because we don't want game to start before we press the jump button.
@@ -1437,9 +1441,6 @@ In the ``init_dynamic_objects`` function, we feed ``player`` entity to the ``cre
 
         // Create logic systems
         create_logic_systems(player);
-
-        // Disable physics and everything at start to pause the game
-        pause_physics();
 
         // Reset state variables
         reset_state_variables();
@@ -1589,9 +1590,9 @@ Now let's use this class in ``game_scene``:
 
     // Create logic systems
     void create_logic_systems(entt::entity player) {
-        system_manager_.create_system<column_logic>();
-        system_manager_.create_system<player_logic>(player);
-        system_manager_.create_system<collision_logic>(player, player_died_);
+        system_manager_.create_system_rt<column_logic>();
+        system_manager_.create_system_rt<player_logic>(player);
+        system_manager_.create_system_rt<collision_logic>(player, player_died_);
     }
 
 Add some more state variables for player death, game over, and reset query:
@@ -1886,14 +1887,16 @@ Then fill it with the constructor.
     class column_logic final : public ecs::logic_update_system<column_logic> {
     public:
         explicit column_logic(entt::registry &registry, entt::entity score) noexcept : system(registry),
-                                                                                        score_entity_(score) {}
+                                                                                    score_entity_(score) {
+            disable();
+        }
 
 We need to update the creation line too, feeding the score entity.
 
 .. code-block:: cpp
 
     void create_logic_systems(entt::entity player) {
-        system_manager_.create_system<column_logic>(score_entity_);
+        system_manager_.create_system_rt<column_logic>(score_entity_);
 
 Now we go back to the ``update`` function of this class, and inside the for loop which loops all columns, we add the check for score.
 
