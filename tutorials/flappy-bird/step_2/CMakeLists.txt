@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 17)
 
 ##! Our Project title, here flappy-bird.
-project(flappy-bird DESCRIPTION "An awesome flappy-bird" LANGUAGES CXX)
+project(flappy-bird DESCRIPTION "An awesome flappy-bird" LANGUAGES CXX VERSION 1.0.0)
 
 ##! The SDK need's clang as main compiler.
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -39,7 +39,7 @@ set(USE_SFML_ANTARA_WRAPPER ON)
 FetchContent_MakeAvailable(antara-gaming-sdk)
 
 ##! Calling this macros provided by the sdk will if you are on Apple init the environment for this OS (std::filesystem).
-init_apple_env()
+init_antara_env()
 
 ##! Get basis assets (default fonts, etc)
 get_resources_basics_assets(${CMAKE_CURRENT_SOURCE_DIR})

@@ -27,6 +27,7 @@ option(USE_LUA_ANTARA_WRAPPER "Use LUA antara wrapper" OFF)
 option(USE_BOX2D_ANTARA_WRAPPER "Use Box2D antara wrapper" OFF)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(antara)
+init_antara_env()
 
 if (NOT EXISTS ${PROJECT_SOURCE_DIR}/modules/core/antara/gaming/core/version.hpp)
     configure_file(${CMAKE_MODULE_PATH}/version.hpp.in ${PROJECT_SOURCE_DIR}/modules/core/antara/gaming/core/version.hpp @ONLY)

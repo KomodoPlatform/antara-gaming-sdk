@@ -139,5 +139,7 @@ macro(magic_game_app_image_generation from_dir desktop_file appdata_file app_ico
     endif ()
 endmacro()
 
-init_apple_env()
-download_app_image()
+macro(init_antara_env)
+    init_apple_env()
+    download_app_image()
+endmacro()
