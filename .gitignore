@@ -492,6 +492,7 @@ examples/sfml/*/assets/sounds/intro2.wav
 /tutorials/*/*/cmake-*
 /tutorials/*/*/.idea
 /tutorials/*/*/Resources/assets/config
+/tutorials/*/*/assets/fonts
 /docs/_build
 
 
