@@ -8,18 +8,85 @@ This tutorial is divided into multiple steps to make it easier to follow.
 Step 1: Setup the executable, window and the game scene
 -------------------------------------------------------
 
-First, create a folder called ``flappy-bird`` for your project, and create another folder called ``assets`` inside. Inside ``assets`` folder. Make another folder inside named ``textures`` and place ``player.png`` inside. Then create one more folder called ``fonts`` and add ``sansation.ttf`` inside.
+First, create a folder called ``flappy-bird`` for your project, and create another folder called ``assets`` inside. Inside ``assets`` folder. Make another folder inside named ``textures`` and place ``player.png`` inside.
+Make another folder called ``data`` with ``linux`` and ``osx`` subfolder.
+
+The data folder contains utility files for installing the game on targeted systems.
+
+In the Linux folder we need three files:
+
+- komodo_icon.png (Icons of our game)
+- org.antara.gaming.sfml.flappybird.appdata.xml (xml definition for our game)
+- org.antara.gaming.sfml.flappybird.desktop (desktop file for Linux)
+
+Here is the icon of the game that we will use for the tutorials:
+
+.. image:: ../../../tutorials/flappy-bird/step_1/data/linux/komodo_icon.png
+
+Here is the xml file:
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/linux/org.antara.gaming.sfml.flappybird.appdata.xml
+   :language: xml
+
+Here is the desktop file:
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/linux/org.antara.gaming.sfml.flappybird.desktop
+
+In the OSX folder we need four files:
+
+- kmd_logo.icns (icon osx format of our game)
+- Packaging_CMakeDMGBackground.tif (dmg image background)
+- Packaging_CMakeDMGSetup.scpt (OSX Apple script for the packaging)
+- sfml_flappybird_install.cmake (CMake script for the bundling)
+
+Here is the kmd_logo.icns (if the image is not appearing it's normal, just right click and click download image):
+
+.. image:: ../../../tutorials/flappy-bird/step_1/data/osx/kmd_logo.icns
+
+For downloading it:
+
+.. image:: ../../assets/download_icns.png
+
+Your download folder should have the following results:
+
+.. image:: ../../assets/download_icns_result.png
+
+Here is the Packaging_CMakeDMGBackground.tif:
+
+.. image:: ../../../tutorials/flappy-bird/step_1/data/osx/Packaging_CMakeDMGBackground.tif
+
+Here is the AppleScript:
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/osx/Packaging_CMakeDMGSetup.scpt
+
+And finally the CMake script:
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/osx/sfml_flappybird_install.cmake
+   :language: cmake
 
 You should have the following tree:
 
 .. code-block:: bash
 
     ./flappy-bird
-    └── assets
-        ├── fonts
-        │   └── sansation.ttf
-        └── textures
-            └── player.png
+    ├── assets
+    │  ├── config
+    │  │  └── game.config.maker.json
+    │  └── textures
+    │     └── player.png
+    ├── CMakeLists.txt
+    ├── data
+    │  ├── linux
+    │  │  ├── komodo_icon.png
+    │  │  ├── org.antara.gaming.sfml.flappybird.appdata.xml
+    │  │  └── org.antara.gaming.sfml.flappybird.desktop
+    │  └── osx
+    │     ├── kmd_logo.icns
+    │     ├── Packaging_CMakeDMGBackground.tif
+    │     ├── Packaging_CMakeDMGSetup.scpt
+    │     └── sfml_flappybird_install.cmake
+    └── flappy-bird.cpp
+
 
 Then create a text file and save it as ``CMakeLists.txt``.
 
