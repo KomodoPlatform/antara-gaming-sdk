@@ -13,7 +13,9 @@ project(tic-tac-toe DESCRIPTION "An awesome tic-tac-toe" LANGUAGES CXX)
 
 ##! The SDK need's clang as main compiler.
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
+    if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+        message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
+    endif()
 endif ()
 
 ##! We will let know the SDK if our on Linux
@@ -42,5 +44,26 @@ init_apple_env()
 ##! We create the executable with the project name
 add_executable(${PROJECT_NAME} tic-tac-toe.cpp)
 
+##! Setting output directory
+set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
+        )
+
 ##! We link the SDK modules that we want to use to our executable
 target_link_libraries(${PROJECT_NAME} PUBLIC antara::world antara::sfml)
+
+##! Move DLL
+if (WIN32)
+    ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/bin/"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
+
+    ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${SFML_SOURCE_DIR}/extlibs/bin/x64/openal32.dll" "${CMAKE_BINARY_DIR}/bin/openal32.dll"
+            COMMENT "copying dlls …"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
+endif ()
