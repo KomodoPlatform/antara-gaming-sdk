@@ -48,6 +48,16 @@ configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 ##! We create the executable with the project name
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${ICON} flappy-bird.cpp)
 
+##! Linux assets
+magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
+        "org.antara.gaming.sfml.flappybird.desktop"
+        "org.antara.gaming.sfml.flappybirds.appdata.xml"
+        "komodo_icon.png"
+        flappy-bird
+        AntaraFlappyBirdAppDir
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets
+        )
+
 ##! Setting output directory
 set_target_properties(${PROJECT_NAME}
         PROPERTIES

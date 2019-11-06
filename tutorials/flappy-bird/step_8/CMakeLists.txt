@@ -54,6 +54,15 @@ set_target_properties(${PROJECT_NAME}
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
         )
 
+magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
+        "org.antara.gaming.sfml.flappybird.desktop"
+        "org.antara.gaming.sfml.flappybirds.appdata.xml"
+        "komodo_icon.png"
+        flappy-bird
+        AntaraFlappyBirdAppDir
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets
+        )
+
 ##! We link the SDK modules that we want to use to our executable
 target_link_libraries(${PROJECT_NAME} PUBLIC antara::world antara::sfml antara::collisions)
 
