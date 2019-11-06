@@ -57,6 +57,7 @@ target_compile_options(antara_cross_filesystem INTERFACE
         $<$<AND:$<PLATFORM_ID:Darwin>,$<VERSION_GREATER:$<CXX_COMPILER_VERSION>,8.0>>:-mmacosx-version-min=10.15>)
 
 add_library(antara_default_settings INTERFACE)
-add_library(antara::default_settings ALIAS antara_default_settings)
-find_package(Threads)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 target_link_libraries(antara_default_settings INTERFACE antara::error_settings antara::optimize_settings antara::defaults_features antara::cross_filesystem Threads::Threads)
+add_library(antara::default_settings ALIAS antara_default_settings)
