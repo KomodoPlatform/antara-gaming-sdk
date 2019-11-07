@@ -28,9 +28,7 @@ namespace {
     void on_position_construct(entt::entity entity, entt::registry &reg,
                                antara::gaming::transform::position_2d &pos) {
         using namespace antara::gaming;
-        if (reg.has<entt::tag<"dynamic"_hs>>(entity)) {
-            reg.assign<transform::previous_position_2d>(entity, pos);
-        }
+        reg.assign<transform::previous_position_2d>(entity, pos);
     }
 }
 namespace antara::gaming::ecs {

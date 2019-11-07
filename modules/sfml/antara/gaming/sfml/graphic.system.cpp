@@ -153,7 +153,7 @@ namespace antara::gaming::sfml {
                             auto prev_pos = this->entity_registry_.get<transform::previous_position_2d>(
                                     entity); //! save org
                             float interp = this->entity_registry_.ctx<ecs::interpolation_system::st_interpolation>().value();
-                            auto pos = (org_pos - prev_pos) * prev_pos + interp;
+                            auto pos = prev_pos + (org_pos - prev_pos) * interp;
                             drawable.drawable.setPosition(pos);
                             this->render_texture_.draw(drawable.drawable);
                             drawable.drawable.setPosition(org_pos);
