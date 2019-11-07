@@ -30,7 +30,7 @@ include(FetchContent)
 FetchContent_Declare(
         antara-gaming-sdk
         #URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/master.zip
-        URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/b65b6806d3f673cd98965cdecfbdb58efacb65bd.zip
+        URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/1a7b635a221a88b3d80e0e393272a5bfa7fd76ca.zip
 )
 
 ##! We set extras modules from the SDK that we want to use, here we will use the SFML module.
