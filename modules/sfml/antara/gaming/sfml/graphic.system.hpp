@@ -39,7 +39,7 @@ namespace antara::gaming::sfml
     using have_global_bounds = decltype(std::declval<T&>().drawable.getGlobalBounds());
 
     template <typename T>
-    using have_set_position = decltype(std::declval<T&>().drawable.setPosition());
+    using have_set_position = decltype(std::declval<T&>().drawable.setPosition(std::declval<sf::Vector2f &>()));
 
     class graphic_system final : public ecs::post_update_system<graphic_system>
     {
