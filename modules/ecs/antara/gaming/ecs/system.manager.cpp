@@ -18,15 +18,31 @@
 #include <range/v3/numeric.hpp>
 #include <range/v3/action/remove_if.hpp>
 #include <range/v3/view/filter.hpp>
+#include <entt/entity/helper.hpp>
+#include <antara/gaming/transform/component.position.hpp>
 #include "antara/gaming/ecs/system.manager.hpp"
+#include "antara/gaming/ecs/interpolation.system.hpp"
 
+
+namespace {
+    void on_position_construct(entt::entity entity, entt::registry &reg,
+                               antara::gaming::transform::position_2d &pos) {
+        using namespace antara::gaming;
+        if (reg.has<entt::tag<"dynamic"_hs>>(entity)) {
+            reg.assign<transform::previous_position_2d>(entity, pos);
+        }
+    }
+}
 namespace antara::gaming::ecs {
     system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept
             : entity_registry_(
             registry), dispatcher_(this->entity_registry_.ctx<entt::dispatcher>()) {
         LOG_SCOPE_FUNCTION(INFO);
+        this->create_system<interpolation_system>();
+        this->entity_registry_.set<interpolation_system::st_interpolation>(0.f);
         if (susbscribe_to_internal_events) {
             this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
+            this->entity_registry_.on_construct<transform::position_2d>().connect<&on_position_construct>();
             assert(not dispatcher_.sink<event::add_base_system>().empty());
         }
     }
@@ -72,6 +88,8 @@ namespace antara::gaming::ecs {
         }
         //LCOV_EXCL_STOP
 
+        auto& interp = this->entity_registry_.ctx<interpolation_system::st_interpolation>();
+        interp = interpolation_system::st_interpolation{this->timestep_.get_interpolation()};
         nb_systems_updated += update_systems(system_type::post_update);
 
         if (need_to_sweep_systems_) {

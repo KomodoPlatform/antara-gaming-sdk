@@ -59,57 +59,57 @@ namespace antara::gaming::ecs::tests {
         manager.start();
 
         //! add
-                CHECK_EQ(manager.nb_systems(), 0u);
+                CHECK_EQ(manager.nb_systems(), 1u);
         manager.create_system<logic_concrete_system>();
                 CHECK(manager.has_system<logic_concrete_system>());
-                CHECK_EQ(manager.nb_systems(), 1u);
+                CHECK_EQ(manager.nb_systems(), 2u);
                 CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
         manager.create_system<logic_concrete_system>();
-                CHECK_EQ(manager.nb_systems(), 1u);
+                CHECK_EQ(manager.nb_systems(), 2u);
                 CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
 
         //! evt
         ecs::event::add_base_system evt(std::make_unique<pre_concrete_system>(registry));
         manager.receive_add_base_system(evt);
         manager.update();
-                CHECK_EQ(manager.nb_systems(), 2u);
+                CHECK_EQ(manager.nb_systems(), 3u);
                 CHECK(manager.mark_system<pre_concrete_system>());
         manager.update();
-                CHECK_EQ(manager.nb_systems(), 1u);
+                CHECK_EQ(manager.nb_systems(), 2u);
 
         manager.create_system_rt<pre_concrete_system>();
-                CHECK_EQ(manager.nb_systems(), 1u);
-        manager.update();
                 CHECK_EQ(manager.nb_systems(), 2u);
+        manager.update();
+                CHECK_EQ(manager.nb_systems(), 3u);
                 CHECK(manager.mark_system<pre_concrete_system>());
         manager.update();
-                CHECK_EQ(manager.nb_systems(), 1u);
+                CHECK_EQ(manager.nb_systems(), 2u);
 
 
         //! remove
-                CHECK_EQ(manager.nb_systems(), 1u);
+                CHECK_EQ(manager.nb_systems(), 2u);
                 CHECK(manager.mark_system<logic_concrete_system>());
         manager.update();
                 CHECK_FALSE(manager.has_system<logic_concrete_system>());
-                CHECK_EQ(manager.nb_systems(), 0u);
+                CHECK_EQ(manager.nb_systems(), 1u);
                 CHECK_FALSE(manager.mark_system<logic_concrete_system>());
 
 
         //! add multiple
         manager.load_systems<logic_concrete_system, pre_concrete_system>();
-                CHECK_EQ(manager.nb_systems(), 2u);
+                CHECK_EQ(manager.nb_systems(), 3u);
                 CHECK(manager.has_systems<logic_concrete_system, pre_concrete_system>());
 
         //! update/enable/disable systems from specific type
-                CHECK_EQ(manager.update_systems(pre_update), 1ull);
+                CHECK_EQ(manager.update_systems(pre_update), 2ull);
                 CHECK(manager.disable_system<pre_concrete_system>());
-                CHECK_EQ(manager.update_systems(pre_update), 0ull);
+                CHECK_EQ(manager.update_systems(pre_update), 1ull);
                 CHECK(manager.enable_system<pre_concrete_system>());
 
                 CHECK(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
-                CHECK_EQ(manager.update(), 0ull);
+                CHECK_EQ(manager.update(), 1ull);
                 CHECK(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
-                CHECK_GE(manager.update(), 1ull);
+                CHECK_GE(manager.update(), 2ull);
 
         //! get single
         auto &logic_system = manager.get_system<logic_concrete_system>();
@@ -134,7 +134,7 @@ namespace antara::gaming::ecs::tests {
                 CHECK_FALSE(manager.has_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_FALSE(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_FALSE(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
-                CHECK_EQ(0ull, manager.update());
-                CHECK_EQ(0ull, manager.nb_systems());
+                CHECK_EQ(1ull, manager.update());
+                CHECK_EQ(1ull, manager.nb_systems());
     }
 }

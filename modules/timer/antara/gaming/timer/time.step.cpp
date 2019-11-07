@@ -52,4 +52,8 @@ namespace antara::gaming::timer
     {
         return fixed_delta_time;
     }
+
+    float time_step::get_interpolation() const noexcept {
+        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(fps_).count();;
+    }
 }
