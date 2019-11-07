@@ -87,6 +87,9 @@ if (USE_LUA_ANTARA_WRAPPER)
 endif ()
 
 if (USE_SFML_ANTARA_WRAPPER)
+    if(APPLE)
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Override option" FORCE)
+    endif()
     FetchContent_Declare(
             SFML
             URL https://github.com/Milerius/SFML/archive/patch-1.zip
