@@ -63,10 +63,10 @@ namespace antara::gaming::ecs::tests {
         manager.create_system<logic_concrete_system>();
                 CHECK(manager.has_system<logic_concrete_system>());
                 CHECK_EQ(manager.nb_systems(), 2u);
-                CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
+                CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 2u);
         manager.create_system<logic_concrete_system>();
                 CHECK_EQ(manager.nb_systems(), 2u);
-                CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 1u);
+                CHECK_EQ(manager.nb_systems(logic_concrete_system::get_system_type()), 2u);
 
         //! evt
         ecs::event::add_base_system evt(std::make_unique<pre_concrete_system>(registry));
@@ -101,15 +101,15 @@ namespace antara::gaming::ecs::tests {
                 CHECK(manager.has_systems<logic_concrete_system, pre_concrete_system>());
 
         //! update/enable/disable systems from specific type
-                CHECK_EQ(manager.update_systems(pre_update), 2ull);
-                CHECK(manager.disable_system<pre_concrete_system>());
                 CHECK_EQ(manager.update_systems(pre_update), 1ull);
+                CHECK(manager.disable_system<pre_concrete_system>());
+                CHECK_EQ(manager.update_systems(pre_update), 0ull);
                 CHECK(manager.enable_system<pre_concrete_system>());
 
                 CHECK(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_EQ(manager.update(), 1ull);
                 CHECK(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
-                CHECK_GE(manager.update(), 2ull);
+                CHECK_GE(manager.update(), 1ull);
 
         //! get single
         auto &logic_system = manager.get_system<logic_concrete_system>();
@@ -134,7 +134,7 @@ namespace antara::gaming::ecs::tests {
                 CHECK_FALSE(manager.has_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_FALSE(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_FALSE(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
-                CHECK_EQ(1ull, manager.update());
+                CHECK_EQ(0ull, manager.update());
                 CHECK_EQ(1ull, manager.nb_systems());
     }
 }

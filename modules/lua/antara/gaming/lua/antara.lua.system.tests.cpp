@@ -237,12 +237,12 @@ namespace antara::gaming::lua::tests
                 CHECK(not dispatcher.sink<ecs::event::add_base_system>().empty());
                 CHECK(script_sys.load_scripted_system("pre_update_system.lua"));
         system_mgr.update();
-                CHECK(system_mgr.nb_systems() == 2);
+                CHECK(system_mgr.nb_systems() == 3);
         dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
                 CHECK_EQ(system_mgr.update_systems(ecs::system_type::pre_update), 1ull);
                 CHECK(system_mgr.mark_system<details::lua_pre_scripted_system>());
         system_mgr.update();
-                CHECK(system_mgr.nb_systems() == 1u);
+                CHECK(system_mgr.nb_systems() == 2u);
     }
 
     TEST_CASE_FIXTURE (lua_tests_fixture, "call function")
@@ -257,9 +257,9 @@ namespace antara::gaming::lua::tests
     {
 #ifndef EMSCRIPTEN
                 CHECK(this->script_sys.load_scripted_system("scenes_system.lua"));
-                CHECK(system_mgr.nb_systems() == 2);
+                CHECK(system_mgr.nb_systems() == 3);
         dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
-                CHECK_EQ(2u, system_mgr.update_systems(ecs::system_type::logic_update));
+                CHECK_EQ(3u, system_mgr.update_systems(ecs::system_type::logic_update));
 #endif
     }
 

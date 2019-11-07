@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include <antara/gaming/ecs/interpolation.system.hpp>
 #include "antara/gaming/world/world.app.hpp"
 
 namespace antara::gaming::world::tests
@@ -22,7 +23,12 @@ namespace antara::gaming::world::tests
     class empty_concrete_world : public world::app
     {
     public:
-        empty_concrete_world() = default;
+        empty_concrete_world() {
+            system_manager_.mark_system<ecs::interpolation_system>();
+            system_manager_.start();
+            system_manager_.update();
+            assert(system_manager_.nb_systems() == 0);
+        };
     };
 
 
@@ -50,6 +56,10 @@ namespace antara::gaming::world::tests
     public:
         concrete_world()
         {
+            system_manager_.mark_system<ecs::interpolation_system>();
+            system_manager_.start();
+            system_manager_.update();
+            assert(system_manager_.nb_systems() == 0);
             system_manager_.create_system<concrete_pre_system>();
         }
     };
