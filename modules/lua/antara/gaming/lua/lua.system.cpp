@@ -53,9 +53,9 @@ namespace antara::gaming::lua
         assert(std::filesystem::exists(systems_directory_path_));
         assert(std::filesystem::exists(script_lib_directory_));
         assert(std::filesystem::exists(directory_path_));
-#ifndef EMSCRIPTEN
-        assert(this->load_scripts(script_lib_directory_));
-#endif
+        auto res = this->load_scripts(script_lib_directory_);
+        if (!res)
+            std::abort();
         sol::table table = lua_state_->create_table_with("version", gaming::version());
         table.new_enum<ecs::system_type>("system_type", {
                 {"pre_update",   ecs::pre_update},

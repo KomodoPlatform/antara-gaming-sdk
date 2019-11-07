@@ -138,7 +138,7 @@ if (EMSCRIPTEN)
 else()
     target_compile_definitions(antara_log INTERFACE -DLOGURU_USE_FMTLIB=1)
 endif()
-target_link_libraries(antara_log INTERFACE fmt::fmt Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(antara_log INTERFACE fmt::fmt-header-only Threads::Threads ${CMAKE_DL_LIBS})
 
 add_library(antara::log ALIAS antara_log)
 

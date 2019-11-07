@@ -18,13 +18,13 @@ jobs:
           #ubuntu-18-04-emcc-latest-debug,
           windows-2019-clang-cl-debug,
           windows-2019-clang-debug,
-          macos-10-14-clang-8-debug,
-          macos-10-14-clang-9-debug,
+          macos-10-15-clang-8-debug,
+          macos-10-15-clang-9-debug,
           ubuntu-18-04-clang-8-release,
           windows-2019-clang-cl-release,
           windows-2019-clang-release,
-          macos-10-14-clang-8-release,
-          macos-10-14-clang-9-release,
+          macos-10-15-clang-8-release,
+          macos-10-15-clang-9-release,
         ]
 
         include:
@@ -66,13 +66,13 @@ jobs:
             os: windows-2019
             compiler: clang
 
-          - name: macos-10-14-clang-8-debug
+          - name: macos-10-15-clang-8-debug
             cmake_build_type: Debug
-            os: macOS-10.14
+            os: macOS-latest
             compiler: clang
             version: "8"
 
-          - name: macos-10-14-clang-9-debug
+          - name: macos-10-15-clang-9-debug
             cmake_build_type: Debug
             os: macOS-latest
             compiler: clang
@@ -94,13 +94,13 @@ jobs:
             os: windows-2019
             compiler: clang
 
-          - name: macos-10-14-clang-8-release
+          - name: macos-10-15-clang-8-release
             cmake_build_type: Release
-            os: macOS-10.14
+            os: macOS-latest
             compiler: clang
             version: "8"
 
-          - name: macos-10-14-clang-9-release
+          - name: macos-10-15-clang-9-release
             cmake_build_type: Release
             os: macOS-latest
             compiler: clang
@@ -149,9 +149,9 @@ jobs:
           brew install pkg-config freetype
           pkg-config --cflags freetype2
           brew install ninja lcov
-          brew install llvm@${{ matrix.version}}
-          echo "::set-env name=CC::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang"
-          echo "::set-env name=CXX::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang++"
+          #brew install llvm@${{ matrix.version}}
+          #echo "::set-env name=CC::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang"
+          #echo "::set-env name=CXX::/usr/local/opt/llvm@${{ matrix.version}}/bin/clang++"
           #sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target / -allowUntrusted
 
       - name: Install (Windows)
