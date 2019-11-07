@@ -87,4 +87,5 @@ endif ()
 
 if (APPLE)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}.app/Contents/Resources)
+    include(data/osx/sfml_flappybird_install.cmake)
 endif()
