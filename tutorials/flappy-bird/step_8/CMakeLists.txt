@@ -36,7 +36,12 @@ FetchContent_Declare(
 set(USE_SFML_ANTARA_WRAPPER ON)
 
 ##! We fetch our dependence
-FetchContent_MakeAvailable(antara-gaming-sdk)
+#FetchContent_MakeAvailable(antara-gaming-sdk)
+FetchContent_GetProperties(antara-gaming-sdk)
+if(NOT antara-gaming-sdk_POPULATED)
+    FetchContent_Populate(antara-gaming-sdk)
+    add_subdirectory(${antara-gaming-sdk_SOURCE_DIR} ${antara-gaming-sdk_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
 
 ##! Calling this macros provided by the sdk will if you are on Apple init the environment for this OS (std::filesystem).
 init_antara_env()
@@ -86,6 +91,11 @@ if (WIN32)
 endif ()
 
 if (APPLE)
+    ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks" "${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}.app/Contents/Frameworks"
+            COMMENT "copying frameworks …"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}.app/Contents/Resources)
     include(data/osx/sfml_flappybird_install.cmake)
 endif()
