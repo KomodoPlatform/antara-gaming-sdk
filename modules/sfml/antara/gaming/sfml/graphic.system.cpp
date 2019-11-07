@@ -146,17 +146,22 @@ namespace antara::gaming::sfml {
                             this->render_texture_.draw(aabb_shape_debug);
                         }
                     }
-                    if constexpr (doom::meta::is_detected_v<have_set_position, DrawableType>) {
-                        auto is_dynamic = this->entity_registry_.has<entt::tag<"dynamic"_hs>>(entity);
-                        if (is_dynamic) {
+
+                    auto is_dynamic = this->entity_registry_.has<entt::tag<"dynamic"_hs>>(entity);
+                    if (is_dynamic) {
+                        if constexpr (doom::meta::is_detected_v<have_set_position, DrawableType>) {
                             auto org_pos = this->entity_registry_.get<transform::position_2d>(entity); //! save org
                             auto prev_pos = this->entity_registry_.get<transform::previous_position_2d>(
                                     entity); //! save org
-                            float interp = this->entity_registry_.ctx<ecs::interpolation_system::st_interpolation>().value();
-                            auto pos = prev_pos + (org_pos - prev_pos) * interp;
-                            drawable.drawable.setPosition(pos);
-                            this->render_texture_.draw(drawable.drawable);
-                            drawable.drawable.setPosition(org_pos);
+                            if (prev_pos != org_pos) {
+                                float interp = this->entity_registry_.ctx<ecs::interpolation_system::st_interpolation>().value();
+                                auto pos = prev_pos + (org_pos - prev_pos) * interp;
+                                drawable.drawable.setPosition(pos.x(), pos.y());
+                                this->render_texture_.draw(drawable.drawable);
+                                drawable.drawable.setPosition(org_pos.x(), org_pos.y());
+                            } else {
+                                this->render_texture_.draw(drawable.drawable);
+                            }
                         }
                     } else {
                         this->render_texture_.draw(drawable.drawable);
