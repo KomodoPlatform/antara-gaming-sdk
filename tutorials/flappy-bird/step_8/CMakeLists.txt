@@ -29,8 +29,8 @@ include(FetchContent)
 ##! We declare information about the dependance that we want to fetch.
 FetchContent_Declare(
         antara-gaming-sdk
-        #URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/master.zip
-        URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/4d06518ac5f691f965f0662b42d9f35a45878d8b.zip
+        URL https://github.com/KomodoPlatform/antara-gaming-sdk/archive/master.zip
+        
 )
 
 ##! We set extras modules from the SDK that we want to use, here we will use the SFML module.
