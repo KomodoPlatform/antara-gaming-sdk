@@ -14,6 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
+#pragma once
+
 #include <antara/gaming/ecs/system.hpp>
 
 namespace antara::gaming::ecs {
