@@ -19,7 +19,7 @@
 #include <antara/gaming/ecs/system.hpp>
 
 namespace antara::gaming::ecs {
-    struct interpolation_system final : ecs::pre_update_system<interpolation_system> {
+    struct interpolation_system final : ecs::logic_update_system<interpolation_system> {
         using st_interpolation = st::type<float, struct interpolation_tag>;
         interpolation_system(entt::registry &registry) noexcept;
 
