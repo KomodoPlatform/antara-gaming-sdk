@@ -14,35 +14,19 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <entt/entity/helper.hpp>
+#include <antara/gaming/ecs/interpolation.system.hpp>
+#include <antara/gaming/transform/component.position.hpp>
 
-#include <chrono>
-#include "antara/gaming/timer/fps.hpp"
+namespace antara::gaming::ecs {
+    void interpolation_system::update() noexcept {
+        auto func = [](transform::position_2d& pos, transform::previous_position_2d& previous_pos) {
+            previous_pos = pos;
+        };
+        this->entity_registry_.view<entt::tag<"dynamic"_hs>, transform::position_2d, transform::previous_position_2d>().less(func);
+    }
 
-namespace antara::gaming::timer
-{
-    class time_step
-    {
-    public:
-        void start() noexcept;
+    interpolation_system::interpolation_system(entt::registry &registry) noexcept : system(registry) {
 
-        void start_frame() noexcept;
-
-        [[nodiscard]] bool is_update_required() const noexcept;
-        
-        [[nodiscard]] float get_interpolation() const noexcept;
-
-        void perform_update() noexcept;
-
-        static void change_fps(std::chrono::nanoseconds new_fps_rate);
-
-        static float get_fixed_delta_time() noexcept;
-
-    private:
-        static std::chrono::nanoseconds fps_;
-        static float fixed_delta_time;
-        using clock = std::chrono::steady_clock;
-        std::chrono::nanoseconds lag_{0ns};
-        clock::time_point start_{clock::now()};
-    };
+    }
 }

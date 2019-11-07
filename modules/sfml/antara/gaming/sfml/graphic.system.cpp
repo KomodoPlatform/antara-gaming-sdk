@@ -18,6 +18,7 @@
 #include <range/v3/view/zip.hpp>
 #include <antara/gaming/event/key.pressed.hpp>
 #include <meta/detection/detection.hpp>
+#include <antara/gaming/ecs/interpolation.system.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -29,8 +30,7 @@ namespace {
     using namespace antara::gaming;
 
     template<typename TSFMLEntity>
-    void fill_properties(transform::properties* props, TSFMLEntity &underlying_entity)
-    {
+    void fill_properties(transform::properties *props, TSFMLEntity &underlying_entity) {
         auto[scale_x, scale_y] = (*props).scale;
         underlying_entity.setScale(scale_x, scale_y);
         underlying_entity.setRotation(props->rotation);
@@ -110,7 +110,7 @@ namespace antara::gaming::sfml {
     template<size_t Layer, typename DrawableType>
     void graphic_system::draw() noexcept {
         this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().less(
-                [this](auto &&drawable) {
+                [this](entt::entity entity, auto &&drawable) {
                     if constexpr (doom::meta::is_detected_v<have_global_bounds, DrawableType>) {
                         if (this->debug_mode_) {
                             auto[capsule_left, capsule_top, capsule_width, capsule_height] = drawable.drawable.getGlobalBounds();
@@ -146,7 +146,21 @@ namespace antara::gaming::sfml {
                             this->render_texture_.draw(aabb_shape_debug);
                         }
                     }
-                    this->render_texture_.draw(drawable.drawable);
+                    if constexpr (doom::meta::is_detected_v<have_set_position, DrawableType>) {
+                        auto is_dynamic = this->entity_registry_.has<entt::tag<"dynamic"_hs>>(entity);
+                        if (is_dynamic) {
+                            auto org_pos = this->entity_registry_.get<transform::position_2d>(entity); //! save org
+                            auto prev_pos = this->entity_registry_.get<transform::previous_position_2d>(
+                                    entity); //! save org
+                            float interp = this->entity_registry_.ctx<ecs::interpolation_system::st_interpolation>().value();
+                            auto pos = (org_pos - prev_pos) * prev_pos + interp;
+                            drawable.drawable.setPosition(pos);
+                            this->render_texture_.draw(drawable.drawable);
+                            drawable.drawable.setPosition(org_pos);
+                        }
+                    } else {
+                        this->render_texture_.draw(drawable.drawable);
+                    }
                 });
     }
 

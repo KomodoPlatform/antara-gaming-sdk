@@ -14,35 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <antara/gaming/ecs/system.hpp>
 
-#include <chrono>
-#include "antara/gaming/timer/fps.hpp"
+namespace antara::gaming::ecs {
+    struct interpolation_system final : ecs::pre_update_system<interpolation_system> {
+        using st_interpolation = st::type<float, struct interpolation_tag>;
+        interpolation_system(entt::registry &registry) noexcept;
 
-namespace antara::gaming::timer
-{
-    class time_step
-    {
-    public:
-        void start() noexcept;
-
-        void start_frame() noexcept;
-
-        [[nodiscard]] bool is_update_required() const noexcept;
-        
-        [[nodiscard]] float get_interpolation() const noexcept;
-
-        void perform_update() noexcept;
-
-        static void change_fps(std::chrono::nanoseconds new_fps_rate);
-
-        static float get_fixed_delta_time() noexcept;
-
-    private:
-        static std::chrono::nanoseconds fps_;
-        static float fixed_delta_time;
-        using clock = std::chrono::steady_clock;
-        std::chrono::nanoseconds lag_{0ns};
-        clock::time_point start_{clock::now()};
+        void update() noexcept final;
     };
 }
+
+REFL_AUTO (type(antara::gaming::ecs::interpolation_system));
