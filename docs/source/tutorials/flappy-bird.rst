@@ -1,19 +1,27 @@
 Tutorial: Flappy Bird
 =====================
 
-If you have not read the :doc:`getting started<getting_started>` part yet, Please read it before reading this one.
+Before starting the tutorial, make sure that you have installed the required dependencies and your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`.
 
 This tutorial is divided into multiple steps to make it easier to follow.
 
 Step 1: Setup the executable, window and the game scene
 -------------------------------------------------------
 
-First, create a folder called ``flappy-bird`` for your project, and create another folder called ``assets`` inside. Inside ``assets`` folder. Make another folder inside named ``textures`` and place ``player.png`` inside.
-Make another folder called ``data`` with ``linux`` and ``osx`` subfolder.
+First, create a folder called ``flappy-bird`` for your project, and create a subfolder called ``assets`` inside.
+Within the ``assets`` folder create a ``textures`` subfolder (for storing the ``player.png`` image)
+Also within the ``assets folder, create another subfolder called ``data``, and within this, create two subfolders: ``linux`` and ``osx`` to store utility files required to install the game on targeted systems.
 
-The data folder contains utility files for installing the game on targeted systems.
-
-In the Linux folder we need three files:
+Your folder structure should look like this:
+```
+./flappy-bird
+|── assets
+|   |── textures
+|── data
+    |── linux
+    |── osx        
+```
+In the ``Linux`` folder we need three files:
 
 - komodo_icon.png (Icons of our game)
 - org.antara.gaming.sfml.flappybird.appdata.xml (xml definition for our game)
@@ -32,7 +40,7 @@ Here is the desktop file:
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/linux/org.antara.gaming.sfml.flappybird.desktop
 
-In the OSX folder we need four files:
+In the ``OSX`` folder we need four files:
 
 - kmd_logo.icns (icon osx format of our game)
 - Packaging_CMakeDMGBackground.tif (dmg image background)
@@ -47,12 +55,29 @@ Here is the AppleScript:
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/osx/Packaging_CMakeDMGSetup.scpt
 
-And finally the CMake script:
+And the CMake script:
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_1/data/osx/sfml_flappybird_install.cmake
    :language: cmake
 
-You should have the following tree:
+Now create a text file and save it as ``CMakeLists.txt``.
+
+In this ``CMakeLists.txt`` file we will have: name of the project, creation of the executable, link with the SDK, moving of the assets, C++ standard that will be used, and any extra modules that we need.
+
+Below is the ``CMakeLists.txt`` file:
+
+.. literalinclude:: ../../../tutorials/flappy-bird/step_1/CMakeLists.txt
+   :language: cmake
+   
+Now we can create our input file for the application containing an empty main function (as below) and save it as ``flappy-bird.cpp``.:
+
+.. code-block:: cpp
+
+    int main() {
+        return 0;
+    }
+
+You should now have the following tree:
 
 .. code-block:: bash
 
@@ -62,6 +87,8 @@ You should have the following tree:
     │  │  └── game.config.maker.json
     │  └── textures
     │     └── player.png
+    │  └── fonts
+    │     └── sansation.ttf
     ├── CMakeLists.txt
     ├── data
     │  ├── linux
@@ -76,47 +103,13 @@ You should have the following tree:
     └── flappy-bird.cpp
 
 
-Then create a text file and save it as ``CMakeLists.txt``.
-
-In this ``CMakeLists.txt`` file we will have: name of the project, creation of the executable, link with the SDK, moving of the assets, C++ standard that will be used and extra modules that we want to use.
-
-Below is the ``CMakeLists.txt`` file:
-
-.. literalinclude:: ../../../tutorials/flappy-bird/step_1/CMakeLists.txt
-   :language: cmake
-
-Then we create our input file for the application and call it ``flappy-bird.cpp``.
-
-We add an empty main function:
-
-.. code-block:: cpp
-
-    int main() {
-        return 0;
-    }
-
-If you did everything correctly so far, you should have the following tree:
-
-.. code-block:: bash
-
-    ./flappy-bird
-    ├── assets
-    │   ├── fonts
-    │   │   └── sansation.ttf
-    │   └── textures
-    │       └── player.png
-    ├── CMakeLists.txt
-    └── flappy-bird.cpp
-
-Before continuing the tutorial, make sure that you have installed the required dependencies and your program compiles with the build commands available in the tutorial :doc:`getting started<getting_started>`.
-
 Now we need a world representing the world of our game, to do this we use the following header file: ``#include <antara/gaming/world/world.app.hpp>``
 
 And a basic structure that we name ``flappy_bird_world``. It will inherit from ``antara::gaming::world::app`` class.
 
 And use the namespace ``antara::gaming`` and ``std::string_literals`` to make things easier. 
 
-Finally, we declare our new object in the body of the main function and we replace the return value with the return value of our game returned by the ``run`` function of the ``class world::app``.
+Finally, we declare our new object in the body of the main function, and we replace its return value with the return value of our game (returned by the ``run`` function of the ``class world::app``).
 
 It gives us the following result:
 
@@ -145,7 +138,7 @@ If you compile now and run your executable, you have an infinite loop and nothin
 
 The last stage of this step one is to add the graphics side of the application, for that we will need two modules: ``antara::gaming::sfml::graphic_system`` and ``antara::gaming::sfml::input::system`` which have these following headers, respectively: ``#include <antara/gaming/sfml/graphic.system.hpp>`` and ``#include <antara/gaming/sfml/input.system.hpp>``.
 
-Now in the body of the constructor of our class ``flappy_bird_world`` we will load the graphic system, then we will initialize input system with the window coming from the loaded graphic system.
+Now in the body of the constructor of our class ``flappy_bird_world`` we will load the graphic system, then initialize the input system with the window from the graphic system.
 
 .. code-block:: cpp
 
@@ -164,7 +157,7 @@ If you compile and run now, you should see a black window open. You can close by
 
 And now, the setup part is over. We have a ``CMakeLists.txt`` to be able to compile our program into a basic executable which can create the game window.
 
-We will create a game scene using the scene manager. In order to do so we need to include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
+Next we create a game scene using the scene manager. To do so we need to include the header file ``#include <antara/gaming/scenes/scene.manager.hpp>`` and load the scenes manager system into the system manager.
 
 .. code-block:: cpp
 
@@ -184,7 +177,7 @@ We will create a game scene using the scene manager. In order to do so we need t
     };
 
 
-Now we are going to create the ``game_scene`` class that inherits from the ``base_scene`` class. This class will be the entry point of our game scene.
+Now we create the ``game_scene`` class that inherits from the ``base_scene`` class. This class will be the entry point of our game scene.
 
 The concrete class must override several functions such as update, ``scene_name``.
 Flappy Bird is a game that needs an update for each tick, so we will fill the update function later.
@@ -209,7 +202,7 @@ For the ``scene_name`` function we'll just return the name of the scene.
         }
     };
 
-Now we are going to load our game scene into the ``scene_manager`` using the ``change_scene`` member function
+Now we load our game scene into the ``scene_manager`` using the ``change_scene`` member function.
 
 .. code-block:: cpp
 
@@ -232,7 +225,7 @@ Now we are going to load our game scene into the ``scene_manager`` using the ``c
         }
     };
 
-We will also use a sprite for the bird, so we need the ``sfml::resources_system``. In order to do so we need to include the header file ``#include <antara/gaming/sfml/resources.manager.hpp>`` and load it in the world constructor.
+We will also use a sprite for the bird, so we need the ``sfml::resources_system`` by including the header file ``#include <antara/gaming/sfml/resources.manager.hpp>`` and loading it in the world constructor.
 
 .. code-block:: cpp
 
