@@ -57,20 +57,20 @@ namespace antara::gaming::sfml
     entt::entity intro_scene_factory::create_foreground(entt::registry &entity_registry)
     {
         //! Get window information
-        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
+        auto window_info = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
 
         //! Entity creation
         auto entity = entity_registry.create();
 
         //! Entity components
         auto &rect = entity_registry.assign<rectangle>(entity, sf::RectangleShape(
-                sf::Vector2f(window_info.x, window_info.y))).drawable;
+                sf::Vector2f(window_info.x(), window_info.y()))).drawable;
         rect.setFillColor(sf::Color(0, 0, 0, 0));
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<graphics::layer<2>>(entity);
 
         rect.setFillColor(sf::Color(0, 0, 0, 0));
-        rect.setSize(sf::Vector2f(window_info.x, window_info.y));
+        rect.setSize(sf::Vector2f(window_info.x(), window_info.y()));
         //! Give the fresh entity
         return entity;
     }
@@ -78,7 +78,7 @@ namespace antara::gaming::sfml
     entt::entity intro_scene_factory::create_background(entt::registry &entity_registry)
     {
         //! Get window information
-        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
+        auto window_info = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
 
         //! Entity creation
         auto entity = entity_registry.create();
@@ -87,9 +87,9 @@ namespace antara::gaming::sfml
         auto &va_cmp = entity_registry.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
         sf::VertexArray &va = va_cmp.drawable;
         va.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.x, 0), sf::Color(0, 217, 184)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.x, window_info.y), sf::Color(0, 176, 163)));
-        va.append(sf::Vertex(sf::Vector2f(0, window_info.x), sf::Color(0, 67, 106)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.x(), 0), sf::Color(0, 217, 184)));
+        va.append(sf::Vertex(sf::Vector2f(window_info.x(), window_info.y()), sf::Color(0, 176, 163)));
+        va.append(sf::Vertex(sf::Vector2f(0, window_info.x()), sf::Color(0, 67, 106)));
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<graphics::layer<0>>(entity);
 
