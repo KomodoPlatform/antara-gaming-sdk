@@ -20,6 +20,7 @@
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <iostream>
+#include <antara/gaming/graphics/component.canvas.hpp>
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
 
@@ -47,9 +48,8 @@ namespace antara::gaming::sfml
     //! Factory
     auto intro_scene_factory::get_window_and_screen(entt::registry &entity_registry)
     {
-        auto window_info = entity_registry.ctx<sf::RenderTexture>().getSize();
-        auto screen_size = sf::Vector2f(window_info.x, window_info.y);
-        auto window_center = sf::Vector2f(screen_size.x * 0.5f, screen_size.y * 0.5f);
+        auto screen_size = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
+        auto window_center = screen_size * 0.5f;
 
         return std::make_tuple(screen_size, window_center);
     }
@@ -103,10 +103,10 @@ namespace antara::gaming::sfml
 
         auto logo_entity = create_sprite<1>(entity_registry, resource_mgr, "logo");
         const float logo_final_scale = 0.5f;
-        const sf::Vector2f logo_target_position = sf::Vector2f(window_center.x, screen_size.y * 0.4f);
+        const math::vec2f logo_target_position{window_center.x(), screen_size.y() * 0.4f};
         auto &logo = entity_registry.get<sfml::sprite>(logo_entity).drawable;
         logo.setScale(10.0f, 10.0f);
-        entity_registry.assign_or_replace<transform::position_2d>(logo_entity, window_center.x, screen_size.y * 0.8f);
+        entity_registry.assign_or_replace<transform::position_2d>(logo_entity, window_center.x(), screen_size.y() * 0.8f);
         logo.setColor(sf::Color(255, 255, 255, 0));
 
         const float logo_default_angle = 45.0f;
@@ -116,7 +116,7 @@ namespace antara::gaming::sfml
     }
 
     auto intro_scene_factory::create_name(entt::registry &entity_registry, resources_manager &resource_mgr,
-                                          const float logo_final_scale, const sf::Vector2f logo_target_position,
+                                          const float logo_final_scale, const math::vec2f logo_target_position,
                                           sf::Sprite &logo_sprite)
     {
 
@@ -126,8 +126,8 @@ namespace antara::gaming::sfml
         auto &name = entity_registry.get<sfml::sprite>(name_entity).drawable;
         name.setScale(0.6f, 0.6f);
         const float name_target_position =
-                logo_target_position.y + logo_sprite.getTexture()->getSize().y * logo_final_scale * 0.75f;
-        entity_registry.assign_or_replace<transform::position_2d>(name_entity, window_center.x, screen_size.y);
+                logo_target_position.y() + logo_sprite.getTexture()->getSize().y * logo_final_scale * 0.75f;
+        entity_registry.assign_or_replace<transform::position_2d>(name_entity, window_center.x(), screen_size.y());
 
         name.setColor(sf::Color(255, 255, 255, 0));
         return std::make_tuple(name_entity, name_target_position);
@@ -254,7 +254,7 @@ namespace antara::gaming::sfml
             static auto pos = entity_registry_.get<transform::position_2d>(logo_entity);
 
             // Change pos_y
-            bool done = ease(&pos.y_ref(), logo_target_position.y, 1.5f, dt);
+            bool done = ease(&pos.y_ref(), logo_target_position.y(), 1.5f, dt);
 
             // Set pos_y
             entity_registry_.assign_or_replace<transform::position_2d>(logo_entity, pos.x(), pos.y());
