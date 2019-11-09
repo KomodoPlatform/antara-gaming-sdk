@@ -21,6 +21,7 @@
 #include <entt/signal/dispatcher.hpp>
 #include <iostream>
 #include <antara/gaming/graphics/component.canvas.hpp>
+#include <antara/gaming/geometry/component.rectangle.hpp>
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
 
@@ -59,18 +60,15 @@ namespace antara::gaming::sfml
         //! Get window information
         auto window_info = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
 
-        //! Entity creation
-        auto entity = entity_registry.create();
-
         //! Entity components
-        auto &rect = entity_registry.assign<rectangle>(entity, sf::RectangleShape(
-                sf::Vector2f(window_info.x(), window_info.y()))).drawable;
-        rect.setFillColor(sf::Color(0, 0, 0, 0));
+        auto entity = geometry::blueprint_rectangle(entity_registry,
+            window_info,
+            graphics::color{0, 0, 0, 0},
+            transform::position_2d{window_info.x() * 0.5f, window_info.y() * 0.5f});
+
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<graphics::layer<2>>(entity);
 
-        rect.setFillColor(sf::Color(0, 0, 0, 0));
-        rect.setSize(sf::Vector2f(window_info.x(), window_info.y()));
         //! Give the fresh entity
         return entity;
     }
