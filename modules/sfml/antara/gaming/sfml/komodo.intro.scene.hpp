@@ -67,9 +67,7 @@ namespace antara::gaming::sfml
 
         static auto create_logo(entt::registry &entity_registry);
 
-        static auto create_name(entt::registry &entity_registry,
-                                resources_manager &resource_mgr,
-                                float logo_final_scale, math::vec2f logo_target_position);
+        static auto create_name(entt::registry &entity_registry, float logo_final_scale, math::vec2f logo_target_position);
     };
 
     class intro_scene final : public antara::gaming::scenes::base_scene
