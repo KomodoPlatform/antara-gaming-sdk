@@ -22,6 +22,7 @@
 #include <iostream>
 #include <antara/gaming/graphics/component.canvas.hpp>
 #include <antara/gaming/geometry/component.rectangle.hpp>
+#include <antara/gaming/geometry/component.vertex.hpp>
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
 
@@ -81,13 +82,19 @@ namespace antara::gaming::sfml
         //! Entity creation
         auto entity = entity_registry.create();
 
-        //! Entity components
-        auto &va_cmp = entity_registry.assign<vertex_array>(entity, sf::VertexArray(sf::Quads));
-        sf::VertexArray &va = va_cmp.drawable;
-        va.append(sf::Vertex(sf::Vector2f(0, 0), sf::Color(0, 109, 129)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.x(), 0), sf::Color(0, 217, 184)));
-        va.append(sf::Vertex(sf::Vector2f(window_info.x(), window_info.y()), sf::Color(0, 176, 163)));
-        va.append(sf::Vertex(sf::Vector2f(0, window_info.x()), sf::Color(0, 67, 106)));
+        std::vector<geometry::vertex> vertices{4};
+
+        vertices[0].pos = {0.f, 0.f};
+        vertices[1].pos = {window_info.x(), 0.f};
+        vertices[2].pos = {window_info.x(), window_info.y()};
+        vertices[3].pos = {0.f, window_info.x()};
+
+        vertices[0].pixel_color = graphics::color{0, 109, 129};
+        vertices[1].pixel_color = graphics::color{0, 217, 184};
+        vertices[2].pixel_color = graphics::color{0, 176, 163};
+        vertices[3].pixel_color = graphics::color{0, 67, 106};
+
+        entity_registry.assign<geometry::vertex_array>(entity, vertices, geometry::vertex_geometry_type::quads);
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<graphics::layer<0>>(entity);
 
