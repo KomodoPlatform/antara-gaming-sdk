@@ -69,7 +69,7 @@ namespace antara::gaming::sfml
 
         static auto create_name(entt::registry &entity_registry,
                                 resources_manager &resource_mgr,
-                                const float logo_final_scale, const sf::Vector2f logo_target_position,
+                                const float logo_final_scale, const math::vec2f logo_target_position,
                                 sf::Sprite &logo_sprite);
     };
 
