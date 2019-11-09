@@ -25,6 +25,7 @@
 #include <antara/gaming/geometry/component.vertex.hpp>
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
+#include <antara/gaming/graphics/component.sprite.hpp>
 
 // Utility
 static bool ease(float *val, const float targetVal, const float rate, const float dt)
@@ -102,27 +103,29 @@ namespace antara::gaming::sfml
         return entity;
     }
 
-    auto intro_scene_factory::create_logo(entt::registry &entity_registry, resources_manager &resource_mgr)
+    auto intro_scene_factory::create_logo(entt::registry &entity_registry)
     {
         auto&&[screen_size, window_center] = intro_scene_factory::get_window_and_screen(entity_registry);
 
-        auto logo_entity = create_sprite<1>(entity_registry, resource_mgr, "logo");
         const float logo_final_scale = 0.5f;
         const math::vec2f logo_target_position{window_center.x(), screen_size.y() * 0.4f};
-        auto &logo = entity_registry.get<sfml::sprite>(logo_entity).drawable;
-        logo.setScale(10.0f, 10.0f);
-        entity_registry.assign_or_replace<transform::position_2d>(logo_entity, window_center.x(), screen_size.y() * 0.8f);
-        logo.setColor(sf::Color(255, 255, 255, 0));
 
         const float logo_default_angle = 45.0f;
         const float logo_start_angle = 180.0f - logo_default_angle;
-        logo.setRotation(logo_start_angle);
-        return std::make_tuple(logo_entity, logo_final_scale, logo_target_position, logo, logo_start_angle);
+
+        auto entity = graphics::blueprint_sprite(entity_registry,
+                                                 graphics::sprite{"logo.png"},
+                                                 transform::position_2d{window_center.x(), screen_size.y() * 0.8f},
+                                                 graphics::fill_color{255, 255, 255, 0},
+                                                 transform::properties{10.f, logo_start_angle});
+
+        entity_registry.assign<graphics::layer<9>>(entity);
+
+        return std::make_tuple(entity, logo_final_scale, logo_target_position, logo_start_angle);
     }
 
     auto intro_scene_factory::create_name(entt::registry &entity_registry, resources_manager &resource_mgr,
-                                          const float logo_final_scale, const math::vec2f logo_target_position,
-                                          sf::Sprite &logo_sprite)
+                                          const float logo_final_scale, const math::vec2f logo_target_position)
     {
 
         auto&&[screen_size, window_center] = intro_scene_factory::get_window_and_screen(entity_registry);
@@ -130,8 +133,7 @@ namespace antara::gaming::sfml
         auto name_entity = intro_scene_factory::create_sprite<1>(entity_registry, resource_mgr, "name");
         auto &name = entity_registry.get<sfml::sprite>(name_entity).drawable;
         name.setScale(0.6f, 0.6f);
-        const float name_target_position =
-                logo_target_position.y() + logo_sprite.getTexture()->getSize().y * logo_final_scale * 0.75f;
+        const float name_target_position = logo_target_position.y() + 942 * logo_final_scale * 0.75f;
         entity_registry.assign_or_replace<transform::position_2d>(name_entity, window_center.x(), screen_size.y());
 
         name.setColor(sf::Color(255, 255, 255, 0));
@@ -182,16 +184,17 @@ namespace antara::gaming::sfml
               on_finish_functor_(std::move(
                       on_finish_functor))
     {
+        if(entity_registry.try_ctx<antara::gaming::sfml::resources_system>() == nullptr)
+            entity_registry.set<antara::gaming::sfml::resources_system>(entity_registry);
+
         static const float DEG2RAD = 0.0174533f;
         auto&&[logo_entity,
         logo_final_scale,
         logo_target_position,
-        logo_sprite,
-        logo_start_angle] = intro_scene_factory::create_logo(entity_registry_, resource_mgr);
+        logo_start_angle] = intro_scene_factory::create_logo(entity_registry_);
         auto &&[name_entity, name_target_position] = intro_scene_factory::create_name(entity_registry_, resource_mgr,
                                                                                       logo_final_scale,
-                                                                                      logo_target_position,
-                                                                                      logo_sprite);
+                                                                                      logo_target_position);
         auto intro1_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro1");
         auto intro2_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro2");
         entity_registry_.get<sfml::component_sound>(intro2_entity).sound.setVolume(15.f);
