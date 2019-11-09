@@ -1138,7 +1138,7 @@ Step 4 is now complete, here is the full code.
 Step 5: Creation of Flappy Bird
 -----------------------------------
 
-Now we will create the Flappy Bird. Instead of using a rectangle as a character, we will use an image file. This is called a ``character sprite``. We can call Flappy Bird, player from now on.
+Now we will create the Flappy Bird. Instead of using a rectangle as a character, we will use an image file. This is called a ``character sprite``. We will call Flappy Bird "player" from now on.
 
 We need two constants, one for the player position, and another one for the image file name.
 
@@ -1161,7 +1161,8 @@ We retrieve the constants as always.
         const auto[_, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
-Then we use the ``graphics::blueprint_sprite`` which is really easy to use. It requires two parameters, ``graphics::sprite`` and ``transform::position_2d``. ``graphics::sprite`` gets the image path, and ``transform::position_2d`` gets the ``player_pos_x`` constant as X position, half of the canvas height as Y position.
+Then we use the ``graphics::blueprint_sprite`` which is really easy to use. It requires two parameters, ``graphics::sprite`` and ``transform::position_2d``.
+``graphics::sprite`` gets the image path, and ``transform::position_2d`` gets the ``player_pos_x`` constant as X position, half of the canvas height as Y position.
 
 .. code-block:: cpp
 
@@ -1179,7 +1180,7 @@ We assign ``layer<5>`` for draw order, tag ``player``, ``game_scene`` and ``dyna
 
     return entity;
 
-Whole ``create_player`` function looks like this:
+The completed ``create_player`` function looks like this:
 
 .. code-block:: cpp
 
@@ -1240,7 +1241,7 @@ We will also need some constants for physics. ``gravity`` is the force which wil
     const float rotate_speed{100.f};
     const float max_angle{60.f};
 
-Let's initialize virtual input system and add ``jump`` action. Keyboard keys will be: ``space``, ``w``, ``up``; mouse buttons will be ``left`` and ``right``.
+Let's initialize the virtual input system and add a ``jump`` action. Keyboard keys will be: ``space``, ``w``, ``up``; mouse buttons will be ``left`` and ``right``.
 
 .. code-block:: cpp
 
@@ -1329,23 +1330,23 @@ If position Y is equal or lower than zero, we reset both position and speed Y to
         movement_speed_.set_y(0.f);
     }
 
-And set the modified position to the player entity.
+Then set the modified position to the player entity.
 
 .. code-block:: cpp
 
     // Set the new position value
     registry.replace<transform::position_2d>(player_, pos);
 
-Now player can jump, and fall down with gravity and forced to stay inside the screen.
+Now player can jump, falls down with gravity, and is forced to stay inside the screen.
 
 .. code-block:: cpp
 
     // Set the new position value
     registry.replace<transform::position_2d>(player_, pos);
 
-All good, but if you played Flappy Bird, character is rotating, looking down when it's falling. Let's have the same rotation trick.
+So far so good, but we still need to apply rotation to Flappy Bird, so he is looking down when falling.
 
-Retrieve the properties of the player, then add ``rotate_speed`` to the ``props.rotation``, also apply delta time. This way, character will rotate.
+To do this, retrieve the properties of the player, then add ``rotate_speed`` to the ``props.rotation``, also apply delta time.
 
 .. code-block:: cpp
 
@@ -1356,7 +1357,7 @@ Retrieve the properties of the player, then add ``rotate_speed`` to the ``props.
     // Increase the rotation a little by applying delta time
     float new_rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
 
-When player jumps, we need to reset the rotation so character will be straight again before rotating back down. Also we don't want character to rotate forever, we limit it with ``max_angle``.
+When player jumps, we need to reset the rotation so character will be straight again before rotating back down. Also we don't want character to rotate forever, so we'll apply a ``max_angle`` limit.
 
 .. code-block:: cpp
 
@@ -1374,7 +1375,7 @@ Finally, set the ``transform::properties`` to apply the rotation change.
     // Set the properties
     registry.replace<transform::properties>(player_, transform::properties{.rotation = new_rotation});
 
-Update function is done, this is how it looks like:
+Update function is complete, this is how it looks like:
 
 .. code-block:: cpp
 
@@ -1427,7 +1428,7 @@ Update function is done, this is how it looks like:
         registry.replace<transform::properties>(player_, transform::properties{.rotation = new_rotation});
     }
 
-We also need to name this logic system, after the class.
+Now we'll name this logic system, after the class.
 
 .. code-block:: cpp
 
@@ -1436,7 +1437,7 @@ We also need to name this logic system, after the class.
 
 ``player_logic`` is now ready. Let's use it in ``game_scene``.
 
-We made a function before, called ``create_logic_systems``, we will create ``player_logic`` in it. Though ``player_logic`` requires ``player`` entity as argument. Let's modify the function like this:
+We made a function earlier called ``create_logic_systems``, now we will create ``player_logic`` in it. Though ``player_logic`` requires ``player`` entity as argument. Modify the function like as below:
 
 .. code-block:: cpp
 
@@ -1446,9 +1447,9 @@ We made a function before, called ``create_logic_systems``, we will create ``pla
         system_manager_.create_system_rt<player_logic>(player);
     }
 
-When we launch the game, we want physics to pause because we don't want game to start before we press the jump button.
+When we launch the game, we want physics in a paused state so we don't start the game until we press the jump button.
 
-We make two functions which enables and disables both logic functions we made.
+To do so, we'll make two functions which enable and disable both logic functions we made.
 
 .. code-block:: cpp
 
@@ -1462,14 +1463,14 @@ We make two functions which enables and disables both logic functions we made.
         system_manager_.enable_systems<column_logic, player_logic>();
     }
 
-Also, let's have a boolean which indicates if player started playing.
+We'll use a boolean to indicate if player started playing.
 
 .. code-block:: cpp
 
     // States
     bool started_playing_{false};
 
-And a function which resets state values like that.
+And a function which resets this state value.
 
 .. code-block:: cpp
 
@@ -1496,7 +1497,7 @@ In the ``init_dynamic_objects`` function, we feed ``player`` entity to the ``cre
         reset_state_variables();
     }
 
-Final thing we need to do is, to check that jump button press which will start the game. We do this check only if player didn't start playing yet.
+Final thing we need to do is, to check for a jump button press which will start the game. We do this check only if player hasn't already started playing.
 
 .. code-block:: cpp
 
@@ -1510,7 +1511,7 @@ Final thing we need to do is, to check that jump button press which will start t
         }
     }
 
-And call this function in the update function which gets called every tick.
+Then call this function in the update function which gets called every tick.
 
 .. code-block:: cpp
 
