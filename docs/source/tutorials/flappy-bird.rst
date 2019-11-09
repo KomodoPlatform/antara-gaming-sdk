@@ -677,7 +677,7 @@ Step 2 is complete, here is the full code.
 Step 3: Creation of the background
 ----------------------------------
 
-Background is still black as you noticed. Now we will make it prettier. We will add sky, ground and grass. This is how we want it to look like:
+Now it is time to maker the black background prettier by adding sky, ground and grass. This is how we want it to look like:
 
 .. image:: ../../assets/fb_background.png
 
@@ -693,9 +693,9 @@ Let's add the constants to ``struct flappy_bird_constants``: thickness and color
     const graphics::color grass_color{132, 227, 90};
     const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
 
-Now we need to make a function, ``create_background``.
+Now we make a function called ``create_background``.
 
-Retrieve the constants and canvas size:
+First retrieve the constants and canvas size:
 
 .. code-block:: cpp
 
@@ -703,7 +703,7 @@ Retrieve the constants and canvas size:
     const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
     const auto constants = registry.ctx<flappy_bird_constants>();
 
-Let's create the sky first, it's a blue rectangle which is whole canvas.
+Let's create the sky next, a simple blue rectangle.
 
 Position is center of the canvas. 
 
@@ -712,7 +712,7 @@ Position is center of the canvas.
     // Sky is whole canvas so position is middle of it
     transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
 
-Size is whole canvas.
+Set the size to whole canvas (other visual elements will appear in the foreground).
 
 .. code-block:: cpp
 
@@ -749,7 +749,7 @@ Here is how the whole sky creation snippet looks like:
         tag_game_scene(registry, sky);
     }
 
-Now we do the same thing, but for grass. X position is middle of the canvas, Y position is canvas height minus ground thickness because grass is on top of the ground. 
+Now we do the same thing, but for grass. X position is middle of the canvas, Y position is canvas height minus ground thickness because grass grows above the ground!
 
 .. code-block:: cpp
 
@@ -773,7 +773,7 @@ We use ``geometry::blueprint_rectangle`` again, and assign ``layer<3>``, then ta
     registry.assign<graphics::layer<3>>(grass);
     tag_game_scene(registry, grass);
     
-Here is how the whole grass creation snippet looks like:
+Here is the completed grass creation snippet looks:
 
 .. code-block:: cpp
 
@@ -792,11 +792,11 @@ Here is how the whole grass creation snippet looks like:
         tag_game_scene(registry, grass);
     }
 
-Now we create the ground, it's the easiest. 
+Now we create the ground, it's easy. 
 
-X position is middle of canvas, height is canvas height minus half of the ground thickness because position is center of the rectangle.
+X position is middle of canvas, height is canvas height minus half of the ground thickness (because position is center of the rectangle).
 
-Size X is canvas width, Size Y is ground thickness. Rest are the same.
+Size X is canvas width, Size Y is ground thickness.
 
 .. code-block:: cpp
 
@@ -816,7 +816,7 @@ Size X is canvas width, Size Y is ground thickness. Rest are the same.
 
 Notice that we didn't tag any of these ``dynamic``. They will be static and permanent.
 
-Background is complete, whole function looks like this:
+Now the background is complete, the whole function looks like this:
 
 .. code-block:: cpp
 
@@ -883,11 +883,11 @@ Let's call it inside the ``game_scene`` constructor.
         init_dynamic_objects(registry);
     }
 
-Now we have a pretty background, at least as pretty as it can get with three rectangles.
+Now we have a pretty background, at least as pretty as it can get with three rectangles!
 
 .. image:: ../../assets/fb_background.png
 
-Step 3 is complete, here is the full code.
+Step 3 is complete, full code below.
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_3/flappy-bird.cpp
    :language: cpp
@@ -895,9 +895,9 @@ Step 3 is complete, here is the full code.
 Step 4: Move, destroy and respawn pipes
 ---------------------------------------
 
-We will create an illusion to implement the movement easier. Instead of moving Flappy Bird to right, Flappy Bird will stay still and pipes will move to left. That way, we don't need to make a camera which follows Flappy Bird. 
+To create the illusion of movement, Flappy Bird will stay still and pipes will move to left. That way, we don't need to make a camera which follows Flappy Bird. 
 
-Let's define a constant into ``flappy_bird_constants`` named ``scroll_speed``, it will be the movement speed of pipes moving left.
+Let's define a constant into ``flappy_bird_constants`` named ``scroll_speed``, which will be the movement speed of pipes moving left (towards Flappy bird).
 
 .. code-block:: cpp
 
@@ -914,7 +914,7 @@ Smooth movement requires a position update at every tick. So we need a ``ecs::lo
             disable();
         }
 
-And make a ``move_pipe`` function, has a parameter of ``struct pipe`` reference. Also retrieve constants, to access the scroll speed.
+Next we make a ``move_pipe`` function, with a parameter of ``struct pipe`` reference. We'll also retrieve constants, to access the scroll speed.
 
 .. code-block:: cpp
 
@@ -923,14 +923,14 @@ And make a ``move_pipe`` function, has a parameter of ``struct pipe`` reference.
         // Retrieve constants
         const auto constants = registry.ctx<flappy_bird_constants>();
 
-To move the pipe, first we need to get the current position of it. We retrieve the body position of the pipe, cap is also the same so body will be enough. Pipes move only in X axis, horizontally. So we are interested in the X position.
+To move the pipe, first we need to know its current position. We retrieve the body position of the pipe (cap is also the same so body will be enough). Pipes move only along the X axis, horizontally. So we are only interested in their X position.
 
 .. code-block:: cpp
 
     // Get current position of the pipe
     auto pos = registry.get<transform::position_2d>(pipe.body);
 
-Now we calculate the new position X, by adding ``scroll_speed``, but we use ``-`` instead because lower position value is left side, higher position value is right side. That's why we actually subtract to make the pipe move to left side. We also multiply ``scroll_speed`` with delta time ``timer::time_step::get_fixed_delta_time()``, so it will spread over time, will look smoother. ``scroll_speed`` is actually amount of pixels the object will move in ``1 second``.
+Now we calculate the new position X, by adding ``scroll_speed``, but we use ``-`` because a lower position value moves to the left side. So we're actually subtracting from the X position value to make the pipe move to left side. We also multiply ``scroll_speed`` with delta time ``timer::time_step::get_fixed_delta_time()``, so the movement will be spread over time, and the frame changes will look smoother. ``scroll_speed`` is actually amount of pixels the object will move in ``1 second``.
 
 .. code-block:: cpp
 
@@ -949,14 +949,14 @@ Update both body and cap positions by replacing entity's ``transform::position_2
     auto cap_pos = registry.get<transform::position_2d>(pipe.cap);
     registry.replace<transform::position_2d>(pipe.cap, new_pos_x, cap_pos.y());
 
-And finally, return the new position, we will use it later.
+And finally, return the new position (we will use this later).
 
 .. code-block:: cpp
 
     // Return the info about if this pipe is out of the screen
     return new_pos_x;
 
-Whole function looks like this:
+The completed function now looks like this:
 
 .. code-block:: cpp
 
@@ -983,7 +983,7 @@ Whole function looks like this:
         return new_pos_x;
     }
 
-In the update function, we will move all the columns every tick, and the ones which gets out of the screen will be destroyed. A new column will be spawned far right side, after the last or furthest column. Let's make a very basic function which will return the X position of the furthest pipe.
+In the update function, we will move all the columns every tick, and those exiting the screen on the left will be destroyed. A new column will be spawned coming in from the right side, the column furthest away from Flappy bird. Let's make a very basic function which will return the X position of the furthest pipe.
 
 This basic function simply loops over all columns and check if the column's X position is higher than the previous maximum.
 
@@ -1032,14 +1032,14 @@ Then call the ``move_pipe`` function twice, one for top pipe, one for the bottom
     float column_pos_x = move_pipe(registry, col.top_pipe);
     move_pipe(registry, col.bottom_pipe);
 
-Now we know the column position. As we said before, we need to destroy it if it's out of the screen. Position of left side of the screen is ``0``. To make sure column is out of the screen, we can use the ``column_distance`` value, but negative. For example, it will be ``-400``. We can compare column position against this value to know if it's out of the screen.
+Now we know the column position. As we said before, we need to destroy it if it's out of the screen. Position of left side of the screen is ``0``. To make sure column is out of the screen, we can use the ``column_distance`` value, but negative. For example, it will be ``-400``. We can compare the column's X position against this value to know if it's outside the screen.
 
 .. code-block:: cpp
 
     // If column is out of the screen
     if (column_pos_x < -constants.column_distance) {
 
-Inside, we destroy this column, then create a new column using the ``create_column`` function. As the new column position, we use the ``furthest_pipe_position`` then add ``column_distance`` so it will spawn a little bit further than the last column.
+If it is, we destroy the column, then create a new column on the right using the ``create_column`` function. As the new column position, we use the ``furthest_pipe_position`` then add ``column_distance`` so it will spawn a little bit further than the last column.
 
 .. code-block:: cpp
 
@@ -1052,7 +1052,7 @@ Inside, we destroy this column, then create a new column using the ``create_colu
         create_column(registry, furthest_pipe_position(registry) + constants.column_distance);
     }
 
-That's it, the ``update`` function looks like this:
+That's it - the complete ``update`` function looks like this:
 
 .. code-block:: cpp
 
@@ -1082,7 +1082,7 @@ That's it, the ``update`` function looks like this:
         }
     }
 
-We also need to name this logic system, after the class.
+Now we name this logic system, after the class.
 
 .. code-block:: cpp
 
@@ -1100,7 +1100,7 @@ We add a member variable to store the reference inside the ``game_scene``.
     // System manager reference
     ecs::system_manager &system_manager_;
 
-And add a parameter to the constructor which sets this reference.
+Then add a parameter to the constructor which sets this reference.
 
 .. code-block:: cpp
 
@@ -1127,7 +1127,7 @@ And finally call this in the ``init_dynamic_objects`` function.
         create_logic_systems();
     }
 
-Step 4 is complete, here is the full code.
+Step 4 is now complete, here is the full code.
 
 .. literalinclude:: ../../../tutorials/flappy-bird/step_4/flappy-bird.cpp
    :language: cpp
