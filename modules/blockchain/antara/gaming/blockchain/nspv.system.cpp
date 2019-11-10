@@ -57,7 +57,7 @@ namespace antara::gaming::blockchain {
             return false;
         }
         std::array<std::string, 1> args = {(tools_path_ / "nspv").string()};
-        auto ec = registry_.at(coin).background.start(args, tools_path_.string().c_str());
+        auto ec = registry_.at(coin).background.start(args, reproc::options{nullptr,tools_path_.string().c_str()});
         if (ec) {
             DVLOG_F(loguru::Verbosity_ERROR, "error: {}", ec.message());
             return false;
