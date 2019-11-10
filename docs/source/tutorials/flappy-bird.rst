@@ -1761,9 +1761,9 @@ Step 7 is complete, here is the full code.
 Step 8: Score and UI
 --------------------
 
-Without scores, there is no motivation to play. So we will count scores and display it on the screen. 
+Without scores there is no measure of achievement, and no motivation to play again to see if your skills have improved (or are better than your friends!). So we will count scores and display it on the screen. 
 
-Only one constant we need here, ``font_size``.
+Only one constant is needed here, ``font_size``.
 
 .. code-block:: cpp
 
@@ -1771,14 +1771,14 @@ Only one constant we need here, ``font_size``.
         // UI
         const unsigned long long font_size{32ull};
 
-We will get one score from each column player passes. Though we need to mark the column as ``scored``. Let's put a variable into the ``struct column``.
+We will get one score from each column player passes, so we need to mark the column as ``scored``. Let's put a variable into the ``struct column``.
 
 .. code-block:: cpp
 
     // Is score taken from this column
     bool scored{false};
 
-And we define a score struct, it will have the current score, max score and UI text.
+Then we define a score struct, it will have the current score, max score and UI text.
 
 .. code-block:: cpp
 
@@ -1789,7 +1789,7 @@ And we define a score struct, it will have the current score, max score and UI t
         entt::entity text;
     };
 
-Let's make a function which constructs the UI text and put it under Logic functions ``namespace``:
+Now make a function which constructs the UI text, and put it under Logic functions ``namespace``:
 
 .. code-block:: cpp
 
@@ -1800,9 +1800,9 @@ Let's make a function which constructs the UI text and put it under Logic functi
                "\n\nW / UP / Space / Mouse to FLAP"s;
     }
 
-Now we can make the ``create_score`` function which will make an entity.
+Next we can make the ``create_score`` function which will make an entity.
 
-Retrieve constants and canvas size,
+Retrieve constants and canvas size:
 
 .. code-block:: cpp
 
@@ -1812,7 +1812,7 @@ Retrieve constants and canvas size,
         const auto[canvas_width, canvas_height] = registry.ctx<graphics::canvas_2d>().canvas.size;
         const auto constants = registry.ctx<flappy_bird_constants>();
 
-Create ``text_entity`` using ``graphics::blueprint_text`` function, feed the text ``score_ui_text`` and ``font_size`` from ``constants``.
+Then, create ``text_entity`` using ``graphics::blueprint_text`` function, feed the text ``score_ui_text`` and ``font_size`` from ``constants``.
 
 .. code-block:: cpp
 
@@ -1820,14 +1820,14 @@ Create ``text_entity`` using ``graphics::blueprint_text`` function, feed the tex
     auto text_entity = graphics::blueprint_text(registry, graphics::text{score_ui_text(), constants.font_size},
         transform::position_2d{canvas_width * 0.03f, canvas_height * 0.03f}, graphics::white);
 
-Set the ``layer<9>`` because we want the text to be in front of everything. Also tag it as ``game_scene``.
+Set it ot ``layer<9>`` because we want the text to be in front of everything, and tag it as ``game_scene``.
 
 .. code-block:: cpp
 
     registry.assign<graphics::layer<9>>(text_entity);
     tag_game_scene(registry, text_entity);
 
-Create a fresh entity, assign ``struct score`` to it with 0 score and max record values, and ``text_entity`` we just created. Tag it as ``high_score`` and ``game_scene``, then return it.
+Now we create a fresh entity, assign ``struct score`` to it with 0 score and max record values, and ``text_entity`` we just created. Tag it as ``high_score`` and ``game_scene``, then return it.
 
 .. code-block:: cpp
 
@@ -1841,13 +1841,13 @@ Create a fresh entity, assign ``struct score`` to it with 0 score and max record
 
         return entity;
 
-Let's have a member for it in ``game_scene``:
+Add a member for it in ``game_scene``:
 
 .. code-block:: cpp
 
     entt::entity score_entity_;
 
-Create it inside ``game_scene`` constructor using the ``create_score`` function:
+Then create it inside ``game_scene`` constructor using the ``create_score`` function:
 
 .. code-block:: cpp
 
@@ -1868,7 +1868,7 @@ We simply have a parameter ``reset`` to know about the reset situation.
 
 First we retrieve the ``struct score`` from the entity, then if reset is requested, we simply set the ``value`` to zero.
 
-If reset is not requested, then it will increment ``value`` by one, then check if it's higher than the ``max_score``, and update ``max_score`` if ``value`` is higher.
+If reset is not requested, then it will increment ``value`` by one, check if it's higher than the ``max_score``, and update ``max_score`` if ``value`` it is.
 
 .. code-block:: cpp
 
@@ -1881,14 +1881,14 @@ If reset is not requested, then it will increment ``value`` by one, then check i
             // Compare it with the max score, and update max score if it's greater
         else if (++sc.value > sc.max_score) sc.max_score = sc.value;
 
-Then update the ``struct score`` inside the score entity. 
+Next, update the ``struct score`` inside the score entity. 
 
 .. code-block:: cpp
 
     // Update the score entity
     registry.replace<score>(entity, sc);
 
-And then update the contents of ``graphics::text`` with the ``score_ui_text`` using the new values.
+Then then update the contents of ``graphics::text`` with the ``score_ui_text`` using the new values.
 
 .. code-block:: cpp
 
@@ -1897,7 +1897,7 @@ And then update the contents of ``graphics::text`` with the ``score_ui_text`` us
     text.contents = score_ui_text(sc.value, sc.max_score);
     registry.replace<graphics::text>(sc.text, text);
 
-Whole function looks like this:
+The completed function looks like this:
 
 .. code-block:: cpp
 
@@ -1920,7 +1920,7 @@ Whole function looks like this:
         registry.replace<graphics::text>(sc.text, text);
     }
 
-We have the function to update the score now. It needs to be called when player passes a column. This function needs the score entity so we will pass it to ``column_logic`` with the constructor.
+We have the function to update the score now, and it needs to be called when player passes a column. This function needs the score entity so we will pass it to ``column_logic`` with the constructor.
 
 First, have a class member for entity.
 
@@ -1949,7 +1949,7 @@ We need to update the creation line too, feeding the score entity.
 
 Now we go back to the ``update`` function of this class, and inside the for loop which loops all columns, we add the check for score.
 
-First, column should be a new one, ``score`` field being false. Second, column position should be at left side of the player position, a simple ``<`` comparison.
+At first, column should be new, with ``score`` field being false. Once the column position is to the left side of the player position (after Flappy bird passes), use a simple ``<`` comparison of the column and Flappy bird's position on the X axis.
 
 Inside, we call the ``update_score`` function, and mark the column ``scored`` as ``true``.
 
@@ -1982,7 +1982,7 @@ Next thing we want is to reset this score value when game is over and ``reset_ga
         update_score(entity_registry_, score_entity_, true);
     }
 
-That's it, now if you run the game, you'll see the UI which shows current score, max score and button instructions. And as you play, you'll see that score and max score increasing, and score will be reset when you die and reset the game.
+That's it, now if you run the game, you'll see the UI which shows current score, max score and button instructions, and as you play, you'll see score and max score increasing, and see the score return to zero when you die and reset the game.
 
 .. image:: ../../assets/fb_score.png
 
