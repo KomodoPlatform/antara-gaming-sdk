@@ -26,13 +26,13 @@ namespace antara::gaming::timer
     public:
         static void start() noexcept;
 
-        void start_frame() noexcept;
+        static void start_frame() noexcept;
 
         [[nodiscard]] bool is_update_required() const noexcept;
         
         [[nodiscard]] float get_interpolation() const noexcept;
 
-        void perform_update() noexcept;
+        static void perform_update() noexcept;
 
         static void change_fps(std::chrono::nanoseconds new_fps_rate);
 
