@@ -14,12 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <cstdio>
-#include <SFML/Graphics.hpp>
 #include <utility>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include <iostream>
 #include <antara/gaming/graphics/component.canvas.hpp>
 #include <antara/gaming/geometry/component.rectangle.hpp>
 #include <antara/gaming/geometry/component.vertex.hpp>
@@ -192,13 +189,15 @@ namespace antara::gaming::sfml
             entity_registry.set<antara::gaming::sfml::resources_system>(entity_registry);
 
         static const float DEG2RAD = 0.0174533f;
-        auto&&[logo_entity,
-        logo_final_scale,
-        logo_target_position,
-        logo_start_angle] = intro_scene_factory::create_logo(entity_registry_);
+        auto &&[logo_entity,
+                logo_final_scale,
+                logo_target_position,
+                logo_start_angle] = intro_scene_factory::create_logo(entity_registry_);
+
         auto &&[name_entity, name_target_position] = intro_scene_factory::create_name(entity_registry_,
                                                                                       logo_final_scale,
                                                                                       logo_target_position);
+
         auto intro1_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro1");
         auto intro2_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro2");
         entity_registry_.get<sfml::component_sound>(intro2_entity).sound.setVolume(15.f);
@@ -227,38 +226,44 @@ namespace antara::gaming::sfml
             const float scale = base_scale + size * sin(sin_base + speed * total_time);
 
             // Set the scale
-            get_underlying_sfml_drawable<sfml::sprite>(logo_entity).setScale(scale, scale);
+            auto &props = entity_registry_.get<transform::properties>(logo_entity);
+
+            props.scale = scale;
+
+            entity_registry_.replace<transform::properties>(logo_entity, props);
 
             // Complete if size is near zero
             return size < 0.0001f;
         });
 
         // Rotate Logo
-        actions.emplace_back(0.0f,
-                             [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity, DEG2RAD = DEG2RAD](
-                                     float dt) {
-                                 static const auto sin_base = 90.0f * DEG2RAD;
-                                 static const auto speed = 2.25f;
-                                 static const auto friction = 0.15f;
-                                 static const auto base_angle = 0.0f;
-                                 static auto size = logo_start_angle;
-                                 static auto total_time = 0.0f;
+        actions.emplace_back(0.0f, [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity, DEG2RAD = DEG2RAD](float dt) {
+             static const auto sin_base = 90.0f * DEG2RAD;
+             static const auto speed = 2.25f;
+             static const auto friction = 0.15f;
+             static const auto base_angle = 0.0f;
+             static auto size = logo_start_angle;
+             static auto total_time = 0.0f;
 
-                                 // Up and down animation
-                                 total_time += dt;
+             // Up and down animation
+             total_time += dt;
 
-                                 // Slow down
-                                 size *= powf(friction, dt);
+             // Slow down
+             size *= powf(friction, dt);
 
-                                 // Final rotation
-                                 const float rotation = base_angle + size * sin(sin_base + speed * total_time);
+             // Final rotation
+             const float rotation = base_angle + size * sin(sin_base + speed * total_time);
 
-                                 // Set the rotation
-                                 get_underlying_sfml_drawable<sfml::sprite>(logo_entity).setRotation(rotation);
+             // Set the rotation
+            auto &props = entity_registry_.get<transform::properties>(logo_entity);
 
-                                 // Complete if size is near zero
-                                 return size < 0.0001f;
-                             });
+            props.rotation = rotation;
+
+            entity_registry_.replace<transform::properties>(logo_entity, props);
+
+             // Complete if size is near zero
+             return size < 0.0001f;
+         });
 
         // Move Logo
         actions.emplace_back(0.0f, [this, logo_target_position = logo_target_position,
@@ -289,7 +294,7 @@ namespace antara::gaming::sfml
         });
 
         // Fade in Transparency
-        auto transparency_func = [](float dt, float &size, float &total_time, sf::Sprite &sprite) {
+        auto transparency_func = [](float dt, float &size, float &total_time, entt::registry &entity_registry, entt::entity entity) {
             static const auto sin_base = 270.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.1f;
@@ -305,7 +310,9 @@ namespace antara::gaming::sfml
             const float transparency = base_angle + size * sin(sin_base + speed * total_time);
 
             // Set the transparency
-            sprite.setColor(sf::Color(255, 255, 255, transparency));
+            entity_registry.get<graphics::fill_color>(entity).a = transparency;
+
+            entity_registry.replace<graphics::sprite>(entity, entity_registry.get<graphics::sprite>(entity));
 
             // Complete if size is near zero
             return size < 0.0001f;
@@ -315,14 +322,14 @@ namespace antara::gaming::sfml
         actions.emplace_back(0.0f, [this, transparency_func, logo_entity = logo_entity](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
-            return transparency_func(dt, size, total_time, get_underlying_sfml_drawable<sfml::sprite>(logo_entity));
+            return transparency_func(dt, size, total_time, entity_registry_, logo_entity);
         });
 
         // Fade in name
         actions.emplace_back(1.5f, [this, transparency_func, name_entity = name_entity](float dt) {
             static auto size = 240.0f;
             static auto total_time = 0.0f;
-            return transparency_func(dt, size, total_time, get_underlying_sfml_drawable<sfml::sprite>(name_entity));
+            return transparency_func(dt, size, total_time, entity_registry_, name_entity);
         });
 
         // Sound effects
@@ -339,16 +346,16 @@ namespace antara::gaming::sfml
         // Black out foreground transparency
         // This is the final animation which completes the intro
         actions.emplace_back(3.25f, [this, foreground_entity](float dt) {
-            auto &foreground = get_underlying_sfml_drawable<sfml::rectangle>(foreground_entity);
-            static float transparency = foreground.getFillColor().a;
+            auto &color = entity_registry_.get<graphics::fill_color>(foreground_entity);
+
+            static float transparency = color.a;
 
             // Increase transparency
             bool done = ease(&transparency, 255.0f, 15.0f, dt);
 
             // Set transparency
-            auto color = foreground.getFillColor();
             color.a = transparency;
-            foreground.setFillColor(color);
+            entity_registry_.replace<geometry::rectangle>(foreground_entity, entity_registry_.get<geometry::rectangle>(foreground_entity));
 
             return done;
         });
