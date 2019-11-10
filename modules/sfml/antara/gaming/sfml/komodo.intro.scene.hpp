@@ -20,13 +20,11 @@
 #include <functional>
 #include <entt/signal/dispatcher.hpp>
 #include <entt/entity/helper.hpp>
-#include <SFML/Graphics.hpp>
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
 #include "antara/gaming/sfml/component.audio.hpp"
-#include "antara/gaming/sfml/component.drawable.hpp"
 
 
 namespace antara::gaming::sfml
@@ -37,27 +35,6 @@ namespace antara::gaming::sfml
         static auto get_window_and_screen(entt::registry &entity_registry);
 
     public:
-        template<std::size_t current_layer>
-        static entt::entity
-        create_sprite(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sprite_name)
-        {
-            //! Texture loading
-            auto texture = resource_mgr.load_texture(std::string(sprite_name + ".png").c_str());
-            texture.get().setSmooth(true);
-
-            //! Entity creation
-            auto entity = entity_registry.create();
-
-            //! Entity components
-            auto &sprite = entity_registry.assign<antara::gaming::sfml::sprite>(entity, sf::Sprite(*texture)).drawable;
-            sprite.setOrigin(sprite.getLocalBounds().width * 0.5f, sprite.getLocalBounds().height * 0.5f);
-            entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
-            entity_registry.assign<antara::gaming::graphics::layer<current_layer>>(entity);
-
-            //! Give the fresh entity
-            return entity;
-        }
-
         static entt::entity
         create_sound(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sound_name);
 
@@ -106,12 +83,6 @@ namespace antara::gaming::sfml
 
         std::vector<animation> actions;
         float global_time{0.f};
-
-        template<typename Component>
-        auto &get_underlying_sfml_drawable(entt::entity entity)
-        {
-            return entity_registry_.get<Component>(entity).drawable;
-        }
 
         on_finish_functor on_finish_functor_;
         bool intro_finished{false};
