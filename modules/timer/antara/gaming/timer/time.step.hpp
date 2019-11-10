@@ -24,7 +24,7 @@ namespace antara::gaming::timer
     class time_step
     {
     public:
-        void start() noexcept;
+        static void start() noexcept;
 
         void start_frame() noexcept;
 
@@ -38,11 +38,13 @@ namespace antara::gaming::timer
 
         static float get_fixed_delta_time() noexcept;
 
+        static void reset_lag() noexcept;
+
     private:
         static std::chrono::nanoseconds fps_;
         static float fixed_delta_time;
         using clock = std::chrono::steady_clock;
-        std::chrono::nanoseconds lag_{0ns};
-        clock::time_point start_{clock::now()};
+        static std::chrono::nanoseconds lag_;
+        static clock::time_point start_;
     };
 }
