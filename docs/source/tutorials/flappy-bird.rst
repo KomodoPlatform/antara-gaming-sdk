@@ -1530,9 +1530,9 @@ Step 6 is complete, here is the full code.
 Step 7: Collision between player and columns, death and reset game
 ------------------------------------------------------------------
 
-Game ends when player touches the columns. Let's start with adding the collision system header ``<antara/gaming/collisions/basic.collision.system.hpp>``.
+Game ends when Flappy bird flies into the columns and dies. To set this up, we'll start with adding the collision system header ``<antara/gaming/collisions/basic.collision.system.hpp>``.
 
-Let's make another logic system, ``collision_logic``. Constructor gets the player entity and a reference of ``player_dead`` variable, so we can report back the collision result.
+Then make another logic system, ``collision_logic``. Constructor gets the player entity and a reference of ``player_dead`` variable, so we can report back the collision result.
 
 We store both in the class like this:
 
@@ -1541,7 +1541,7 @@ We store both in the class like this:
     entt::entity player_;
     bool &player_died_;
 
-And create the class and constructor:
+Then create the class and constructor:
 
 .. code-block:: cpp
 
@@ -1552,13 +1552,11 @@ And create the class and constructor:
                                                                                                     player_(player_),
                                                                                                     player_died_(player_died_) {}
 
-And a function to check collision between player and the pipes, ``check_player_pipe_collision``.
+Now add a function to check collision between player and the pipes, ``check_player_pipe_collision``.
 
 Remember that we put columns to ``layer<3>``. We can now retrieve them all by using ``view`` function, ``registry.view<graphics::layer<3>>()``.
 
-And use ``collisions::basic_collision_system::query_rect`` function with ``player_`` and ``entity`` which is the pipe. 
-
-If collision happens, we mark ``player_died_`` as ``true``.
+Then use ``collisions::basic_collision_system::query_rect`` function with ``player_`` and ``entity`` which is the pipe. If a collision is detected, we mark ``player_died_`` as ``true``.
 
 .. code-block:: cpp
 
@@ -1573,7 +1571,7 @@ If collision happens, we mark ``player_died_`` as ``true``.
         }
     }
 
-Then call this function in the ``update`` function which is called every tick. But if ``player_died_`` is ``true``, then no need to check for collision, we simply stop the function.
+We'll call this function in the ``update`` function which is called every tick. But if ``player_died_`` is ``true``, then no need to check for collision, we simply stop the function.
 
 .. code-block:: cpp
 
@@ -1588,14 +1586,14 @@ Then call this function in the ``update`` function which is called every tick. B
         check_player_pipe_collision(registry);
     }
 
-As we did before, we name this system, out of the class.
+As we did earlier, we name this system, out of the class.
 
 .. code-block:: cpp
 
     // Name this system
     REFL_AUTO (type(collision_logic));
 
-Whole class looks like this: 
+The completed class looks like this: 
 
 .. code-block:: cpp
 
@@ -1646,7 +1644,7 @@ Now let's use this class in ``game_scene``:
         system_manager_.create_system_rt<collision_logic>(player, player_died_);
     }
 
-Add some more state variables for player death, game over, and reset query:
+Then some more state variables for player death, game over, and reset query:
 
 .. code-block:: cpp
 
@@ -1656,7 +1654,7 @@ Add some more state variables for player death, game over, and reset query:
     bool game_over_{false};
     bool need_reset_{false};
 
-And add two of them to ``reset_state_variables``:
+Finally, add the needed values for game restart to ``reset_state_variables``:
 
 .. code-block:: cpp
 
@@ -1667,7 +1665,7 @@ And add two of them to ``reset_state_variables``:
         game_over_ = false;
     }
 
-Since ``player_died_`` will be filled by ``collision_logic``, we can read it in this class. When it's ``true``, we will mark ``game_over_`` as ``true`` and pause physics because we want the game to stop when player dies. Also mark ``player_died_`` to ``false`` so these won't be triggered again.
+Since ``player_died_`` will be filled by ``collision_logic``, we can read it in this class. When it's ``true``, we will mark ``game_over_`` as ``true`` and pause physics because we want the game to stop when player dies. We'll also mark ``player_died_`` to ``false`` so these won't be triggered again.
 
 .. code-block:: cpp
 
@@ -1681,7 +1679,7 @@ Since ``player_died_`` will be filled by ``collision_logic``, we can read it in 
         }
     }
 
-And another function which will check the jump button press when game is over. When jump button is pressed, game will reset.
+Another function will check for a jump button press after the game is over. When jump button is pressed, game will restart.
 
 .. code-block:: cpp
 
@@ -1707,7 +1705,7 @@ Let's call these two in the ``update`` function:
         check_reset_request();
     }
 
-As you saw in ``check_reset_request``, we use ``reset_game`` function, let's define that:
+As you saw in ``check_reset_request``, we use ``reset_game`` function, so let's define that:
 
 .. code-block:: cpp
 
@@ -1720,9 +1718,9 @@ As you saw in ``check_reset_request``, we use ``reset_game`` function, let's def
         this->need_reset_ = true;
     }
 
-In ``reset_game`` we want to destroy dynamic objects, to do that, we retrieve all the dynamic entities with ``dynamic`` tag that we set before. Then destroy them all using the registry. 
+In ``reset_game`` we want to destroy dynamic objects. To do that, we retrieve all the dynamic entities with ``dynamic`` tag that we set before, then destroy them all using the registry. 
 
-For logic system deletions, we need to mark them for deletion, function looks like this:
+For logic system deletions, we need to mark items for deletion, with the function below:
 
 .. code-block:: cpp
 
@@ -1738,7 +1736,7 @@ For logic system deletions, we need to mark them for deletion, function looks li
         system_manager_.mark_systems<player_logic, collision_logic>();
     }
 
-Those systems get deleted after the whole update tick is completed. That's why we did not want to reinitialize them in ``reset_game``. Instead, queue this reset by setting ``need_reset_`` true and do reinitialization in ``post_update`` like this:
+Those systems get deleted after the whole update tick is completed, so we don't want to reinitialize them in ``reset_game``. Instead, queue the reset by setting ``need_reset_`` true, and do reinitialization in ``post_update`` like this:
 
 .. code-block:: cpp
 
@@ -1752,7 +1750,7 @@ Those systems get deleted after the whole update tick is completed. That's why w
         }
     }
 
-That's it! Player now collides with pipes, dying, getting to the game over state, then by pressing jump button, all the dynamic entities and logic systems are being destroyed, then reinitialized.
+That's it! Flappy bird now collides with pipes, dies, and enters the "game over" state. Afterwards, by pressing jump button, all the dynamic entities and logic systems are destroyed, then reinitialized.
 
 Step 7 is complete, here is the full code.
 
