@@ -203,6 +203,11 @@ namespace antara::gaming::sfml {
         }
 
         sfml_circle.drawable.setOrigin(sfml_circle.drawable.getRadius(), sfml_circle.drawable.getRadius());
+
+        if (auto pos = registry.try_get<transform::position_2d>(entity); pos != nullptr) {
+            sfml_circle.drawable.setPosition(pos->x(), pos->y());
+        }
+
         fill_properties_sfml_entity(entity_registry_, entity, sfml_circle.drawable);
     }
 
@@ -224,6 +229,11 @@ namespace antara::gaming::sfml {
 
         auto[_, __, r_width, r_height] = sfml_rectangle.getGlobalBounds();
         sfml_rectangle.setOrigin(r_width * 0.5f, r_height * 0.5f);
+
+        if (auto pos = registry.try_get<transform::position_2d>(entity); pos != nullptr) {
+            sfml_rectangle.setPosition(pos->x(), pos->y());
+        }
+
         fill_properties_sfml_entity(entity_registry_, entity, sfml_rectangle);
     }
 
@@ -296,12 +306,13 @@ namespace antara::gaming::sfml {
             sf_text.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
+        //auto [left, top, width, height] = sf_text.getLocalBounds();
+        //sf_text.setOrigin(left + (width * 0.5f), top + (height * 0.5f));
+
         if (auto position = registry.try_get<transform::position_2d>(entity); position != nullptr) {
             sf_text.setPosition(position->x(), position->y());
         }
 
-        //auto [left, top, width, height] = sf_text.getLocalBounds();
-        //sf_text.setOrigin(left + (width * 0.5f), top + (height * 0.5f));
         fill_properties_sfml_entity(entity_registry_, entity, sf_text);
     }
 
@@ -321,12 +332,13 @@ namespace antara::gaming::sfml {
             native_sprite.setColor(sf::Color(r, g, b, a));
         }
 
+        native_sprite.setOrigin(native_sprite.getLocalBounds().width * 0.5f,
+                                native_sprite.getLocalBounds().height * 0.5f);
+
         if (auto pos = registry.try_get<transform::position_2d>(entity); pos != nullptr) {
             native_sprite.setPosition(pos->x(), pos->y());
         }
 
-        native_sprite.setOrigin(native_sprite.getLocalBounds().width * 0.5f,
-                                native_sprite.getLocalBounds().height * 0.5f);
         fill_properties_sfml_entity(entity_registry_, entity, native_sprite);
     }
 
