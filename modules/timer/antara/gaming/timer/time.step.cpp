@@ -19,6 +19,10 @@
 namespace antara::gaming::timer
 {
     std::chrono::nanoseconds time_step::fps_ = _60fps;
+    std::chrono::nanoseconds time_step::lag_ = 0ns;
+    using clock = std::chrono::steady_clock;
+    clock::time_point time_step::start_ = clock::now();
+
     float time_step::fixed_delta_time{std::chrono::duration<float, std::ratio<1>>(fps_).count()};
     void time_step::start() noexcept
     {
@@ -54,6 +58,11 @@ namespace antara::gaming::timer
     }
 
     float time_step::get_interpolation() const noexcept {
-        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(fps_).count();;
+        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(fps_).count();
+    }
+
+    void time_step::reset_lag() noexcept {
+        lag_ = std::chrono::nanoseconds(0);
+        start();
     }
 }

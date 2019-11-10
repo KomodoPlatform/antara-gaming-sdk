@@ -134,6 +134,8 @@ namespace antara::gaming::ecs {
     void system_manager::start() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         game_is_running = true;
+
+        antara::gaming::timer::time_step::reset_lag();
     }
 
     system_manager::~system_manager() noexcept {
