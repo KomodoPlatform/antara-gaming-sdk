@@ -12,15 +12,6 @@ First, create a folder called ``flappy-bird`` for your project, and create a sub
 Within the ``assets`` folder create a ``textures`` subfolder (for storing the ``player.png`` image)
 Also within the ``assets folder, create another subfolder called ``data``, and within this, create two subfolders: ``linux`` and ``osx`` to store utility files required to install the game on targeted systems.
 
-Your folder structure should look like this:
-```
-./flappy-bird
-|── assets
-|   |── textures
-|── data
-    |── linux
-    |── osx        
-```
 In the ``Linux`` folder we need three files:
 
 - komodo_icon.png (Icons of our game)
