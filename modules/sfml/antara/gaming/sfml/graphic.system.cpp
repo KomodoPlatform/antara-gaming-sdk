@@ -19,6 +19,7 @@
 #include <antara/gaming/event/key.pressed.hpp>
 #include <meta/detection/detection.hpp>
 #include <antara/gaming/ecs/interpolation.system.hpp>
+#include <antara/gaming/event/fill.image.properties.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -59,6 +60,7 @@ namespace antara::gaming::sfml {
         this->window_.setVerticalSyncEnabled(true);
         dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
         dispatcher_.sink<event::key_pressed>().connect<&graphic_system::on_key_pressed>(*this);
+        dispatcher_.sink<event::fill_image_properties>().connect<&graphic_system::on_fill_image_properties>(*this);
         registry.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
         registry.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
         registry.on_replace<transform::properties>().connect<&graphic_system::on_properties_replaced>(*this);
@@ -366,5 +368,12 @@ namespace antara::gaming::sfml {
             return true;
         }
         return false;
+    }
+
+    void graphic_system::on_fill_image_properties(const event::fill_image_properties &evt) noexcept {
+        auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+        auto handle = resources_system.load_texture(evt.appearance.c_str());
+        auto [width, height] = handle->getSize();
+        evt.image_size.set_xy(width, height); 
     }
 }

@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <entt/entity/helper.hpp>
+#include <antara/gaming/animation2d/animation.2d.hpp>
 #include "antara/gaming/world/world.app.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/geometry/component.rectangle.hpp"
@@ -33,11 +34,10 @@ class intro_scene;
 
 using namespace antara::gaming;
 
-class game_scene final : public antara::gaming::scenes::base_scene
-{
+class game_scene final : public antara::gaming::scenes::base_scene {
 public:
-    game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
-    {
+    game_scene(entt::registry &entity_registry, animation2d::anim_system &animation2d_system) noexcept : base_scene(
+            entity_registry), animation2d_system_(animation2d_system) {
         auto &window_size = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
         auto text_entity = entity_registry.create();
         entity_registry.assign<graphics::fill_color>(text_entity, graphics::green);
@@ -51,10 +51,10 @@ public:
         entity_registry.assign<graphics::layer<0>>(another_text_entity);
 
         auto sprite_entity = graphics::blueprint_sprite(entity_registry,
-                graphics::sprite{"tileSand1.png"},
-                transform::position_2d{400.f, 400.f},
-                graphics::white,
-                transform::properties{.scale = 2.f, .rotation = 45.f});
+                                                        graphics::sprite{"tileSand1.png"},
+                                                        transform::position_2d{400.f, 400.f},
+                                                        graphics::white,
+                                                        transform::properties{.scale = 2.f, .rotation = 45.f});
         //entity_registry.assign<graphics::sprite>(sprite_entity, "tileSand1.png");
         entity_registry.assign<entt::tag<"game_scene"_hs>>(sprite_entity);
         entity_registry.assign<graphics::layer<0>>(sprite_entity);
@@ -64,58 +64,79 @@ public:
                                                          graphics::magenta, transform::position_2d(200.f, 200.f));
         entity_registry.assign<entt::tag<"game_scene"_hs>>(rect_entity);
         entity_registry.assign<graphics::layer<3>>(rect_entity);
+
+        animation2d_system_.add_animation("mage_idle", "mage_idle_dir_1.png", 1, 1, 9);
+        auto animated_entity = animation2d::blueprint_animation(entity_registry,
+                                                                animation2d::anim_component{"mage_idle",
+                                                                                            animation2d::anim_component::status::playing,
+                                                                                            animation2d::anim_component::seconds(0.10f),
+                                                                                            1, true},
+                                                                transform::position_2d(600.f, 300.f));
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(animated_entity);
+        entity_registry.assign<graphics::layer<4>>(animated_entity);
+
+        animation2d_system.add_animation("bheet_arrival", "bheet_arrival.png", 12, 7, 80);
+        antara::gaming::timer::time_step::reset_lag();
+        auto animated2_entity = animation2d::blueprint_animation(entity_registry,
+                                                                animation2d::anim_component{"bheet_arrival",
+                                                                                            animation2d::anim_component::status::playing,
+                                                                                            animation2d::anim_component::seconds(0.10f),
+                                                                                            1, true},
+                                                                transform::position_2d(900.f, 300.f));
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(animated2_entity);
+        entity_registry.assign<graphics::layer<5>>(animated2_entity);
+
+        //!
+        //auto& anim_cmp = entity_registry.get<animation2d::anim_component>(animated2_entity);
+        //anim_cmp.elapsed = animation2d::anim_component::seconds(0.f);
+        //anim_cmp.current_frame = 0;
+        //anim_cmp.current_status = animation2d::anim_component::playing;
     }
 
-    void update() noexcept final
-    {
+    void update() noexcept final {
 
     }
 
-    bool on_key_pressed(const antara::gaming::event::key_pressed &) noexcept final
-    {
+    bool on_key_pressed(const antara::gaming::event::key_pressed &) noexcept final {
         return false;
     }
 
-    bool on_key_released(const antara::gaming::event::key_released &) noexcept final
-    {
+    bool on_key_released(const antara::gaming::event::key_released &) noexcept final {
         return false;
     }
 
-    std::string scene_name() noexcept final
-    {
+    std::string scene_name() noexcept final {
         return "game_scene";
     }
 
-    ~game_scene() noexcept final
-    {
+    ~game_scene() noexcept final {
         auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
         entity_registry_.destroy(view.begin(), view.end());
     }
 
 private:
+    antara::gaming::animation2d::anim_system &animation2d_system_;
     //antara::gaming::sfml::resources_manager resource_mgr;
 };
 
-class my_world : public antara::gaming::world::app
-{
+class my_world : public antara::gaming::world::app {
 public:
-    my_world() noexcept
-    {
+    my_world() noexcept {
         auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
         this->entity_registry_.set<antara::gaming::sfml::resources_system>(this->entity_registry_);
+        auto &anim_system = this->system_manager_.create_system<antara::gaming::animation2d::anim_system>();
         this->system_manager_.create_system<antara::gaming::sfml::audio_system>();
         this->system_manager_.create_system<antara::gaming::sfml::input_system>(graphic_system.get_window());
         auto &scene_manager = this->system_manager_.create_system<antara::gaming::scenes::manager>();
         scene_manager.change_scene(
-                std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, [this]() {
+                std::make_unique<antara::gaming::sfml::intro_scene>(entity_registry_, [this, &anim_system]() {
                     this->dispatcher_.trigger<antara::gaming::event::change_scene>(
-                            std::make_unique<game_scene>(this->entity_registry_), false);
+                            std::make_unique<game_scene>(this->entity_registry_, anim_system), false);
                 }), true);
     }
 };
 
-int main()
-{
+int main() {
     my_world game_app;
     return game_app.run();
 }

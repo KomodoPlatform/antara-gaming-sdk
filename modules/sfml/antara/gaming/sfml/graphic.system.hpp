@@ -21,6 +21,7 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <meta/sequence/list.hpp>
+#include "antara/gaming/event/fill.image.properties.hpp"
 #include "antara/gaming/transform/component.properties.hpp"
 #include "antara/gaming/geometry/component.vertex.hpp"
 #include "antara/gaming/graphics/component.canvas.hpp"
@@ -78,6 +79,7 @@ namespace antara::gaming::sfml
 
         //! Callback
         void on_key_pressed(const event::key_pressed& evt) noexcept;
+        void on_fill_image_properties(const event::fill_image_properties& evt) noexcept;
         void on_window_resized_event(const event::window_resized &evt) noexcept;
         void on_circle_construct(entt::entity entity, entt::registry &registry, geometry::circle &circle) noexcept;
         void on_rectangle_construct(entt::entity entity, entt::registry &registry, geometry::rectangle &rectangle) noexcept;

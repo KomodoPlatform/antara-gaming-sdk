@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string> //! std::string
+#include "antara/gaming/graphics/component.color.hpp"
 #include "antara/gaming/transform/component.properties.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/core/safe.refl.hpp"

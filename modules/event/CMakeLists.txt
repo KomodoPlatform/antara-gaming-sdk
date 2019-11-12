@@ -9,7 +9,7 @@ target_sources(antara_event_shared_sources PRIVATE
         antara/gaming/event/mouse.button.pressed.cpp
         antara/gaming/event/mouse.button.released.cpp)
 target_include_directories(antara_event_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_event_shared_sources PUBLIC antara::default_settings antara::input doom::meta EnTT antara::refl-cpp antara::core)
+target_link_libraries(antara_event_shared_sources PUBLIC antara::default_settings antara::math antara::input doom::meta EnTT antara::refl-cpp antara::core)
 add_library(antara::event ALIAS antara_event_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)
