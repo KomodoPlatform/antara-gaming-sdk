@@ -107,7 +107,7 @@ namespace antara::gaming::ecs::tests {
                 CHECK(manager.enable_system<pre_concrete_system>());
 
                 CHECK(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
-                CHECK_EQ(manager.update(), 0ull);
+                CHECK_GE(manager.update(), 0ull);
                 CHECK(manager.enable_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_GE(manager.update(), 1ull);
 
