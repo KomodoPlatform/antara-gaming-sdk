@@ -1,0 +1,10 @@
+{
+    "coin": "RICK",
+    "asset": "RICK",
+    "fname": "RICK",
+    "rpcport": 25435,
+    "mm2": 1,
+    "p2p": 25434,
+    "magic":"f60d75fd",
+    "nSPV": "159.69.45.70"
+}
