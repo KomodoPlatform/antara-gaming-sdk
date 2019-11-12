@@ -69,7 +69,8 @@ public:
         auto animated_entity = animation2d::blueprint_animation(entity_registry,
                                                                 animation2d::anim_component{"mage_idle",
                                                                                             animation2d::anim_component::status::playing,
-                                                                                            animation2d::anim_component::seconds(0.10f),
+                                                                                            animation2d::anim_component::seconds(
+                                                                                                    0.10f),
                                                                                             1, true},
                                                                 transform::position_2d(600.f, 300.f));
         entity_registry.assign<entt::tag<"game_scene"_hs>>(animated_entity);
@@ -78,11 +79,12 @@ public:
         animation2d_system.add_animation("bheet_arrival", "bheet_arrival.png", 12, 7, 80);
         antara::gaming::timer::time_step::reset_lag();
         auto animated2_entity = animation2d::blueprint_animation(entity_registry,
-                                                                animation2d::anim_component{"bheet_arrival",
-                                                                                            animation2d::anim_component::status::playing,
-                                                                                            animation2d::anim_component::seconds(0.10f),
-                                                                                            1, true},
-                                                                transform::position_2d(900.f, 300.f));
+                                                                 animation2d::anim_component{"bheet_arrival",
+                                                                                             animation2d::anim_component::status::playing,
+                                                                                             animation2d::anim_component::seconds(
+                                                                                                     0.10f),
+                                                                                             1, true},
+                                                                 transform::position_2d(900.f, 300.f));
         entity_registry.assign<entt::tag<"game_scene"_hs>>(animated2_entity);
         entity_registry.assign<graphics::layer<5>>(animated2_entity);
 

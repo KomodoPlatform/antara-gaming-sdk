@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <antara/gaming/transform/component.properties.hpp>
 #include <antara/gaming/transform/component.position.hpp>
 #include <antara/gaming/graphics/component.color.hpp>
