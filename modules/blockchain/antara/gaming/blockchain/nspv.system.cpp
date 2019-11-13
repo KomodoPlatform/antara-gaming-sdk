@@ -114,4 +114,8 @@ namespace antara::gaming::blockchain {
         }
         return true;
     }
+
+    bool nspv::is_wif_wallet_exist() noexcept {
+        return std::filesystem::exists(antara::gaming::core::assets_real_path() / "blockchain/encrypted.wallet.wif");
+    }
 }
