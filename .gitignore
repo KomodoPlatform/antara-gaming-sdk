@@ -496,3 +496,5 @@ examples/sfml/*/assets/sounds/intro2.wav
 /docs/_build
 
 
+/modules/blockchain/assets/tools/coins
+/modules/blockchain/assets/tools/nspv
