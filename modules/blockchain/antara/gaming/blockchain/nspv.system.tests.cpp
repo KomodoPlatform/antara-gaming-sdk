@@ -39,9 +39,5 @@ namespace antara::gaming::blockchain::tests
 
         auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
         CHECK(nspv_system.spawn_nspv_instance("RICK"));
-        for (auto start = std::chrono::steady_clock::now(), now = start; now < start + std::chrono::seconds{15}; now = std::chrono::steady_clock::now())
-        {
-            nspv_system.update();
-        }
     }
 }

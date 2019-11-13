@@ -57,7 +57,7 @@ namespace antara::gaming::blockchain {
     struct nspv_process {
         nspv_process(reproc::process background_) noexcept:
                 background(std::move(background_)) {
-            sink_thread = std::thread([this]() { this->background.drain(thread_safe_string_sink(out, err, process_mutex)); });
+            //sink_thread = std::thread([this]() { this->background.drain(thread_safe_string_sink(out, err, process_mutex)); });
         }
 
 
@@ -69,16 +69,16 @@ namespace antara::gaming::blockchain {
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
             }
 
-            if (sink_thread.joinable()) {
+            /*if (sink_thread.joinable()) {
                 sink_thread.join();
-            }
+            }*/
         }
 
         reproc::process background;
-        std::string out;
-        std::string err;
-        std::mutex process_mutex;
-        std::thread sink_thread;
+        //std::string out;
+        //std::string err;
+        //std::mutex process_mutex;
+        //std::thread sink_thread;
     };
 
     class nspv final : public ecs::logic_update_system<nspv> {
