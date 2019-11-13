@@ -15,62 +15,8 @@
  ******************************************************************************/
 
 #include <loguru.hpp>
-
 #include <reproc++/sink.hpp>
-
-/*#include <cstdlib>
-#include <cstring> //memset, strerror
-#include <cstdio> //perror, printf
-#include <sys/socket.h> //socket
-
-#if __has_include(<unistd.h>)
-
-#include <unistd.h>
-
-#endif
-
-#include <netinet/in.h>*/
-
 #include <antara/gaming/blockchain/nspv.system.hpp>
-
-
-namespace {
-    /*int get_first_open_port() {
-        int sock = socket(AF_INET, SOCK_STREAM, 0);
-        if (sock < 0) {
-            std::printf("socket error\n");
-            return -1;
-        }
-
-        struct sockaddr_in serv_addr;
-
-        std::memset((char *) &serv_addr, 0, sizeof(serv_addr));
-        serv_addr.sin_family = AF_INET;
-        serv_addr.sin_addr.s_addr = INADDR_ANY;
-        serv_addr.sin_port = 0;
-        if (bind(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-            if (errno == EADDRINUSE) {
-                std::printf("the port is not available. already to other process\n");
-                return -1;
-            } else {
-                std::printf("could not bind to process (%d) %s\n", errno, strerror(errno));
-                return -1;
-            }
-        }
-
-        socklen_t len = sizeof(serv_addr);
-        if (getsockname(sock, (struct sockaddr *) &serv_addr, &len) == -1) {
-            std::perror("getsockname");
-            return -1;
-        }
-
-        if (close(sock) < 0) {
-            std::printf("did not close: %s\n", std::strerror(errno));
-            return -1;
-        }
-        return ntohs(serv_addr.sin_port);
-    }*/
-}
 
 namespace antara::gaming::blockchain {
     nspv::nspv(entt::registry &registry, fs::path tools_path) noexcept :
