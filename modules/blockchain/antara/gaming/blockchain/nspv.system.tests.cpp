@@ -40,5 +40,6 @@ namespace antara::gaming::blockchain::tests
         auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
         CHECK(nspv_system.spawn_nspv_instance("RICK"));
         CHECK_FALSE(blockchain::nspv::is_wif_wallet_exist());
+        CHECK_NOTHROW(nspv_system.set_pin_for_the_session("88691313"));
     }
 }

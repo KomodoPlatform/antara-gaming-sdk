@@ -1,7 +1,7 @@
 add_library(antara_nspv STATIC)
 target_sources(antara_nspv PRIVATE antara/gaming/blockchain/nspv.system.cpp)
 target_include_directories(antara_nspv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_nspv PUBLIC antara::default_settings antara::ecs reproc++)
+target_link_libraries(antara_nspv PUBLIC antara::default_settings antara::ecs reproc++ nlohmann_json::nlohmann_json)
 add_library(antara::nspv ALIAS antara_nspv)
 
 if (ANTARA_WIP_FEATURES)

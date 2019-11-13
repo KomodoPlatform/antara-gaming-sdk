@@ -28,8 +28,8 @@ namespace fs = std::filesystem;
 
 namespace antara::gaming::blockchain {
     struct nspv_process {
-        nspv_process(reproc::process background_) noexcept:
-                background(std::move(background_)) {
+        nspv_process(reproc::process background_, std::size_t rpcport_) noexcept:
+                background(std::move(background_)), rpcport(rpcport_) {
         }
 
 
@@ -43,6 +43,7 @@ namespace antara::gaming::blockchain {
         }
 
         reproc::process background;
+        std::size_t rpcport;
     };
 
     class nspv final : public ecs::logic_update_system<nspv> {
@@ -50,6 +51,8 @@ namespace antara::gaming::blockchain {
         nspv(entt::registry &registry, fs::path tools_path = core::assets_real_path() / "tools") noexcept;
 
         void update() noexcept final;
+
+        void set_pin_for_the_session(const std::string &pin);
 
         static bool is_wif_wallet_exist() noexcept;
 
@@ -61,6 +64,8 @@ namespace antara::gaming::blockchain {
         std::filesystem::path tools_path_;
         using nspv_registry = std::unordered_map<std::string, nspv_process>;
         nspv_registry registry_;
+        std::size_t pin_;
+        bool is_pin_set_for_the_session_{false};
     };
 }
 

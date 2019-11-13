@@ -14,9 +14,11 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <fstream>
+#include <nlohmann/json.hpp>
 #include <loguru.hpp>
 #include <reproc++/sink.hpp>
-#include <antara/gaming/blockchain/nspv.system.hpp>
+#include "antara/gaming/blockchain/nspv.system.hpp"
 
 namespace antara::gaming::blockchain {
     nspv::nspv(entt::registry &registry, fs::path tools_path) noexcept :
@@ -34,12 +36,23 @@ namespace antara::gaming::blockchain {
 
     bool nspv::spawn_nspv_instance(const std::string &coin) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
+        std::ifstream ifs(tools_path_ / "coins");
+        assert(ifs);
+        nlohmann::json config_json_data;
+        ifs >> config_json_data;
+        std::size_t rpcport{0};
+        for (auto&& object : config_json_data) {
+            if (object["coin"].get<std::string>() == coin) {
+                rpcport = object["rpcport"].get<std::size_t>();
+            }
+        }
+        DVLOG_F(loguru::Verbosity_INFO, "rpcport: {}", rpcport);
         auto bg = reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
                                   reproc::cleanup::kill, reproc::infinite);
 
 
         auto res = registry_.try_emplace(coin, reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
-                                                               reproc::cleanup::kill, reproc::infinite)).second;
+                                                               reproc::cleanup::kill, reproc::infinite), rpcport).second;
         if (not res) {
             return false;
         }
@@ -62,6 +75,12 @@ namespace antara::gaming::blockchain {
     }
 
     bool nspv::is_wif_wallet_exist() noexcept {
-        return std::filesystem::exists(antara::gaming::core::assets_real_path() / "blockchain/encrypted.wallet.wif");
+        return std::filesystem::exists(
+                antara::gaming::core::assets_real_path() / "blockchain/nspv/encrypted.wallet.wif");
+    }
+
+    void nspv::set_pin_for_the_session(const std::string &pin) {
+        pin_ = std::stoi(pin);
+        is_pin_set_for_the_session_ = true;
     }
 }
