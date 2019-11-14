@@ -46,6 +46,16 @@ namespace antara::gaming::blockchain {
         std::size_t rpcport;
     };
 
+    struct nspv_api {
+        struct get_newaddress_answer {
+            std::string wif;
+        };
+
+        static get_newaddress_answer get_newaddress() noexcept {
+            return get_newaddress_answer();
+        }
+    };
+
     class nspv final : public ecs::logic_update_system<nspv> {
     public:
         nspv(entt::registry &registry, fs::path tools_path = core::assets_real_path() / "tools") noexcept;
@@ -55,6 +65,7 @@ namespace antara::gaming::blockchain {
         void set_pin_for_the_session(const std::string &pin);
 
         static bool is_wif_wallet_exist() noexcept;
+
 
         bool spawn_nspv_instance(const std::string &coin) noexcept;
 
