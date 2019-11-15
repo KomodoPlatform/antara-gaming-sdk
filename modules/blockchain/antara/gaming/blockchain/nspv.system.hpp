@@ -51,8 +51,20 @@ namespace antara::gaming::blockchain {
             std::string wif;
         };
 
+        struct login_answer {
+            std::string result;
+            std::string status;
+            std::string address;
+            std::string pubkey;
+            std::size_t wifprefix;
+        };
+
         static get_newaddress_answer get_newaddress() noexcept {
             return get_newaddress_answer();
+        }
+
+        static login_answer login(const std::string &wif) noexcept {
+            return login_answer{};
         }
     };
 
@@ -67,7 +79,8 @@ namespace antara::gaming::blockchain {
         static bool is_wif_wallet_exist() noexcept;
 
 
-        bool spawn_nspv_instance(const std::string &coin, std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
+        bool spawn_nspv_instance(const std::string &coin,
+                                 std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
 
         ~nspv() noexcept final;
 
