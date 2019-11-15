@@ -67,7 +67,7 @@ namespace antara::gaming::blockchain {
         static bool is_wif_wallet_exist() noexcept;
 
 
-        bool spawn_nspv_instance(const std::string &coin) noexcept;
+        bool spawn_nspv_instance(const std::string &coin, std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
 
         ~nspv() noexcept final;
 

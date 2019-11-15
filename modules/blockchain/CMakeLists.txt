@@ -4,7 +4,7 @@ target_include_directories(antara_nspv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_nspv PUBLIC antara::default_settings antara::ecs reproc++ nlohmann_json::nlohmann_json)
 add_library(antara::nspv ALIAS antara_nspv)
 
-if (ANTARA_WIP_FEATURES)
+if (ENABLE_BLOCKCHAIN_MODULES)
     if (ANTARA_BUILD_UNIT_TESTS)
         ##! antara blockchain tests
         add_executable(antara_blockchain_tests)
