@@ -111,6 +111,10 @@ if (USE_SDL_ANTARA_WRAPPER)
 endif ()
 
 if (ENABLE_BLOCKCHAIN_MODULES)
+    FetchContent_Declare(
+            restclient-cpp
+            URL https://github.com/mrtazz/restclient-cpp/archive/master.zip
+    )
     if (APPLE)
         FetchContent_Declare(
                 nspv
@@ -122,7 +126,18 @@ if (ENABLE_BLOCKCHAIN_MODULES)
                 URL https://github.com/SirSevenG/libnspv/releases/download/1/nspv-linux-606601ef116ccb75c8e802d144d7c98d7328ca4e.tar.gz
         )
     endif ()
-    FetchContent_MakeAvailable(nspv)
+    FetchContent_MakeAvailable(nspv restclient-cpp)
+    find_package(CURL REQUIRED)
+    add_library(restclient_obj STATIC)
+    target_sources(restclient_obj PRIVATE
+            ${restclient-cpp_SOURCE_DIR}/source/connection.cc
+            ${restclient-cpp_SOURCE_DIR}/source/helpers.cc
+            ${restclient-cpp_SOURCE_DIR}/source/restclient.cc)
+    target_compile_features(restclient_obj PRIVATE cxx_std_11)
+    target_include_directories(restclient_obj PUBLIC ${restclient-cpp_SOURCE_DIR}/include ${restclient-cpp_BINARY_DIR}/include)
+    add_library(antara::http_client ALIAS restclient_obj)
+
+    target_link_libraries(restclient_obj PUBLIC CURL::libcurl Threads::Threads)
     IF (UNIX)
         configure_file(${nspv_SOURCE_DIR}/nspv ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/nspv COPYONLY)
         configure_file(${nspv_SOURCE_DIR}/coins ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/coins COPYONLY)
