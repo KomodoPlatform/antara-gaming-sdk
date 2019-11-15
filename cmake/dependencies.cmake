@@ -87,9 +87,9 @@ if (USE_LUA_ANTARA_WRAPPER)
 endif ()
 
 if (USE_SFML_ANTARA_WRAPPER)
-    if(APPLE)
+    if (APPLE)
         set(BUILD_SHARED_LIBS OFF CACHE BOOL "Override option" FORCE)
-    endif()
+    endif ()
     FetchContent_Declare(
             SFML
             URL https://github.com/Milerius/SFML/archive/patch-1.zip
@@ -110,7 +110,27 @@ if (USE_SDL_ANTARA_WRAPPER)
     )
 endif ()
 
+if (ENABLE_BLOCKCHAIN_MODULES)
+    if (APPLE)
+        FetchContent_Declare(
+                nspv
+                URL https://github.com/SirSevenG/libnspv/releases/download/1/nspv-macos-606601ef116ccb75c8e802d144d7c98d7328ca4e.tar.gz
+        )
+    elseif (LINUX)
+        FetchContent_Declare(
+                nspv
+                URL https://github.com/SirSevenG/libnspv/releases/download/1/nspv-linux-606601ef116ccb75c8e802d144d7c98d7328ca4e.tar.gz
+        )
+    endif ()
+    FetchContent_MakeAvailable(nspv)
+    IF (UNIX)
+        configure_file(${nspv_SOURCE_DIR}/nspv ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/nspv COPYONLY)
+        configure_file(${nspv_SOURCE_DIR}/coins ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/coins COPYONLY)
+    endif ()
+endif ()
+
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes loguru fmt reproc)
+
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
 endif ()
@@ -138,9 +158,9 @@ target_include_directories(antara_log INTERFACE ${loguru_SOURCE_DIR})
 find_package(Threads)
 if (EMSCRIPTEN)
     target_compile_definitions(antara_log INTERFACE -DLOGURU_USE_FMTLIB=1 -DLOGURU_STACKTRACES=0)
-else()
+else ()
     target_compile_definitions(antara_log INTERFACE -DLOGURU_USE_FMTLIB=1)
-endif()
+endif ()
 target_link_libraries(antara_log INTERFACE fmt::fmt-header-only Threads::Threads ${CMAKE_DL_LIBS})
 
 add_library(antara::log ALIAS antara_log)

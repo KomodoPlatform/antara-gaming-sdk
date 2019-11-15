@@ -34,17 +34,21 @@ namespace antara::gaming::blockchain {
         LOG_SCOPE_FUNCTION(INFO);
     }
 
-    bool nspv::spawn_nspv_instance(const std::string &coin) noexcept {
+    bool nspv::spawn_nspv_instance(const std::string &coin, std::optional<std::size_t> rpcport_in) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         std::ifstream ifs(tools_path_ / "coins");
         assert(ifs);
         nlohmann::json config_json_data;
         ifs >> config_json_data;
         std::size_t rpcport{0};
-        for (auto&& object : config_json_data) {
-            if (object["coin"].get<std::string>() == coin) {
-                rpcport = object["rpcport"].get<std::size_t>();
+        if (not rpcport_in.has_value()) {
+            for (auto &&object : config_json_data) {
+                if (object["coin"].get<std::string>() == coin) {
+                    rpcport = object["rpcport"].get<std::size_t>();
+                }
             }
+        } else {
+            rpcport = rpcport_in.value();
         }
         DVLOG_F(loguru::Verbosity_INFO, "rpcport: {}", rpcport);
         auto bg = reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
@@ -56,7 +60,7 @@ namespace antara::gaming::blockchain {
         if (not res) {
             return false;
         }
-        std::array<std::string, 4> args = {(tools_path_ / "nspv").string(), coin};
+        std::array<std::string, 4> args = {(tools_path_ / "nspv").string(), coin, "-p", std::to_string(rpcport)};
         auto ec = registry_.at(coin).background.start(args, reproc::options{nullptr, tools_path_.string().c_str(),
                                                                             {reproc::redirect::inherit,
                                                                              reproc::redirect::inherit,
