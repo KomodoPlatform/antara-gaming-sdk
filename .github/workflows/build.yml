@@ -8,7 +8,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      fail-fast: true
       matrix:
         name: [
           ubuntu-18-04-clang-8-debug,
