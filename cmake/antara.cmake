@@ -1,3 +1,7 @@
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set(LINUX TRUE)
+endif ()
+
 macro(init_apple_env)
     if (APPLE)
         if (EXISTS "/usr/local/opt/llvm/lib")
@@ -35,10 +39,6 @@ init_windows_env()
 
 include(compiler_targets)
 include(dependencies)
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set(LINUX TRUE)
-endif ()
 
 macro(target_enable_coverage target)
     if (ENABLE_COVERAGE)
