@@ -75,6 +75,9 @@ namespace antara::gaming::blockchain {
             DVLOG_F(loguru::Verbosity_ERROR, "error: {}", error.message());
             return false;
         }
+        if (auto wif = std::getenv("SECRET_WIF_WALLET"); wif != nullptr) {
+            registry_.at(coin).address = nspv_api::login(registry_.at(coin).endpoint, wif).address;
+        }
         return true;
     }
 
@@ -84,11 +87,18 @@ namespace antara::gaming::blockchain {
     }
 
     void nspv::set_pin_for_the_session(const std::string &pin) {
+        LOG_SCOPE_FUNCTION(INFO);
         pin_ = std::stoi(pin);
         is_pin_set_for_the_session_ = true;
     }
 
     const std::string &nspv::get_endpoint(const std::string& coin) const noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
         return registry_.at(coin).endpoint;
+    }
+
+    double nspv::get_balance(const std::string &coin) const noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+        return nspv_api::listunspent(get_endpoint(coin), registry_.at(coin).address).balance;
     }
 }
