@@ -21,6 +21,8 @@
 #include <string>
 #include <entt/entity/registry.hpp>
 #include <reproc++/reproc.hpp>
+#include <nlohmann/json.hpp>
+#include <restclient-cpp/restclient.h>
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
@@ -29,7 +31,8 @@ namespace fs = std::filesystem;
 namespace antara::gaming::blockchain {
     struct nspv_process {
         nspv_process(reproc::process background_, std::size_t rpcport_) noexcept:
-                background(std::move(background_)), rpcport(rpcport_) {
+                background(std::move(background_)), rpcport(rpcport_),
+                endpoint("http://127.0.0.1:" + std::to_string(rpcport)) {
         }
 
 
@@ -44,6 +47,7 @@ namespace antara::gaming::blockchain {
 
         reproc::process background;
         std::size_t rpcport;
+        std::string endpoint;
     };
 
     struct nspv_api {
@@ -60,11 +64,24 @@ namespace antara::gaming::blockchain {
         };
 
         static get_newaddress_answer get_newaddress() noexcept {
+            LOG_SCOPE_FUNCTION(INFO);
+            auto json_data = template_request("getnewaddress");
             return get_newaddress_answer();
         }
 
-        static login_answer login(const std::string &wif) noexcept {
+        static login_answer login(const std::string& endpoint, const std::string &wif) noexcept {
+            LOG_SCOPE_FUNCTION(INFO);
+            auto json_data = template_request("login");
+            DVLOG_F(loguru::Verbosity_INFO, "json: {}", json_data.dump());
+            json_data["params"].push_back(wif);
+            auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
             return login_answer{};
+        }
+
+        static nlohmann::json template_request(std::string method_name) noexcept {
+            return {{"method",  std::move(method_name)},
+                    {"jsonrpc", "2.0"},
+                    {"params",  nlohmann::json::array()}};
         }
     };
 
@@ -78,10 +95,11 @@ namespace antara::gaming::blockchain {
 
         static bool is_wif_wallet_exist() noexcept;
 
-
         bool spawn_nspv_instance(const std::string &coin,
                                  std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
 
+
+        const std::string& get_endpoint(const std::string& coin) const noexcept;
         ~nspv() noexcept final;
 
     private:
