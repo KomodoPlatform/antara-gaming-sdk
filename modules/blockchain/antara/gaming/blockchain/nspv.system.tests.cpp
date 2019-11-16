@@ -50,5 +50,7 @@ namespace antara::gaming::blockchain::tests {
         auto unspent_answer =  blockchain::nspv_api::listunspent(endpoint, answer.address);
         CHECK_NE(unspent_answer.rpc_result_code, -1);
         CHECK_GT(unspent_answer.balance, 0.0);
+
+        CHECK_GT(nspv_system.get_balance("RICK"), 0.0);
     }
 }

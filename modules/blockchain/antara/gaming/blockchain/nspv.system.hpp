@@ -157,6 +157,8 @@ namespace antara::gaming::blockchain {
         bool spawn_nspv_instance(const std::string &coin,
                                  std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
 
+        double get_balance(const std::string& coin) const noexcept;
+
 
         const std::string& get_endpoint(const std::string& coin) const noexcept;
         ~nspv() noexcept final;
