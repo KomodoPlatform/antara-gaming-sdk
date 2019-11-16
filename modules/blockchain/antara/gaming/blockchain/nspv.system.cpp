@@ -87,4 +87,8 @@ namespace antara::gaming::blockchain {
         pin_ = std::stoi(pin);
         is_pin_set_for_the_session_ = true;
     }
+
+    const std::string &nspv::get_endpoint(const std::string& coin) const noexcept {
+        return registry_.at(coin).endpoint;
+    }
 }

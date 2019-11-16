@@ -19,27 +19,31 @@
 #include <chrono>
 #include "nspv.system.hpp"
 
-namespace antara::gaming::blockchain::tests
-{
-    TEST_CASE("nspv system creation")
-    {
+namespace antara::gaming::blockchain::tests {
+    TEST_CASE ("nspv system creation") {
         entt::registry entity_registry;
-        [[ maybe_unused ]] entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        [[maybe_unused]] entt::dispatcher &dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
 
-        auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
+        auto &nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
         nspv_system.update();
     }
 
-    TEST_CASE("nspv system spawn")
-    {
+    TEST_CASE ("nspv system spawn") {
+
         entt::registry entity_registry;
-        [[ maybe_unused ]] entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        [[maybe_unused]] entt::dispatcher &dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
 
-        auto& nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
-        CHECK(nspv_system.spawn_nspv_instance("RICK"));
-        CHECK_FALSE(blockchain::nspv::is_wif_wallet_exist());
-        CHECK_NOTHROW(nspv_system.set_pin_for_the_session("88691313"));
+        auto &nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
+                CHECK(nspv_system.spawn_nspv_instance("RICK"));
+                CHECK_FALSE(blockchain::nspv::is_wif_wallet_exist());
+                CHECK_NOTHROW(nspv_system.set_pin_for_the_session("88691313"));
+
+
+        //! Login
+        auto wif = std::getenv("SECRET_WIF_WALLET");
+        CHECK_NOTNULL_F(wif);
+        auto answer = blockchain::nspv_api::login(nspv_system.get_endpoint("RICK"), wif);
     }
 }
