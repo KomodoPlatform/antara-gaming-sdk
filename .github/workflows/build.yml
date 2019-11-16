@@ -213,6 +213,8 @@ jobs:
       - name: Run Tests (Linux and OSX)
         working-directory: build/bin/unit_tests
         if: runner.os == 'Linux' || runner.os == 'macOS'
+        env: # Or as an environment variable
+          SECRET_WIF_WALLET: ${{ secrets.SECRET_WIF_WALLET }}
         run: |
           if [[ "${{matrix.name}}" == "ubuntu-18-04-emcc-latest-debug" ]]; then
             for i in *_tests*.js; do node ${i} --reporters=xml --out=${i}-result.xml -s || true; done;
