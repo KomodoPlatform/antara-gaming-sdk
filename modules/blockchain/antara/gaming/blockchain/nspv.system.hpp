@@ -48,6 +48,7 @@ namespace antara::gaming::blockchain {
         reproc::process background;
         std::size_t rpcport;
         std::string endpoint;
+        std::string address{""};
     };
 
     struct nspv_api {
@@ -65,12 +66,24 @@ namespace antara::gaming::blockchain {
             std::string raw_result;
         };
 
+        struct listunspent_answer {
+            std::string result;
+            int rpc_result_code;
+            std::string raw_result;
+            double balance;
+        };
+
         static void from_json(const  nlohmann::json& j, login_answer& cfg) {
             j.at("result").get_to(cfg.result);
             j.at("status").get_to(cfg.status);
             j.at("address").get_to(cfg.address);
             j.at("pubkey").get_to(cfg.pubkey);
             j.at("wifprefix").get_to(cfg.wifprefix);
+        }
+
+        static void from_json(const nlohmann::json& j, listunspent_answer& cfg) {
+            j.at("result").get_to(cfg.result);
+            j.at("balance").get_to(cfg.balance);
         }
 
         static get_newaddress_answer get_newaddress() noexcept {
@@ -86,6 +99,14 @@ namespace antara::gaming::blockchain {
             json_data["params"].push_back(wif);
             auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
             return rpc_process_answer<login_answer>(resp);
+        }
+
+        static listunspent_answer listunspent(const std::string& endpoint, const std::string& address) {
+            LOG_SCOPE_FUNCTION(INFO);
+            auto json_data = template_request("listunspent");
+            json_data["params"].push_back(address);
+            auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
+            return rpc_process_answer<listunspent_answer>(resp);
         }
 
         static nlohmann::json template_request(std::string method_name) noexcept {
