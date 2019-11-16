@@ -61,7 +61,17 @@ namespace antara::gaming::blockchain {
             std::string address;
             std::string pubkey;
             std::size_t wifprefix;
+            int rpc_result_code;
+            std::string raw_result;
         };
+
+        static void from_json(const  nlohmann::json& j, login_answer& cfg) {
+            j.at("result").get_to(cfg.result);
+            j.at("status").get_to(cfg.status);
+            j.at("address").get_to(cfg.address);
+            j.at("pubkey").get_to(cfg.pubkey);
+            j.at("wifprefix").get_to(cfg.wifprefix);
+        }
 
         static get_newaddress_answer get_newaddress() noexcept {
             LOG_SCOPE_FUNCTION(INFO);
@@ -75,13 +85,41 @@ namespace antara::gaming::blockchain {
             DVLOG_F(loguru::Verbosity_INFO, "json: {}", json_data.dump());
             json_data["params"].push_back(wif);
             auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
-            return login_answer{};
+            return rpc_process_answer<login_answer>(resp);
         }
 
         static nlohmann::json template_request(std::string method_name) noexcept {
+            LOG_SCOPE_FUNCTION(INFO);
             return {{"method",  std::move(method_name)},
                     {"jsonrpc", "2.0"},
                     {"params",  nlohmann::json::array()}};
+        }
+
+        template<typename RpcReturnType>
+        static RpcReturnType rpc_process_answer(const RestClient::Response& resp) noexcept
+        {
+            LOG_SCOPE_FUNCTION(INFO);
+            RpcReturnType answer;
+            DVLOG_F(loguru::Verbosity_INFO, "resp: {}", resp.body);
+            if (resp.code != 200) {
+                DVLOG_F(loguru::Verbosity_WARNING, "rpc answer code is not 200");
+                answer.rpc_result_code = resp.code;
+                answer.raw_result = resp.body;
+                return answer;
+            }
+
+            try {
+                auto json_answer = nlohmann::json::parse(resp.body);
+                from_json(json_answer, answer);
+                answer.rpc_result_code = resp.code;
+                answer.result = resp.body;
+            }
+            catch (const std::exception& error) {
+                VLOG_F(loguru::Verbosity_ERROR, "{}", error.what());
+                answer.rpc_result_code = -1;
+                answer.raw_result = error.what();
+            }
+            return answer;
         }
     };
 
