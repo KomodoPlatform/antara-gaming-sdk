@@ -24,7 +24,6 @@ namespace antara::gaming::blockchain::tests {
         entt::registry entity_registry;
         [[maybe_unused]] entt::dispatcher &dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
-
         auto &nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
         nspv_system.update();
     }
@@ -45,5 +44,6 @@ namespace antara::gaming::blockchain::tests {
         auto wif = std::getenv("SECRET_WIF_WALLET");
         CHECK_NOTNULL_F(wif);
         auto answer = blockchain::nspv_api::login(nspv_system.get_endpoint("RICK"), wif);
+        CHECK_NE(answer.rpc_result_code, -1);
     }
 }
