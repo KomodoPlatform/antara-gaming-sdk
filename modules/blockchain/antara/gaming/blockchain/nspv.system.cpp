@@ -34,7 +34,7 @@ namespace antara::gaming::blockchain {
         LOG_SCOPE_FUNCTION(INFO);
     }
 
-    bool nspv::spawn_nspv_instance(const std::string &coin, std::optional<std::size_t> rpcport_in) noexcept {
+    bool nspv::spawn_nspv_instance(const std::string &coin, bool auto_login, std::optional<std::size_t> rpcport_in) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         std::ifstream ifs(tools_path_ / "coins");
         assert(ifs);
@@ -75,8 +75,10 @@ namespace antara::gaming::blockchain {
             DVLOG_F(loguru::Verbosity_ERROR, "error: {}", error.message());
             return false;
         }
-        if (auto wif = std::getenv("SECRET_WIF_WALLET"); wif != nullptr) {
-            registry_.at(coin).address = nspv_api::login(registry_.at(coin).endpoint, wif).address;
+        if (auto_login) {
+            if (auto wif = std::getenv("SECRET_WIF_WALLET"); wif != nullptr) {
+                registry_.at(coin).address = nspv_api::login(registry_.at(coin).endpoint, wif).address;
+            }
         }
         return true;
     }
