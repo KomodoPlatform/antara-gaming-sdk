@@ -43,7 +43,12 @@ namespace antara::gaming::blockchain::tests {
         //! Login
         auto wif = std::getenv("SECRET_WIF_WALLET");
         CHECK_NOTNULL_F(wif);
-        auto answer = blockchain::nspv_api::login(nspv_system.get_endpoint("RICK"), wif);
+        auto endpoint = nspv_system.get_endpoint("RICK");
+        auto answer = blockchain::nspv_api::login(endpoint, wif);
         CHECK_NE(answer.rpc_result_code, -1);
+
+        auto unspent_answer =  blockchain::nspv_api::listunspent(endpoint, answer.address);
+        CHECK_NE(unspent_answer.rpc_result_code, -1);
+        CHECK_GT(unspent_answer.balance, 0.0);
     }
 }
