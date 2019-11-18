@@ -106,4 +106,15 @@ namespace antara::gaming::blockchain {
         registry_.at(coin).address = result.address; //! we save address for later usage
         return result.result == "success";
     }
+
+    bool nspv::send(const std::string &coin, const std::string &address, std::size_t amount) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+        //! assume we are login before call send
+        auto result = nspv_api::spend(get_endpoint(coin), address, amount);
+        return result.result == "success";
+    }
+
+    const std::string &nspv::get_address(const std::string &coin) const {
+        return registry_.at(coin).address;
+    }
 }

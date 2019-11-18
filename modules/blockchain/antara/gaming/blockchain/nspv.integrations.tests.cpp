@@ -27,9 +27,21 @@ namespace antara::gaming::blockchain::integration {
             std::size_t price;
         };
 
+        struct bill {
+            std::string address;
+            std::size_t final_amount;
+        };
+
         shop() noexcept {
                     CHECK(nspv_system_.spawn_nspv_instance("RICK", false, 7777));
                     CHECK(nspv_system_.load_from_env("RICK", "SHOP_WIF_WALLET"));
+        }
+
+
+        bill prepare_item_buy(std::string item_name, std::size_t quantity) noexcept {
+            CHECK_LT(quantity, contents_.at(item_name).quantity);
+            auto final_price = contents_.at(item_name).price * quantity;
+            return bill{nspv_system_.get_address("RICK"), final_price};
         }
 
     private:
@@ -62,13 +74,16 @@ namespace antara::gaming::blockchain::integration {
 
         //! Here both nspv instance are lunch, we will simulate a buy from the client in the shop
         GIVEN("Two instances nspv: a client (who is the player) and a shop (which simulates the instance of a store in game)") {
-            WHEN ("I buy a beer from the shop with my client for 1 rick") {
-                //! Here use buy methodes which do a spent + a broadcast with 1 rick
-                THEN("I am waiting for the confirmation of the transaction") {
-                    //! here we wait
-                    AND_THEN("And now I check the differences of the balances before and after my transaction") {
+            WHEN ("I want to buy a beer from the shop with my client for 1 rick") {
+                THEN("I ask for a bill (1 beer)") {
+                    auto bill = ingame_shop.prepare_item_buy("beer", 1);
+                    CHECK_EQ(bill.final_amount, 1.0);
+                    CHECK_LT(bill.final_amount, nspv_system.get_balance("RICK"));
+                    AND_THEN("If the bill seem's correct to me i send the money and retrieve my transaction") {
+                        auto result = nspv_system.send("RICK", bill.address, bill.final_amount);
                     }
                 }
+
             }
         }
     }
