@@ -37,9 +37,13 @@ namespace antara::gaming::blockchain {
 
 
         ~nspv_process() {
-            auto ec = background.stop(reproc::cleanup::terminate, reproc::milliseconds(2000),
-                                      reproc::cleanup::kill,
-                                      reproc::infinite);
+            reproc::stop_actions stop_actions = {
+                    { reproc::stop::terminate, reproc::milliseconds(2000) },
+                    { reproc::stop::kill, reproc::milliseconds(5000) },
+                    { reproc::stop::wait, reproc::milliseconds(2000) }
+            };
+
+            auto ec = background.stop(stop_actions);
             if (ec) {
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
             }
