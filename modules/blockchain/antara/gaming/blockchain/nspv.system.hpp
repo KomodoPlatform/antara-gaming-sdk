@@ -77,6 +77,13 @@ namespace antara::gaming::blockchain {
             double balance;
         };
 
+        struct spend_answer {
+            std::string result;
+            int rpc_result_code;
+            std::string raw_result;
+            std::string hex;
+        };
+
         static void from_json(const  nlohmann::json& j, login_answer& cfg) {
             j.at("result").get_to(cfg.result);
             j.at("status").get_to(cfg.status);
@@ -88,6 +95,11 @@ namespace antara::gaming::blockchain {
         static void from_json(const nlohmann::json& j, listunspent_answer& cfg) {
             j.at("result").get_to(cfg.result);
             j.at("balance").get_to(cfg.balance);
+        }
+
+        static void from_json(const nlohmann::json& j, spend_answer& cfg) {
+            j.at("result").get_to(cfg.result);
+            j.at("hex").get_to(cfg.hex);
         }
 
         static get_newaddress_answer get_newaddress() noexcept {
@@ -111,6 +123,15 @@ namespace antara::gaming::blockchain {
             json_data["params"].push_back(address);
             auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
             return rpc_process_answer<listunspent_answer>(resp);
+        }
+
+        static spend_answer spend(const std::string& endpoint, const std::string& address, std::size_t amount) {
+            LOG_SCOPE_FUNCTION(INFO);
+            auto json_data = template_request("spend");
+            json_data["params"].push_back(address);
+            json_data["params"].push_back(amount);
+            auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
+            return rpc_process_answer<spend_answer>(resp);
         }
 
         static nlohmann::json template_request(std::string method_name) noexcept {
@@ -158,16 +179,19 @@ namespace antara::gaming::blockchain {
 
         static bool is_wif_wallet_exist() noexcept;
 
+        [[nodiscard]] const std::string& get_address(const std::string& coin) const;
+
         bool spawn_nspv_instance(const std::string &coin,
                                  bool auto_login = false,
                                  std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
 
 
         bool load_from_env(const std::string& coin, const std::string& env_variable) noexcept;
-        double get_balance(const std::string& coin) const noexcept;
+        [[nodiscard]] double get_balance(const std::string& coin) const noexcept;
+        [[nodiscard]] const std::string& get_endpoint(const std::string& coin) const noexcept;
 
-
-        const std::string& get_endpoint(const std::string& coin) const noexcept;
+        //! this function process a spend + broadcast on the given coin and given amount
+        bool send(const std::string& coin, const std::string& address, std::size_t amount) noexcept;
         ~nspv() noexcept final;
 
     private:
