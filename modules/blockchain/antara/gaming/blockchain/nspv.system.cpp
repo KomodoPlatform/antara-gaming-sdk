@@ -51,12 +51,8 @@ namespace antara::gaming::blockchain {
             rpcport = rpcport_in.value();
         }
         DVLOG_F(loguru::Verbosity_INFO, "rpcport: {}", rpcport);
-        auto bg = reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
-                                  reproc::cleanup::kill, reproc::infinite);
 
-
-        auto res = registry_.try_emplace(coin, reproc::process(reproc::cleanup::terminate, reproc::milliseconds(2000),
-                                                               reproc::cleanup::kill, reproc::infinite), rpcport).second;
+        auto res = registry_.try_emplace(coin, reproc::process(), rpcport).second;
         if (not res) {
             return false;
         }
