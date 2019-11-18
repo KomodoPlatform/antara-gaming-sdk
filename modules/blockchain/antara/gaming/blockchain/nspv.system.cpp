@@ -103,4 +103,11 @@ namespace antara::gaming::blockchain {
         LOG_SCOPE_FUNCTION(INFO);
         return nspv_api::listunspent(get_endpoint(coin), registry_.at(coin).address).balance;
     }
+
+    bool nspv::load_from_env(const std::string& coin, const std::string& env_variable) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+        auto result = nspv_api::login(get_endpoint(coin), std::getenv(env_variable.c_str()));
+        registry_.at(coin).address = result.address; //! we save address for later usage
+        return result.result == "success";
+    }
 }
