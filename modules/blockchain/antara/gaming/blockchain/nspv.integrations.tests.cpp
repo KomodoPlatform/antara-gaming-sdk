@@ -28,9 +28,10 @@ namespace antara::gaming::blockchain::integration {
         };
 
         shop() noexcept {
-            CHECK(nspv_system_.spawn_nspv_instance("RICK", false, 7777));
-            CHECK(nspv_system_.load_from_env("RICK", "SHOP_WIF_WALLET"));
+                    CHECK(nspv_system_.spawn_nspv_instance("RICK", false, 7777));
+                    CHECK(nspv_system_.load_from_env("RICK", "SHOP_WIF_WALLET"));
         }
+
     private:
         entt::registry entity_registry_;
         [[maybe_unused]] entt::dispatcher &dispatcher_{entity_registry_.set<entt::dispatcher>()};
@@ -42,8 +43,7 @@ namespace antara::gaming::blockchain::integration {
         };
     };
 
-    SCENARIO ("simulating a ingame shop with nspv")
-    {
+    SCENARIO ("simulating a ingame shop with nspv") {
 
         MESSAGE("Spawning nspv shop on port 7777");
         //! we create a shop
@@ -59,5 +59,17 @@ namespace antara::gaming::blockchain::integration {
 
         MESSAGE("Spawning nspv instance from the client on port 25435");
         CHECK(nspv_system.spawn_nspv_instance("RICK", true)); // we use auto login from env
+
+        //! Here both nspv instance are lunch, we will simulate a buy from the client in the shop
+        GIVEN("Two instances nspv: a client (who is the player) and a shop (which simulates the instance of a store in game)") {
+            WHEN ("I buy a beer from the shop with my client for 1 rick") {
+                //! Here use buy methodes which do a spent + a broadcast with 1 rick
+                THEN("I am waiting for the confirmation of the transaction") {
+                    //! here we wait
+                    AND_THEN("And now I check the differences of the balances before and after my transaction") {
+                    }
+                }
+            }
+        }
     }
 }
