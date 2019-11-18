@@ -8,6 +8,15 @@ if (ANTARA_BUILD_UNIT_TESTS)
     ##! antara blockchain tests
     add_executable(antara_blockchain_tests)
 
+    add_executable(nspv_test_integration)
+    target_link_libraries(nspv_test_integration PRIVATE doctest PUBLIC antara::nspv)
+    target_sources(nspv_test_integration PRIVATE antara/gaming/blockchain/nspv.integrations.tests.cpp
+            antara/gaming/blockchain/antara.blockchain.tests.cpp)
+    set_target_properties(nspv_test_integration
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/unit_tests"
+            )
+
     target_link_libraries(antara_blockchain_tests PRIVATE doctest PUBLIC antara::nspv)
     target_sources(antara_blockchain_tests PRIVATE
             antara/gaming/blockchain/antara.blockchain.tests.cpp

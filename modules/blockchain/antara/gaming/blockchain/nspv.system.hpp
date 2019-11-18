@@ -133,7 +133,7 @@ namespace antara::gaming::blockchain {
                 auto json_answer = nlohmann::json::parse(resp.body);
                 from_json(json_answer, answer);
                 answer.rpc_result_code = resp.code;
-                answer.result = resp.body;
+                answer.raw_result = resp.body;
             }
             catch (const std::exception& error) {
                 VLOG_F(loguru::Verbosity_ERROR, "{}", error.what());
@@ -158,6 +158,8 @@ namespace antara::gaming::blockchain {
                                  bool auto_login = false,
                                  std::optional<std::size_t> rpcport_in = std::nullopt) noexcept;
 
+
+        bool load_from_env(const std::string& coin, const std::string& env_variable) noexcept;
         double get_balance(const std::string& coin) const noexcept;
 
 
