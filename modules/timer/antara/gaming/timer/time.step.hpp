@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <string>
 #include <chrono>
 #include "antara/gaming/timer/fps.hpp"
 
