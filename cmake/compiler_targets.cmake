@@ -33,6 +33,7 @@ add_library(antara::optimize_settings ALIAS antara_optimize_settings)
 # /Ox - Full optimization
 # /Oy- do not suppress frame pointers (recommended for debugging)
 
+find_package(OpenMP)
 target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Linux>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Linux>>:-O2 -march=native>
@@ -45,6 +46,11 @@ target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/Zi /FS /DEBUG /Od /MDd /Oy->
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/O2 -DNDEBUG>
         )
+
+if(OpenMP_CXX_FOUND)
+    message(STATUS "OpenMP found, adding it to targets")
+    target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP_CXX)
+endif()
 
 ## Cross filesystem
 add_library(antara_cross_filesystem INTERFACE)
