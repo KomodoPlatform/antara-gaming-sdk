@@ -145,8 +145,6 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew reinstall cmake --HEAD
-          cmake --version
           brew install pkg-config freetype libomp
           pkg-config --cflags freetype2
           brew install ninja lcov
