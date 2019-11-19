@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <optional>
 #include <vector>
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
@@ -28,10 +29,8 @@
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
 
-namespace antara::gaming::geometry
-{
-    enum vertex_geometry_type
-    {
+namespace antara::gaming::geometry {
+    enum vertex_geometry_type {
         points,
         lines,
         line_strip,
@@ -41,30 +40,38 @@ namespace antara::gaming::geometry
         quads
     };
 
-    struct vertex
-    {
+    struct vertex {
         transform::position_2d pos{transform::position_2d::scalar(0.f)};
         transform::position_2d texture_pos{transform::position_2d::scalar(0.f)};
         graphics::color pixel_color{graphics::white};
     };
 
-    struct vertex_array
-    {
+    struct vertex_array {
         vertex_array() noexcept = default;
 
-        vertex_array(std::vector<vertex> vertices_) noexcept : vertices(std::move(vertices_))
-        {
+        vertex_array(std::vector<vertex> vertices_) noexcept : vertices(std::move(vertices_)) {
+
+        }
+
+        vertex_array(std::vector<vertex> vertices_, std::optional<std::string> texture_id_) noexcept : vertices(
+                std::move(vertices_)), texture_id(texture_id_) {
+
+        }
+
+        vertex_array(std::vector<vertex> vertices_, vertex_geometry_type geometry_type_,
+                     std::optional<std::string> texture_id_) noexcept : vertices(
+                std::move(vertices_)), geometry_type(geometry_type_), texture_id(texture_id_) {
 
         }
 
         vertex_array(std::vector<vertex> vertices_, vertex_geometry_type geometry_type_) noexcept : vertices(
-                std::move(vertices_)), geometry_type(geometry_type_)
-        {
+                std::move(vertices_)), geometry_type(geometry_type_) {
 
         }
 
         std::vector<vertex> vertices;
         vertex_geometry_type geometry_type;
+        std::optional<std::string> texture_id{std::nullopt};
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
         using constructors = sol::constructors<vertex_array(), vertex_array(std::vector<vertex>),
