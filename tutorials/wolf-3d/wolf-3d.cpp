@@ -7,6 +7,7 @@
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/ecs/virtual.input.system.hpp>
 #include <iostream>
+#include <SFML/Window/Keyboard.hpp>
 
 // For convenience
 using namespace antara::gaming;
@@ -284,7 +285,7 @@ public:
 
         // Strafe left or right
         if(input_dir.x() != 0) {
-            auto dir = math::vec2f{dir_player.x(), -dir_player.y()} * input_dir.x();
+            auto dir = math::vec2f{dir_player.y(), -dir_player.x()} * input_dir.x();
             move(dir * move_speed);
         }
     }
