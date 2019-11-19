@@ -61,6 +61,10 @@ namespace {
         return math::vec2f(float(tex_idx.x() * (constants.tex_width + 2) + 1),
                            float(tex_idx.y() * (constants.tex_height + 2) + 1));
     }
+
+    math::vec2f get_texture_offset(wolf_constants &constants, const int type) {
+        return get_texture_offset(constants, constants.wall_texture_indexes[type]);
+    }
 }
 
 class raycast_system final : public ecs::post_update_system<raycast_system> {
@@ -162,7 +166,7 @@ public:
 
             // Prepare wall line
             {
-                auto offset = get_texture_offset(constants, math::vec2i::scalar(worldMap[mapX][mapY]));
+                auto offset = get_texture_offset(constants, worldMap[mapX][mapY]);
                 wall_lines[idx_vx + 0].texture_pos = math::vec2f(float(texX), 0.f) + offset;
                 wall_lines[idx_vx + 1].texture_pos = math::vec2f(float(texX), float(constants.tex_height)) + offset;
                 wall_lines[idx_vx + 0].pos = math::vec2f(float(x), float(drawStart));
