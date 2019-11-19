@@ -84,6 +84,15 @@ namespace antara::gaming::blockchain {
             std::string hex;
         };
 
+        struct broadcast_answer {
+            std::string result;
+            int rpc_result_code;
+            std::string raw_result;
+            int retcode;
+            std::string expected;
+            std::string broadcast;
+        };
+
         static void from_json(const  nlohmann::json& j, login_answer& cfg) {
             j.at("result").get_to(cfg.result);
             j.at("status").get_to(cfg.status);
@@ -100,6 +109,13 @@ namespace antara::gaming::blockchain {
         static void from_json(const nlohmann::json& j, spend_answer& cfg) {
             j.at("result").get_to(cfg.result);
             j.at("hex").get_to(cfg.hex);
+        }
+
+        static void from_json(const nlohmann::json& j, broadcast_answer& cfg) {
+            j.at("result").get_to(cfg.result);
+            j.at("retcode").get_to(cfg.retcode);
+            j.at("expected").get_to(cfg.expected);
+            j.at("broadcast").get_to(cfg.broadcast);
         }
 
         static get_newaddress_answer get_newaddress() noexcept {
@@ -125,13 +141,21 @@ namespace antara::gaming::blockchain {
             return rpc_process_answer<listunspent_answer>(resp);
         }
 
-        static spend_answer spend(const std::string& endpoint, const std::string& address, std::size_t amount) {
+        static spend_answer spend(const std::string& endpoint, const std::string& address, double amount) {
             LOG_SCOPE_FUNCTION(INFO);
             auto json_data = template_request("spend");
             json_data["params"].push_back(address);
             json_data["params"].push_back(amount);
             auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
             return rpc_process_answer<spend_answer>(resp);
+        }
+
+        static broadcast_answer broadcast(const std::string& endpoint, const std::string& hex) {
+            LOG_SCOPE_FUNCTION(INFO);
+            auto json_data = template_request("broadcast");
+            json_data["params"].push_back(hex);
+            auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
+            return rpc_process_answer<broadcast_answer>(resp);
         }
 
         static nlohmann::json template_request(std::string method_name) noexcept {
@@ -191,7 +215,7 @@ namespace antara::gaming::blockchain {
         [[nodiscard]] const std::string& get_endpoint(const std::string& coin) const noexcept;
 
         //! this function process a spend + broadcast on the given coin and given amount
-        bool send(const std::string& coin, const std::string& address, std::size_t amount) noexcept;
+        bool send(const std::string& coin, const std::string& address, double amount) noexcept;
         ~nspv() noexcept final;
 
     private:
