@@ -14,9 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
 #include <cmath>
-#include <string>
 #include "antara/gaming/timer/time.step.hpp"
 
 namespace antara::gaming::timer
@@ -55,7 +53,6 @@ namespace antara::gaming::timer
 
             // Set string
             fps_str_ = std::to_string(avg_fps);
-            std::cout << fps_str_ << std::endl;
         }
     }
 
