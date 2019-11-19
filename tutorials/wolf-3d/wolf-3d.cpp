@@ -5,6 +5,7 @@
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/world/world.app.hpp>
+#include <antara/gaming/ecs/virtual.input.system.hpp>
 
 // For convenience
 using namespace antara::gaming;
@@ -80,6 +81,7 @@ private:
         auto &canvas = this->entity_registry_.ctx<graphics::canvas_2d>();
         auto &constants = this->entity_registry_.ctx<wolf_constants>();
         auto[width, height] = canvas.canvas.size.to<math::vec2i>();
+        auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
         for (int x = 0, idx_vx = 0; x < width; ++x, idx_vx += 2) {
             //! X-coordinate in camera space
             const float camera_x = 2.0f * float(x) / width - 1;
@@ -121,6 +123,7 @@ private:
     void prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
                       const math::vec2i &map_pos, int side, float perp_wall_dist)
     {
+        auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
         // Calculate height of line to draw on screen
         const float line_height = std::abs(float(height) / perp_wall_dist);
 
@@ -177,8 +180,10 @@ private:
         return side;
     }
 
-    void shot_ray(const math::vec2f &ray_dir, const math::vec2f &delta_dist, math::vec2f &side_dist, math::vec2i &step, const math::vec2i &map_pos) const
+    void shot_ray(const math::vec2f &ray_dir, const math::vec2f &delta_dist, math::vec2f &side_dist, math::vec2i &step,
+                  const math::vec2i &map_pos) const
     {
+        auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
         // X-direction
         if (ray_dir.x() < 0) {
             step.x_ref() = -1;
@@ -202,22 +207,29 @@ public:
     explicit raycast_system(entt::registry &registry) noexcept : system(registry)
     {
         this->entity_registry_.assign<graphics::layer_0>(wall_entity);
+        this->disable();
+    }
+
+    void set_player(entt::entity entity) noexcept
+    {
+        this->player_entity = entity;
     }
 
     void update() noexcept final
     {
+        if (not entity_registry_.valid(player_entity)) return;
         perform_raycast();
     }
 
 private:
     // Variables
-    math::vec2f pos{22.f, 12.f};
     math::vec2f dir{-1.f, 0.f};
     math::vec2f plane{0.f, this->entity_registry_.ctx<wolf_constants>().fov};
 
     //TODO: move it elsewhere
     float bobbing_y_offset{0.f};
     entt::entity wall_entity{this->entity_registry_.create()};
+    entt::entity player_entity{entt::null};
 
     std::vector<geometry::vertex> wall_lines{static_cast<std::vector<geometry::vertex>::size_type>(
                                                      entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2i>().x() *
@@ -226,12 +238,56 @@ private:
 
 REFL_AUTO(type(raycast_system));
 
+class player_system final : public ecs::logic_update_system<player_system>
+{
+public:
+    player_system(entt::registry &registry) noexcept : system(registry)
+    {
+        this->entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
+    }
+
+    void update() noexcept final
+    {
+        auto& constants = this->entity_registry_.ctx<wolf_constants>();
+        auto& pos = this->entity_registry_.get<transform::position_2d>(player_);
+        bool up = input::virtual_input::is_tapped("move_forward");
+        bool down = input::virtual_input::is_tapped("move_down");
+        bool right = input::virtual_input::is_tapped("move_right");
+        bool left = input::virtual_input::is_tapped("move_left");
+        math::vec2f input_dir{float(right - left), float(up - down)};
+
+        float move_speed = timer::time_step::get_fixed_delta_time() * constants.movement_speed;
+        if (input_dir.x() != 0.f && input_dir.y() != 0.f) {
+            move_speed /= std::sqrt(2);
+        }
+
+        auto move = [&pos](const math::vec2f vec) {
+
+        };
+    }
+
+    entt::entity get_player() const noexcept
+    {
+        return player_;
+    }
+
+private:
+    entt::entity player_{this->entity_registry_.create()};
+};
+
+REFL_AUTO(type(player_system));
+
 // Game Scene
 class game_scene final : public scenes::base_scene
 {
 public:
-    explicit game_scene(entt::registry &registry) noexcept : base_scene(registry)
+    explicit game_scene(entt::registry &registry, ecs::system_manager &system_manager) noexcept : base_scene(registry),
+                                                                                                  system_manager_(
+                                                                                                          system_manager)
     {
+        auto &p_system = system_manager_.create_system<player_system>();
+        system_manager_.get_system<raycast_system>().set_player(p_system.get_player());
+        system_manager_.enable_system<raycast_system>();
     }
 
     // Scene name
@@ -240,11 +296,13 @@ public:
         return "game_scene";
     }
 
-private:
     // Update the game every tick
     void update() noexcept final
     {
     }
+
+private:
+    ecs::system_manager &system_manager_;
 };
 
 // Game world
@@ -268,11 +326,18 @@ struct wolf3d_world : world::app
         //! Load the input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
+        // Create virtual input system
+        input::virtual_input::create("move_forward", {input::key::z, input::key::up}, {});
+        input::virtual_input::create("move_left", {input::key::q, input::key::left}, {});
+        input::virtual_input::create("move_down", {input::key::s, input::key::down}, {});
+        input::virtual_input::create("move_right", {input::key::d, input::key::right}, {});
+
+
         //! Load the scenes manager
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
 
         //! Change the current_scene to "game_scene" by pushing it.
-        scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_), true);
+        scene_manager.change_scene(std::make_unique<game_scene>(entity_registry_, system_manager_), true);
     }
 };
 
