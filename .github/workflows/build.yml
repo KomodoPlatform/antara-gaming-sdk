@@ -145,8 +145,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew unlink cmake
-          brew install cmake --HEAD
+          brew reinstall cmake --HEAD
           cmake --version
           brew install pkg-config freetype libomp
           pkg-config --cflags freetype2
