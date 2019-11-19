@@ -145,7 +145,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install pkg-config freetype
+          brew install pkg-config freetype libomp
           pkg-config --cflags freetype2
           brew install ninja lcov
           #brew install llvm@${{ matrix.version}}
