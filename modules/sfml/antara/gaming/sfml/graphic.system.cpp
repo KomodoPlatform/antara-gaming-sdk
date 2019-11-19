@@ -167,7 +167,18 @@ namespace antara::gaming::sfml {
                             }
                         }
                     } else {
-                        this->render_texture_.draw(drawable.drawable);
+                        if constexpr (std::is_same_v<DrawableType, vertex_array>) {
+                            auto text_id = this->entity_registry_.get<geometry::vertex_array>(entity).texture_id;
+                            if (text_id.has_value()) {
+                                auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+                                auto handle = resources_system.load_texture(text_id.value().c_str());
+                                this->render_texture_.draw(drawable.drawable, &handle.get());
+                            } else {
+                                this->render_texture_.draw(drawable.drawable);
+                            }
+                        } else {
+                            this->render_texture_.draw(drawable.drawable);
+                        }
                     }
                 });
     }
@@ -245,14 +256,21 @@ namespace antara::gaming::sfml {
                 static_cast<sf::PrimitiveType>(cmp_vertex_array.geometry_type),
                 cmp_vertex_array.vertices.size())).drawable;
 
+        if (cmp_vertex_array.texture_id.has_value()) { // We hare using a texture here, load it.
+            auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+            auto handle = resources_system.load_texture(cmp_vertex_array.texture_id.value().c_str());
+        }
         using ranges::views::zip;
         using ranges::views::ints;
         for (auto &&[current_vertex, current_idx]: zip(cmp_vertex_array.vertices, ints(0u, ranges::unreachable))) {
             sf_vertex_array[current_idx].position = sf::Vector2f{current_vertex.pos.x(), current_vertex.pos.y()};
-            sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos.x(),
-                                                                  current_vertex.texture_pos.y()};
-            auto[r, g, b, a] = current_vertex.pixel_color;
-            sf_vertex_array[current_idx].color = sf::Color(r, g, b, a);
+            if (cmp_vertex_array.texture_id.has_value()) {
+                sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos.x(),
+                                                                      current_vertex.texture_pos.y()};
+            } else {
+                auto[r, g, b, a] = current_vertex.pixel_color;
+                sf_vertex_array[current_idx].color = sf::Color(r, g, b, a);
+            }
         }
     }
 
