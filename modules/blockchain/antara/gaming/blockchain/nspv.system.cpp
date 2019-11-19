@@ -34,7 +34,8 @@ namespace antara::gaming::blockchain {
         LOG_SCOPE_FUNCTION(INFO);
     }
 
-    bool nspv::spawn_nspv_instance(const std::string &coin, bool auto_login, std::optional<std::size_t> rpcport_in) noexcept {
+    bool nspv::spawn_nspv_instance(const std::string &coin, bool auto_login,
+                                   std::optional<std::size_t> rpcport_in) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         std::ifstream ifs(tools_path_ / "coins");
         assert(ifs);
@@ -90,7 +91,7 @@ namespace antara::gaming::blockchain {
         is_pin_set_for_the_session_ = true;
     }
 
-    const std::string &nspv::get_endpoint(const std::string& coin) const noexcept {
+    const std::string &nspv::get_endpoint(const std::string &coin) const noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         return registry_.at(coin).endpoint;
     }
@@ -100,18 +101,22 @@ namespace antara::gaming::blockchain {
         return nspv_api::listunspent(get_endpoint(coin), registry_.at(coin).address).balance;
     }
 
-    bool nspv::load_from_env(const std::string& coin, const std::string& env_variable) noexcept {
+    bool nspv::load_from_env(const std::string &coin, const std::string &env_variable) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         auto result = nspv_api::login(get_endpoint(coin), std::getenv(env_variable.c_str()));
         registry_.at(coin).address = result.address; //! we save address for later usage
         return result.result == "success";
     }
 
-    bool nspv::send(const std::string &coin, const std::string &address, std::size_t amount) noexcept {
+    bool nspv::send(const std::string &coin, const std::string &address, double amount) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         //! assume we are login before call send
         auto result = nspv_api::spend(get_endpoint(coin), address, amount);
-        return result.result == "success";
+        if (result.result == "success") {
+            auto broadcast_result = nspv_api::broadcast(get_endpoint(coin), result.hex);
+            return broadcast_result.result == "success";
+        }
+        return false;
     }
 
     const std::string &nspv::get_address(const std::string &coin) const {

@@ -24,12 +24,12 @@ namespace antara::gaming::blockchain::integration {
     public:
         struct item {
             std::size_t quantity;
-            std::size_t price;
+            double price;
         };
 
         struct bill {
             std::string address;
-            std::size_t final_amount;
+            double final_amount;
         };
 
         shop() noexcept {
@@ -50,8 +50,8 @@ namespace antara::gaming::blockchain::integration {
         antara::gaming::ecs::system_manager mgr_{entity_registry_};
         nspv nspv_system_{entity_registry_, std::filesystem::current_path() / "nspv/assets/tools"};
         std::unordered_map<std::string, item> contents_{
-                {"beer", {.quantity=10, .price=1}},
-                {"cake", {.quantity=5, .price=5}}
+                {"beer", {.quantity=10, .price=0.001}},
+                {"cake", {.quantity=5, .price=5.0}}
         };
     };
 
@@ -77,7 +77,7 @@ namespace antara::gaming::blockchain::integration {
             WHEN ("I want to buy a beer from the shop with my client for 1 rick") {
                 THEN("I ask for a bill (1 beer)") {
                     auto bill = ingame_shop.prepare_item_buy("beer", 1);
-                    CHECK_EQ(bill.final_amount, 1.0);
+                    CHECK_EQ(bill.final_amount, 0.001);
                     CHECK_LT(bill.final_amount, nspv_system.get_balance("RICK"));
                     AND_THEN("If the bill seem's correct to me i send the money and retrieve my transaction") {
                         auto result = nspv_system.send("RICK", bill.address, bill.final_amount);
