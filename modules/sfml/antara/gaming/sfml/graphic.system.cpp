@@ -20,6 +20,7 @@
 #include <meta/detection/detection.hpp>
 #include <antara/gaming/ecs/interpolation.system.hpp>
 #include <antara/gaming/event/fill.image.properties.hpp>
+#include <antara/gaming/timer/time.step.hpp>
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -103,6 +104,14 @@ namespace antara::gaming::sfml {
         draw_all_layers();
         render_texture_.display();
         window_.draw(render_texture_sprite_);
+        if (this->debug_mode_) {
+            sf::Text fps_text;
+            auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+            auto handle = resources_system.load_font("sansation.ttf");
+            fps_text.setString(antara::gaming::timer::time_step::fps_str_);
+            fps_text.setFont(handle.get());
+            window_.draw(fps_text);
+        }
         window_.display();
     }
 

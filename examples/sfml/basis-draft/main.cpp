@@ -46,7 +46,7 @@ public:
         entity_registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
         entity_registry.assign<graphics::layer<0>>(text_entity);
 
-        auto another_text_entity = graphics::blueprint_text(entity_registry, {"another text"});
+        auto another_text_entity = graphics::blueprint_text(entity_registry, {"another text"}, transform::position_2d{900.0f, 900.0f});
         entity_registry.assign<entt::tag<"game_scene"_hs>>(another_text_entity);
         entity_registry.assign<graphics::layer<0>>(another_text_entity);
 

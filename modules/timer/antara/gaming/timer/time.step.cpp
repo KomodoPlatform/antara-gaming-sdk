@@ -14,12 +14,19 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iostream>
+#include <cmath>
+#include <string>
 #include "antara/gaming/timer/time.step.hpp"
 
 namespace antara::gaming::timer
 {
     std::chrono::nanoseconds time_step::fps_ = _60fps;
     std::chrono::nanoseconds time_step::lag_ = 0ns;
+
+    float time_step::fps_time_sum_ = 0.0f;
+    int time_step::fps_capture_count_ = 0;
+    std::string time_step::fps_str_ = "";
     using clock = std::chrono::steady_clock;
     clock::time_point time_step::start_ = clock::now();
 
@@ -34,6 +41,22 @@ namespace antara::gaming::timer
         auto deltaTime = clock::now() - start_;
         start_ = clock::now();
         lag_ += std::chrono::duration_cast<std::chrono::nanoseconds>(deltaTime);
+
+        float elapsed_time =  std::chrono::duration<float, std::ratio<1>>(deltaTime).count();
+        fps_time_sum_ += elapsed_time;
+        ++fps_capture_count_;
+        if(fps_time_sum_ > fps_average_every_seconds_) {
+            // Calculate average rounded fps
+            const float avg_fps = std::round(1 / (fps_time_sum_ / fps_capture_count_));
+
+            // Reset
+            fps_time_sum_ = 0.0f;
+            fps_capture_count_ = 0;
+
+            // Set string
+            fps_str_ = std::to_string(avg_fps);
+            std::cout << fps_str_ << std::endl;
+        }
     }
 
     bool time_step::is_update_required() const noexcept

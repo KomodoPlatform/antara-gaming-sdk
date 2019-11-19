@@ -40,11 +40,18 @@ namespace antara::gaming::timer
 
         static void reset_lag() noexcept;
 
+    public:
+        static std::string fps_str_;
+
     private:
         static std::chrono::nanoseconds fps_;
         static float fixed_delta_time;
         using clock = std::chrono::steady_clock;
         static std::chrono::nanoseconds lag_;
         static clock::time_point start_;
+
+        static constexpr float fps_average_every_seconds_{1.0f};
+        static float fps_time_sum_;
+        static int fps_capture_count_;
     };
 }
