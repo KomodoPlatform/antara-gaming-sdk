@@ -6,10 +6,13 @@
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/ecs/virtual.input.system.hpp>
+#include <iostream>
 
 // For convenience
 using namespace antara::gaming;
 using namespace std::string_literals;
+
+using st_direction = st::type<math::vec2f, struct st_direction_tag>;
 
 struct wolf_constants
 {
@@ -82,6 +85,7 @@ private:
         auto &constants = this->entity_registry_.ctx<wolf_constants>();
         auto[width, height] = canvas.canvas.size.to<math::vec2i>();
         auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
+        auto &dir = this->entity_registry_.get<st_direction>(player_entity).value();
         for (int x = 0, idx_vx = 0; x < width; ++x, idx_vx += 2) {
             //! X-coordinate in camera space
             const float camera_x = 2.0f * float(x) / width - 1;
@@ -223,7 +227,7 @@ public:
 
 private:
     // Variables
-    math::vec2f dir{-1.f, 0.f};
+    //math::vec2f dir{-1.f, 0.f};
     math::vec2f plane{0.f, this->entity_registry_.ctx<wolf_constants>().fov};
 
     //TODO: move it elsewhere
@@ -244,26 +248,45 @@ public:
     player_system(entt::registry &registry) noexcept : system(registry)
     {
         this->entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
+        this->entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
     }
 
     void update() noexcept final
     {
         auto& constants = this->entity_registry_.ctx<wolf_constants>();
+        auto& dir_player = this->entity_registry_.get<st_direction>(player_).value();
         auto& pos = this->entity_registry_.get<transform::position_2d>(player_);
-        bool up = input::virtual_input::is_tapped("move_forward");
-        bool down = input::virtual_input::is_tapped("move_down");
-        bool right = input::virtual_input::is_tapped("move_right");
-        bool left = input::virtual_input::is_tapped("move_left");
+        bool up = input::virtual_input::is_held("move_forward");
+        bool down = input::virtual_input::is_held("move_down");
+        bool right = input::virtual_input::is_held("move_right");
+        bool left = input::virtual_input::is_held("move_left");
+
         math::vec2f input_dir{float(right - left), float(up - down)};
+
 
         float move_speed = timer::time_step::get_fixed_delta_time() * constants.movement_speed;
         if (input_dir.x() != 0.f && input_dir.y() != 0.f) {
             move_speed /= std::sqrt(2);
         }
 
-        auto move = [&pos](const math::vec2f vec) {
-
+        auto move = [&pos, &constants](const math::vec2f vec) {
+            static const float dist_multiplier = 12.0f;
+            auto curr_pos(pos.to<math::vec2i>());
+            math::vec2i future_pos(int(pos.x() + dist_multiplier * vec.x()), int(pos.y() + dist_multiplier * vec.y()));
+            if(constants.world_map[future_pos.x()][curr_pos.y()] == 0) pos.x_ref() += vec.x();
+            if(constants.world_map[curr_pos.x()][future_pos.y()] == 0) pos.y_ref() += vec.y();
         };
+
+        if(input_dir.y() != 0) {
+            auto dir = math::vec2f(dir_player.x(), dir_player.y()) * input_dir.y();
+            move(dir * move_speed);
+        }
+
+        // Strafe left or right
+        if(input_dir.x() != 0) {
+            auto dir = math::vec2f{dir_player.x(), -dir_player.y()} * input_dir.x();
+            move(dir * move_speed);
+        }
     }
 
     entt::entity get_player() const noexcept
@@ -325,6 +348,9 @@ struct wolf3d_world : world::app
 
         //! Load the input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
+
+        // Create virtual input system
+        system_manager_.create_system<ecs::virtual_input_system>();
 
         // Create virtual input system
         input::virtual_input::create("move_forward", {input::key::z, input::key::up}, {});
