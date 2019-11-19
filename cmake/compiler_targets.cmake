@@ -33,7 +33,6 @@ add_library(antara::optimize_settings ALIAS antara_optimize_settings)
 # /Ox - Full optimization
 # /Oy- do not suppress frame pointers (recommended for debugging)
 
-find_package(OpenMP)
 target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Linux>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Linux>>:-O2 -march=native>
@@ -47,10 +46,42 @@ target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/O2 -DNDEBUG>
         )
 
-if(OpenMP_CXX_FOUND)
-    message(STATUS "OpenMP found, adding it to targets")
-    target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP_CXX)
-endif()
+
+if (NOT APPLE)
+    find_package(OpenMP)
+    if (OpenMP_CXX_FOUND)
+        message(STATUS "OpenMP found, adding it to targets")
+        target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP_CXX)
+    endif ()
+else()
+    find_library(OpenMP_LIBRARY
+            NAMES omp
+            )
+
+    find_path(OpenMP_INCLUDE_DIR
+            omp.h
+            )
+
+    mark_as_advanced(OpenMP_LIBRARY OpenMP_INCLUDE_DIR)
+
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(OpenMP DEFAULT_MSG
+            OpenMP_LIBRARY OpenMP_INCLUDE_DIR)
+
+    if (OpenMP_FOUND)
+        set(OpenMP_LIBRARIES ${OpenMP_LIBRARY})
+        set(OpenMP_INCLUDE_DIRS ${OpenMP_INCLUDE_DIR})
+        set(OpenMP_COMPILE_OPTIONS -Xpreprocessor -fopenmp)
+
+        add_library(OpenMP::OpenMP SHARED IMPORTED)
+        set_target_properties(OpenMP::OpenMP PROPERTIES
+                IMPORTED_LOCATION ${OpenMP_LIBRARIES}
+                INTERFACE_INCLUDE_DIRECTORIES "${OpenMP_INCLUDE_DIRS}"
+                INTERFACE_COMPILE_OPTIONS "${OpenMP_COMPILE_OPTIONS}"
+                )
+        target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP)
+    endif()
+endif ()
 
 ## Cross filesystem
 add_library(antara_cross_filesystem INTERFACE)
