@@ -14,6 +14,7 @@ using namespace antara::gaming;
 using namespace std::string_literals;
 
 using st_direction = st::type<math::vec2f, struct st_direction_tag>;
+using st_bobbing = st::type<float, struct bobbin_tag>;
 
 struct wolf_constants
 {
@@ -75,6 +76,30 @@ namespace
     {
         return get_texture_offset(constants, constants.wall_texture_indexes[type]);
     }
+
+    float magnitude(const math::vec2f &a)
+    {
+        return std::sqrt(a.x() * a.x() + a.y() * a.y());
+    }
+
+    void set_color(geometry::vertex &v, std::uint8_t value)
+    {
+        v.pixel_color.r = v.pixel_color.g = v.pixel_color.b = value;
+    }
+
+    /*void set_color(geometry::vertex &v, std::uint8_t value, std::uint8_t alpha)
+    {
+        set_color(v, value);
+        v.pixel_color.a = alpha;
+    }*/
+
+    void set_brightness(geometry::vertex &v, const float distance, const float max_distance,
+                        const float brightness_cap = 90.0f)
+    {
+        const float darkness = std::max(std::min(brightness_cap * distance / max_distance, brightness_cap), 0.0f);
+        const float brightness = brightness_cap - darkness;
+        set_color(v, std::uint8_t(brightness));
+    }
 }
 
 class raycast_system final : public ecs::post_update_system<raycast_system>
@@ -135,6 +160,7 @@ private:
                  const math::vec2i &map_pos, int side, float perp_wall_dist)
     {
         auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
+        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity).value();
         // Calculate height of line to draw on screen
         const float line_height = std::abs(float(height) / perp_wall_dist);
 
@@ -159,6 +185,11 @@ private:
             wall_lines[idx_vx + 1].texture_pos = math::vec2f(float(tex_x), float(constants.tex_height)) + offset;
             wall_lines[idx_vx + 0].pos = math::vec2f(float(x), float(draw_start));
             wall_lines[idx_vx + 1].pos = math::vec2f(float(x), float(draw_end));
+
+            const float distance = magnitude(math::vec2f(map_pos.x() - pos.x() + (side == 1 ? wall_x : 0),
+                                                         map_pos.y() - pos.y() + (side == 0 ? wall_x : 0)));
+            set_brightness(wall_lines[idx_vx + 0], distance, constants.darkness_distance);
+            set_brightness(wall_lines[idx_vx + 1], distance, constants.darkness_distance);
         }
         return std::make_tuple(wall_x, draw_end); //! in case someone want to code a floor one day he will need it.
     }
@@ -237,8 +268,6 @@ private:
     // Variables
     math::vec2f plane{0.f, entity_registry_.ctx<wolf_constants>().fov};
 
-    //TODO: move it elsewhere
-    float bobbing_y_offset{0.f};
     entt::entity wall_entity{entity_registry_.create()};
     entt::entity player_entity{entt::null};
 
@@ -256,13 +285,16 @@ public:
     {
         entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
         entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
+        entity_registry_.assign<st_bobbing>(player_, 0.f);
     }
 
     void update() noexcept final
     {
+        const float dt = timer::time_step::get_fixed_delta_time();
+        total_timer_ += dt;
+        const auto[_, height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size;
         auto &constants = entity_registry_.ctx<wolf_constants>();
-        auto &dir_player = entity_registry_.get<st_direction>(player_).value();
-        auto &pos = entity_registry_.get<transform::position_2d>(player_);
+
         bool up = input::virtual_input::is_held("move_forward");
         bool down = input::virtual_input::is_held("move_down");
         bool right = input::virtual_input::is_held("move_right");
@@ -270,18 +302,36 @@ public:
 
         math::vec2f input_dir{float(right - left), float(up - down)};
 
+        bobbing(dt, height, input_dir);
+        move_player(dt, constants, input_dir);
+    }
 
-        float move_speed = timer::time_step::get_fixed_delta_time() * constants.movement_speed;
+
+private:
+    void bobbing(const float dt, const float height, const math::vec2f &input_dir) noexcept
+    {
+        auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
+        bool moving = input_dir.x() != 0 || input_dir.y() != 0;
+        if (moving) walking_timer_ += dt;
+        bobbing_y_offset = height * (moving ? 0.008 : 0.004) * std::sin(14.0f * walking_timer_ + 2.0f * total_timer_);
+    }
+
+    void move_player(const float dt, const wolf_constants &constants, const math::vec2f &input_dir) const noexcept
+    {
+        const auto &dir_player = entity_registry_.get<st_direction>(player_).value();
+        auto &player_pos = entity_registry_.get<transform::position_2d>(player_);
+        float move_speed = dt * constants.movement_speed;
         if (input_dir.x() != 0.f && input_dir.y() != 0.f) {
             move_speed /= std::sqrt(2);
         }
 
-        auto move = [&pos, &constants](const math::vec2f vec) {
+        auto move = [&player_pos, &constants](const math::vec2f vec) {
             static const float dist_multiplier = 12.0f;
-            auto curr_pos(pos.to<math::vec2i>());
-            math::vec2i future_pos(int(pos.x() + dist_multiplier * vec.x()), int(pos.y() + dist_multiplier * vec.y()));
-            if (constants.world_map[future_pos.x()][curr_pos.y()] == 0) pos.x_ref() += vec.x();
-            if (constants.world_map[curr_pos.x()][future_pos.y()] == 0) pos.y_ref() += vec.y();
+            auto curr_pos(player_pos.to<math::vec2i>());
+            math::vec2i future_pos(int(player_pos.x() + dist_multiplier * vec.x()),
+                                   int(player_pos.y() + dist_multiplier * vec.y()));
+            if (constants.world_map[future_pos.x()][curr_pos.y()] == 0) player_pos.x_ref() += vec.x();
+            if (constants.world_map[curr_pos.x()][future_pos.y()] == 0) player_pos.y_ref() += vec.y();
         };
 
         if (input_dir.y() != 0) {
@@ -296,6 +346,7 @@ public:
         }
     }
 
+public:
     [[nodiscard]] entt::entity get_player() const noexcept
     {
         return player_;
@@ -303,6 +354,8 @@ public:
 
 private:
     entt::entity player_{entity_registry_.create()};
+    float walking_timer_{0.f};
+    float total_timer_{0.f};
 };
 
 REFL_AUTO(type(player_system));
