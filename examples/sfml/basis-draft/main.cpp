@@ -90,16 +90,16 @@ public:
 
         math::vec2i out;
         math::vec2i out_relative;
-        this->dispatcher_.trigger<event::fill_mouse_position>(out);
-        this->dispatcher_.trigger<event::fill_mouse_position>(out_relative, true);
+        this->dispatcher_.trigger<event::get_mouse_position>(out);
+        this->dispatcher_.trigger<event::get_mouse_position>(out_relative, true);
 
         DVLOG_F(loguru::Verbosity_INFO, "before out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(), out_relative.x(), out_relative.y());
 
         this->dispatcher_.trigger<event::set_mouse_position>(out + 10);
         this->dispatcher_.trigger<event::set_mouse_position>(out_relative + 10, true);
 
-        this->dispatcher_.trigger<event::fill_mouse_position>(out);
-        this->dispatcher_.trigger<event::fill_mouse_position>(out_relative, true);
+        this->dispatcher_.trigger<event::get_mouse_position>(out);
+        this->dispatcher_.trigger<event::get_mouse_position>(out_relative, true);
 
         DVLOG_F(loguru::Verbosity_INFO, "after out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(), out_relative.x(), out_relative.y());
         //!

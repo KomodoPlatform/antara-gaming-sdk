@@ -20,18 +20,18 @@
 
 namespace antara::gaming::event
 {
-    struct fill_mouse_position
+    struct get_mouse_position
     {
-        fill_mouse_position(math::vec2i &in, bool relative_to_the_window_ = false) noexcept :
+        get_mouse_position(math::vec2i &in, bool relative_to_the_window_ = false) noexcept :
                 pos(in),
                 relative_to_the_window(relative_to_the_window_)
         {
 
         }
 
-        fill_mouse_position(const fill_mouse_position &) noexcept = default;
+        get_mouse_position(const get_mouse_position &) noexcept = default;
 
-        fill_mouse_position &operator=(const fill_mouse_position &other) noexcept {
+        get_mouse_position &operator=(const get_mouse_position &other) noexcept {
             this->pos = other.pos;
             this->relative_to_the_window = other.relative_to_the_window;
             return *this;

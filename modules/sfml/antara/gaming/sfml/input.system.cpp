@@ -51,7 +51,7 @@ namespace antara::gaming::input
 
 namespace antara::gaming::sfml
 {
-    void input_system::on_fill_mouse_position(const event::fill_mouse_position &evt) noexcept
+    void input_system::on_fill_mouse_position(const event::get_mouse_position &evt) noexcept
     {
         if (not evt.relative_to_the_window) {
             auto[x, y] = sf::Mouse::getPosition();
@@ -75,7 +75,7 @@ namespace antara::gaming::sfml
     input_system::input_system(entt::registry &registry, sf::RenderWindow &window) noexcept
             : system(registry), window_(window)
     {
-        this->dispatcher_.sink<event::fill_mouse_position>().connect<&input_system::on_fill_mouse_position>(*this);
+        this->dispatcher_.sink<event::get_mouse_position>().connect<&input_system::on_fill_mouse_position>(*this);
         this->dispatcher_.sink<event::set_mouse_position>().connect<&input_system::on_set_mouse_position>(*this);
     }
 

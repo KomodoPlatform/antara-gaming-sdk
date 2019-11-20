@@ -19,7 +19,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/event/fill.mouse.position.hpp"
+#include "antara/gaming/event/get.mouse.position.hpp"
 #include "antara/gaming/event/set.mouse.position.hpp"
 
 namespace antara::gaming::sfml
@@ -32,7 +32,7 @@ namespace antara::gaming::sfml
 
         void update() noexcept final;
 
-        void on_fill_mouse_position(const event::fill_mouse_position& evt) noexcept;
+        void on_fill_mouse_position(const event::get_mouse_position& evt) noexcept;
         void on_set_mouse_position(const event::set_mouse_position& evt) noexcept;
     private:
         [[nodiscard]] auto translate_window_coord(int x,  int y) const;
