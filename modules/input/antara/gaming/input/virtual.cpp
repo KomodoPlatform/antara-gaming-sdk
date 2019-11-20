@@ -37,7 +37,8 @@ namespace antara::gaming::input {
         for (auto &&[current_states, current_idx]: zip(cached_states_, ints(0u, ranges::unreachable))) {
             auto &states = current_states.second;
             if (states.buttons.count(evt.button)) {
-                states.held[current_idx] = false;
+                auto idx = std::distance(states.buttons.begin(), states.buttons.find(evt.button));
+                states.held[(states.keys.size() + idx) - 1] = false;
             }
         }
     }
@@ -48,7 +49,8 @@ namespace antara::gaming::input {
         for (auto &&[current_states, current_idx]: zip(cached_states_, ints(0u, ranges::unreachable))) {
             auto &states = current_states.second;
             if (states.buttons.count(evt.button)) {
-                states.held[current_idx] = true;
+                auto idx = std::distance(states.buttons.begin(), states.buttons.find(evt.button));
+                states.held[(states.keys.size() + idx) - 1] = true;
             }
         }
     }
@@ -59,7 +61,8 @@ namespace antara::gaming::input {
         for (auto &&[current_states, current_idx]: zip(cached_states_, ints(0u, ranges::unreachable))) {
             auto &states = current_states.second;
             if (states.keys.count(evt.key)) {
-                states.held[current_idx] = false;
+                auto idx = std::distance(states.keys.begin(), states.keys.find(evt.key));
+                states.held[idx] = false;
             }
         }
     }
@@ -70,7 +73,8 @@ namespace antara::gaming::input {
         for (auto &&[current_states, current_idx]: zip(cached_states_, ints(0u, ranges::unreachable))) {
             auto &states = current_states.second;
             if (states.keys.count(evt.key)) {
-                states.held[current_idx] = true;
+                auto idx = std::distance(states.keys.begin(), states.keys.find(evt.key));
+                states.held[idx] = true;
             }
         }
     }
