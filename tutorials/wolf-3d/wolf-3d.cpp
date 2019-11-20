@@ -113,7 +113,7 @@ private:
         auto size = canvas.canvas.size.to<math::vec2i>();
         const auto width = size.x();
         const auto height = size.y();
-        const auto& plane = entity_registry_.get<st_plane>(player_entity).value();
+        const auto &plane = entity_registry_.get<st_plane>(player_entity).value();
         const auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
         auto &dir = entity_registry_.get<st_direction>(player_entity).value();
 
@@ -290,10 +290,10 @@ public:
         entity_registry_.assign<st_bobbing>(player_, 0.f);
         this->dispatcher_.sink<event::mouse_moved>().connect<&player_system::on_mouse_moved>(*this);
     }
-    
+
     void on_mouse_moved(const event::mouse_moved &evt) noexcept
     {
-        const auto& constants = entity_registry_.ctx<wolf_constants>();
+        const auto &constants = entity_registry_.ctx<wolf_constants>();
         math::vec2i curr{math::vec2f{evt.x, evt.y}.to<math::vec2i>()};
         //move_player_camera(constants.mouse_sensitivity)
     }
@@ -318,20 +318,21 @@ public:
 
 
 private:
-    void move_player_camera(const float amount, const float dt) {
-        auto& plane = entity_registry_.get<st_plane>(player_).value();
+    void move_player_camera(const float amount, const float dt)
+    {
+        auto &plane = entity_registry_.get<st_plane>(player_).value();
         auto &dir_player = entity_registry_.get<st_direction>(player_).value();
-        const float rotSpeed = amount * dt; // Constant value is in radians/second
+        const float rot_speed = amount * dt; // Constant value is in radians/second
 
         // Both camera direction and camera plane must be rotated
         const float old_dir_x = dir_player.x();
-        dir_player.x_ref() = dir_player.x() * std::cos(-rotSpeed) - dir_player.y() * std::sin(-rotSpeed);
-        dir_player.y_ref() = old_dir_x * std::sin(-rotSpeed) + dir_player.y() * std::cos(-rotSpeed);
+        dir_player.x_ref() = dir_player.x() * std::cos(-rot_speed) - dir_player.y() * std::sin(-rot_speed);
+        dir_player.y_ref() = old_dir_x * std::sin(-rot_speed) + dir_player.y() * std::cos(-rot_speed);
         const float old_plane_x = plane.x();
-        plane.x_ref() = plane.x() * std::cos(-rotSpeed) - plane.y() * std::sin(-rotSpeed);
-        plane.y_ref() = old_plane_x * std::sin(-rotSpeed) + plane.y() * std::cos(-rotSpeed);
+        plane.x_ref() = plane.x() * std::cos(-rot_speed) - plane.y() * std::sin(-rot_speed);
+        plane.y_ref() = old_plane_x * std::sin(-rot_speed) + plane.y() * std::cos(-rot_speed);
     };
-    
+
     void bobbing(const float dt, const float height, const math::vec2f &input_dir) noexcept
     {
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
