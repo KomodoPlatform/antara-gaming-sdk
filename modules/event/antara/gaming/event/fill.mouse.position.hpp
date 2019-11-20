@@ -16,29 +16,28 @@
 
 #pragma once
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/event/fill.mouse.position.hpp"
-#include "antara/gaming/event/set.mouse.position.hpp"
+#include <antara/gaming/math/vector.hpp>
 
-namespace antara::gaming::sfml
+namespace antara::gaming::event
 {
-    class input_system final : public ecs::pre_update_system<input_system>
+    struct fill_mouse_position
     {
-    public:
-        //! Constructors
-        input_system(entt::registry &registry, sf::RenderWindow &window) noexcept;
+        fill_mouse_position(math::vec2i &in, bool relative_to_the_window_ = false) noexcept :
+                pos(in),
+                relative_to_the_window(relative_to_the_window_)
+        {
 
-        void update() noexcept final;
+        }
 
-        void on_fill_mouse_position(const event::fill_mouse_position& evt) noexcept;
-        void on_set_mouse_position(const event::set_mouse_position& evt) noexcept;
-    private:
-        [[nodiscard]] auto translate_window_coord(int x,  int y) const;
+        fill_mouse_position(const fill_mouse_position &) noexcept = default;
 
-        sf::RenderWindow &window_;
+        fill_mouse_position &operator=(const fill_mouse_position &other) noexcept {
+            this->pos = other.pos;
+            this->relative_to_the_window = other.relative_to_the_window;
+            return *this;
+        }
+
+        math::vec2i &pos;
+        bool relative_to_the_window{false};
     };
 }
-
-REFL_AUTO(type(antara::gaming::sfml::input_system));
