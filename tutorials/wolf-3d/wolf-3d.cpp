@@ -35,30 +35,31 @@ struct wolf_constants
             math::vec2i{1, 0}, // 4
             math::vec2i{1, 1}, // 5
     };
+
     const int world_map[24][24] = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 2, 2, 0, 2, 2, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1},
-            {1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 4, 0, 0, 0, 0, 5, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 4, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 1, 1, 1},
+            {1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 1, 1, 1},
+            {1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 2, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 3, 0, 5, 0, 3, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 5, 5, 5, 2, 0, 0, 0, 2, 5, 5, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 5, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 2, 2, 0, 2, 2, 0, 5, 0, 5, 3, 0, 3, 0, 3, 0, 0, 0, 1},
+            {1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0, 3, 0, 0, 0, 1},
+            {1, 0, 0, 0, 3, 0, 0, 2, 2, 2, 3, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 5, 4, 4, 4, 0, 0, 5, 0, 5, 1},
+            {1, 0, 0, 2, 2, 2, 2, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 2, 0, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 5, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 5, 0, 0, 1},
+            {1, 4, 4, 4, 0, 4, 4, 0, 4, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1},
+            {1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 2, 5, 5, 0, 4, 0, 3, 0, 0, 0, 0, 1},
+            {1, 4, 0, 0, 0, 0, 5, 0, 4, 2, 2, 2, 2, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1},
+            {1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 3, 0, 1, 1},
+            {1, 4, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 1},
+            {1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 3, 0, 1, 1},
+            {1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
 };
@@ -85,13 +86,14 @@ private:
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
         auto &constants = entity_registry_.ctx<wolf_constants>();
         auto size = canvas.canvas.size.to<math::vec2i>();
-        auto width = size.x();
-        auto height = size.y();
+        const auto width = size.x();
+        const auto height = size.y();
         auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
+        const auto &pos_x = pos.x();
+        const auto &pos_y = pos.y();
         auto &dir = entity_registry_.get<st_direction>(player_entity).value();
 
         int idx_vx = 0;
-        pixels_floor.clear();
         //#pragma omp simd
         for (int x = 0; x < width; ++x) {
             //! X-coordinate in camera space
@@ -120,12 +122,13 @@ private:
             int side = perform_dda(constants, delta_dist, side_dist, step, map_pos);
 
             //! Calculate distance projected on camera direction (Euclidean distance will give fish-eye effect!)
-            float perp_wall_dist;
-            perp_wall_dist = (side == 0) ? std::fabs((map_pos.x() - pos.x() + (1.f - step.x()) / 2) / ray_dir.x())
-                                         : std::fabs((map_pos.y() - pos.y() + (1.f - step.y()) / 2) / ray_dir.y());
+            const float perp_wall_dist{
+                    (side == 0) ? std::fabs((map_pos.x() - pos.x() + (1.f - step.x()) / 2) / ray_dir.x())
+                                : std::fabs((map_pos.y() - pos.y() + (1.f - step.y()) / 2) / ray_dir.y())};
 
             //! Prepare current wall into the vertices
-            auto [wall_x, draw_end] = prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side, perp_wall_dist);
+            const auto&&[wall_x, draw_end] = prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side,
+                                                          perp_wall_dist);
 
             // FLOOR CASTING
             float floor_x_wall, floor_y_wall; // X, Y position of the floor texel at the bottom of the wall
@@ -145,32 +148,50 @@ private:
                 floor_y_wall = map_pos.y() + 1.0f;
             }
 
-            for(int y = int(draw_end) + 1; y < height; ++y) {
-                const float currentDist = height / (2.0f * (y - bobbing_y_offset) - height); //you could make a small lookup table for this instead
-                const float weight = currentDist / perp_wall_dist;
-                const float currentFloorX = weight * floor_x_wall + (1.0f - weight) * pos.x();
-                const float currentFloorY = weight * floor_y_wall + (1.0f - weight) * pos.y();
+            assert(not pixels_floor.empty());
 
-                const int floorTexX = static_cast<int>(currentFloorX * constants.tex_width) % constants.tex_width;
-                const int floorTexY = static_cast<int>(currentFloorY * constants.tex_height) % constants.tex_height;
+            //for(int y = 0; y < height; ++y) {
+            //            pixels_floor[x + width * ((height/2)-y)].pixel_color = graphics::transparent;
+            //        }
 
-                // Prepare floor
-                {
-                    auto& vx = pixels_floor[x + width * (height-y)];
-                    vx.pos = math::vec2f(float(x - 1), float(y));
-                    vx.texture_pos = floor_texture_offset + math::vec2f(float(floorTexX), float(floorTexY));
+            const float c_draw_end = draw_end;
+            const float c_floor_x_wall = floor_x_wall;
+            const float c_floor_y_wall = floor_y_wall;
+            const std::size_t tex_width = constants.tex_width;
+            const std::size_t tex_height = constants.tex_height;
+            const int c_x = x;
+            {
+                #pragma omp parallel for default(none) num_threads(4)
+                for (int y = int(c_draw_end) + 1; y < height; ++y) {
+                    const float currentDist = height / (2.0f * (y - bobbing_y_offset) -
+                                                        height); //you could make a small lookup table for this instead
+                    const float weight = currentDist / perp_wall_dist;
+                    const float currentFloorX = weight * c_floor_x_wall + (1.0f - weight) * pos_x;
+                    const float currentFloorY = weight * c_floor_y_wall + (1.0f - weight) * pos_y;
+
+                    const int floorTexX = static_cast<int>(currentFloorX * tex_width) % tex_width;
+                    const int floorTexY = static_cast<int>(currentFloorY * tex_height) % tex_height;
+
+                    // Prepare floor
+                    {
+                        auto &vx = pixels_floor[c_x + width * (height - y)];
+                        vx.pos = math::vec2f(float(c_x - 1), float(y));
+                        vx.texture_pos = floor_texture_offset + math::vec2f(float(floorTexX), float(floorTexY));
+                    }
                 }
             }
 
             idx_vx += 2;
         }
-        entity_registry_.assign_or_replace<geometry::vertex_array>(floor_entity, pixels_floor, geometry::points, "csgo.png");
+        /*entity_registry_.assign_or_replace<geometry::vertex_array>(floor_entity, pixels_floor, geometry::points,
+                                                                   "csgo.png");*/
         entity_registry_.assign_or_replace<geometry::vertex_array>(wall_entity, wall_lines, geometry::lines,
                                                                    "csgo.png");
     }
 
-    std::tuple<float, float> prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
-                       const math::vec2i &map_pos, int side, float perp_wall_dist)
+    std::tuple<float, float>
+    prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
+                 const math::vec2i &map_pos, int side, float perp_wall_dist)
     {
         auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
         // Calculate height of line to draw on screen
@@ -254,6 +275,15 @@ private:
     }
 
 public:
+    void post_update() noexcept final
+    {
+        /*#pragma omp parallel for simd default(none) num_threads(4)
+        for (auto it = pixels_floor.begin(); it != pixels_floor.end(); ++it) {
+            *it = geometry::vertex{};
+        }*/
+    }
+
+public:
     explicit raycast_system(entt::registry &registry) noexcept : system(registry)
     {
         entity_registry_.assign<graphics::layer_1>(wall_entity);
@@ -286,8 +316,9 @@ private:
                                                      entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2i>().x() *
                                                      2)};
 
-    std::vector<geometry::vertex> pixels_floor{(1440*900) / 2};
-    math::vec2f floor_texture_offset{get_texture_offset(entity_registry_.ctx<wolf_constants>(), entity_registry_.ctx<wolf_constants>().floor_texture_index)};
+    std::vector<geometry::vertex> pixels_floor{(1440 * 900) / 2};
+    math::vec2f floor_texture_offset{get_texture_offset(entity_registry_.ctx<wolf_constants>(),
+                                                        entity_registry_.ctx<wolf_constants>().floor_texture_index)};
 };
 
 REFL_AUTO(type(raycast_system));
