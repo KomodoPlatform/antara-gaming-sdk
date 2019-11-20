@@ -16,29 +16,13 @@
 
 #pragma once
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/event/fill.mouse.position.hpp"
-#include "antara/gaming/event/set.mouse.position.hpp"
+#include <antara/gaming/math/vector.hpp>
 
-namespace antara::gaming::sfml
+namespace antara::gaming::event
 {
-    class input_system final : public ecs::pre_update_system<input_system>
+    struct set_mouse_position
     {
-    public:
-        //! Constructors
-        input_system(entt::registry &registry, sf::RenderWindow &window) noexcept;
-
-        void update() noexcept final;
-
-        void on_fill_mouse_position(const event::fill_mouse_position& evt) noexcept;
-        void on_set_mouse_position(const event::set_mouse_position& evt) noexcept;
-    private:
-        [[nodiscard]] auto translate_window_coord(int x,  int y) const;
-
-        sf::RenderWindow &window_;
+        math::vec2i to;
+        bool relative_to_the_window{false};
     };
 }
-
-REFL_AUTO(type(antara::gaming::sfml::input_system));

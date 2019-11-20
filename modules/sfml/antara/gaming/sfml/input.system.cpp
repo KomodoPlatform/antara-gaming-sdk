@@ -37,29 +37,64 @@ namespace antara::gaming::input
     {
         return sf::Mouse::isButtonPressed(static_cast<sf::Mouse::Button>(button));
     }
+
+    math::vec2i get_mouse_position(bool relative_to_the_window) noexcept
+    {
+        if (not relative_to_the_window) {
+            auto[x, y] = sf::Mouse::getPosition();
+            return {x, y};
+        }
+        //TODO: handle the window
+        return {0, 0};
+    }
 }
 
 namespace antara::gaming::sfml
 {
+    void input_system::on_fill_mouse_position(const event::fill_mouse_position &evt) noexcept
+    {
+        if (not evt.relative_to_the_window) {
+            auto[x, y] = sf::Mouse::getPosition();
+            evt.pos = math::vec2i{x, y};
+            return;
+        }
+        auto[x, y] = sf::Mouse::getPosition(this->window_);
+        evt.pos = math::vec2i{x, y};
+    }
+
+
+    void input_system::on_set_mouse_position(const event::set_mouse_position &evt) noexcept
+    {
+        if (not evt.relative_to_the_window) {
+            sf::Mouse::setPosition(sf::Vector2i{evt.to.x(), evt.to.y()});
+        } else {
+            sf::Mouse::setPosition(sf::Vector2i{evt.to.x(), evt.to.y()}, this->window_);
+        }
+    }
+
     input_system::input_system(entt::registry &registry, sf::RenderWindow &window) noexcept
             : system(registry), window_(window)
     {
-
+        this->dispatcher_.sink<event::fill_mouse_position>().connect<&input_system::on_fill_mouse_position>(*this);
+        this->dispatcher_.sink<event::set_mouse_position>().connect<&input_system::on_set_mouse_position>(*this);
     }
 
-    auto input_system::translate_window_coord(const int x, const int y) const {
+    auto input_system::translate_window_coord(const int x, const int y) const
+    {
         // Translate Window pixel position to coordinate using the view
         auto window_pos = window_.mapPixelToCoords(sf::Vector2i(x, y));
 
         // Translate position of RT, if half of it is out of the screen for example, still find the correct position
-        auto& rt_sprite = this->entity_registry_.ctx<sf::Sprite>();
-        auto translated_coord = window_pos + sf::Vector2f((rt_sprite.getGlobalBounds().width - window_.getSize().x) * 0.5f, (rt_sprite.getGlobalBounds().height - window_.getSize().y) * 0.5f);
+        auto &rt_sprite = this->entity_registry_.ctx<sf::Sprite>();
+        auto translated_coord = window_pos +
+                                sf::Vector2f((rt_sprite.getGlobalBounds().width - window_.getSize().x) * 0.5f,
+                                             (rt_sprite.getGlobalBounds().height - window_.getSize().y) * 0.5f);
 
         // Scale the position to RT level
         sf::Vector2i rt_pos(translated_coord.x / rt_sprite.getScale().x, translated_coord.y / rt_sprite.getScale().y);
 
         // Translate RT pixel position to coordinate using the view
-        auto& rt = this->entity_registry_.ctx<sf::RenderTexture>();
+        auto &rt = this->entity_registry_.ctx<sf::RenderTexture>();
         auto rt_coord = rt.mapPixelToCoords(rt_pos);
 
         return std::make_tuple(rt_coord, window_pos);
@@ -74,7 +109,7 @@ namespace antara::gaming::sfml
                     this->dispatcher_.trigger<event::quit_game>(0);
                     break;
                 case sf::Event::Resized: {
-                    auto& canvas = this->entity_registry_.ctx<graphics::canvas_2d>();
+                    auto &canvas = this->entity_registry_.ctx<graphics::canvas_2d>();
                     auto &&[window_width, window_height] = canvas.window.size;
                     window_width = evt.size.width;
                     window_height = evt.size.height;
@@ -101,19 +136,21 @@ namespace antara::gaming::sfml
                 case sf::Event::MouseWheelScrolled:
                     break;
                 case sf::Event::MouseButtonPressed: {
-                    auto [rt_coord, window_pos] = translate_window_coord(evt.mouseButton.x, evt.mouseButton.y);
+                    auto[rt_coord, window_pos] = translate_window_coord(evt.mouseButton.x, evt.mouseButton.y);
                     this->dispatcher_.trigger<event::mouse_button_pressed>(
-                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y, window_pos.x, window_pos.y);
+                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y,
+                            window_pos.x, window_pos.y);
                     break;
                 }
                 case sf::Event::MouseButtonReleased: {
-                    auto [rt_coord, window_pos] = translate_window_coord(evt.mouseButton.x, evt.mouseButton.y);
+                    auto[rt_coord, window_pos] = translate_window_coord(evt.mouseButton.x, evt.mouseButton.y);
                     this->dispatcher_.trigger<event::mouse_button_released>(
-                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y, window_pos.x, window_pos.y);
+                            static_cast<input::mouse_button>(evt.mouseButton.button), rt_coord.x, rt_coord.y,
+                            window_pos.x, window_pos.y);
                     break;
                 }
                 case sf::Event::MouseMoved: {
-                    auto [rt_coord, window_pos] = translate_window_coord(evt.mouseMove.x, evt.mouseMove.y);
+                    auto[rt_coord, window_pos] = translate_window_coord(evt.mouseMove.x, evt.mouseMove.y);
                     this->dispatcher_.trigger<event::mouse_moved>(rt_coord.x, rt_coord.y, window_pos.x, window_pos.y);
                     break;
                 }

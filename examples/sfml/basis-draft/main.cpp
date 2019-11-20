@@ -88,6 +88,20 @@ public:
         entity_registry.assign<entt::tag<"game_scene"_hs>>(animated2_entity);
         entity_registry.assign<graphics::layer<5>>(animated2_entity);
 
+        math::vec2i out;
+        math::vec2i out_relative;
+        this->dispatcher_.trigger<event::fill_mouse_position>(out);
+        this->dispatcher_.trigger<event::fill_mouse_position>(out_relative, true);
+
+        DVLOG_F(loguru::Verbosity_INFO, "before out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(), out_relative.x(), out_relative.y());
+
+        this->dispatcher_.trigger<event::set_mouse_position>(out + 10);
+        this->dispatcher_.trigger<event::set_mouse_position>(out_relative + 10, true);
+
+        this->dispatcher_.trigger<event::fill_mouse_position>(out);
+        this->dispatcher_.trigger<event::fill_mouse_position>(out_relative, true);
+
+        DVLOG_F(loguru::Verbosity_INFO, "after out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(), out_relative.x(), out_relative.y());
         //!
         //auto& anim_cmp = entity_registry.get<animation2d::anim_component>(animated2_entity);
         //anim_cmp.elapsed = animation2d::anim_component::seconds(0.f);

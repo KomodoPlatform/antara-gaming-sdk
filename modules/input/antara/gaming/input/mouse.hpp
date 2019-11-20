@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <antara/gaming/math/vector.hpp>
+
 namespace antara::gaming::input
 {
     enum class mouse_button
@@ -35,4 +37,5 @@ namespace antara::gaming::input
     };
 
     bool is_mouse_button_pressed(mouse_button button) noexcept;
+    math::vec2i get_mouse_position(bool relative_to_the_window = false) noexcept;
 }
