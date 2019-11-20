@@ -15,6 +15,7 @@ using namespace std::string_literals;
 
 using st_direction = st::type<math::vec2f, struct st_direction_tag>;
 using st_bobbing = st::type<float, struct bobbin_tag>;
+using st_plane = st::type<math::vec2f, struct plane_tag>;
 
 struct wolf_constants
 {
@@ -112,6 +113,7 @@ private:
         auto size = canvas.canvas.size.to<math::vec2i>();
         const auto width = size.x();
         const auto height = size.y();
+        const auto& plane = entity_registry_.get<st_plane>(player_entity).value();
         const auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
         auto &dir = entity_registry_.get<st_direction>(player_entity).value();
 
@@ -266,11 +268,10 @@ public:
 
 private:
     // Variables
-    math::vec2f plane{0.f, entity_registry_.ctx<wolf_constants>().fov};
+    //math::vec2f plane{0.f, entity_registry_.ctx<wolf_constants>().fov};
 
     entt::entity wall_entity{entity_registry_.create()};
     entt::entity player_entity{entt::null};
-
     std::vector<geometry::vertex> wall_lines{static_cast<std::vector<geometry::vertex>::size_type>(
                                                      entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2i>().x() *
                                                      2)};
@@ -285,7 +286,16 @@ public:
     {
         entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
         entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
+        entity_registry_.assign<st_plane>(player_, st_plane{{0.f, entity_registry_.ctx<wolf_constants>().fov}});
         entity_registry_.assign<st_bobbing>(player_, 0.f);
+        this->dispatcher_.sink<event::mouse_moved>().connect<&player_system::on_mouse_moved>(*this);
+    }
+    
+    void on_mouse_moved(const event::mouse_moved &evt) noexcept
+    {
+        const auto& constants = entity_registry_.ctx<wolf_constants>();
+        math::vec2i curr{math::vec2f{evt.x, evt.y}.to<math::vec2i>()};
+        //move_player_camera(constants.mouse_sensitivity)
     }
 
     void update() noexcept final
@@ -308,6 +318,20 @@ public:
 
 
 private:
+    void move_player_camera(const float amount, const float dt) {
+        auto& plane = entity_registry_.get<st_plane>(player_).value();
+        auto &dir_player = entity_registry_.get<st_direction>(player_).value();
+        const float rotSpeed = amount * dt; // Constant value is in radians/second
+
+        // Both camera direction and camera plane must be rotated
+        const float old_dir_x = dir_player.x();
+        dir_player.x_ref() = dir_player.x() * std::cos(-rotSpeed) - dir_player.y() * std::sin(-rotSpeed);
+        dir_player.y_ref() = old_dir_x * std::sin(-rotSpeed) + dir_player.y() * std::cos(-rotSpeed);
+        const float old_plane_x = plane.x();
+        plane.x_ref() = plane.x() * std::cos(-rotSpeed) - plane.y() * std::sin(-rotSpeed);
+        plane.y_ref() = old_plane_x * std::sin(-rotSpeed) + plane.y() * std::cos(-rotSpeed);
+    };
+    
     void bobbing(const float dt, const float height, const math::vec2f &input_dir) noexcept
     {
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
@@ -356,6 +380,7 @@ private:
     entt::entity player_{entity_registry_.create()};
     float walking_timer_{0.f};
     float total_timer_{0.f};
+    //math::vec2i mouse_prev_pos{};
 };
 
 REFL_AUTO(type(player_system));
