@@ -103,6 +103,70 @@ namespace
     }
 }
 
+class background_system final : public ecs::post_update_system<background_system>
+{
+public:
+    explicit background_system(entt::registry &registry) noexcept : system(registry)
+    {
+        entity_registry_.assign<graphics::layer_0>(floor_);
+        entity_registry_.assign<graphics::layer_0>(sky_);
+        disable();
+    }
+
+    void update() noexcept final
+    {
+        if (not entity_registry_.valid(player_entity)) return;
+        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity).value();
+        auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
+        const auto[w, h] = canvas.canvas.size;
+
+        prepare_sky(bobbing_y_offset, w, h);
+        prepare_floor(bobbing_y_offset, w, h);
+    }
+
+    void set_player(entt::entity entity) noexcept
+    {
+        player_entity = entity;
+    }
+
+private:
+    void prepare_floor(const float bobbing_y_offset, const float w, const float h) const noexcept
+    {
+        std::vector<geometry::vertex> floor_vertices(4);
+        floor_vertices[0].pos = {0.0f, bobbing_y_offset + h * 0.5f};
+        floor_vertices[1].pos = {w, bobbing_y_offset + h * 0.5f};
+        floor_vertices[2].pos = {w, bobbing_y_offset + h * 1.1f};
+        floor_vertices[3].pos = {0.0f, bobbing_y_offset + h * 1.1f};
+        graphics::color c{27, 24, 24};
+        floor_vertices[2].pixel_color = floor_vertices[3].pixel_color = c;
+        float decrease = 0.f;
+        c.r = c.r * decrease;
+        c.g = c.g * decrease;
+        c.b = c.b * decrease;
+        floor_vertices[0].pixel_color = floor_vertices[1].pixel_color = c;
+        entity_registry_.assign_or_replace<geometry::vertex_array>(floor_, floor_vertices, geometry::quads);
+    }
+
+    void prepare_sky(const float bobbing_y_offset, const float w, const float h) const noexcept
+    {
+        std::vector<geometry::vertex> sky_vertices(4);
+        sky_vertices[0].pos = {0.0f, bobbing_y_offset};
+        sky_vertices[1].pos = {w, bobbing_y_offset};
+        sky_vertices[2].pos = {w, bobbing_y_offset + h * 0.51f};
+        sky_vertices[3].pos = {0.0f, bobbing_y_offset + h * 0.51f};
+        sky_vertices[2].pixel_color = sky_vertices[3].pixel_color = graphics::color{21, 12, 7};
+        sky_vertices[0].pixel_color = sky_vertices[1].pixel_color = graphics::color{3, 6, 16};
+        entity_registry_.assign_or_replace<geometry::vertex_array>(sky_, sky_vertices, geometry::quads);
+    }
+
+private:
+    entt::entity floor_{entity_registry_.create()};
+    entt::entity sky_{entity_registry_.create()};
+    entt::entity player_entity{entt::null};
+};
+
+REFL_AUTO(type(background_system));
+
 class raycast_system final : public ecs::post_update_system<raycast_system>
 {
 private:
@@ -267,9 +331,6 @@ public:
     }
 
 private:
-    // Variables
-    //math::vec2f plane{0.f, entity_registry_.ctx<wolf_constants>().fov};
-
     entt::entity wall_entity{entity_registry_.create()};
     entt::entity player_entity{entt::null};
     std::vector<geometry::vertex> wall_lines{static_cast<std::vector<geometry::vertex>::size_type>(
@@ -401,7 +462,8 @@ public:
     {
         auto &p_system = system_manager_.create_system<player_system>();
         system_manager_.get_system<raycast_system>().set_player(p_system.get_player());
-        system_manager_.enable_system<raycast_system>();
+        system_manager_.get_system<background_system>().set_player(p_system.get_player());
+        system_manager_.enable_systems<raycast_system, background_system>();
     }
 
     // Scene name
@@ -428,8 +490,8 @@ struct wolf3d_world : world::app
         //! Set wolf constants
         entity_registry_.set<wolf_constants>();
 
-        //! Load ray cast system
-        system_manager_.create_system<raycast_system>();
+        //! Load ray cast system and Load background system (Sky, Ground)
+        system_manager_.load_systems<raycast_system, background_system>();
 
         //! Load the graphical system
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
