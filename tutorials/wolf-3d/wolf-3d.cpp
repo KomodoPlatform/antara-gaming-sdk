@@ -82,12 +82,18 @@ class raycast_system final : public ecs::post_update_system<raycast_system>
 private:
     void perform_raycast()
     {
-        auto &canvas = this->entity_registry_.ctx<graphics::canvas_2d>();
-        auto &constants = this->entity_registry_.ctx<wolf_constants>();
-        auto[width, height] = canvas.canvas.size.to<math::vec2i>();
-        auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
-        auto &dir = this->entity_registry_.get<st_direction>(player_entity).value();
-        for (int x = 0, idx_vx = 0; x < width; ++x, idx_vx += 2) {
+        auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
+        auto &constants = entity_registry_.ctx<wolf_constants>();
+        auto size = canvas.canvas.size.to<math::vec2i>();
+        auto width = size.x();
+        auto height = size.y();
+        auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
+        auto &dir = entity_registry_.get<st_direction>(player_entity).value();
+
+        int idx_vx = 0;
+        pixels_floor.clear();
+        //#pragma omp simd
+        for (int x = 0; x < width; ++x) {
             //! X-coordinate in camera space
             const float camera_x = 2.0f * float(x) / width - 1;
 
@@ -119,16 +125,54 @@ private:
                                          : std::fabs((map_pos.y() - pos.y() + (1.f - step.y()) / 2) / ray_dir.y());
 
             //! Prepare current wall into the vertices
-            prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side, perp_wall_dist);
+            auto [wall_x, draw_end] = prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side, perp_wall_dist);
+
+            // FLOOR CASTING
+            float floor_x_wall, floor_y_wall; // X, Y position of the floor texel at the bottom of the wall
+
+            // Four different wall directions possible
+            if (side == 0 && ray_dir.x() > 0) {
+                floor_x_wall = map_pos.x();
+                floor_y_wall = map_pos.y() + wall_x;
+            } else if (side == 0 && ray_dir.x() < 0) {
+                floor_x_wall = map_pos.x() + 1.0f;
+                floor_y_wall = map_pos.y() + wall_x;
+            } else if (side == 1 && ray_dir.y() > 0) {
+                floor_x_wall = map_pos.x() + wall_x;
+                floor_y_wall = map_pos.y();
+            } else {
+                floor_x_wall = map_pos.x() + wall_x;
+                floor_y_wall = map_pos.y() + 1.0f;
+            }
+
+            for(int y = int(draw_end) + 1; y < height; ++y) {
+                const float currentDist = height / (2.0f * (y - bobbing_y_offset) - height); //you could make a small lookup table for this instead
+                const float weight = currentDist / perp_wall_dist;
+                const float currentFloorX = weight * floor_x_wall + (1.0f - weight) * pos.x();
+                const float currentFloorY = weight * floor_y_wall + (1.0f - weight) * pos.y();
+
+                const int floorTexX = static_cast<int>(currentFloorX * constants.tex_width) % constants.tex_width;
+                const int floorTexY = static_cast<int>(currentFloorY * constants.tex_height) % constants.tex_height;
+
+                // Prepare floor
+                {
+                    auto& vx = pixels_floor[x + width * (height-y)];
+                    vx.pos = math::vec2f(float(x - 1), float(y));
+                    vx.texture_pos = floor_texture_offset + math::vec2f(float(floorTexX), float(floorTexY));
+                }
+            }
+
+            idx_vx += 2;
         }
+        entity_registry_.assign_or_replace<geometry::vertex_array>(floor_entity, pixels_floor, geometry::points, "csgo.png");
         entity_registry_.assign_or_replace<geometry::vertex_array>(wall_entity, wall_lines, geometry::lines,
                                                                    "csgo.png");
     }
 
-    void prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
-                      const math::vec2i &map_pos, int side, float perp_wall_dist)
+    std::tuple<float, float> prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
+                       const math::vec2i &map_pos, int side, float perp_wall_dist)
     {
-        auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
+        auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
         // Calculate height of line to draw on screen
         const float line_height = std::abs(float(height) / perp_wall_dist);
 
@@ -154,6 +198,7 @@ private:
             wall_lines[idx_vx + 0].pos = math::vec2f(float(x), float(draw_start));
             wall_lines[idx_vx + 1].pos = math::vec2f(float(x), float(draw_end));
         }
+        return std::make_tuple(wall_x, draw_end);
     }
 
     int perform_dda(const wolf_constants &constants,
@@ -188,7 +233,7 @@ private:
     void shot_ray(const math::vec2f &ray_dir, const math::vec2f &delta_dist, math::vec2f &side_dist, math::vec2i &step,
                   const math::vec2i &map_pos) const
     {
-        auto &pos = this->entity_registry_.get<transform::position_2d>(player_entity);
+        auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
         // X-direction
         if (ray_dir.x() < 0) {
             step.x_ref() = -1;
@@ -211,13 +256,14 @@ private:
 public:
     explicit raycast_system(entt::registry &registry) noexcept : system(registry)
     {
-        this->entity_registry_.assign<graphics::layer_0>(wall_entity);
-        this->disable();
+        entity_registry_.assign<graphics::layer_1>(wall_entity);
+        entity_registry_.assign<graphics::layer_0>(floor_entity);
+        disable();
     }
 
     void set_player(entt::entity entity) noexcept
     {
-        this->player_entity = entity;
+        player_entity = entity;
     }
 
     void update() noexcept final
@@ -228,17 +274,20 @@ public:
 
 private:
     // Variables
-    //math::vec2f dir{-1.f, 0.f};
-    math::vec2f plane{0.f, this->entity_registry_.ctx<wolf_constants>().fov};
+    math::vec2f plane{0.f, entity_registry_.ctx<wolf_constants>().fov};
 
     //TODO: move it elsewhere
     float bobbing_y_offset{0.f};
-    entt::entity wall_entity{this->entity_registry_.create()};
+    entt::entity wall_entity{entity_registry_.create()};
+    entt::entity floor_entity{entity_registry_.create()};
     entt::entity player_entity{entt::null};
 
     std::vector<geometry::vertex> wall_lines{static_cast<std::vector<geometry::vertex>::size_type>(
                                                      entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2i>().x() *
                                                      2)};
+
+    std::vector<geometry::vertex> pixels_floor{(1440*900) / 2};
+    math::vec2f floor_texture_offset{get_texture_offset(entity_registry_.ctx<wolf_constants>(), entity_registry_.ctx<wolf_constants>().floor_texture_index)};
 };
 
 REFL_AUTO(type(raycast_system));
@@ -248,15 +297,15 @@ class player_system final : public ecs::logic_update_system<player_system>
 public:
     player_system(entt::registry &registry) noexcept : system(registry)
     {
-        this->entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
-        this->entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
+        entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
+        entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
     }
 
     void update() noexcept final
     {
-        auto& constants = this->entity_registry_.ctx<wolf_constants>();
-        auto& dir_player = this->entity_registry_.get<st_direction>(player_).value();
-        auto& pos = this->entity_registry_.get<transform::position_2d>(player_);
+        auto &constants = entity_registry_.ctx<wolf_constants>();
+        auto &dir_player = entity_registry_.get<st_direction>(player_).value();
+        auto &pos = entity_registry_.get<transform::position_2d>(player_);
         bool up = input::virtual_input::is_held("move_forward");
         bool down = input::virtual_input::is_held("move_down");
         bool right = input::virtual_input::is_held("move_right");
@@ -274,29 +323,29 @@ public:
             static const float dist_multiplier = 12.0f;
             auto curr_pos(pos.to<math::vec2i>());
             math::vec2i future_pos(int(pos.x() + dist_multiplier * vec.x()), int(pos.y() + dist_multiplier * vec.y()));
-            if(constants.world_map[future_pos.x()][curr_pos.y()] == 0) pos.x_ref() += vec.x();
-            if(constants.world_map[curr_pos.x()][future_pos.y()] == 0) pos.y_ref() += vec.y();
+            if (constants.world_map[future_pos.x()][curr_pos.y()] == 0) pos.x_ref() += vec.x();
+            if (constants.world_map[curr_pos.x()][future_pos.y()] == 0) pos.y_ref() += vec.y();
         };
 
-        if(input_dir.y() != 0) {
+        if (input_dir.y() != 0) {
             auto dir = math::vec2f(dir_player.x(), dir_player.y()) * input_dir.y();
             move(dir * move_speed);
         }
 
         // Strafe left or right
-        if(input_dir.x() != 0) {
+        if (input_dir.x() != 0) {
             auto dir = math::vec2f{dir_player.y(), -dir_player.x()} * input_dir.x();
             move(dir * move_speed);
         }
     }
 
-    entt::entity get_player() const noexcept
+    [[nodiscard]] entt::entity get_player() const noexcept
     {
         return player_;
     }
 
 private:
-    entt::entity player_{this->entity_registry_.create()};
+    entt::entity player_{entity_registry_.create()};
 };
 
 REFL_AUTO(type(player_system));
