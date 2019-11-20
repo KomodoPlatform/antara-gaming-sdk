@@ -289,20 +289,25 @@ public:
         entity_registry_.assign<st_plane>(player_, st_plane{{0.f, entity_registry_.ctx<wolf_constants>().fov}});
         entity_registry_.assign<st_bobbing>(player_, 0.f);
         this->dispatcher_.sink<event::mouse_moved>().connect<&player_system::on_mouse_moved>(*this);
+        this->dispatcher_.trigger<event::get_mouse_position>(this->mouse_prev_pos, true);
     }
 
     void on_mouse_moved(const event::mouse_moved &evt) noexcept
     {
         const auto &constants = entity_registry_.ctx<wolf_constants>();
         math::vec2i curr{math::vec2f{evt.x, evt.y}.to<math::vec2i>()};
-        //move_player_camera(constants.mouse_sensitivity)
+        move_player_camera(constants.mouse_sensitivity * (float(curr.x() - mouse_prev_pos.x())), 1);
+        mouse_prev_pos = curr;
     }
 
     void update() noexcept final
     {
+        const auto[width, height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size;
+        mouse_prev_pos = math::vec2i{int(width / 2), int(height / 2)};
+        this->dispatcher_.trigger<event::set_mouse_position>(mouse_prev_pos, true);
         const float dt = timer::time_step::get_fixed_delta_time();
         total_timer_ += dt;
-        const auto[_, height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size;
+
         auto &constants = entity_registry_.ctx<wolf_constants>();
 
         bool up = input::virtual_input::is_held("move_forward");
@@ -381,7 +386,7 @@ private:
     entt::entity player_{entity_registry_.create()};
     float walking_timer_{0.f};
     float total_timer_{0.f};
-    //math::vec2i mouse_prev_pos{};
+    math::vec2i mouse_prev_pos{};
 };
 
 REFL_AUTO(type(player_system));
