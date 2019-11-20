@@ -26,7 +26,6 @@ struct wolf_constants
     const float minimap_zoom{0.5f};
     const float movement_speed{5.0f};
     const float max_brightness{90.0f};
-    const math::vec2i floor_texture_index{0, 0};
     const math::vec2i wall_texture_indexes[6] = {
             math::vec2i{0, 0}, // 0
             math::vec2i{2, 0}, // 1
@@ -88,13 +87,10 @@ private:
         auto size = canvas.canvas.size.to<math::vec2i>();
         const auto width = size.x();
         const auto height = size.y();
-        auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
-        const auto &pos_x = pos.x();
-        const auto &pos_y = pos.y();
+        const auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
         auto &dir = entity_registry_.get<st_direction>(player_entity).value();
 
         int idx_vx = 0;
-        //#pragma omp simd
         for (int x = 0; x < width; ++x) {
             //! X-coordinate in camera space
             const float camera_x = 2.0f * float(x) / width - 1;
@@ -127,64 +123,9 @@ private:
                                 : std::fabs((map_pos.y() - pos.y() + (1.f - step.y()) / 2) / ray_dir.y())};
 
             //! Prepare current wall into the vertices
-            const auto&&[wall_x, draw_end] = prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side,
-                                                          perp_wall_dist);
-
-            // FLOOR CASTING
-            float floor_x_wall, floor_y_wall; // X, Y position of the floor texel at the bottom of the wall
-
-            // Four different wall directions possible
-            if (side == 0 && ray_dir.x() > 0) {
-                floor_x_wall = map_pos.x();
-                floor_y_wall = map_pos.y() + wall_x;
-            } else if (side == 0 && ray_dir.x() < 0) {
-                floor_x_wall = map_pos.x() + 1.0f;
-                floor_y_wall = map_pos.y() + wall_x;
-            } else if (side == 1 && ray_dir.y() > 0) {
-                floor_x_wall = map_pos.x() + wall_x;
-                floor_y_wall = map_pos.y();
-            } else {
-                floor_x_wall = map_pos.x() + wall_x;
-                floor_y_wall = map_pos.y() + 1.0f;
-            }
-
-            assert(not pixels_floor.empty());
-
-            //for(int y = 0; y < height; ++y) {
-            //            pixels_floor[x + width * ((height/2)-y)].pixel_color = graphics::transparent;
-            //        }
-
-            const float c_draw_end = draw_end;
-            const float c_floor_x_wall = floor_x_wall;
-            const float c_floor_y_wall = floor_y_wall;
-            const std::size_t tex_width = constants.tex_width;
-            const std::size_t tex_height = constants.tex_height;
-            const int c_x = x;
-            {
-                #pragma omp parallel for default(none) num_threads(4)
-                for (int y = int(c_draw_end) + 1; y < height; ++y) {
-                    const float currentDist = height / (2.0f * (y - bobbing_y_offset) -
-                                                        height); //you could make a small lookup table for this instead
-                    const float weight = currentDist / perp_wall_dist;
-                    const float currentFloorX = weight * c_floor_x_wall + (1.0f - weight) * pos_x;
-                    const float currentFloorY = weight * c_floor_y_wall + (1.0f - weight) * pos_y;
-
-                    const int floorTexX = static_cast<int>(currentFloorX * tex_width) % tex_width;
-                    const int floorTexY = static_cast<int>(currentFloorY * tex_height) % tex_height;
-
-                    // Prepare floor
-                    {
-                        auto &vx = pixels_floor[c_x + width * (height - y)];
-                        vx.pos = math::vec2f(float(c_x - 1), float(y));
-                        vx.texture_pos = floor_texture_offset + math::vec2f(float(floorTexX), float(floorTexY));
-                    }
-                }
-            }
-
+            prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side, perp_wall_dist);
             idx_vx += 2;
         }
-        /*entity_registry_.assign_or_replace<geometry::vertex_array>(floor_entity, pixels_floor, geometry::points,
-                                                                   "csgo.png");*/
         entity_registry_.assign_or_replace<geometry::vertex_array>(wall_entity, wall_lines, geometry::lines,
                                                                    "csgo.png");
     }
@@ -219,7 +160,7 @@ private:
             wall_lines[idx_vx + 0].pos = math::vec2f(float(x), float(draw_start));
             wall_lines[idx_vx + 1].pos = math::vec2f(float(x), float(draw_end));
         }
-        return std::make_tuple(wall_x, draw_end);
+        return std::make_tuple(wall_x, draw_end); //! in case someone want to code a floor one day he will need it.
     }
 
     int perform_dda(const wolf_constants &constants,
@@ -275,19 +216,9 @@ private:
     }
 
 public:
-    void post_update() noexcept final
-    {
-        /*#pragma omp parallel for simd default(none) num_threads(4)
-        for (auto it = pixels_floor.begin(); it != pixels_floor.end(); ++it) {
-            *it = geometry::vertex{};
-        }*/
-    }
-
-public:
     explicit raycast_system(entt::registry &registry) noexcept : system(registry)
     {
         entity_registry_.assign<graphics::layer_1>(wall_entity);
-        entity_registry_.assign<graphics::layer_0>(floor_entity);
         disable();
     }
 
@@ -309,16 +240,11 @@ private:
     //TODO: move it elsewhere
     float bobbing_y_offset{0.f};
     entt::entity wall_entity{entity_registry_.create()};
-    entt::entity floor_entity{entity_registry_.create()};
     entt::entity player_entity{entt::null};
 
     std::vector<geometry::vertex> wall_lines{static_cast<std::vector<geometry::vertex>::size_type>(
                                                      entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2i>().x() *
                                                      2)};
-
-    std::vector<geometry::vertex> pixels_floor{(1440 * 900) / 2};
-    math::vec2f floor_texture_offset{get_texture_offset(entity_registry_.ctx<wolf_constants>(),
-                                                        entity_registry_.ctx<wolf_constants>().floor_texture_index)};
 };
 
 REFL_AUTO(type(raycast_system));
