@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <type_traits>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
 #include <antara/gaming/event/key.pressed.hpp>
@@ -21,6 +22,7 @@
 #include <antara/gaming/ecs/interpolation.system.hpp>
 #include <antara/gaming/event/fill.image.properties.hpp>
 #include <antara/gaming/timer/time.step.hpp>
+#include "antara/gaming/graphics/component.2d.render.texture.hpp"
 #include "antara/gaming/config/config.game.maker.hpp"
 #include "antara/gaming/event/canvas.resized.hpp"
 #include "antara/gaming/sfml/graphic.system.hpp"
@@ -31,6 +33,19 @@
 namespace
 {
     using namespace antara::gaming;
+
+    /*template<typename TGenericDrawable>
+    auto &get_real_entity(entt::registry &registry, entt::entity entity) noexcept
+    {
+        if constexpr (std::is_same_v<TGenericDrawable, geometry::vertex_array>) {
+            return registry.get<sfml::vertex_array>(entity).drawable;
+        } else if constexpr (std::is_same_v<TGenericDrawable, geometry::rectangle>) {
+            return registry.get<sfml::rectangle>(entity).drawable;
+        } else if constexpr (std::is_same_v<TGenericDrawable, geometry::circle>) {
+            return registry.get<sfml::circle>(entity).drawable;
+        } else
+            return registry.get<sfml::sprite>(entity).drawable;
+    }*/
 
     template<typename TSFMLEntity>
     void fill_properties(transform::properties *props, TSFMLEntity &underlying_entity)
@@ -130,75 +145,134 @@ namespace antara::gaming::sfml
     template<size_t Layer, typename DrawableType>
     void graphic_system::draw() noexcept
     {
-        this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().less(
-                [this](entt::entity entity, auto &&drawable) {
-                    if constexpr (doom::meta::is_detected_v<have_global_bounds, DrawableType>) {
-                        if (this->debug_mode_) {
-                            auto[capsule_left, capsule_top, capsule_width, capsule_height] = drawable.drawable.getGlobalBounds();
-                            auto[_, __, width, height] = drawable.drawable.getLocalBounds();
+        auto draw_functor = [this](entt::entity entity, auto &&drawable) {
+            if constexpr (doom::meta::is_detected_v<have_global_bounds, DrawableType>)
+                if (this->debug_mode_)
+                    draw_debug(drawable);
 
-                            sf::RectangleShape shape_debug{sf::Vector2f(width, height)};
-                            sf::RectangleShape aabb_shape_debug{sf::Vector2f(capsule_width, capsule_height)};
+            auto is_dynamic = this->entity_registry_.has<entt::tag<"dynamic"_hs>>(entity);
+            if (is_dynamic)
+                draw_dynamic_entities(entity, drawable);
+            else {
+                if constexpr (std::is_same_v<DrawableType, vertex_array>) {
+                    draw_vertices(entity, drawable);
+                } else if constexpr (std::is_same_v<DrawableType, render_texture>) {
+                    draw_render_texture(entity, drawable);
+                } else
+                    this->render_texture_.draw(drawable.drawable);
+            }
+        };
 
-                            // Set origin for the new size as middle
-                            shape_debug.setOrigin(width * 0.5f, height * 0.5f);
+        this->entity_registry_.view<DrawableType, graphics::layer<Layer>>().less(draw_functor);
+    }
 
-                            // Move to the middle of the encapsulating bounds
-                            shape_debug.setPosition(capsule_left + capsule_width * 0.5f,
-                                                    capsule_top + capsule_height * 0.5f);
-                            aabb_shape_debug.setPosition(capsule_left, capsule_top);
+    template<typename Drawable>
+    void graphic_system::draw_vertices(entt::entity entity, Drawable &drawable) const
+    {
+        auto text_id = entity_registry_.get<geometry::vertex_array>(entity).texture_id;
+        if (text_id.has_value()) {
+            auto &res_system = entity_registry_.ctx<resources_system>();
+            auto handle = res_system.load_texture(text_id.value().c_str());
+            render_texture_.draw(drawable.drawable, &handle.get());
+        } else {
+            render_texture_.draw(drawable.drawable);
+        }
+    }
 
-                            // Change the scale
-                            shape_debug.setScale(drawable.drawable.getScale());
+    template<typename Drawable>
+    void graphic_system::draw_debug(Drawable &drawable) const
+    {
+        auto[capsule_left, capsule_top, capsule_width, capsule_height] = drawable.drawable.getGlobalBounds();
+        auto[_, __, width, height] = drawable.drawable.getLocalBounds();
 
-                            // Rotate
-                            shape_debug.setRotation(drawable.drawable.getRotation());
+        sf::RectangleShape shape_debug{sf::Vector2f(width, height)};
+        sf::RectangleShape aabb_shape_debug{sf::Vector2f(capsule_width, capsule_height)};
 
-                            // Cosmetic
-                            shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
-                            shape_debug.setOutlineThickness(3.0f);
-                            shape_debug.setOutlineColor(sf::Color::Red);
+        // Set origin for the new size as middle
+        shape_debug.setOrigin(width * 0.5f, height * 0.5f);
 
-                            aabb_shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
-                            aabb_shape_debug.setOutlineThickness(3.0f);
-                            aabb_shape_debug.setOutlineColor(sf::Color::Blue);
+        // Move to the middle of the encapsulating bounds
+        shape_debug.setPosition(capsule_left + capsule_width * 0.5f,
+                                capsule_top + capsule_height * 0.5f);
+        aabb_shape_debug.setPosition(capsule_left, capsule_top);
 
-                            this->render_texture_.draw(shape_debug);
-                            this->render_texture_.draw(aabb_shape_debug);
-                        }
-                    }
+        // Change the scale
+        shape_debug.setScale(drawable.drawable.getScale());
 
-                    auto is_dynamic = this->entity_registry_.has<entt::tag<"dynamic"_hs>>(entity);
-                    if (is_dynamic) {
-                        if constexpr (doom::meta::is_detected_v<have_set_position, DrawableType>) {
-                            auto org_pos = this->entity_registry_.get<transform::position_2d>(entity); //! save org
-                            auto prev_pos = this->entity_registry_.get<transform::previous_position_2d>(
-                                    entity); //! save org
-                            if (prev_pos != org_pos) {
-                                float interp = this->entity_registry_.ctx<ecs::interpolation_system::st_interpolation>().value();
-                                auto pos = prev_pos + (org_pos - prev_pos) * interp;
-                                drawable.drawable.setPosition(pos.x(), pos.y());
-                                this->render_texture_.draw(drawable.drawable);
-                                drawable.drawable.setPosition(org_pos.x(), org_pos.y());
-                            } else {
-                                this->render_texture_.draw(drawable.drawable);
-                            }
-                        }
+        // Rotate
+        shape_debug.setRotation(drawable.drawable.getRotation());
+
+        // Cosmetic
+        shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
+        shape_debug.setOutlineThickness(3.0f);
+        shape_debug.setOutlineColor(sf::Color::Red);
+
+        aabb_shape_debug.setFillColor(sf::Color(0, 0, 0, 0));
+        aabb_shape_debug.setOutlineThickness(3.0f);
+        aabb_shape_debug.setOutlineColor(sf::Color::Blue);
+
+        render_texture_.draw(shape_debug);
+        render_texture_.draw(aabb_shape_debug);
+    }
+
+    template<typename Drawable>
+    void graphic_system::draw_dynamic_entities(entt::entity entity, Drawable &drawable) const
+    {
+        if constexpr (doom::meta::is_detected_v<have_set_position, Drawable>) {
+            auto org_pos = entity_registry_.get<transform::position_2d>(entity); //! save org
+            auto prev_pos = entity_registry_.get<transform::previous_position_2d>(entity); //! save org
+            if (prev_pos != org_pos) {
+                float interp = entity_registry_.ctx<ecs::interpolation_system::st_interpolation>().value();
+                auto pos = prev_pos + (org_pos - prev_pos) * interp;
+                drawable.drawable.setPosition(pos.x(), pos.y());
+                render_texture_.draw(drawable.drawable);
+                drawable.drawable.setPosition(org_pos.x(), org_pos.y());
+            } else {
+                render_texture_.draw(drawable.drawable);
+            }
+        }
+    }
+
+    template<typename Drawable>
+    void graphic_system::draw_render_texture(entt::entity entity, Drawable &drawable) const
+    {
+        auto &rt = entity_registry_.get<graphics::render_texture_2d>(entity);
+        auto[r, g, b, a] = rt.clear_color;
+        sf::RenderTexture &rt_underlying = *drawable.drawable;
+        rt_underlying.clear(sf::Color(r, g, b, a));
+        for (auto&&[_, current_drawable] : rt.to_draw) {
+            switch (current_drawable.dt) {
+                case graphics::d_vertex_array: {
+                    auto &vertices = entity_registry_.get<geometry::vertex_array>(current_drawable.entity);
+                    auto &sfml_vertices = entity_registry_.get<vertex_array>(current_drawable.entity).drawable;
+                    if (vertices.texture_id.has_value()) {
+                        auto &res_system = entity_registry_.ctx<resources_system>();
+                        auto handle = res_system.load_texture(vertices.texture_id.value().c_str());
+                        rt_underlying.draw(sfml_vertices, &handle.get());
                     } else {
-                        if constexpr (std::is_same_v<DrawableType, vertex_array>) {
-                            auto text_id = this->entity_registry_.get<geometry::vertex_array>(entity).texture_id;
-                            if (text_id.has_value()) {
-                                auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
-                                auto handle = resources_system.load_texture(text_id.value().c_str());
-                                this->render_texture_.draw(drawable.drawable, &handle.get());
-                            } else {
-                                this->render_texture_.draw(drawable.drawable);
-                            }
-                        } else {
-                            this->render_texture_.draw(drawable.drawable);
-                        }
+                        rt_underlying.draw(sfml_vertices);
                     }
-                });
+                    break;
+                }
+                case graphics::d_sprite: {
+                    auto &sfml_sprite = entity_registry_.get<sprite>(current_drawable.entity).drawable;
+                    rt_underlying.draw(sfml_sprite);
+                    break;
+                }
+                case graphics::d_circle: {
+                    auto &sfml_circle = entity_registry_.get<circle>(current_drawable.entity).drawable;
+                    rt_underlying.draw(sfml_circle);
+                    break;
+                }
+                case graphics::d_rectangle: {
+                    auto &sfml_rectangle = entity_registry_.get<rectangle>(
+                            current_drawable.entity).drawable;
+                    rt_underlying.draw(sfml_rectangle);
+                    break;
+                }
+            }
+        }
+        rt_underlying.display();
     }
 
     template<size_t Layer, typename... DrawableType>
@@ -428,4 +502,5 @@ namespace antara::gaming::sfml
         auto[width, height] = handle->getSize();
         evt.image_size.set_xy(width, height);
     }
+
 }
