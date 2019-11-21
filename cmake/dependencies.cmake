@@ -118,12 +118,12 @@ if (ENABLE_BLOCKCHAIN_MODULES)
     if (APPLE)
         FetchContent_Declare(
                 nspv
-                URL https://github.com/SirSevenG/libnspv/releases/download/3/nspv-macos-4739a587dbb8f92aaad920bf6a202c275960581a.tar.gz
+                URL https://github.com/SirSevenG/libnspv/releases/download/3/nspv-macos-c237ad3e76d76709360b6385e38a1f468313e4ae.tar.gz
         )
     elseif (LINUX)
         FetchContent_Declare(
                 nspv
-                URL https://github.com/SirSevenG/libnspv/releases/download/3/nspv-linux-4739a587dbb8f92aaad920bf6a202c275960581a.tar.gz
+                URL https://github.com/SirSevenG/libnspv/releases/download/3/nspv-linux-c237ad3e76d76709360b6385e38a1f468313e4ae.tar.gz
         )
     endif ()
     FetchContent_MakeAvailable(nspv restclient-cpp)
