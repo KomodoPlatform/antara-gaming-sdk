@@ -16,63 +16,35 @@
 
 #pragma once
 
-#include <utility>
-#include <SFML/Graphics.hpp>
-#include "meta/sequence/list.hpp"
+#include <string>
+#include <map>
+#include <antara/gaming/math/vector.hpp>
+#include <antara/gaming/graphics/component.color.hpp>
 
-namespace antara::gaming::sfml
+namespace antara::gaming::graphics
 {
-    // LCOV_EXCL_START
-    struct sprite
+    enum drawable_type
     {
-        sprite() = default;
-
-        sf::Sprite drawable;
+        d_sprite,
+        d_vertex_array,
+        d_circle,
+        d_rectangle
     };
 
-    struct rectangle
+    struct drawable_info
     {
-        rectangle() = default;
-
-        sf::RectangleShape drawable;
+        entt::entity entity;
+        drawable_type dt;
     };
 
-    struct circle
+    using drawable_registry = std::map<std::string, drawable_info>;
+
+    struct render_texture_2d
     {
-        circle(sf::CircleShape drawable_) : drawable(std::move(drawable_))
-        {
-            drawable.setOrigin(drawable.getRadius(), drawable.getRadius());
-        }
-
-        circle()
-        {
-            drawable.setOrigin(drawable.getRadius(), drawable.getRadius());
-        }
-
-        sf::CircleShape drawable;
+        math::vec2u size;
+        drawable_registry to_draw;
+        graphics::color clear_color{graphics::black};
+        bool smooth{true};
+        bool repeated{false};
     };
-
-    struct text
-    {
-        text() = default;
-
-        sf::Text drawable;
-    };
-
-    struct vertex_array
-    {
-        vertex_array() = default;
-
-        sf::VertexArray drawable;
-    };
-
-    struct render_texture
-    {
-        render_texture() = default;
-        std::unique_ptr<sf::RenderTexture> drawable{std::make_unique<sf::RenderTexture>()};
-    };
-    // LCOV_EXCL_STOP
-
-    using drawable_list = doom::meta::list<sprite, circle, text, vertex_array, rectangle, render_texture>;
-    using drawable_list_transformable = doom::meta::list<sprite, circle, text, rectangle>;
 }

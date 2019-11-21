@@ -97,6 +97,18 @@ namespace antara::gaming::sfml
                                                     static_cast<sf::Uint32>(sf::Style::Default)};
         sf::RenderTexture& render_texture_{this->entity_registry_.set<sf::RenderTexture>()};
         sf::Sprite& render_texture_sprite_{this->entity_registry_.set<sf::Sprite>()};
+
+        template <typename Drawable>
+        void draw_render_texture(entt::entity entity, Drawable &drawable) const;
+
+        template <typename Drawable>
+        void draw_dynamic_entities(entt::entity entity, Drawable &drawable) const;
+
+        template <typename Drawable>
+        void draw_debug(Drawable &drawable) const;
+
+        template <typename Drawable>
+        void draw_vertices(entt::entity entity, Drawable &drawable) const;
     };
 }
 
