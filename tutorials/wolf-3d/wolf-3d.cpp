@@ -167,6 +167,59 @@ private:
 
 REFL_AUTO(type(background_system));
 
+class minimap_system final : public ecs::post_update_system<minimap_system>
+{
+private:
+    struct compass_contents
+    {
+        std::vector<entt::entity> compass_entities;
+    };
+
+    void create_compass() noexcept
+    {
+        auto compass_inner_shadow = this->entity_registry_.create();
+        auto compass_core = this->entity_registry_.create();
+        auto compass_ring = this->entity_registry_.create();
+        std::vector<entt::entity> entities{{compass_inner_shadow, compass_core, compass_ring}};
+        this->entity_registry_.assign<compass_contents>(minimap_compass_, entities);
+    }
+
+public:
+    minimap_system(entt::registry &registry) noexcept: system(registry)
+    {
+        auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
+        auto compass_handle = resources_system.load_texture("compass.png");
+        compass_handle->setSmooth(true);
+        auto compass_inner_shadow_handle = resources_system.load_texture("compass_inner_shadow.png");
+        compass_inner_shadow_handle->setSmooth(true);
+        auto compass_ring_handle = resources_system.load_texture("compass_ring.png");
+        compass_ring_handle->setSmooth(true);
+        auto compass_arrow_handle = resources_system.load_texture("compass_arrow.png");
+        compass_arrow_handle->setSmooth(true);
+        const float minimap_height = compass_inner_shadow_handle->getSize().y;
+
+        //auto &constants = entity_registry_.ctx<wolf_constants>();
+        auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
+        auto [_, height] = canvas.canvas.size;
+        disable();
+        minimap_circle_ = geometry::blueprint_circle(registry, minimap_height * 0.5f,
+                graphics::fill_color{255, 255, 255, 200},
+                transform::position_2d{10 + minimap_height, height - minimap_height * 0.5f - 10});
+        entity_registry_.assign<graphics::layer_2>(minimap_circle_);
+        create_compass();
+    }
+
+    void update() noexcept final
+    {
+    }
+
+private:
+    entt::entity minimap_circle_{entity_registry_.create()};
+    entt::entity minimap_compass_{entity_registry_.create()};
+};
+
+REFL_AUTO(type(minimap_system));
+
 class raycast_system final : public ecs::post_update_system<raycast_system>
 {
 private:
@@ -463,7 +516,7 @@ public:
         auto &p_system = system_manager_.create_system<player_system>();
         system_manager_.get_system<raycast_system>().set_player(p_system.get_player());
         system_manager_.get_system<background_system>().set_player(p_system.get_player());
-        system_manager_.enable_systems<raycast_system, background_system>();
+        system_manager_.enable_systems<raycast_system, background_system, minimap_system>();
     }
 
     // Scene name
@@ -487,17 +540,17 @@ struct wolf3d_world : world::app
     // Game entry point
     wolf3d_world() noexcept
     {
+        //! Load the resources system
+        entity_registry_.set<sfml::resources_system>(entity_registry_);
+
         //! Set wolf constants
         entity_registry_.set<wolf_constants>();
 
         //! Load ray cast system and Load background system (Sky, Ground)
-        system_manager_.load_systems<raycast_system, background_system>();
+        system_manager_.load_systems<raycast_system, background_system, minimap_system>();
 
         //! Load the graphical system
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
-
-        //! Load the resources system
-        entity_registry_.set<sfml::resources_system>(entity_registry_);
 
         //! Load the input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
