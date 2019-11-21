@@ -34,19 +34,6 @@ namespace
 {
     using namespace antara::gaming;
 
-    /*template<typename TGenericDrawable>
-    auto &get_real_entity(entt::registry &registry, entt::entity entity) noexcept
-    {
-        if constexpr (std::is_same_v<TGenericDrawable, geometry::vertex_array>) {
-            return registry.get<sfml::vertex_array>(entity).drawable;
-        } else if constexpr (std::is_same_v<TGenericDrawable, geometry::rectangle>) {
-            return registry.get<sfml::rectangle>(entity).drawable;
-        } else if constexpr (std::is_same_v<TGenericDrawable, geometry::circle>) {
-            return registry.get<sfml::circle>(entity).drawable;
-        } else
-            return registry.get<sfml::sprite>(entity).drawable;
-    }*/
-
     template<typename TSFMLEntity>
     void fill_properties(transform::properties *props, TSFMLEntity &underlying_entity)
     {
