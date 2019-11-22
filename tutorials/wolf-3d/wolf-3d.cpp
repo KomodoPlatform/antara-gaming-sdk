@@ -177,35 +177,43 @@ private:
 
     void create_compass() noexcept
     {
-        auto compass_inner_shadow = this->entity_registry_.create();
-        auto compass_core = this->entity_registry_.create();
-        auto compass_ring = this->entity_registry_.create();
-        std::vector<entt::entity> entities{{compass_inner_shadow, compass_core, compass_ring}};
-        this->entity_registry_.assign<compass_contents>(minimap_compass_, entities);
+        //this->entity_registry_.assign<compass_contents>(minimap_compass_, entities);
     }
 
 public:
     minimap_system(entt::registry &registry) noexcept: system(registry)
     {
+        disable();
         std::vector<event::loading_settings> settings = {{"compass.png"},
                                                          {"compass_inner_shadow.png"},
                                                          {"compass_ring.png"},
                                                          {"compass_arrow.png"}};
         this->dispatcher_.trigger<event::load_textures>(settings);
         math::vec2u compass_inner_shadow_texture_size;
-        this->dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png", compass_inner_shadow_texture_size);
+        this->dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png",
+                                                                compass_inner_shadow_texture_size);
         const float minimap_height = compass_inner_shadow_texture_size.y();
 
-        //auto &constants = entity_registry_.ctx<wolf_constants>();
+        auto &constants = entity_registry_.ctx<wolf_constants>();
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
         auto[_, height] = canvas.canvas.size;
-        disable();
-        minimap_circle_ = geometry::blueprint_circle(registry, minimap_height * 0.5f,
-                                                     graphics::fill_color{255, 255, 255, 200},
-                                                     transform::position_2d{10 + minimap_height,
-                                                                            height - minimap_height * 0.5f - 10});
-        entity_registry_.assign<graphics::layer_2>(minimap_circle_);
-        create_compass();
+
+
+        math::vec2u minimap_size{static_cast<unsigned int>(minimap_height / constants.minimap_zoom),
+                                 static_cast<unsigned int>(minimap_height / constants.minimap_zoom)};
+
+        entity_registry_.assign<graphics::render_texture_2d>(minimap_, "minimap_rt", minimap_size, graphics::drawable_registry{});
+
+        geometry::blueprint_circle(minimap_, registry, minimap_height * 0.5f,
+                                   graphics::fill_color{255, 255, 255, 200},
+                                   transform::position_2d{10 + minimap_height,
+                                                          height - minimap_height * 0.5f - 10});
+        entity_registry_.assign<graphics::layer_2>(minimap_);
+        auto compass = this->entity_registry_.create();
+        auto compass_ring = this->entity_registry_.create();
+        auto compass_inner_shadow = this->entity_registry_.create();
+        auto compass_arrow = this->entity_registry_.create();
+        //std::vector<entt::entity> entities{{compass_inner_shadow, compass_core, compass_ring}};
     }
 
     void update() noexcept final
@@ -213,8 +221,8 @@ public:
     }
 
 private:
-    entt::entity minimap_circle_{entity_registry_.create()};
-    entt::entity minimap_compass_{entity_registry_.create()};
+    entt::entity minimap_{entity_registry_.create()};
+    //entt::entity minimap_compass_{entity_registry_.create()};
 };
 
 REFL_AUTO(type(minimap_system));
