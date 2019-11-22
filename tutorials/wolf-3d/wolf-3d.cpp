@@ -17,6 +17,8 @@ using st_direction = st::type<math::vec2f, struct st_direction_tag>;
 using st_bobbing = st::type<float, struct bobbin_tag>;
 using st_plane = st::type<math::vec2f, struct plane_tag>;
 
+inline constexpr float RAD2DEG = 57.295779513082320876798154814105f;
+
 struct wolf_constants
 {
     const std::size_t tex_width{256};
@@ -67,6 +69,24 @@ struct wolf_constants
 
 namespace
 {
+    static float vec_to_angle(const math::vec2f &vec)
+    {
+        if (vec.x() == 0.0f && vec.y() == 0.0f) return 0.0f;
+        const float absx = std::abs(vec.x()), absy = std::abs(vec.y());
+        const float a = absx > absy ? absy / absx : absx / absy;
+        const float s = a * a;
+        float r = ((-0.0464964749f * s + 0.15931422f) * s - 0.327622764f) * s * a + a;
+
+        if (absy > absx) r = 1.57079637f - r;
+        if (vec.x() < 0) r = 3.14159274f - r;
+        if (vec.y() < 0) r = -r;
+
+        float ang = r * RAD2DEG + 90.0f;
+        if (ang < 0.0f) ang += 360.0f;
+        else if (ang > 360.0f) ang -= 360.0f;
+        return ang + 90;
+    }
+
     math::vec2f get_texture_offset(wolf_constants &constants, const math::vec2i &tex_idx)
     {
         return math::vec2f(float(tex_idx.x() * (constants.tex_width + 2) + 1),
@@ -106,27 +126,22 @@ namespace
 class background_system final : public ecs::post_update_system<background_system>
 {
 public:
-    explicit background_system(entt::registry &registry) noexcept : system(registry)
+    explicit background_system(entt::registry &registry, entt::entity player) noexcept : system(registry),
+                                                                                         player_entity_(player)
     {
         entity_registry_.assign<graphics::layer_0>(floor_);
         entity_registry_.assign<graphics::layer_0>(sky_);
-        disable();
     }
 
     void update() noexcept final
     {
-        if (not entity_registry_.valid(player_entity)) return;
-        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity).value();
+        if (not entity_registry_.valid(player_entity_)) return;
+        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity_).value();
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
         const auto[w, h] = canvas.canvas.size;
 
         prepare_sky(bobbing_y_offset, w, h);
         prepare_floor(bobbing_y_offset, w, h);
-    }
-
-    void set_player(entt::entity entity) noexcept
-    {
-        player_entity = entity;
     }
 
 private:
@@ -162,36 +177,21 @@ private:
 private:
     entt::entity floor_{entity_registry_.create()};
     entt::entity sky_{entity_registry_.create()};
-    entt::entity player_entity{entt::null};
+    entt::entity player_entity_;
 };
 
 REFL_AUTO(type(background_system));
 
 class minimap_system final : public ecs::post_update_system<minimap_system>
 {
-private:
-    struct compass_contents
-    {
-        std::vector<entt::entity> compass_entities;
-    };
-
-    void create_compass() noexcept
-    {
-        //this->entity_registry_.assign<compass_contents>(minimap_compass_, entities);
-    }
-
 public:
-    minimap_system(entt::registry &registry) noexcept: system(registry)
+    minimap_system(entt::registry &registry, entt::entity player_entity) noexcept: system(registry),
+                                                                                   player_entity_(player_entity)
     {
-        disable();
-        std::vector<event::loading_settings> settings = {{"compass.png"},
-                                                         {"compass_inner_shadow.png"},
-                                                         {"compass_ring.png"},
-                                                         {"compass_arrow.png"}};
-        this->dispatcher_.trigger<event::load_textures>(settings);
+        load_minimap_textures();
         math::vec2u compass_inner_shadow_texture_size;
-        this->dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png",
-                                                                compass_inner_shadow_texture_size);
+        dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png",
+                                                          compass_inner_shadow_texture_size);
         const float minimap_height = compass_inner_shadow_texture_size.y();
 
         auto &constants = entity_registry_.ctx<wolf_constants>();
@@ -202,27 +202,64 @@ public:
         math::vec2u minimap_size{static_cast<unsigned int>(minimap_height / constants.minimap_zoom),
                                  static_cast<unsigned int>(minimap_height / constants.minimap_zoom)};
 
-        entity_registry_.assign<graphics::render_texture_2d>(minimap_, "minimap_rt", minimap_size, graphics::drawable_registry{});
+        entity_registry_.assign<graphics::render_texture_2d>(minimap_, "minimap_rt", minimap_size,
+                                                             graphics::drawable_registry{});
 
+        auto minimap_position = transform::position_2d{10 + minimap_height,
+                                                       height - minimap_height * 0.5f - 10};
         geometry::blueprint_circle(minimap_, registry, minimap_height * 0.5f,
                                    graphics::fill_color{255, 255, 255, 200},
-                                   transform::position_2d{10 + minimap_height,
-                                                          height - minimap_height * 0.5f - 10});
-        entity_registry_.assign<graphics::layer_2>(minimap_);
-        auto compass = this->entity_registry_.create();
-        auto compass_ring = this->entity_registry_.create();
-        auto compass_inner_shadow = this->entity_registry_.create();
-        auto compass_arrow = this->entity_registry_.create();
-        //std::vector<entt::entity> entities{{compass_inner_shadow, compass_core, compass_ring}};
+                                   minimap_position);
+        entity_registry_.assign<graphics::layer_1>(minimap_);
+
+        create_compass(registry, minimap_position);
     }
 
     void update() noexcept final
     {
+        if (not entity_registry_.valid(player_entity_)) return;
+        update_minimap_rotation();
     }
 
 private:
+    void load_minimap_textures() const noexcept
+    {
+        std::vector<event::loading_settings> settings = {{"compass.png"},
+                                                         {"compass_inner_shadow.png"},
+                                                         {"compass_ring.png"},
+                                                         {"compass_arrow.png"}};
+        dispatcher_.trigger<event::load_textures>(settings);
+    }
+
+    void create_compass(entt::registry &registry, const transform::position_2d &minimap_position) noexcept
+    {
+        auto compass_inner_shadow = graphics::blueprint_sprite(registry, graphics::sprite{"compass_inner_shadow.png"},
+                                                               minimap_position);
+        entity_registry_.assign<graphics::layer_2>(compass_inner_shadow);
+
+        compass_ = graphics::blueprint_sprite(registry, graphics::sprite{"compass.png"}, minimap_position);
+        entity_registry_.assign<graphics::layer_3>(compass_);
+
+        auto compass_ring = graphics::blueprint_sprite(registry, graphics::sprite{"compass_ring.png"},
+                                                       minimap_position);
+        entity_registry_.assign<graphics::layer_4>(compass_ring);
+    }
+
+    void update_minimap_rotation() const noexcept
+    {
+        auto &circle_props = entity_registry_.get<transform::properties>(minimap_);
+        auto &compass_props = entity_registry_.get<transform::properties>(compass_);
+        auto &dir = entity_registry_.get<st_direction>(player_entity_).value();
+        circle_props.rotation = vec_to_angle(dir);
+        compass_props.rotation = circle_props.rotation;
+        entity_registry_.replace<transform::properties>(minimap_, circle_props);
+        entity_registry_.replace<transform::properties>(compass_, circle_props);
+    }
+
+private:
+    entt::entity player_entity_;
+    entt::entity compass_{entt::null};
     entt::entity minimap_{entity_registry_.create()};
-    //entt::entity minimap_compass_{entity_registry_.create()};
 };
 
 REFL_AUTO(type(minimap_system));
@@ -237,9 +274,9 @@ private:
         auto size = canvas.canvas.size.to<math::vec2i>();
         const auto width = size.x();
         const auto height = size.y();
-        const auto &plane = entity_registry_.get<st_plane>(player_entity).value();
-        const auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
-        auto &dir = entity_registry_.get<st_direction>(player_entity).value();
+        const auto &plane = entity_registry_.get<st_plane>(player_entity_).value();
+        const auto &pos = entity_registry_.get<transform::position_2d>(player_entity_);
+        auto &dir = entity_registry_.get<st_direction>(player_entity_).value();
 
         int idx_vx = 0;
         for (int x = 0; x < width; ++x) {
@@ -285,8 +322,8 @@ private:
     prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
                  const math::vec2i &map_pos, int side, float perp_wall_dist)
     {
-        auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
-        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity).value();
+        auto &pos = entity_registry_.get<transform::position_2d>(player_entity_);
+        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity_).value();
         // Calculate height of line to draw on screen
         const float line_height = std::abs(float(height) / perp_wall_dist);
 
@@ -352,7 +389,7 @@ private:
     void shot_ray(const math::vec2f &ray_dir, const math::vec2f &delta_dist, math::vec2f &side_dist, math::vec2i &step,
                   const math::vec2i &map_pos) const
     {
-        auto &pos = entity_registry_.get<transform::position_2d>(player_entity);
+        auto &pos = entity_registry_.get<transform::position_2d>(player_entity_);
         // X-direction
         if (ray_dir.x() < 0) {
             step.x_ref() = -1;
@@ -373,26 +410,21 @@ private:
     }
 
 public:
-    explicit raycast_system(entt::registry &registry) noexcept : system(registry)
+    explicit raycast_system(entt::registry &registry, entt::entity player) noexcept : system(registry),
+                                                                                      player_entity_(player)
     {
         entity_registry_.assign<graphics::layer_1>(wall_entity);
-        disable();
-    }
-
-    void set_player(entt::entity entity) noexcept
-    {
-        player_entity = entity;
     }
 
     void update() noexcept final
     {
-        if (not entity_registry_.valid(player_entity)) return;
+        if (not entity_registry_.valid(player_entity_)) return;
         perform_raycast();
     }
 
 private:
     entt::entity wall_entity{entity_registry_.create()};
-    entt::entity player_entity{entt::null};
+    entt::entity player_entity_;
     std::vector<geometry::vertex> wall_lines{static_cast<std::vector<geometry::vertex>::size_type>(
                                                      entity_registry_.ctx<graphics::canvas_2d>().canvas.size.to<math::vec2i>().x() *
                                                      2)};
@@ -409,8 +441,8 @@ public:
         entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
         entity_registry_.assign<st_plane>(player_, st_plane{{0.f, entity_registry_.ctx<wolf_constants>().fov}});
         entity_registry_.assign<st_bobbing>(player_, 0.f);
-        this->dispatcher_.sink<event::mouse_moved>().connect<&player_system::on_mouse_moved>(*this);
-        this->dispatcher_.trigger<event::get_mouse_position>(this->mouse_prev_pos, true);
+        dispatcher_.sink<event::mouse_moved>().connect<&player_system::on_mouse_moved>(*this);
+        dispatcher_.trigger<event::get_mouse_position>(mouse_prev_pos, true);
     }
 
     void on_mouse_moved(const event::mouse_moved &evt) noexcept
@@ -425,7 +457,7 @@ public:
     {
         const auto[width, height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size;
         mouse_prev_pos = math::vec2i{int(width / 2), int(height / 2)};
-        this->dispatcher_.trigger<event::set_mouse_position>(mouse_prev_pos, true);
+        dispatcher_.trigger<event::set_mouse_position>(mouse_prev_pos, true);
         const float dt = timer::time_step::get_fixed_delta_time();
         total_timer_ += dt;
 
@@ -520,10 +552,13 @@ public:
                                                                                                   system_manager_(
                                                                                                           system_manager)
     {
+        //! Create player system
         auto &p_system = system_manager_.create_system<player_system>();
-        system_manager_.get_system<raycast_system>().set_player(p_system.get_player());
-        system_manager_.get_system<background_system>().set_player(p_system.get_player());
-        system_manager_.enable_systems<raycast_system, background_system, minimap_system>();
+
+        //! Load ray cast system and Load background system (Sky, Ground)
+        system_manager.create_system<background_system>(p_system.get_player());
+        system_manager.create_system<raycast_system>(p_system.get_player());
+        system_manager.create_system<minimap_system>(p_system.get_player());
     }
 
     // Scene name
@@ -553,24 +588,20 @@ struct wolf3d_world : world::app
         //! Set wolf constants
         entity_registry_.set<wolf_constants>();
 
-        //! Load ray cast system and Load background system (Sky, Ground)
-        system_manager_.load_systems<raycast_system, background_system, minimap_system>();
-
         //! Load the graphical system
         auto &graphic_system = system_manager_.create_system<sfml::graphic_system>();
 
         //! Load the input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
 
-        // Create virtual input system
+        //! Create virtual input system
         system_manager_.create_system<ecs::virtual_input_system>();
 
-        // Create virtual input system
+        //! Create virtual inputs
         input::virtual_input::create("move_forward", {input::key::z, input::key::up}, {});
         input::virtual_input::create("move_left", {input::key::q, input::key::left}, {});
         input::virtual_input::create("move_down", {input::key::s, input::key::down}, {});
         input::virtual_input::create("move_right", {input::key::d, input::key::right}, {});
-
 
         //! Load the scenes manager
         auto &scene_manager = system_manager_.create_system<scenes::manager>();
