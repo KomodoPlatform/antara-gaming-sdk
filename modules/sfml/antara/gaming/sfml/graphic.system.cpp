@@ -72,6 +72,8 @@ namespace antara::gaming::sfml
         registry.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
         registry.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
         registry.on_replace<transform::properties>().connect<&graphic_system::on_properties_replaced>(*this);
+        registry.on_construct<graphics::render_texture_2d>().connect<&graphic_system::on_rt_construct>(*this);
+        registry.on_replace<graphics::render_texture_2d>().connect<&graphic_system::on_rt_construct>(*this);
         registry.on_construct<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
         registry.on_replace<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
         registry.on_construct<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
@@ -299,6 +301,13 @@ namespace antara::gaming::sfml
             sfml_circle.drawable.setFillColor(sf::Color(fill_color->r, fill_color->g, fill_color->b, fill_color->a));
         }
 
+        if (circle.try_to_apply_rt) {
+            if (auto rt = entity_registry_.try_get<sfml::render_texture>(entity); rt != nullptr) {
+                std::unique_ptr<sf::RenderTexture> &sfml_rt = rt->drawable;
+                sfml_circle.drawable.setTexture(&sfml_rt->getTexture());
+            }
+        }
+
         sfml_circle.drawable.setOrigin(sfml_circle.drawable.getRadius(), sfml_circle.drawable.getRadius());
 
         if (auto pos = registry.try_get<transform::position_2d>(entity); pos != nullptr) {
@@ -425,6 +434,15 @@ namespace antara::gaming::sfml
         fill_properties_sfml_entity(entity_registry_, entity, sf_text);
     }
 
+    void graphic_system::on_rt_construct(entt::entity entity, entt::registry &registry,
+                                         graphics::render_texture_2d &rt) noexcept
+    {
+        std::unique_ptr<sf::RenderTexture> &sfml_rt = registry.assign_or_replace<sfml::render_texture>(entity).drawable;
+        sfml_rt->create(rt.size.x(), rt.size.y());
+        sfml_rt->setSmooth(rt.smooth);
+        sfml_rt->setRepeated(rt.repeated);
+    }
+
     void
     graphic_system::on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept
     {
@@ -489,5 +507,4 @@ namespace antara::gaming::sfml
         auto[width, height] = handle->getSize();
         evt.image_size.set_xy(width, height);
     }
-
 }

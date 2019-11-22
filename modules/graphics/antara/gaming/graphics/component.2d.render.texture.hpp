@@ -41,6 +41,7 @@ namespace antara::gaming::graphics
 
     struct render_texture_2d
     {
+        std::string id;
         math::vec2u size;
         drawable_registry to_draw;
         graphics::color clear_color{graphics::black};

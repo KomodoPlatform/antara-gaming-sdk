@@ -35,6 +35,8 @@ namespace antara::gaming::geometry
     {
         circle(float radius_) noexcept;
 
+        circle(float radius_, bool try_to_apply_rt) noexcept;
+
         circle(const circle &other) noexcept = default;
 
         circle() noexcept;
@@ -42,10 +44,12 @@ namespace antara::gaming::geometry
         circle &operator=(const circle &other) noexcept = default;
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<circle(), circle(const circle &other), circle(float radius)>;
+        using constructors = sol::constructors<circle(), circle(const circle &other), circle(float radius), circle(
+                float radius, bool try_to_apply_rt)>;
 #endif
 
         float radius{0.f};
+        bool try_to_apply_rt{false};
     };
 
     entt::entity blueprint_circle(
@@ -54,7 +58,17 @@ namespace antara::gaming::geometry
             graphics::fill_color fill_color = graphics::white,
             transform::position_2d pos = math::vec2f::scalar(0.f),
             graphics::outline_color out_color = graphics::transparent,
-            const transform::properties& prop = {}) noexcept;
+            const transform::properties &prop = {}) noexcept;
+
+    void blueprint_circle(
+            entt::entity,
+            entt::registry &registry,
+            float radius,
+            graphics::fill_color fill_color = graphics::white,
+            transform::position_2d pos = math::vec2f::scalar(0.f),
+            bool try_to_apply_rt = false,
+            graphics::outline_color out_color = graphics::transparent,
+            const transform::properties &prop = {}) noexcept;
 }
 
 REFL_AUTO(type(antara::gaming::geometry::circle), field(radius));

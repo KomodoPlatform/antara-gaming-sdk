@@ -21,6 +21,7 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <meta/sequence/list.hpp>
+#include <antara/gaming/graphics/component.2d.render.texture.hpp>
 #include "antara/gaming/event/fill.image.properties.hpp"
 #include "antara/gaming/transform/component.properties.hpp"
 #include "antara/gaming/geometry/component.vertex.hpp"
@@ -86,6 +87,7 @@ namespace antara::gaming::sfml
         void on_position_2d_construct(entt::entity entity, entt::registry &registry, transform::position_2d &pos) noexcept;
         void on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept;
         void on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept;
+        void on_rt_construct(entt::entity entity, entt::registry &registry, graphics::render_texture_2d &rt) noexcept;
         void on_vertex_array_construct(entt::entity entity, entt::registry &registry, geometry::vertex_array &cmp_vertex_array) noexcept;
         void on_properties_replaced(entt::entity entity, entt::registry &registry, transform::properties &props) noexcept;
     private:
