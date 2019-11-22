@@ -19,10 +19,12 @@
 namespace antara::gaming::sfml
 {
 
-    texture_handle resources_manager::load_texture(const char *resource_id)
+    texture_handle resources_manager::load_texture(const char *resource_id, bool smooth)
     {
-        return resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id,
+        auto handle = resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id,
                                                                         (textures_path_ / resource_id).string());
+        handle->setSmooth(smooth);
+        return handle;
     }
 
     font_handle resources_manager::load_font(const char *resource_id)

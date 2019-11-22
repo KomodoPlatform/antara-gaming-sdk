@@ -17,6 +17,7 @@
 #pragma once
 
 #include <meta/sequence/list.hpp>
+#include "antara/gaming/event/load.textures.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/start.game.hpp"
 #include "antara/gaming/event/key.pressed.hpp"

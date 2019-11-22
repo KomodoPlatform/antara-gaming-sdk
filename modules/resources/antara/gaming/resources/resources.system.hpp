@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "antara/gaming/event/load.textures.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
 namespace antara::gaming::resources
@@ -27,8 +28,16 @@ namespace antara::gaming::resources
         using resources_identifier = const char *;
         using TSystem = ecs::logic_update_system<system<UnderlyingResourceManager>>;
 
+        void on_load_textures(const event::load_textures& evt) noexcept
+        {
+            for (auto&& current_setting : evt.textures_settings) {
+                this->load_texture(current_setting.texture_id.c_str());
+            }
+        }
+
         system(entt::registry &registry) noexcept : TSystem::system(registry)
         {
+            this->dispatcher_.template sink<event::load_textures>().template connect<&system::on_load_textures>(*this);
             this->disable();
         }
 
@@ -41,9 +50,10 @@ namespace antara::gaming::resources
 
     public:
 
-        auto load_texture(resources_identifier id)
+        template <typename ... Args>
+        auto load_texture(Args&& ...args)
         {
-            return underlying_resource_manager_.load_texture(id);
+            return underlying_resource_manager_.load_texture(std::forward<Args>(args)...);
         }
 
         auto load_font(resources_identifier id)

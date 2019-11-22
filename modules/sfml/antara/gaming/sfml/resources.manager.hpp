@@ -52,7 +52,7 @@ namespace antara::gaming::sfml
             return cache.contains(identifier);
         }
 
-        texture_handle load_texture(const char *resource_id);
+        texture_handle load_texture(const char *resource_id, bool smooth = false);
 
         font_handle load_font(const char *resource_id);
 
