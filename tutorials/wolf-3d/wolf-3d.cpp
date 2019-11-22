@@ -192,16 +192,9 @@ public:
                                                          {"compass_ring.png"},
                                                          {"compass_arrow.png"}};
         this->dispatcher_.trigger<event::load_textures>(settings);
-        auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
-        //auto compass_handle = resources_system.load_texture("compass.png");
-        //compass_handle->setSmooth(true);
-        auto compass_inner_shadow_handle = resources_system.load_texture("compass_inner_shadow.png");
-        compass_inner_shadow_handle->setSmooth(true);
-        //auto compass_ring_handle = resources_system.load_texture("compass_ring.png");
-        //compass_ring_handle->setSmooth(true);
-        //auto compass_arrow_handle = resources_system.load_texture("compass_arrow.png");
-        //compass_arrow_handle->setSmooth(true);
-        const float minimap_height = compass_inner_shadow_handle->getSize().y;
+        math::vec2u compass_inner_shadow_texture_size;
+        this->dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png", compass_inner_shadow_texture_size);
+        const float minimap_height = compass_inner_shadow_texture_size.y();
 
         //auto &constants = entity_registry_.ctx<wolf_constants>();
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
