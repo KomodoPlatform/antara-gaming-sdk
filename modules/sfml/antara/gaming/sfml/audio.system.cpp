@@ -44,7 +44,9 @@ namespace
                 handle->pause();
                 break;
             case audio::playing:
-                handle->play();
+                if (handle->getStatus() != sf::Sound::Playing) {
+                    handle->play();
+                }
                 break;
         }
     }
