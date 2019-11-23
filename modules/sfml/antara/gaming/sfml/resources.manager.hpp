@@ -58,6 +58,7 @@ namespace antara::gaming::sfml
 
         sound_handle load_sound(const char *resource_id);
 
+        music_handle load_music(const char* resource_id);
 
     private:
         const std::filesystem::path assets_path_{antara::gaming::core::assets_real_path()};

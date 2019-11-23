@@ -16,31 +16,22 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
+#include <functional>
+#include <string>
+#include "antara/gaming/audio/audio.status.hpp"
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/sfml/event.play.sound.hpp"
-#include "antara/gaming/ecs/system.hpp"
-
-namespace antara::gaming::sfml
+namespace antara::gaming::audio
 {
-    /**
-     * @class audio_system
-     * @brief This class allows the customization and play of audio.
-     */
-    class audio_system final : public ecs::pre_update_system<audio_system>
+    struct sound_effect
     {
-    public:
-        /**
-         * @param registry The entity_registry is provided to the system when it is created.
-         */
-        audio_system(entt::registry &registry) noexcept;
-
-        /**
-         * @brief This function destroys and cleans up the sounds which are completed playing.
-         */
-        void update() noexcept final;
+        std::string sound_id;
+        status sound_status{status::wait_for_first_run};
+        float pitch{1.f};
+        float volume{100.f};
+        bool loop{false};
+        std::function<void()> on_finish{[]() {}};
+        float minimum_distance{1.f};
+        float attenuation{1.f};
+        bool relative_to_listener{false};
     };
 }
-
-REFL_AUTO(type(antara::gaming::sfml::audio_system));

@@ -2,7 +2,7 @@ set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
 add_executable(antara-sfml-example MACOSX_BUNDLE ${ICON} main.cpp)
-target_link_libraries(antara-sfml-example PUBLIC antara::world antara::scenes antara::sfml antara::animation2d)
+target_link_libraries(antara-sfml-example PUBLIC antara::world antara::scenes antara::sfml antara::audio antara::animation2d)
 
 set_target_properties(antara-sfml-example
         PROPERTIES
