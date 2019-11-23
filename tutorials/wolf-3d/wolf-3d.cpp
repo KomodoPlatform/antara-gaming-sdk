@@ -6,8 +6,6 @@
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/ecs/virtual.input.system.hpp>
-#include <iostream>
-#include <SFML/Window/Keyboard.hpp>
 
 // For convenience
 using namespace antara::gaming;
