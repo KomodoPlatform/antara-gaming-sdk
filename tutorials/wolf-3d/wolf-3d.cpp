@@ -16,9 +16,11 @@ using namespace std::string_literals;
 using st_direction = st::type<math::vec2f, struct st_direction_tag>;
 using st_bobbing = st::type<float, struct bobbin_tag>;
 using st_plane = st::type<math::vec2f, struct plane_tag>;
+using st_tile_size = st::type<float, struct tile_size_tag>;
 
 inline constexpr float RAD2DEG = 57.295779513082320876798154814105f;
-
+inline constexpr std::size_t map_width = 24ull;
+inline constexpr std::size_t map_height = 24ull;
 struct wolf_constants
 {
     const std::size_t tex_width{256};
@@ -28,8 +30,7 @@ struct wolf_constants
     const float fov{fov_degrees / 100.0f};
     const float mouse_sensitivity{0.00125};
     const float minimap_zoom{0.5f};
-    const float movement_speed{5.0f};
-    const float max_brightness{90.0f};
+    const float movement_speed{3.5f};
     const math::vec2i wall_texture_indexes[6] = {
             math::vec2i{0, 0}, // 0
             math::vec2i{2, 0}, // 1
@@ -39,7 +40,7 @@ struct wolf_constants
             math::vec2i{1, 1}, // 5
     };
 
-    const int world_map[24][24] = {
+    const int world_map[map_width][map_height] = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 1, 1, 1},
             {1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 1, 1, 1},
@@ -69,6 +70,30 @@ struct wolf_constants
 
 namespace
 {
+    inline constexpr math::vec2f UNIT_UP(0.f, -1.f);
+    inline constexpr math::vec2f UNIT_UP_RIGHT(1.f, -1.f);
+    inline constexpr math::vec2f UNIT_UP_LEFT(-1.f, -1.f);
+    inline constexpr math::vec2f UNIT_DOWN(0.f, 1.f);
+    inline constexpr math::vec2f UNIT_DOWN_RIGHT(1.f, 1.f);
+    inline constexpr math::vec2f UNIT_DOWN_LEFT(-1.f, 1.f);
+    inline constexpr math::vec2f UNIT_RIGHT(1.f, 0.f);
+    inline constexpr math::vec2f UNIT_LEFT(-1.f, 0.f);
+
+    math::vec2f angle_to_vec(const float &degree)
+    {
+        if (degree == 180) return UNIT_DOWN;
+        if (degree == 90) return UNIT_RIGHT;
+        if (degree == 270) return UNIT_LEFT;
+        if (degree == 0 || degree == 360) return UNIT_UP;
+        if (degree == 45) return UNIT_UP_RIGHT;
+        if (degree == 135) return UNIT_DOWN_RIGHT;
+        if (degree == 225) return UNIT_DOWN_LEFT;
+        if (degree == 315) return UNIT_UP_LEFT;
+
+        const float rad = (-degree + 90.0f) / RAD2DEG;
+        return math::vec2f(cosf(rad), -sinf(rad));
+    }
+
     static float vec_to_angle(const math::vec2f &vec)
     {
         if (vec.x() == 0.0f && vec.y() == 0.0f) return 0.0f;
@@ -87,13 +112,13 @@ namespace
         return ang + 90;
     }
 
-    math::vec2f get_texture_offset(wolf_constants &constants, const math::vec2i &tex_idx)
+    math::vec2f get_texture_offset(const wolf_constants &constants, const math::vec2i &tex_idx)
     {
         return math::vec2f(float(tex_idx.x() * (constants.tex_width + 2) + 1),
                            float(tex_idx.y() * (constants.tex_height + 2) + 1));
     }
 
-    math::vec2f get_texture_offset(wolf_constants &constants, const int type)
+    math::vec2f get_texture_offset(const wolf_constants &constants, const int type)
     {
         return get_texture_offset(constants, constants.wall_texture_indexes[type]);
     }
@@ -108,11 +133,11 @@ namespace
         v.pixel_color.r = v.pixel_color.g = v.pixel_color.b = value;
     }
 
-    /*void set_color(geometry::vertex &v, std::uint8_t value, std::uint8_t alpha)
+    void set_color(geometry::vertex &v, std::uint8_t value, std::uint8_t alpha)
     {
         set_color(v, value);
         v.pixel_color.a = alpha;
-    }*/
+    }
 
     void set_brightness(geometry::vertex &v, const float distance, const float max_distance,
                         const float brightness_cap = 90.0f)
@@ -192,25 +217,47 @@ public:
         math::vec2u compass_inner_shadow_texture_size;
         dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png",
                                                           compass_inner_shadow_texture_size);
-        const float minimap_height = compass_inner_shadow_texture_size.y();
+        minimap_height_ = compass_inner_shadow_texture_size.y();
 
         auto &constants = entity_registry_.ctx<wolf_constants>();
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
         auto[_, height] = canvas.canvas.size;
 
 
-        math::vec2u minimap_size{static_cast<unsigned int>(minimap_height / constants.minimap_zoom),
-                                 static_cast<unsigned int>(minimap_height / constants.minimap_zoom)};
+        math::vec2u minimap_size{static_cast<unsigned int>(minimap_height_ / constants.minimap_zoom),
+                                 static_cast<unsigned int>(minimap_height_ / constants.minimap_zoom)};
 
-        entity_registry_.assign<graphics::render_texture_2d>(minimap_, "minimap_rt", minimap_size,
-                                                             graphics::drawable_registry{});
+        const float tile_size = static_cast<float>(minimap_size.y()) / map_width;
+        std::vector<geometry::vertex> minimap_tiles_vertices(map_width * map_height * 4);
+        minimap_tiles_ = entity_registry_.create();
+        this->entity_registry_.assign<st_tile_size>(minimap_tiles_, st_tile_size{tile_size});
+        this->entity_registry_.assign<geometry::vertex_array>(minimap_tiles_, minimap_tiles_vertices, geometry::quads,
+                                                              "csgo.png");
 
-        auto minimap_position = transform::position_2d{10 + minimap_height,
-                                                       height - minimap_height * 0.5f - 10};
-        geometry::blueprint_circle(minimap_, registry, minimap_height * 0.5f,
+        std::vector<geometry::vertex> minimap_fov_vertices(3);
+        minimap_fov_ = entity_registry_.create();
+        this->entity_registry_.assign<geometry::vertex_array>(minimap_fov_, minimap_fov_vertices, geometry::triangles);
+
+        compass_arrow_ = graphics::blueprint_sprite(registry, graphics::sprite{"compass_arrow.png"},
+                                                    math::vec2f{}, graphics::white,
+                                                    transform::properties{.scale= math::vec2f{1.0f, 1.5f}});
+
+        entity_registry_.assign<graphics::render_texture_2d>(
+                minimap_,
+                "minimap_rt",
+                minimap_size,
+                graphics::drawable_registry{
+                        {"0_minimap_tiles", graphics::drawable_info{.entity = minimap_tiles_, .dt = graphics::d_vertex_array}},
+                        {"1_minimap_fov",   graphics::drawable_info{.entity = minimap_fov_, .dt = graphics::d_vertex_array}},
+                        {"2_minimap_arrow", graphics::drawable_info{.entity = compass_arrow_, .dt = graphics::d_sprite}}
+                });
+
+        auto minimap_position = transform::position_2d{10 + minimap_height_,
+                                                       height - minimap_height_ * 0.5f - 10};
+        geometry::blueprint_circle(minimap_, registry, minimap_height_ * 0.5f,
                                    graphics::fill_color{255, 255, 255, 200},
-                                   minimap_position);
-        entity_registry_.assign<graphics::layer_1>(minimap_);
+                                   minimap_position, true);
+        entity_registry_.assign<graphics::layer_2>(minimap_);
 
         create_compass(registry, minimap_position);
     }
@@ -218,7 +265,18 @@ public:
     void update() noexcept final
     {
         if (not entity_registry_.valid(player_entity_)) return;
-        update_minimap_rotation();
+        const auto &player_dir = entity_registry_.get<st_direction>(player_entity_).value();
+        const float tile_size = entity_registry_.get<st_tile_size>(minimap_tiles_).value();
+        const auto &constants = entity_registry_.ctx<wolf_constants>();
+        auto &player_pos = entity_registry_.get<transform::position_2d>(player_entity_);
+        math::vec2f minimap_player_pos{player_pos.y() * tile_size, player_pos.x() * tile_size};
+        const float minimap_player_dir_angle{-vec_to_angle(player_dir)};
+
+        update_minimap_rotation(player_dir);
+        update_tiles(constants, tile_size);
+        update_fov(constants, tile_size, minimap_player_pos, minimap_player_dir_angle);
+        update_minimap_arrow(minimap_player_pos, minimap_player_dir_angle);
+        update_minimap_circle();
     }
 
 private:
@@ -235,31 +293,103 @@ private:
     {
         auto compass_inner_shadow = graphics::blueprint_sprite(registry, graphics::sprite{"compass_inner_shadow.png"},
                                                                minimap_position);
-        entity_registry_.assign<graphics::layer_2>(compass_inner_shadow);
+        entity_registry_.assign<graphics::layer_3>(compass_inner_shadow);
 
         compass_ = graphics::blueprint_sprite(registry, graphics::sprite{"compass.png"}, minimap_position);
-        entity_registry_.assign<graphics::layer_3>(compass_);
+        entity_registry_.assign<graphics::layer_4>(compass_);
 
         auto compass_ring = graphics::blueprint_sprite(registry, graphics::sprite{"compass_ring.png"},
                                                        minimap_position);
-        entity_registry_.assign<graphics::layer_4>(compass_ring);
+        entity_registry_.assign<graphics::layer_5>(compass_ring);
     }
 
-    void update_minimap_rotation() const noexcept
+    void update_minimap_rotation(const math::vec2f &player_dir) const noexcept
     {
         auto &circle_props = entity_registry_.get<transform::properties>(minimap_);
         auto &compass_props = entity_registry_.get<transform::properties>(compass_);
-        auto &dir = entity_registry_.get<st_direction>(player_entity_).value();
-        circle_props.rotation = vec_to_angle(dir);
+        circle_props.rotation = vec_to_angle(player_dir);
         compass_props.rotation = circle_props.rotation;
         entity_registry_.replace<transform::properties>(minimap_, circle_props);
         entity_registry_.replace<transform::properties>(compass_, circle_props);
     }
 
+    void update_tiles(const wolf_constants &constants, const float tile_size) const noexcept
+    {
+        auto &vertices = entity_registry_.get<geometry::vertex_array>(minimap_tiles_).vertices;
+        for (std::size_t m_x = 0, idx = 0; m_x < map_width; ++m_x) {
+            for (std::size_t m_y = 0; m_y < map_height; ++m_y, idx += 4) {
+                const int type = constants.world_map[m_y][m_x];
+
+                vertices[idx + 0].pos = {m_x * tile_size, m_y * tile_size};
+                vertices[idx + 1].pos = {(m_x + 1) * tile_size, m_y * tile_size};
+                vertices[idx + 2].pos = {(m_x + 1) * tile_size, (m_y + 1) * tile_size};
+                vertices[idx + 3].pos = {m_x * tile_size, (m_y + 1) * tile_size};
+
+                // Texture
+                const auto offset = get_texture_offset(constants, type);
+                vertices[idx + 0].texture_pos = {offset.x(), offset.y()};
+                vertices[idx + 1].texture_pos = {offset.x() + constants.tex_width, offset.y()};
+                vertices[idx + 2].texture_pos = {offset.x() + constants.tex_width, offset.y() + constants.tex_height};
+                vertices[idx + 3].texture_pos = {offset.x(), offset.y() + constants.tex_height};
+
+                const float darkness = 150;
+                std::uint8_t color = type == 0 ? std::uint8_t(darkness) : 255;
+                for (int i = 0; i < 4; ++i) set_color(vertices[idx + i], color);
+            }
+        }
+        this->entity_registry_.replace<geometry::vertex_array>(minimap_tiles_, vertices, geometry::quads, "csgo.png");
+    }
+
+    void update_fov(const wolf_constants &constants, const float tile_size, const math::vec2f &minimap_player_pos,
+                    const float minimap_player_dir_angle) const noexcept
+    {
+        auto &minimap_rt_size = entity_registry_.get<graphics::render_texture_2d>(minimap_).size;
+        auto &fov_vertices = entity_registry_.get<geometry::vertex_array>(minimap_fov_).vertices;
+
+        // Angles
+        const float fov_arm_dist = tile_size * constants.darkness_distance * (minimap_height_ / minimap_rt_size.x()) /
+                                   constants.minimap_zoom;
+        const math::vec2f left_fov_vec =
+                angle_to_vec(minimap_player_dir_angle - constants.fov_degrees * 0.5f) * fov_arm_dist;
+        const math::vec2f right_fov_vec =
+                angle_to_vec(minimap_player_dir_angle + constants.fov_degrees * 0.5f) * fov_arm_dist;
+
+        // Positions
+        fov_vertices[0].pos = minimap_player_pos;
+        fov_vertices[1].pos = fov_vertices[0].pos + left_fov_vec;
+        fov_vertices[2].pos = fov_vertices[0].pos + right_fov_vec;
+
+        // Character point is visible
+        const unsigned char color = 255;
+        set_color(fov_vertices[0], color, 60);
+
+        // Then it goes invisible towards the end
+        for (int i = 1; i <= 2; ++i) set_color(fov_vertices[i], color, 0);
+
+        this->entity_registry_.replace<geometry::vertex_array>(minimap_fov_, fov_vertices, geometry::triangles);
+    }
+
+    void update_minimap_arrow(const math::vec2f& minimap_player_pos, const float minimap_player_dir_angle) const noexcept
+    {
+        auto &arrow_props = entity_registry_.get<transform::properties>(compass_arrow_);
+        arrow_props.rotation = minimap_player_dir_angle;
+        entity_registry_.replace<transform::properties>(compass_arrow_, arrow_props);
+        entity_registry_.replace<transform::position_2d>(compass_arrow_, minimap_player_pos);
+    }
+
+    void update_minimap_circle() const noexcept
+    {
+
+    }
+
 private:
     entt::entity player_entity_;
     entt::entity compass_{entt::null};
+    entt::entity compass_arrow_{entt::null};
+    entt::entity minimap_tiles_{entt::null};
+    entt::entity minimap_fov_{entt::null};
     entt::entity minimap_{entity_registry_.create()};
+    float minimap_height_;
 };
 
 REFL_AUTO(type(minimap_system));
@@ -496,7 +626,7 @@ private:
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
         bool moving = input_dir.x() != 0 || input_dir.y() != 0;
         if (moving) walking_timer_ += dt;
-        bobbing_y_offset = height * (moving ? 0.008 : 0.004) * std::sin(14.0f * walking_timer_ + 2.0f * total_timer_);
+        bobbing_y_offset = height * (moving ? 0.016 : 0.008) * std::sin(15.0f * walking_timer_ + 2.0f * total_timer_);
     }
 
     void move_player(const float dt, const wolf_constants &constants, const math::vec2f &input_dir) const noexcept
