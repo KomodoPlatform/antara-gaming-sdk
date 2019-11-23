@@ -28,7 +28,10 @@ namespace antara::gaming::geometry
 
     }
 
-    circle::circle(float radius_, bool try_to_apply_rt_) noexcept : radius(radius_), try_to_apply_rt(try_to_apply_rt_)
+    circle::circle(float radius_, bool try_to_apply_rt, std::optional<circle_texture> circle_texture_props_) noexcept :
+            radius(radius_),
+            try_to_apply_rt(try_to_apply_rt),
+            circle_texture_props(circle_texture_props_)
     {
 
     }
@@ -52,13 +55,14 @@ namespace antara::gaming::geometry
                           graphics::fill_color fill_color,
                           transform::position_2d pos,
                           bool try_to_apply_rt,
+                          std::optional<circle_texture> circle_texture_props,
                           graphics::outline_color out_color,
                           const transform::properties &prop) noexcept
     {
         registry.assign<graphics::fill_color>(circle_entity, fill_color);
         registry.assign<graphics::outline_color>(circle_entity, out_color);
         registry.assign<transform::properties>(circle_entity, prop);
-        registry.assign<geometry::circle>(circle_entity, radius, try_to_apply_rt);
+        registry.assign<geometry::circle>(circle_entity, radius, try_to_apply_rt, circle_texture_props);
         registry.assign<transform::position_2d>(circle_entity, pos);
     }
 }

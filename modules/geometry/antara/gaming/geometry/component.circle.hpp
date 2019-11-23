@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <optional>
+
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
 
 #include <sol/sol.hpp>
@@ -26,16 +28,23 @@
 #include <entt/entity/registry.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/graphics/component.color.hpp"
+#include "antara/gaming/graphics/component.sprite.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/transform/component.properties.hpp"
 
 namespace antara::gaming::geometry
 {
+    struct circle_texture
+    {
+        bool native_size{true}; //! take the whole size by default
+        graphics::rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
+    };
+
     struct circle
     {
         circle(float radius_) noexcept;
 
-        circle(float radius_, bool try_to_apply_rt) noexcept;
+        circle(float radius_, bool try_to_apply_rt, std::optional<circle_texture> circle_texture_props_ = std::nullopt) noexcept;
 
         circle(const circle &other) noexcept = default;
 
@@ -44,12 +53,12 @@ namespace antara::gaming::geometry
         circle &operator=(const circle &other) noexcept = default;
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<circle(), circle(const circle &other), circle(float radius), circle(
-                float radius, bool try_to_apply_rt)>;
+        using constructors = sol::constructors<circle(), circle(const circle &other), circle(float radius)>;
 #endif
 
         float radius{0.f};
         bool try_to_apply_rt{false};
+        std::optional<circle_texture> circle_texture_props{std::nullopt};
     };
 
     entt::entity blueprint_circle(
@@ -67,6 +76,7 @@ namespace antara::gaming::geometry
             graphics::fill_color fill_color = graphics::white,
             transform::position_2d pos = math::vec2f::scalar(0.f),
             bool try_to_apply_rt = false,
+            std::optional<circle_texture> circle_texture_props = std::nullopt,
             graphics::outline_color out_color = graphics::transparent,
             const transform::properties &prop = {}) noexcept;
 }

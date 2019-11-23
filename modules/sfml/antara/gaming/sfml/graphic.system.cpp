@@ -306,6 +306,14 @@ namespace antara::gaming::sfml
                 std::unique_ptr<sf::RenderTexture> &sfml_rt = rt->drawable;
                 sfml_circle.drawable.setTexture(&sfml_rt->getTexture());
             }
+            if (circle.circle_texture_props.has_value()) {
+                auto props = circle.circle_texture_props.value();
+                if (not props.native_size) {
+                    auto[left, top] = props.texture_rec.pos;
+                    auto[width, height] = props.texture_rec.size;
+                    sfml_circle.drawable.setTextureRect(sf::IntRect(left, top, width, height));
+                }
+            }
         }
 
         sfml_circle.drawable.setOrigin(sfml_circle.drawable.getRadius(), sfml_circle.drawable.getRadius());
