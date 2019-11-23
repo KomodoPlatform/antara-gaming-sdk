@@ -600,6 +600,9 @@ class player_system final : public ecs::logic_update_system<player_system>
 public:
     player_system(entt::registry &registry) noexcept : system(registry)
     {
+        audio::music msc{.music_id = "breath.ogg", .loop = true, .music_status = audio::playing, .pitch = 1.5f};
+        entity_registry_.assign<audio::music>(breath_, msc);
+
         entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
         entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
         entity_registry_.assign<st_plane>(player_, st_plane{{0.f, entity_registry_.ctx<wolf_constants>().fov}});
@@ -633,12 +636,30 @@ public:
 
         math::vec2f input_dir{float(right - left), float(up - down)};
 
-        bobbing(dt, height, input_dir);
+        bool moving = input_dir.x() != 0 || input_dir.y() != 0;
+
+        update_breath(moving, dt);
+        bobbing(dt, height, input_dir, moving);
         move_player(dt, constants, input_dir);
     }
 
 
 private:
+    void update_breath(bool moving, const float dt) const noexcept
+    {
+        const float target_pitch = moving ? 2.f : 1.f;
+        auto &msc = entity_registry_.get<audio::music>(breath_);
+        float curr_pitch = msc.pitch;
+        if (target_pitch != curr_pitch) {
+            float new_pitch = curr_pitch + (target_pitch - curr_pitch) * dt;
+            if (new_pitch != curr_pitch) {
+                curr_pitch = new_pitch;
+                msc.pitch = curr_pitch;
+                entity_registry_.replace<audio::music>(breath_, msc);
+            }
+        }
+    }
+
     void move_player_camera(const float amount, const float dt)
     {
         auto &plane = entity_registry_.get<st_plane>(player_).value();
@@ -654,10 +675,9 @@ private:
         plane.y_ref() = old_plane_x * std::sin(-rot_speed) + plane.y() * std::cos(-rot_speed);
     };
 
-    void bobbing(const float dt, const float height, const math::vec2f &input_dir) noexcept
+    void bobbing(const float dt, const float height, const math::vec2f &input_dir, bool moving) noexcept
     {
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
-        bool moving = input_dir.x() != 0 || input_dir.y() != 0;
         if (moving) walking_timer_ += dt;
         bobbing_y_offset = height * (moving ? 0.016 : 0.008) * std::sin(15.0f * walking_timer_ + 2.0f * total_timer_);
     }
@@ -700,6 +720,7 @@ public:
 
 private:
     entt::entity player_{entity_registry_.create()};
+    entt::entity breath_{entity_registry_.create()};
     float walking_timer_{0.f};
     float total_timer_{0.f};
     math::vec2i mouse_prev_pos{};
