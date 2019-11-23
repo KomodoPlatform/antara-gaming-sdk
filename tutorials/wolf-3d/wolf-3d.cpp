@@ -576,6 +576,8 @@ public:
     explicit raycast_system(entt::registry &registry, entt::entity player) noexcept : system(registry),
                                                                                       player_entity_(player)
     {
+        std::vector<event::loading_settings> settings = {{"csgo.png"}};
+        dispatcher_.trigger<event::load_textures>(settings);
         entity_registry_.assign<graphics::layer_1>(wall_entity);
     }
 
