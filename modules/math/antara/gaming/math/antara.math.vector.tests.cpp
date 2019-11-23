@@ -172,4 +172,30 @@ namespace antara::gaming::math::tests
         CHECK_EQ(res, math::vec2f(1.f, 2.f));
         CHECK_EQ(res.make_xy(3.f, 4.f), math::vec2f(3.f, 4.f));
     }
+
+    TEST_CASE("units")
+    {
+        auto res = math::vec2f::unit_up();
+        CHECK_EQ(res, math::vec2f(0.f, -1.f));
+        res = math::vec2f::unit_up_right();
+        CHECK_EQ(res, math::vec2f(1.f, -1.f));
+        res = math::vec2f::unit_up_left();
+        CHECK_EQ(res, math::vec2f(-1.f, -1.f));
+        res = math::vec2f::unit_down();
+        CHECK_EQ(res, math::vec2f(0.f, 1.f));
+        res = math::vec2f::unit_down_right();
+        CHECK_EQ(res, math::vec2f(1.f, 1.f));
+        res = math::vec2f::unit_down_left();
+        CHECK_EQ(res, math::vec2f(-1.f, 1.f));
+        res = math::vec2f::unit_right();
+        CHECK_EQ(res, math::vec2f(1.f, 0.f));
+        res = math::vec2f::unit_left();
+        CHECK_EQ(res, math::vec2f(-1.f, 0.f));
+
+        res = math::vec2f::angle_to_vec(180.f);
+        CHECK_EQ(res, math::vec2f::unit_down());
+
+        float degree = math::vec2f::vec_to_angle(res);
+        CHECK_EQ(degree, 270.f);
+    }
 }

@@ -21,6 +21,7 @@
 #include <ostream>
 #include <meta/sequence/list.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
+#include "antara/gaming/math/utility.hpp"
 
 namespace antara::gaming::math
 {
@@ -340,6 +341,86 @@ namespace antara::gaming::math
     namespace vector_mixins
     {
         template<class Derived, class Unit>
+        class access_units
+        {
+        public:
+            using value_type = Unit;
+
+            static constexpr auto unit_up() noexcept
+            {
+                return Derived{value_type(0), value_type(-1)};
+            }
+
+            static constexpr auto unit_up_right() noexcept
+            {
+                return Derived{value_type(1), value_type(-1)};
+            }
+
+            static constexpr auto unit_up_left() noexcept
+            {
+                return Derived{value_type(-1), value_type(-1)};
+            }
+
+            static constexpr auto unit_down() noexcept
+            {
+                return Derived{value_type(0), value_type(1)};
+            }
+
+            static constexpr auto unit_down_right() noexcept
+            {
+                return Derived{value_type(1), value_type(1)};
+            }
+
+            static constexpr auto unit_down_left() noexcept
+            {
+                return Derived{value_type(-1), value_type(1)};
+            }
+
+            static constexpr auto unit_right() noexcept
+            {
+                return Derived{value_type(1), value_type(0)};
+            }
+
+            static constexpr auto unit_left() noexcept
+            {
+                return Derived{value_type(-1), value_type(0)};
+            }
+
+            static constexpr auto angle_to_vec(const Unit degree)
+            {
+                if (degree == 180) return unit_down();
+                if (degree == 90) return unit_right();
+                if (degree == 270) return unit_left();
+                if (degree == 0 || degree == 360) return unit_up();
+                if (degree == 45) return unit_up_right();
+                if (degree == 135) return unit_down_right();
+                if (degree == 225) return unit_down_left();
+                if (degree == 315) return unit_up_left();
+
+                const float rad = (-degree + 90.0f) / RAD2DEG;
+                return Derived{std::cos(rad), -std::sin(rad)};
+            }
+
+            static Unit vec_to_angle(const Derived &vec)
+            {
+                if (vec.x() == Unit(0) && vec.y() == Unit(0)) return Unit(0);
+                const Unit absx = std::abs(vec.x()), absy = std::abs(vec.y());
+                const Unit a = absx > absy ? absy / absx : absx / absy;
+                const Unit s = a * a;
+                Unit r = Unit(((-0.0464964749f * s + 0.15931422f) * s - 0.327622764f) * s * a + a);
+
+                if (absy > absx) r = Unit(1.57079637) - r;
+                if (vec.x() < 0) r = Unit(3.14159274) - r;
+                if (vec.y() < 0) r = -r;
+
+                Unit ang = r * RAD2DEG + Unit(90.0);
+                if (ang < 0.0f) ang += Unit(360.0);
+                else if (ang > Unit(360.0)) ang -= Unit(360.0);
+                return ang + 90;
+            }
+        };
+
+        template<class Derived, class Unit>
         class access_xy
         {
         public:
@@ -412,6 +493,9 @@ namespace antara::gaming::math
     template<class Unit>
     using vec2 = basic_vector<Unit, 2, vector_mixins::access_xy>;
 
+    template <class Unit>
+    using vec2_with_units = basic_vector<Unit, 2, vector_mixins::access_xy, vector_mixins::access_units>;
+
     using vec2c   = vec2<char>;
     using vec2uc  = vec2<unsigned char>;
     using vec2s   = vec2<short>;
@@ -422,7 +506,7 @@ namespace antara::gaming::math
     using vec2ul  = vec2<unsigned long>;
     using vec2ll  = vec2<long long>;
     using vec2ull = vec2<unsigned long long>;
-    using vec2f   = vec2<float>;
+    using vec2f   = vec2_with_units<float>;
     using vec2d   = vec2<double>;
     using vec2ld  = vec2<long double>;
 
