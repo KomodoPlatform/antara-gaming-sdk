@@ -29,6 +29,7 @@
 #include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/audio.system.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
+#include "antara/gaming/audio/component.sound.effect.hpp"
 
 class intro_scene;
 

@@ -17,12 +17,13 @@
 #include <utility>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include <antara/gaming/graphics/component.canvas.hpp>
-#include <antara/gaming/geometry/component.rectangle.hpp>
-#include <antara/gaming/geometry/component.vertex.hpp>
+#include "antara/gaming/graphics/component.canvas.hpp"
+#include "antara/gaming/geometry/component.rectangle.hpp"
+#include "antara/gaming/geometry/component.vertex.hpp"
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
 #include "antara/gaming/sfml/event.play.sound.hpp"
-#include <antara/gaming/graphics/component.sprite.hpp>
+#include "antara/gaming/audio/component.sound.effect.hpp"
+#include "antara/gaming/graphics/component.sprite.hpp"
 
 // Utility
 static bool ease(float *val, const float targetVal, const float rate, const float dt)
@@ -61,9 +62,10 @@ namespace antara::gaming::sfml
 
         //! Entity components
         auto entity = geometry::blueprint_rectangle(entity_registry,
-            window_info,
-            graphics::color{0, 0, 0, 0},
-            transform::position_2d{window_info.x() * 0.5f, window_info.y() * 0.5f});
+                                                    window_info,
+                                                    graphics::color{0, 0, 0, 0},
+                                                    transform::position_2d{window_info.x() * 0.5f,
+                                                                           window_info.y() * 0.5f});
 
         entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
         entity_registry.assign<graphics::layer<9>>(entity);
@@ -122,7 +124,8 @@ namespace antara::gaming::sfml
         return std::make_tuple(entity, logo_final_scale, logo_target_position, logo_start_angle);
     }
 
-    auto intro_scene_factory::create_name(entt::registry &entity_registry, const float logo_final_scale, const math::vec2f logo_target_position)
+    auto intro_scene_factory::create_name(entt::registry &entity_registry, const float logo_final_scale,
+                                          const math::vec2f logo_target_position)
     {
 
         auto&&[screen_size, window_center] = intro_scene_factory::get_window_and_screen(entity_registry);
@@ -141,19 +144,17 @@ namespace antara::gaming::sfml
         return std::make_tuple(entity, name_target_position);
     }
 
-    entt::entity intro_scene_factory::create_sound(entt::registry &entity_registry, resources_manager &resource_mgr,
-                                                   const std::string &sound_name)
+    entt::entity intro_scene_factory::create_sound(entt::registry &entity_registry, const std::string &sound_name)
     {
-        //! Sound loading
-        auto sound_buffer = resource_mgr.load_sound(std::string(sound_name + ".wav").c_str());
-
         //! Entity creation
         auto entity = entity_registry.create();
 
-        //! Entity components
-        auto &sound_cmp = entity_registry.assign<component_sound>(entity);
-        sound_cmp.sound.setBuffer(*sound_buffer);
-        entity_registry.assign<entt::tag<"intro_scene"_hs>>(entity);
+        if (sound_name == "intro2") {
+            audio::sound_effect snd_effect{.sound_id = sound_name + ".wav", .volume = 15.f};
+            entity_registry.assign<audio::sound_effect>(entity, snd_effect);
+        } else {
+            entity_registry.assign<audio::sound_effect>(entity, sound_name + ".wav");
+        }
 
         //! Give the fresh entity
         return entity;
@@ -185,22 +186,22 @@ namespace antara::gaming::sfml
               on_finish_functor_(std::move(
                       on_finish_functor))
     {
-        if(entity_registry.try_ctx<antara::gaming::sfml::resources_system>() == nullptr)
+        if (entity_registry.try_ctx<antara::gaming::sfml::resources_system>() == nullptr)
             entity_registry.set<antara::gaming::sfml::resources_system>(entity_registry);
 
         static const float DEG2RAD = 0.0174533f;
         auto &&[logo_entity,
-                logo_final_scale,
-                logo_target_position,
-                logo_start_angle] = intro_scene_factory::create_logo(entity_registry_);
+        logo_final_scale,
+        logo_target_position,
+        logo_start_angle] = intro_scene_factory::create_logo(entity_registry_);
 
         auto &&[name_entity, name_target_position] = intro_scene_factory::create_name(entity_registry_,
                                                                                       logo_final_scale,
                                                                                       logo_target_position);
 
-        auto intro1_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro1");
-        auto intro2_entity = intro_scene_factory::create_sound(entity_registry, resource_mgr, "intro2");
-        entity_registry_.get<sfml::component_sound>(intro2_entity).sound.setVolume(15.f);
+        auto intro1_entity = intro_scene_factory::create_sound(entity_registry, "intro1");
+        auto intro2_entity = intro_scene_factory::create_sound(entity_registry, "intro2");
+        //entity_registry_.get<sfml::component_sound>(intro2_entity).sound.setVolume(15.f);
 
         auto foreground_entity = intro_scene_factory::create_foreground(entity_registry);
         intro_scene_factory::create_background(entity_registry_);
@@ -237,33 +238,35 @@ namespace antara::gaming::sfml
         });
 
         // Rotate Logo
-        actions.emplace_back(0.0f, [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity, DEG2RAD = DEG2RAD](float dt) {
-             static const auto sin_base = 90.0f * DEG2RAD;
-             static const auto speed = 2.25f;
-             static const auto friction = 0.15f;
-             static const auto base_angle = 0.0f;
-             static auto size = logo_start_angle;
-             static auto total_time = 0.0f;
+        actions.emplace_back(0.0f,
+                             [this, logo_start_angle = logo_start_angle, logo_entity = logo_entity, DEG2RAD = DEG2RAD](
+                                     float dt) {
+                                 static const auto sin_base = 90.0f * DEG2RAD;
+                                 static const auto speed = 2.25f;
+                                 static const auto friction = 0.15f;
+                                 static const auto base_angle = 0.0f;
+                                 static auto size = logo_start_angle;
+                                 static auto total_time = 0.0f;
 
-             // Up and down animation
-             total_time += dt;
+                                 // Up and down animation
+                                 total_time += dt;
 
-             // Slow down
-             size *= powf(friction, dt);
+                                 // Slow down
+                                 size *= powf(friction, dt);
 
-             // Final rotation
-             const float rotation = base_angle + size * sin(sin_base + speed * total_time);
+                                 // Final rotation
+                                 const float rotation = base_angle + size * sin(sin_base + speed * total_time);
 
-             // Set the rotation
-            auto &props = entity_registry_.get<transform::properties>(logo_entity);
+                                 // Set the rotation
+                                 auto &props = entity_registry_.get<transform::properties>(logo_entity);
 
-            props.rotation = rotation;
+                                 props.rotation = rotation;
 
-            entity_registry_.replace<transform::properties>(logo_entity, props);
+                                 entity_registry_.replace<transform::properties>(logo_entity, props);
 
-             // Complete if size is near zero
-             return size < 0.0001f;
-         });
+                                 // Complete if size is near zero
+                                 return size < 0.0001f;
+                             });
 
         // Move Logo
         actions.emplace_back(0.0f, [this, logo_target_position = logo_target_position,
@@ -294,7 +297,8 @@ namespace antara::gaming::sfml
         });
 
         // Fade in Transparency
-        auto transparency_func = [](float dt, float &size, float &total_time, entt::registry &entity_registry, entt::entity entity) {
+        auto transparency_func = [](float dt, float &size, float &total_time, entt::registry &entity_registry,
+                                    entt::entity entity) {
             static const auto sin_base = 270.0f * DEG2RAD;
             static const auto speed = 2.25f;
             static const auto friction = 0.1f;
@@ -334,12 +338,16 @@ namespace antara::gaming::sfml
 
         // Sound effects
         actions.emplace_back(0.0f, [this, intro1_entity](float) {
-            entity_registry_.get<sfml::component_sound>(intro1_entity).play();
+            auto &snd_effect = entity_registry_.get<audio::sound_effect>(intro1_entity);
+            snd_effect.sound_status = audio::playing;
+            entity_registry_.replace<audio::sound_effect>(intro1_entity, snd_effect);
             return true;
         });
 
         actions.emplace_back(1.15f, [this, intro2_entity](float) {
-            entity_registry_.get<sfml::component_sound>(intro2_entity).play();
+            auto &snd_effect = entity_registry_.get<audio::sound_effect>(intro2_entity);
+            snd_effect.sound_status = audio::playing;
+            entity_registry_.replace<audio::sound_effect>(intro2_entity, snd_effect);
             return true;
         });
 
@@ -355,7 +363,8 @@ namespace antara::gaming::sfml
 
             // Set transparency
             color.a = transparency;
-            entity_registry_.replace<geometry::rectangle>(foreground_entity, entity_registry_.get<geometry::rectangle>(foreground_entity));
+            entity_registry_.replace<geometry::rectangle>(foreground_entity,
+                                                          entity_registry_.get<geometry::rectangle>(foreground_entity));
 
             return done;
         });

@@ -35,8 +35,7 @@ namespace antara::gaming::sfml
         static auto get_window_and_screen(entt::registry &entity_registry);
 
     public:
-        static entt::entity
-        create_sound(entt::registry &entity_registry, resources_manager &resource_mgr, const std::string &sound_name);
+        static entt::entity create_sound(entt::registry &entity_registry, const std::string &sound_name);
 
         static entt::entity create_foreground(entt::registry &entity_registry);
 

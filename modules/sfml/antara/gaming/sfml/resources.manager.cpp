@@ -22,7 +22,7 @@ namespace antara::gaming::sfml
     texture_handle resources_manager::load_texture(const char *resource_id, bool smooth)
     {
         auto handle = resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id,
-                                                                        (textures_path_ / resource_id).string());
+                                                                               (textures_path_ / resource_id).string());
         handle->setSmooth(smooth);
         return handle;
     }
@@ -37,5 +37,11 @@ namespace antara::gaming::sfml
     {
         return resources_manager::load<sounds_loader, sounds_cache>(sounds_cache_, resource_id,
                                                                     (sounds_path / resource_id).string());
+    }
+
+    music_handle resources_manager::load_music(const char *resource_id)
+    {
+        return resources_manager::load<musics_loader, musics_cache>(musics_cache_, resource_id,
+                                                                    (musics_path_ / resource_id).string());
     }
 }

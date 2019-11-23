@@ -63,7 +63,12 @@ namespace antara::gaming::resources
 
         auto load_sound(resources_identifier id)
         {
-            return underlying_resource_manager_.load_font(id);
+            return underlying_resource_manager_.load_sound(id);
+        }
+
+        auto load_music(resources_identifier id)
+        {
+            return underlying_resource_manager_.load_music(id);
         }
 
     private:
