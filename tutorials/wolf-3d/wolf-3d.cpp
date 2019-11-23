@@ -220,27 +220,12 @@ public:
         minimap_height_ = compass_inner_shadow_texture_size.y();
 
         auto &constants = entity_registry_.ctx<wolf_constants>();
-        auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
-        auto[_, height] = canvas.canvas.size;
 
 
         math::vec2u minimap_size{static_cast<unsigned int>(minimap_height_ / constants.minimap_zoom),
                                  static_cast<unsigned int>(minimap_height_ / constants.minimap_zoom)};
 
-        const float tile_size = static_cast<float>(minimap_size.y()) / map_width;
-        std::vector<geometry::vertex> minimap_tiles_vertices(map_width * map_height * 4);
-        minimap_tiles_ = entity_registry_.create();
-        this->entity_registry_.assign<st_tile_size>(minimap_tiles_, st_tile_size{tile_size});
-        this->entity_registry_.assign<geometry::vertex_array>(minimap_tiles_, minimap_tiles_vertices, geometry::quads,
-                                                              "csgo.png");
-
-        std::vector<geometry::vertex> minimap_fov_vertices(3);
-        minimap_fov_ = entity_registry_.create();
-        this->entity_registry_.assign<geometry::vertex_array>(minimap_fov_, minimap_fov_vertices, geometry::triangles);
-
-        compass_arrow_ = graphics::blueprint_sprite(registry, graphics::sprite{"compass_arrow.png"},
-                                                    math::vec2f{}, graphics::white,
-                                                    transform::properties{.scale= math::vec2f{1.0f, 1.5f}});
+        create_minimap_rt_contents(minimap_size);
 
         entity_registry_.assign<graphics::render_texture_2d>(
                 minimap_,
@@ -252,13 +237,7 @@ public:
                         {"2_minimap_arrow", graphics::drawable_info{.entity = compass_arrow_, .dt = graphics::d_sprite}}
                 });
 
-        auto minimap_position = transform::position_2d{10 + minimap_height_,
-                                                       height - minimap_height_ * 0.5f - 10};
-        geometry::blueprint_circle(minimap_, registry, minimap_height_ * 0.5f,
-                                   graphics::fill_color{255, 255, 255, 200},
-                                   minimap_position, true);
-        entity_registry_.assign<graphics::layer_2>(minimap_);
-
+        transform::position_2d minimap_position = create_minimap_circle(registry);
         create_compass(registry, minimap_position);
     }
 
@@ -281,6 +260,37 @@ public:
     }
 
 private:
+    transform::position_2d create_minimap_circle(entt::registry &registry) const
+    {
+        auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
+        auto[_, height] = canvas.canvas.size;
+        auto minimap_position = transform::position_2d{10 + minimap_height_,
+                                                       height - minimap_height_ * 0.5f - 10};
+        geometry::blueprint_circle(minimap_, registry, minimap_height_ * 0.5f,
+                                   graphics::fill_color{255, 255, 255, 200},
+                                   minimap_position, true);
+        entity_registry_.assign<graphics::layer_2>(minimap_);
+        return minimap_position;
+    }
+
+    void create_minimap_rt_contents(const math::vec2u &minimap_size) noexcept
+    {
+        const float tile_size = static_cast<float>(minimap_size.y()) / map_width;
+        std::vector<geometry::vertex> minimap_tiles_vertices(map_width * map_height * 4);
+        minimap_tiles_ = entity_registry_.create();
+        entity_registry_.assign<st_tile_size>(minimap_tiles_, st_tile_size{tile_size});
+        entity_registry_.assign<geometry::vertex_array>(minimap_tiles_, minimap_tiles_vertices, geometry::quads,
+                                                        "csgo.png");
+
+        std::vector<geometry::vertex> minimap_fov_vertices(3);
+        minimap_fov_ = entity_registry_.create();
+        entity_registry_.assign<geometry::vertex_array>(minimap_fov_, minimap_fov_vertices, geometry::triangles);
+
+        compass_arrow_ = graphics::blueprint_sprite(entity_registry_, graphics::sprite{"compass_arrow.png"},
+                                                    math::vec2f{}, graphics::white,
+                                                    transform::properties{.scale= math::vec2f{1.0f, 1.5f}});
+    }
+
     void load_minimap_textures() const noexcept
     {
         std::vector<event::loading_settings> settings = {{"compass.png"},
@@ -704,9 +714,13 @@ public:
         //! Create player system
         auto &p_system = system_manager_.create_system<player_system>();
 
-        //! Load ray cast system and Load background system (Sky, Ground)
+        //! Load Background system (Sky, Ground)
         system_manager.create_system<background_system>(p_system.get_player());
+
+        //! Load Raycast system
         system_manager.create_system<raycast_system>(p_system.get_player());
+
+        //! Load minimap system
         system_manager.create_system<minimap_system>(p_system.get_player());
     }
 
