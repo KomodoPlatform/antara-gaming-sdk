@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <antara/gaming/audio/audio.status.hpp>
 
 namespace antara::gaming::audio
 {
