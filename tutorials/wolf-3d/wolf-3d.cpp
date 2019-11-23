@@ -6,6 +6,8 @@
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/ecs/virtual.input.system.hpp>
+#include <antara/gaming/audio/component.music.hpp>
+#include <antara/gaming/sfml/audio.system.hpp>
 
 // For convenience
 using namespace antara::gaming;
@@ -152,6 +154,10 @@ public:
     explicit background_system(entt::registry &registry, entt::entity player) noexcept : system(registry),
                                                                                          player_entity_(player)
     {
+        auto ambient_sound = this->entity_registry_.create();
+        audio::music msc{.music_id = "ambient.ogg", .loop = true, .music_status = audio::playing};
+        entity_registry_.assign<audio::music>(ambient_sound, msc);
+
         entity_registry_.assign<graphics::layer_0>(floor_);
         entity_registry_.assign<graphics::layer_0>(sky_);
     }
@@ -754,6 +760,9 @@ struct wolf3d_world : world::app
 
         //! Load the input system with the window from the graphical system
         system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
+
+        //! Load the audio system
+        system_manager_.create_system<sfml::audio_system>();
 
         //! Create virtual input system
         system_manager_.create_system<ecs::virtual_input_system>();
