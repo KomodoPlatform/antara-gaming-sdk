@@ -268,15 +268,16 @@ public:
         const auto &player_dir = entity_registry_.get<st_direction>(player_entity_).value();
         const float tile_size = entity_registry_.get<st_tile_size>(minimap_tiles_).value();
         const auto &constants = entity_registry_.ctx<wolf_constants>();
-        auto &player_pos = entity_registry_.get<transform::position_2d>(player_entity_);
+        const auto &player_pos = entity_registry_.get<transform::position_2d>(player_entity_);
         math::vec2f minimap_player_pos{player_pos.y() * tile_size, player_pos.x() * tile_size};
         const float minimap_player_dir_angle{-vec_to_angle(player_dir)};
+        const auto &minimap_rt_size = entity_registry_.get<graphics::render_texture_2d>(minimap_).size;
 
         update_minimap_rotation(player_dir);
         update_tiles(constants, tile_size);
-        update_fov(constants, tile_size, minimap_player_pos, minimap_player_dir_angle);
+        update_fov(constants, tile_size, minimap_player_pos, minimap_player_dir_angle, minimap_rt_size);
         update_minimap_arrow(minimap_player_pos, minimap_player_dir_angle);
-        update_minimap_circle();
+        update_minimap_circle(constants, minimap_rt_size, tile_size, player_pos);
     }
 
 private:
@@ -341,9 +342,8 @@ private:
     }
 
     void update_fov(const wolf_constants &constants, const float tile_size, const math::vec2f &minimap_player_pos,
-                    const float minimap_player_dir_angle) const noexcept
+                    const float minimap_player_dir_angle, const math::vec2u &minimap_rt_size) const noexcept
     {
-        auto &minimap_rt_size = entity_registry_.get<graphics::render_texture_2d>(minimap_).size;
         auto &fov_vertices = entity_registry_.get<geometry::vertex_array>(minimap_fov_).vertices;
 
         // Angles
@@ -369,7 +369,8 @@ private:
         this->entity_registry_.replace<geometry::vertex_array>(minimap_fov_, fov_vertices, geometry::triangles);
     }
 
-    void update_minimap_arrow(const math::vec2f& minimap_player_pos, const float minimap_player_dir_angle) const noexcept
+    void
+    update_minimap_arrow(const math::vec2f &minimap_player_pos, const float minimap_player_dir_angle) const noexcept
     {
         auto &arrow_props = entity_registry_.get<transform::properties>(compass_arrow_);
         arrow_props.rotation = minimap_player_dir_angle;
@@ -377,9 +378,27 @@ private:
         entity_registry_.replace<transform::position_2d>(compass_arrow_, minimap_player_pos);
     }
 
-    void update_minimap_circle() const noexcept
+    void update_minimap_circle(const wolf_constants &constants, const math::vec2u &minimap_rt_size,
+                               const float tile_size, const math::vec2f &player_pos) const noexcept
     {
 
+        const math::vec2f minimap_pos_offset = -(math::vec2f{float(map_width), float(map_height)} * 0.5f +
+                                                 math::vec2f{-player_pos.y(), -player_pos.x()}) * tile_size;
+
+        const math::vec2i minimap_rect_size(int(constants.minimap_zoom * minimap_rt_size.x()),
+                                            int(constants.minimap_zoom * minimap_rt_size.y()));
+
+        auto left = std::min(
+                std::max(minimap_pos_offset.x() + (1 - constants.minimap_zoom) * 0.5f * minimap_rt_size.x(), 0.0f),
+                float(minimap_rt_size.x() - minimap_rect_size.x()));
+        auto right = std::min(
+                std::max(minimap_pos_offset.y() + (1 - constants.minimap_zoom) * 0.5f * minimap_rt_size.y(), 0.0f),
+                float(minimap_rt_size.y() - minimap_rect_size.y()));
+        auto[width, height] = minimap_rect_size.to<math::vec2f>();
+        graphics::rect rect{.pos = {left, right}, .size = {width, height}};
+        auto &circle = entity_registry_.get<geometry::circle>(minimap_);
+        circle.circle_texture_props = geometry::circle_texture{.native_size = false, .texture_rec = rect};
+        entity_registry_.replace<geometry::circle>(minimap_, circle);
     }
 
 private:
