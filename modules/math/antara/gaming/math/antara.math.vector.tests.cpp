@@ -196,6 +196,6 @@ namespace antara::gaming::math::tests
         CHECK_EQ(res, math::vec2f::unit_down());
 
         float degree = math::vec2f::vec_to_angle(res);
-        CHECK_EQ(degree, 270.f);
+        CHECK_EQ(degree, 180.f);
     }
 }

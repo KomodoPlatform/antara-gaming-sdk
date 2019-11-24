@@ -105,7 +105,7 @@ namespace antara::gaming::math
         template<class...Args, class = std::enable_if_t<
                 std::conjunction_v<std::is_convertible<Args, Unit>...>
         >>
-        static constexpr basic_vector create(Args&&... units) noexcept
+        static constexpr basic_vector create(Args &&... units) noexcept
         {
             return basic_vector(std::forward<Args>(units)...);
         }
@@ -279,7 +279,7 @@ namespace antara::gaming::math
             return std::sqrt(square_length());
         }
 
-        constexpr Unit distance(basic_vector const& other) noexcept
+        constexpr Unit distance(basic_vector const &other) noexcept
         {
             return (*this - other).length();
         }
@@ -328,14 +328,13 @@ namespace antara::gaming::math
         friend std::ostream &operator<<(std::ostream &os, const basic_vector<Unit, Size, Mixins...> &vector)
         {
             os << " data_: {";
-            for (auto&& current : vector.data_) {
+            for (auto &&current : vector.data_) {
                 os << current << " ";
             }
             os << "}";
             return os;
         }
     };
-
 
 
     namespace vector_mixins
@@ -403,20 +402,12 @@ namespace antara::gaming::math
 
             static Unit vec_to_angle(const Derived &vec)
             {
-                if (vec.x() == Unit(0) && vec.y() == Unit(0)) return Unit(0);
-                const Unit absx = std::abs(vec.x()), absy = std::abs(vec.y());
-                const Unit a = absx > absy ? absy / absx : absx / absy;
-                const Unit s = a * a;
-                Unit r = Unit(((-0.0464964749f * s + 0.15931422f) * s - 0.327622764f) * s * a + a);
+                Unit ang = Unit(std::atan2(vec.y(), vec.x()) * RAD2DEG + 90.0);
 
-                if (absy > absx) r = Unit(1.57079637) - r;
-                if (vec.x() < 0) r = Unit(3.14159274) - r;
-                if (vec.y() < 0) r = -r;
+                if (ang < 0.0f) ang += Unit(360);
+                else if (ang > Unit(360.0)) ang -= Unit(360);
 
-                Unit ang = r * RAD2DEG + Unit(90.0);
-                if (ang < 0.0f) ang += Unit(360.0);
-                else if (ang > Unit(360.0)) ang -= Unit(360.0);
-                return ang + 90;
+                return ang;
             }
         };
 
@@ -438,19 +429,19 @@ namespace antara::gaming::math
             constexpr auto &y_ref() noexcept
             { return static_cast<Derived *>(this)->template get<1>(); }
 
-            constexpr Derived& set_x(value_type value) noexcept
+            constexpr Derived &set_x(value_type value) noexcept
             {
                 x_ref() = value;
                 return static_cast<Derived &>(*this);
             }
 
-            constexpr Derived& set_y(value_type value) noexcept
+            constexpr Derived &set_y(value_type value) noexcept
             {
                 y_ref() = value;
                 return static_cast<Derived &>(*this);
             }
 
-            constexpr Derived& set_xy(value_type value_x, value_type value_y) noexcept
+            constexpr Derived &set_xy(value_type value_x, value_type value_y) noexcept
             {
                 set_x(value_x);
                 return set_y(value_y);
@@ -493,7 +484,7 @@ namespace antara::gaming::math
     template<class Unit>
     using vec2 = basic_vector<Unit, 2, vector_mixins::access_xy>;
 
-    template <class Unit>
+    template<class Unit>
     using vec2_with_units = basic_vector<Unit, 2, vector_mixins::access_xy, vector_mixins::access_units>;
 
     using vec2c   = vec2<char>;
