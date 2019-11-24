@@ -374,7 +374,8 @@ namespace antara::gaming::sfml
         using ranges::views::ints;
         for (auto &&[current_vertex, current_idx]: zip(cmp_vertex_array.vertices, ints(0u, ranges::unreachable))) {
             sf_vertex_array[current_idx].position = sf::Vector2f{current_vertex.pos.x(), current_vertex.pos.y()};
-            if (cmp_vertex_array.texture_id.has_value()) {
+            if (cmp_vertex_array.texture_id.has_value() ||
+                cmp_vertex_array.entity_that_own_render_texture.has_value()) {
                 sf_vertex_array[current_idx].texCoords = sf::Vector2f{current_vertex.texture_pos.x(),
                                                                       current_vertex.texture_pos.y()};
             }
