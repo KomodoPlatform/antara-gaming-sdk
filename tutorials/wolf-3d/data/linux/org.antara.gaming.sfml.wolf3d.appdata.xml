@@ -1,13 +1,13 @@
 <component type="desktop-application">
-    <id>org.antara.gaming.sfml.flappybird.desktop</id>
+    <id>org.antara.gaming.sfml.wolf3d.desktop</id>
     <metadata_license>MIT</metadata_license>
     <project_license>MIT</project_license>
-    <name>flappy-bird</name>
-    <summary>flappy-bird tutorial antara gaming sdk</summary>
+    <name>wolf-3d</name>
+    <summary>wolf-3d tutorial antara gaming sdk</summary>
     <description>
         <p>Written in c++17</p>
     </description>
-    <launchable type="desktop-id">org.antara.gaming.sfml.flappybird.desktop</launchable>
+    <launchable type="desktop-id">org.antara.gaming.sfml.wolf3d.desktop</launchable>
     <url type="homepage">https://github.com/KomodoPlatform/antara-gaming-sdk</url>
     <screenshots>
         <screenshot type="default">
@@ -15,6 +15,6 @@
         </screenshot>
     </screenshots>
     <provides>
-        <id>org.antara.gaming.sfml.flappybird.desktop</id>
+        <id>org.antara.gaming.sfml.wolf3d.desktop</id>
     </provides>
 </component>
