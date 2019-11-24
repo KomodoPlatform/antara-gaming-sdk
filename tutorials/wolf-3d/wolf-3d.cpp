@@ -686,7 +686,7 @@ public:
                 lines.push_back(vx);
 
                 vx.texture_pos = math::vec2f(float(tex_x), float(bottom_tex_y));
-                vx.pos = math::vec2f(float(stripe), float(bobbing_y_offset + draw_start_y));
+                vx.pos = math::vec2f(float(stripe), float(bobbing_y_offset + draw_end_y));
                 lines.push_back(vx);
             }
         }
