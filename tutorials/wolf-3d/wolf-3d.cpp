@@ -251,7 +251,7 @@ private:
         geometry::blueprint_circle(minimap_, registry, minimap_height_ * 0.5f,
                                    graphics::fill_color{255, 255, 255, 200},
                                    minimap_position, true);
-        entity_registry_.assign<graphics::layer_2>(minimap_);
+        entity_registry_.assign<graphics::layer_4>(minimap_);
         return minimap_position;
     }
 
@@ -286,14 +286,14 @@ private:
     {
         auto compass_inner_shadow = graphics::blueprint_sprite(registry, graphics::sprite{"compass_inner_shadow.png"},
                                                                minimap_position);
-        entity_registry_.assign<graphics::layer_3>(compass_inner_shadow);
+        entity_registry_.assign<graphics::layer_5>(compass_inner_shadow);
 
         compass_ = graphics::blueprint_sprite(registry, graphics::sprite{"compass.png"}, minimap_position);
-        entity_registry_.assign<graphics::layer_4>(compass_);
+        entity_registry_.assign<graphics::layer_6>(compass_);
 
         auto compass_ring = graphics::blueprint_sprite(registry, graphics::sprite{"compass_ring.png"},
                                                        minimap_position);
-        entity_registry_.assign<graphics::layer_5>(compass_ring);
+        entity_registry_.assign<graphics::layer_7>(compass_ring);
     }
 
     void update_minimap_rotation(const math::vec2f &player_dir) const noexcept
@@ -579,7 +579,8 @@ REFL_AUTO(type(raycast_system));
 class portal_system final : public ecs::post_update_system<portal_system>
 {
 public:
-    portal_system(entt::registry &registry) noexcept : system(registry)
+    portal_system(entt::registry &registry, entt::entity player_entity) noexcept : system(registry),
+                                                                                   player_entity_(player_entity)
     {
         //! Load texture smooth
         std::vector<event::loading_settings> settings = {{"portal.png"}};
@@ -592,15 +593,13 @@ public:
 
         math::vec2f portal_target_pos = portal_texture_size.to<math::vec2f>() * 0.5f;
 
-        portal_entity_ = graphics::blueprint_sprite(registry, graphics::sprite{.appearance = "portal.png"},
-                                                    portal_target_pos);
+        portal_entity_sprite_ = graphics::blueprint_sprite(registry, graphics::sprite{.appearance = "portal.png"},
+                                                           portal_target_pos);
 
-        /*auto portal_lines = registry.create();
-        registry.assign<geometry::vertex_array>(portal_lines, std::vector<geometry::vertex>{}, geometry::lines);
         auto portal_rt_drawables = graphics::drawable_registry{
                 {"0_portal_sprite", graphics::drawable_info{
-                        .entity = portal_lines,
-                        .dt = graphics::d_vertex_array
+                        .entity = portal_entity_sprite_,
+                        .dt = graphics::d_sprite
                 }}
         };
         entity_registry_.assign<graphics::render_texture_2d>(
@@ -608,18 +607,101 @@ public:
                 graphics::render_texture_2d
                         {
                                 .id = "portal_rt",
+                                .clear_color = graphics::transparent,
                                 .size = portal_texture_size,
                                 .to_draw = portal_rt_drawables
-                        });*/
+                        });
+        registry.assign<geometry::vertex_array>(portal_lines_, std::vector<geometry::vertex>{}, geometry::lines,
+                                                portal_rt_entity_);
+
+        registry.assign<graphics::layer_2>(portal_rt_entity_);
+        registry.assign<graphics::layer_3>(portal_lines_);
     }
 
     void update() noexcept final
     {
-        if (not entity_registry_.valid(portal_entity_)) return;
+        std::vector<geometry::vertex> lines;
+        geometry::vertex vx;
+
+        math::vec2u portal_texture_size;
+        dispatcher_.trigger<event::fill_image_properties>("portal.png",
+                                                          portal_texture_size);
+
+        const auto[width, height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size;
+
+        auto &&player_pos = entity_registry_.get<transform::position_2d>(player_entity_);
+        auto &&player_plane = entity_registry_.get<st_plane>(player_entity_).value();
+        auto &&player_dir = entity_registry_.get<st_direction>(player_entity_).value();
+        const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity_).value();
+
+        float sprite_x = portal_position.x() - player_pos.x();
+        float sprite_y = portal_position.y() - player_pos.y();
+
+        float inv_det = 1.0f / (player_plane.x() * player_dir.y() -
+                                player_dir.x() * player_plane.y()); // Required for correct matrix multiplication
+
+        float transform_x = inv_det * (player_dir.y() * sprite_x - player_dir.x() * sprite_y);
+        float transform_y = inv_det * (-player_plane.y() * sprite_x + player_plane.x() *
+                                                                      sprite_y); // This is actually the depth inside the screen, that what Z is in 3D
+
+        int sprite_screen_x = int((width / 2) * (1 + transform_x / transform_y));
+
+        // Calculate height of the sprite on screen
+        int sprite_height = std::abs(
+                int(height / (transform_y))); // Using "transform_y" instead of the real distance prevents fish-eye
+        // Calculate lowest and highest pixel to fill in current stripe
+        int draw_start_y = -sprite_height / 2 + height / 2;
+        if (draw_start_y < 0) draw_start_y = 0;
+        int draw_end_y = sprite_height / 2 + height / 2;
+        if (draw_end_y >= height) draw_end_y = height - 1;
+
+        // Calculate width of the sprite
+        int sprite_width = std::abs(int(height / (transform_y)));
+        int draw_start_x = -sprite_width / 2 + sprite_screen_x;
+        if (draw_start_x < 0) draw_start_x = 0;
+        int draw_end_x = sprite_width / 2 + sprite_screen_x;
+        if (draw_end_x >= width) draw_end_x = width - 1;
+
+        // Loop through every vertical stripe of the sprite on screen
+        for (int stripe = draw_start_x; stripe < draw_end_x; stripe++) {
+            int tex_x = int(256 * (stripe - (-sprite_width / 2 + sprite_screen_x)) * portal_texture_size.x() /
+                            sprite_width) / 256;
+            // The conditions in the if are:
+            // 1) It's in front of camera plane so you don't see things behind you
+            // 2) It's on the screen (left)
+            // 3) It's on the screen (right)
+            // 4) ZBuffer, with perpendicular distance
+            if (transform_y > 0 && stripe > 0 && stripe < width && transform_y < z_buffer[stripe]) {
+                int top_d =
+                        draw_start_y * 256 - height * 128 + sprite_height * 128; // 256 and 128 factors to avoid floats
+                int top_tex_y = ((top_d * portal_texture_size.y()) / sprite_height) / 256;
+
+                int bottom_d =
+                        draw_end_y * 256 - height * 128 + sprite_height * 128; // 256 and 128 factors to avoid floats
+                int bottom_tex_y = ((bottom_d * portal_texture_size.y()) / sprite_height) / 256;
+
+                // Top
+                vx.texture_pos = math::vec2f(float(tex_x), float(top_tex_y));
+                vx.pos = math::vec2f(float(stripe), float(bobbing_y_offset + draw_start_y));
+                lines.push_back(vx);
+
+                vx.texture_pos = math::vec2f(float(tex_x), float(bottom_tex_y));
+                vx.pos = math::vec2f(float(stripe), float(bobbing_y_offset + draw_start_y));
+                lines.push_back(vx);
+            }
+        }
+        if (not lines.empty()) {
+            entity_registry_.replace<geometry::vertex_array>(portal_lines_, lines, geometry::lines, portal_rt_entity_);
+        }
     }
 
 private:
-    entt::entity portal_entity_{entt::null};
+    //TODO: move it elsewhere
+    const math::vec2f portal_position{math::vec2f::scalar(12.5f)};
+
+    entt::entity player_entity_;
+    entt::entity portal_entity_sprite_{entt::null};
+    entt::entity portal_lines_{entity_registry_.create()};
     entt::entity portal_rt_entity_{entity_registry_.create()};
 };
 
@@ -815,10 +897,18 @@ public:
         system_manager.create_system<raycast_system>(p_system.get_player());
 
         //! Load Portal system
-        system_manager.create_system<portal_system>();
+        system_manager.create_system<portal_system>(p_system.get_player());
 
         //! Load minimap system
         system_manager.create_system<minimap_system>(p_system.get_player());
+    }
+
+    bool on_key_pressed(const event::key_pressed &evt) noexcept final
+    {
+        if (evt.key == input::key::escape) {
+            this->dispatcher_.trigger<event::quit_game>(0);
+        }
+        return true;
     }
 
     // Scene name
