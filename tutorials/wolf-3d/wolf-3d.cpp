@@ -18,7 +18,6 @@ using st_bobbing = st::type<float, struct bobbin_tag>;
 using st_plane = st::type<math::vec2f, struct plane_tag>;
 using st_tile_size = st::type<float, struct tile_size_tag>;
 
-inline constexpr float RAD2DEG = 57.295779513082320876798154814105f;
 inline constexpr std::size_t map_width = 24ull;
 inline constexpr std::size_t map_height = 24ull;
 struct wolf_constants
@@ -70,46 +69,9 @@ struct wolf_constants
 
 namespace
 {
-    inline constexpr math::vec2f UNIT_UP(0.f, -1.f);
-    inline constexpr math::vec2f UNIT_UP_RIGHT(1.f, -1.f);
-    inline constexpr math::vec2f UNIT_UP_LEFT(-1.f, -1.f);
-    inline constexpr math::vec2f UNIT_DOWN(0.f, 1.f);
-    inline constexpr math::vec2f UNIT_DOWN_RIGHT(1.f, 1.f);
-    inline constexpr math::vec2f UNIT_DOWN_LEFT(-1.f, 1.f);
-    inline constexpr math::vec2f UNIT_RIGHT(1.f, 0.f);
-    inline constexpr math::vec2f UNIT_LEFT(-1.f, 0.f);
-
-    math::vec2f angle_to_vec(const float &degree)
+    float vec_to_angle(const math::vec2f &vec)
     {
-        if (degree == 180) return UNIT_DOWN;
-        if (degree == 90) return UNIT_RIGHT;
-        if (degree == 270) return UNIT_LEFT;
-        if (degree == 0 || degree == 360) return UNIT_UP;
-        if (degree == 45) return UNIT_UP_RIGHT;
-        if (degree == 135) return UNIT_DOWN_RIGHT;
-        if (degree == 225) return UNIT_DOWN_LEFT;
-        if (degree == 315) return UNIT_UP_LEFT;
-
-        const float rad = (-degree + 90.0f) / RAD2DEG;
-        return math::vec2f(cosf(rad), -sinf(rad));
-    }
-
-    static float vec_to_angle(const math::vec2f &vec)
-    {
-        if (vec.x() == 0.0f && vec.y() == 0.0f) return 0.0f;
-        const float absx = std::abs(vec.x()), absy = std::abs(vec.y());
-        const float a = absx > absy ? absy / absx : absx / absy;
-        const float s = a * a;
-        float r = ((-0.0464964749f * s + 0.15931422f) * s - 0.327622764f) * s * a + a;
-
-        if (absy > absx) r = 1.57079637f - r;
-        if (vec.x() < 0) r = 3.14159274f - r;
-        if (vec.y() < 0) r = -r;
-
-        float ang = r * RAD2DEG + 90.0f;
-        if (ang < 0.0f) ang += 360.0f;
-        else if (ang > 360.0f) ang -= 360.0f;
-        return ang + 90;
+        return math::vec2f::vec_to_angle(vec) + 90.f;
     }
 
     math::vec2f get_texture_offset(const wolf_constants &constants, const math::vec2i &tex_idx)
@@ -364,9 +326,9 @@ private:
         const float fov_arm_dist = tile_size * constants.darkness_distance * (minimap_height_ / minimap_rt_size.x()) /
                                    constants.minimap_zoom;
         const math::vec2f left_fov_vec =
-                angle_to_vec(minimap_player_dir_angle - constants.fov_degrees * 0.5f) * fov_arm_dist;
+                math::vec2f::angle_to_vec(minimap_player_dir_angle - constants.fov_degrees * 0.5f) * fov_arm_dist;
         const math::vec2f right_fov_vec =
-                angle_to_vec(minimap_player_dir_angle + constants.fov_degrees * 0.5f) * fov_arm_dist;
+                math::vec2f::angle_to_vec(minimap_player_dir_angle + constants.fov_degrees * 0.5f) * fov_arm_dist;
 
         // Positions
         fov_vertices[0].pos = minimap_player_pos;
@@ -641,7 +603,7 @@ public:
         bool moving = input_dir.x() != 0 || input_dir.y() != 0;
 
         update_breath(moving, dt);
-        bobbing(dt, height, input_dir, moving);
+        bobbing(dt, height, moving);
         move_player(dt, constants, input_dir);
     }
 
@@ -677,7 +639,7 @@ private:
         plane.y_ref() = old_plane_x * std::sin(-rot_speed) + plane.y() * std::cos(-rot_speed);
     };
 
-    void bobbing(const float dt, const float height, const math::vec2f &input_dir, bool moving) noexcept
+    void bobbing(const float dt, const float height, bool moving) noexcept
     {
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
         if (moving) walking_timer_ += dt;
