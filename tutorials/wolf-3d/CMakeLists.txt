@@ -68,7 +68,7 @@ magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
         "org.antara.gaming.sfml.wolf3d.appdata.xml"
         "komodo_icon.png"
         wolf-3d
-        AntaraFlappyBirdAppDir
+        AntaraWolf3DAppDir
         ${CMAKE_CURRENT_SOURCE_DIR}/assets
         )
 

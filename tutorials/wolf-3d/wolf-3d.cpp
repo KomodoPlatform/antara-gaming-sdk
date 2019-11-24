@@ -8,6 +8,8 @@
 #include <antara/gaming/ecs/virtual.input.system.hpp>
 #include <antara/gaming/audio/component.music.hpp>
 #include <antara/gaming/sfml/audio.system.hpp>
+#include <antara/gaming/audio/component.sound.effect.hpp>
+#include <random>
 
 // For convenience
 using namespace antara::gaming;
@@ -69,6 +71,14 @@ struct wolf_constants
 
 namespace
 {
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    float random_float(float lower, float higher)
+    {
+        std::uniform_real_distribution<float> dist(lower, higher);
+        return dist(gen);
+    }
+
     float vec_to_angle(const math::vec2f &vec)
     {
         return math::vec2f::vec_to_angle(vec) + 90.f;
@@ -567,6 +577,11 @@ public:
         audio::music msc{.music_id = "breath.ogg", .loop = true, .music_status = audio::playing, .pitch = 1.5f};
         entity_registry_.assign<audio::music>(breath_, msc);
 
+        sounds_["walk1"] = create_sound("walk1.wav");
+        sounds_["walk2"] = create_sound("walk2.wav");
+        sounds_["walk3"] = create_sound("walk3.wav");
+        sounds_["walk4"] = create_sound("walk4.wav");
+
         entity_registry_.assign<transform::position_2d>(player_, 22.f, 12.f);
         entity_registry_.assign<st_direction>(player_, st_direction{{-1.f, 0.f}});
         entity_registry_.assign<st_plane>(player_, st_plane{{0.f, entity_registry_.ctx<wolf_constants>().fov}});
@@ -609,6 +624,15 @@ public:
 
 
 private:
+    entt::entity create_sound(std::string name)
+    {
+        audio::sound_effect snd_effect{.sound_id = std::move(name), .sound_status = audio::wait_for_first_run,
+                .recycling = true};
+        auto sound_entity = entity_registry_.create();
+        entity_registry_.assign<audio::sound_effect>(sound_entity, snd_effect);
+        return sound_entity;
+    }
+
     void update_breath(bool moving, const float dt) const noexcept
     {
         const float target_pitch = moving ? 2.f : 1.f;
@@ -639,11 +663,35 @@ private:
         plane.y_ref() = old_plane_x * std::sin(-rot_speed) + plane.y() * std::cos(-rot_speed);
     };
 
+    void play_walking_sound(const std::string &name, float pitch = 1.0f, float volume = 1.0f)
+    {
+        auto entity = sounds_.at(name);
+        audio::sound_effect &snd_effect = this->entity_registry_.get<audio::sound_effect>(entity);
+        snd_effect.sound_status = audio::playing;
+        snd_effect.pitch = pitch;
+        snd_effect.volume = volume * 100.f;
+        entity_registry_.assign_or_replace<audio::sound_effect>(entity, snd_effect);
+    }
+
     void bobbing(const float dt, const float height, bool moving) noexcept
     {
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
         if (moving) walking_timer_ += dt;
-        bobbing_y_offset = height * (moving ? 0.016 : 0.008) * std::sin(15.0f * walking_timer_ + 2.0f * total_timer_);
+        float sin_val = sin(15.0f * walking_timer_ + 2.0f * total_timer_);
+        bobbing_y_offset = height * (moving ? 0.016 : 0.008) * sin_val;
+
+        // Walking sound effect
+        // When bobbing reaches to bottom, play walk sound once
+        static bool walk_played = false;
+        if (sin_val < -0.98f) {
+            if (!walk_played) {
+                walk_played = true;
+                if (moving) {
+                    play_walking_sound("walk" + std::to_string(int(std::floor(random_float(1, 4 + 1)))),
+                                       random_float(0.75f, 1.25f));
+                }
+            }
+        } else walk_played = false;
     }
 
     void move_player(const float dt, const wolf_constants &constants, const math::vec2f &input_dir) const noexcept
@@ -683,6 +731,7 @@ public:
     }
 
 private:
+    std::unordered_map<std::string, entt::entity> sounds_;
     entt::entity player_{entity_registry_.create()};
     entt::entity breath_{entity_registry_.create()};
     float walking_timer_{0.f};
