@@ -92,10 +92,13 @@ namespace antara::gaming::sfml
 
     void audio_system::update() noexcept
     {
-        auto snd_effect_functor = [this](auto entity, component_sound& sfml_sound, audio::sound_effect& snd_effect) {
-            if (snd_effect.sound_status != audio::wait_for_first_run and sfml_sound.sound.getStatus() == sf::Sound::Stopped and not snd_effect.loop) {
+        auto snd_effect_functor = [this](auto entity, component_sound &sfml_sound, audio::sound_effect &snd_effect) {
+            if (snd_effect.sound_status != audio::wait_for_first_run and
+                sfml_sound.sound.getStatus() == sf::Sound::Stopped and not snd_effect.loop) {
                 snd_effect.on_finish();
-                this->entity_registry_.destroy(entity);
+                if (not snd_effect.recycling) {
+                    this->entity_registry_.destroy(entity);
+                }
             }
         };
         this->entity_registry_.view<sfml::component_sound, audio::sound_effect>().each(snd_effect_functor);

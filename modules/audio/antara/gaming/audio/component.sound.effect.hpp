@@ -33,5 +33,6 @@ namespace antara::gaming::audio
         float minimum_distance{1.f};
         float attenuation{1.f};
         bool relative_to_listener{false};
+        bool recycling{false}; ///< Indicate if the sound will be reused (do not destroy the entity)
     };
 }
