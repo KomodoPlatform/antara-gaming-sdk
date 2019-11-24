@@ -12,6 +12,7 @@
   "native_desktop_mode": false,
   "scale_mode": "fit",
   "window_height": 1080.0,
-  "window_title": "game title",
-  "window_width": 1920.0
+  "window_title": "Wolf3D - Antara Gaming SDK",
+  "window_width": 1920.0,
+  "vsync": false
 }
