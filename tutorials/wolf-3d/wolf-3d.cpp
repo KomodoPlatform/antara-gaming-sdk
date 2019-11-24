@@ -1,22 +1,23 @@
+#include <random>
 #include <cmath>
+#include <antara/gaming/audio/component.music.hpp>
+#include <antara/gaming/audio/component.sound.effect.hpp>
+#include <antara/gaming/ecs/virtual.input.system.hpp>
+#include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/scenes/scene.manager.hpp>
 #include <antara/gaming/sfml/graphic.system.hpp>
 #include <antara/gaming/sfml/input.system.hpp>
 #include <antara/gaming/sfml/resources.manager.hpp>
-#include <antara/gaming/graphics/component.layer.hpp>
-#include <antara/gaming/world/world.app.hpp>
-#include <antara/gaming/ecs/virtual.input.system.hpp>
-#include <antara/gaming/audio/component.music.hpp>
 #include <antara/gaming/sfml/audio.system.hpp>
-#include <antara/gaming/audio/component.sound.effect.hpp>
-#include <random>
+#include <antara/gaming/world/world.app.hpp>
+
 
 // For convenience
 using namespace antara::gaming;
 using namespace std::string_literals;
 
 using st_direction = st::type<math::vec2f, struct st_direction_tag>;
-using st_bobbing = st::type<float, struct bobbin_tag>;
+using st_bobbing = st::type<float, struct bobbing_tag>;
 using st_plane = st::type<math::vec2f, struct plane_tag>;
 using st_tile_size = st::type<float, struct tile_size_tag>;
 
@@ -71,10 +72,10 @@ struct wolf_constants
 
 namespace
 {
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
     float random_float(float lower, float higher)
     {
+        std::random_device rd;  // Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
         std::uniform_real_distribution<float> dist(lower, higher);
         return dist(gen);
     }
