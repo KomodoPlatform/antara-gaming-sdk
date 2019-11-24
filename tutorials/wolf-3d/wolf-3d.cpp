@@ -20,9 +20,14 @@ using st_direction = st::type<math::vec2f, struct st_direction_tag>;
 using st_bobbing = st::type<float, struct bobbing_tag>;
 using st_plane = st::type<math::vec2f, struct plane_tag>;
 using st_tile_size = st::type<float, struct tile_size_tag>;
+using st_zbuffer = st::type<float[], struct zbuffer_tag>;
 
 inline constexpr std::size_t map_width = 24ull;
 inline constexpr std::size_t map_height = 24ull;
+
+//! TODO: better zbuffer through ctx variable
+inline float z_buffer[1920] = {};
+
 struct wolf_constants
 {
     const std::size_t tex_width{256};
@@ -446,6 +451,7 @@ private:
                     (side == 0) ? std::fabs((map_pos.x() - pos.x() + (1.f - step.x()) / 2) / ray_dir.x())
                                 : std::fabs((map_pos.y() - pos.y() + (1.f - step.y()) / 2) / ray_dir.y())};
 
+            z_buffer[x] = perp_wall_dist;
             //! Prepare current wall into the vertices
             prepare_wall(constants, height, x, idx_vx, ray_dir, map_pos, side, perp_wall_dist);
             idx_vx += 2;
@@ -569,6 +575,55 @@ private:
 };
 
 REFL_AUTO(type(raycast_system));
+
+class portal_system final : public ecs::post_update_system<portal_system>
+{
+public:
+    portal_system(entt::registry &registry) noexcept : system(registry)
+    {
+        //! Load texture smooth
+        std::vector<event::loading_settings> settings = {{"portal.png"}};
+        dispatcher_.trigger<event::load_textures>(settings);
+
+        //! Get texture size
+        math::vec2u portal_texture_size;
+        dispatcher_.trigger<event::fill_image_properties>("portal.png",
+                                                          portal_texture_size);
+
+        math::vec2f portal_target_pos = portal_texture_size.to<math::vec2f>() * 0.5f;
+
+        portal_entity_ = graphics::blueprint_sprite(registry, graphics::sprite{.appearance = "portal.png"},
+                                                    portal_target_pos);
+
+        /*auto portal_lines = registry.create();
+        registry.assign<geometry::vertex_array>(portal_lines, std::vector<geometry::vertex>{}, geometry::lines);
+        auto portal_rt_drawables = graphics::drawable_registry{
+                {"0_portal_sprite", graphics::drawable_info{
+                        .entity = portal_lines,
+                        .dt = graphics::d_vertex_array
+                }}
+        };
+        entity_registry_.assign<graphics::render_texture_2d>(
+                portal_rt_entity_,
+                graphics::render_texture_2d
+                        {
+                                .id = "portal_rt",
+                                .size = portal_texture_size,
+                                .to_draw = portal_rt_drawables
+                        });*/
+    }
+
+    void update() noexcept final
+    {
+        if (not entity_registry_.valid(portal_entity_)) return;
+    }
+
+private:
+    entt::entity portal_entity_{entt::null};
+    entt::entity portal_rt_entity_{entity_registry_.create()};
+};
+
+REFL_AUTO(type(portal_system));
 
 class player_system final : public ecs::logic_update_system<player_system>
 {
@@ -758,6 +813,9 @@ public:
 
         //! Load Raycast system
         system_manager.create_system<raycast_system>(p_system.get_player());
+
+        //! Load Portal system
+        system_manager.create_system<portal_system>();
 
         //! Load minimap system
         system_manager.create_system<minimap_system>(p_system.get_player());
