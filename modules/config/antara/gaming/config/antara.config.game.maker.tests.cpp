@@ -71,6 +71,7 @@ namespace antara::gaming::config::tests
   "window_width": 1921.0,
   "window_height": 1081.0,
   "window_title": "tic-tac-toe",
+  "vsync": false,
   "background_color": [
     0,
     0,

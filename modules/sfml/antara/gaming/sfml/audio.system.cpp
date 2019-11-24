@@ -24,7 +24,7 @@ namespace
 {
     using namespace antara::gaming;
 
-    void on_music_construct(entt::entity entity, entt::registry &registry, audio::music &music) noexcept
+    void on_music_construct([[maybe_unused]] entt::entity entity, entt::registry &registry, audio::music &music) noexcept
     {
         auto &resources_system = registry.ctx<sfml::resources_system>();
         auto handle = resources_system.load_music(music.music_id.c_str());

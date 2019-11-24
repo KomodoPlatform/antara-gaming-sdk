@@ -44,6 +44,12 @@ namespace antara::gaming::graphics
             game_maker_cfg.window.size.y_ref() = static_cast<float>(json_data.at("window_height").get<int>());
         }
 
+        if (json_data.find("vsync") != json_data.end()) {
+            json_data.at("vsync").get_to(game_maker_cfg.vsync);
+        } else {
+            game_maker_cfg.vsync = false;
+        }
+
         json_data.at("window_title").get_to(game_maker_cfg.window_title);
         auto vec = json_data.at("background_color").get<std::vector<int>>();
         game_maker_cfg.background_color = graphics::fill_color(vec[0], vec[1], vec[2], vec[3]);
@@ -59,6 +65,7 @@ namespace antara::gaming::graphics
         json_data["window_title"] = game_maker_cfg.window_title;
         json_data["custom_canvas_width"] = game_maker_cfg.custom_canvas_width;
         json_data["custom_canvas_height"] = game_maker_cfg.custom_canvas_height;
+        json_data["vsync"] = game_maker_cfg.vsync;
         auto[r, g, b, a] = game_maker_cfg.background_color;
         json_data["background_color"] = {r, g, b, a};
         switch (game_maker_cfg.current_scaling_mode) {

@@ -65,7 +65,8 @@ namespace antara::gaming::sfml
 {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
     {
-        this->window_.setVerticalSyncEnabled(true);
+        auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
+        this->window_.setVerticalSyncEnabled(canvas_2d.vsync);
         dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
         dispatcher_.sink<event::key_pressed>().connect<&graphic_system::on_key_pressed>(*this);
         dispatcher_.sink<event::fill_image_properties>().connect<&graphic_system::on_fill_image_properties>(*this);

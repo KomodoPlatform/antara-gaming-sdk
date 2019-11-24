@@ -66,6 +66,7 @@ namespace antara::gaming::graphics
         bool custom_canvas_height{true};
         bool native_desktop_mode{false};
         bool is_fullscreen{false};
+        bool vsync{false};
         scale_mode current_scaling_mode{fit};
         rectangle view_port;
         std::string window_title{"game title"};

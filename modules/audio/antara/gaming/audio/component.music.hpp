@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <antara/gaming/audio/audio.status.hpp>
 
