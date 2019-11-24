@@ -159,11 +159,17 @@ namespace antara::gaming::sfml
     template<typename Drawable>
     void graphic_system::draw_vertices(entt::entity entity, Drawable &drawable) const
     {
-        auto text_id = entity_registry_.get<geometry::vertex_array>(entity).texture_id;
-        if (text_id.has_value()) {
+        auto &vertices = entity_registry_.get<geometry::vertex_array>(entity);
+        if (vertices.texture_id.has_value()) {
             auto &res_system = entity_registry_.ctx<resources_system>();
-            auto handle = res_system.load_texture(text_id.value().c_str());
+            auto handle = res_system.load_texture(vertices.texture_id.value().c_str());
             render_texture_.draw(drawable.drawable, &handle.get());
+        } else if (vertices.entity_that_own_render_texture.has_value()) {
+            auto rt = entity_registry_.try_get<sfml::render_texture>(vertices.entity_that_own_render_texture.value());
+            if (rt != nullptr) {
+                sf::RenderTexture &underlying_texture = *(rt->drawable);
+                render_texture_.draw(drawable.drawable, &underlying_texture.getTexture());
+            }
         } else {
             render_texture_.draw(drawable.drawable);
         }

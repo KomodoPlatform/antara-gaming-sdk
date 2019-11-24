@@ -51,6 +51,19 @@ namespace antara::gaming::graphics
         registry.assign<transform::position_2d>(spr_entity, pos);
         return spr_entity;
     }
+
+    inline void blueprint_sprite(entt::entity spr_entity,
+                                 entt::registry &registry,
+                                 const sprite &spr,
+                                 transform::position_2d pos = math::vec2f::scalar(0.f),
+                                 fill_color spr_color = graphics::white,
+                                 const transform::properties &prop = {}) noexcept
+    {
+        registry.assign<fill_color>(spr_entity, spr_color);
+        registry.assign<transform::properties>(spr_entity, prop);
+        registry.assign<sprite>(spr_entity, spr);
+        registry.assign<transform::position_2d>(spr_entity, pos);
+    }
 }
 
 REFL_AUTO(type(antara::gaming::graphics::rect), field(pos), field(size))
