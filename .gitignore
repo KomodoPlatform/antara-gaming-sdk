@@ -485,6 +485,13 @@ examples/sfml/*/assets/textures/logo.png
 examples/sfml/*/assets/textures/name.png
 examples/sfml/*/assets/sounds/intro1.wav
 examples/sfml/*/assets/sounds/intro2.wav
+
+examples/blockchain/*/assets/fonts/sansation.ttf
+examples/blockchain/*/assets/textures/logo.png
+examples/blockchain/*/assets/textures/name.png
+examples/blockchain/*/assets/sounds/intro1.wav
+examples/blockchain/*/assets/sounds/intro2.wav
+
 /examples/sfml/*/assets/scripts/lib/lua/*.lua
 /examples/sfml/*/assets/scripts/systems/lua/scenes_system.lua
 /examples/sfml/*/assets/fonts/

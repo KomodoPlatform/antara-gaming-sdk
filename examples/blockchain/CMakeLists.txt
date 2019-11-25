@@ -1,0 +1,1 @@
+add_subdirectory(fake_ingame_shop)
