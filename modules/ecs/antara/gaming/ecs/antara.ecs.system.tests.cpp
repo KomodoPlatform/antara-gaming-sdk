@@ -20,6 +20,7 @@
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/base.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/ecs/lambda.system.hpp"
 #include "antara/gaming/ecs/virtual.input.system.hpp"
 
 namespace antara::gaming::ecs::tests
@@ -78,7 +79,7 @@ namespace antara::gaming::ecs::tests
         {
             struct concrete_system final : base_system
             {
-                concrete_system(entt::registry& registry) : base_system(registry)
+                concrete_system(entt::registry &registry) : base_system(registry)
                 {
 
                 }
@@ -138,9 +139,9 @@ namespace antara::gaming::ecs::tests
                         CHECK_EQ(*static_cast<int *>(data), 42);
             }
 
-            SUBCASE("check class name") {
+                    SUBCASE("check class name") {
                         CHECK_EQ("concrete_system", dummy_system.get_name());
-                    }
+            }
         }
 
         TEST_CASE ("system tests")
@@ -199,23 +200,36 @@ namespace antara::gaming::ecs::tests
 
             }
 
-            SUBCASE("update system") {
-                        dummy_system.update();
-                        pre_dummy_system.update();
-                        post_dummy_system.update();
-                    }
+                    SUBCASE("update system") {
+                dummy_system.update();
+                pre_dummy_system.update();
+                post_dummy_system.update();
+            }
 
                     SUBCASE ("system name") {
                         CHECK_EQ(dummy_system.get_name(), "antara::gaming::ecs::tests::logic_concrete_system");
-                    }
+            }
         }
     }
 
-    TEST_CASE("virtual input")
+    TEST_CASE ("virtual input")
     {
         entt::registry registry;
         registry.set<entt::dispatcher>();
         ecs::virtual_input_system system{registry};
+        system.update();
+    }
+
+    TEST_CASE ("lambda_system")
+    {
+        entt::registry registry;
+        registry.set<entt::dispatcher>();
+        ecs::lambda_logic_system system{registry, ecs::ftor{
+                .on_post_update = []() {},
+                .on_destruct = []() {},
+                .on_create = []() {},
+                .on_update = []() {}
+        }};
         system.update();
     }
 }

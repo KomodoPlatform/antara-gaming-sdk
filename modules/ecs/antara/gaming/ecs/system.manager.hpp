@@ -652,6 +652,12 @@ namespace antara::gaming::ecs
         template<typename ...TSystems, typename ...TArgs>
         auto load_systems(TArgs &&...args) noexcept;
 
+        system_manager& operator+=(system_ptr system) noexcept
+        {
+            auto sys_type = system->get_system_type_rtti();
+            add_system_(std::move(system), sys_type);
+            return *this;
+        }
     private:
         //! Private member functions
         base_system &add_system_(system_ptr &&system, system_type sys_type) noexcept;
