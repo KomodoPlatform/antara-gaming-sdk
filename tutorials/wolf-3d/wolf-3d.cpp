@@ -910,7 +910,7 @@ public:
             registry.view<entt::tag<"portal"_hs>, transform::properties>().less(functor);
         };
 
-        system_manager += std::make_unique<ecs::lambda_pre_system>(
+        system_manager += std::make_unique<ecs::lambda_logic_system>(
                 registry,
                 ecs::ftor{.on_update = std::move(portal_update_functor)});
 
