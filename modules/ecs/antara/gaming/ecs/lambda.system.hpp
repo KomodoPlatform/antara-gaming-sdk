@@ -20,13 +20,7 @@
 #include <functional>
 #include "antara/gaming/ecs/system.hpp"
 
-/*
- * template<typename SystemType>
-    class scripted_system final : public ecs::system<scripted_system<SystemType>, SystemType>
-    {
-    public:
-        using TSystem = ecs::system<scripted_system<SystemType>, SystemType>;
- */
+
 namespace antara::gaming::ecs
 {
     struct ftor
