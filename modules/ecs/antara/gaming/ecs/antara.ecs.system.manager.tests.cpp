@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include "antara/gaming/ecs/lambda.system.hpp"
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/ecs/system.manager.hpp"
 
@@ -136,5 +137,14 @@ namespace antara::gaming::ecs::tests {
                 CHECK_FALSE(manager.disable_systems<logic_concrete_system, pre_concrete_system>());
                 CHECK_GE(0ull, manager.update());
                 CHECK_EQ(1ull, manager.nb_systems());
+
+                manager += std::make_unique<lambda_pre_system>(registry, ecs::ftor{
+                        .on_post_update = []() {},
+                        .on_destruct = []() {},
+                        .on_create = []() {},
+                        .on_update = []() {}
+                });
+                CHECK_EQ(1ull, manager.update_systems(system_type::pre_update));
+                CHECK_EQ(2ull, manager.nb_systems());
     }
 }
