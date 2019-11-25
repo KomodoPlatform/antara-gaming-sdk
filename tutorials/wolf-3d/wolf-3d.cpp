@@ -3,6 +3,7 @@
 #include <antara/gaming/audio/component.music.hpp>
 #include <antara/gaming/audio/component.sound.effect.hpp>
 #include <antara/gaming/ecs/virtual.input.system.hpp>
+#include <antara/gaming/ecs/lambda.system.hpp>
 #include <antara/gaming/graphics/component.layer.hpp>
 #include <antara/gaming/scenes/scene.manager.hpp>
 #include <antara/gaming/sfml/graphic.system.hpp>
@@ -897,8 +898,21 @@ public:
         //! Load Raycast system
         system_manager.create_system<raycast_system>(p_system.get_player());
 
-        //! Load Portal system
+        //! Load Portal system (Will be turned into a generic sprite system soon)
         system_manager.create_system<portal_system>(p_system.get_player());
+
+        auto portal_update_functor = [&registry]() {
+            auto functor = [&registry](entt::entity entity, transform::properties &props) {
+                auto dt = timer::time_step::get_fixed_delta_time();
+                props.rotation = props.rotation + 120.0f * dt;
+                registry.replace<transform::properties>(entity, props);
+            };
+            registry.view<entt::tag<"portal"_hs>, transform::properties>().less(functor);
+        };
+
+        system_manager += std::make_unique<ecs::lambda_pre_system>(
+                registry,
+                ecs::ftor{.on_update = std::move(portal_update_functor)});
 
         //! Load minimap system
         system_manager.create_system<minimap_system>(p_system.get_player());
