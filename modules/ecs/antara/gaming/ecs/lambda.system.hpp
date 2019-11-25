@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <optional>
 #include <functional>
 #include "antara/gaming/ecs/system.hpp"
 
@@ -25,10 +24,10 @@ namespace antara::gaming::ecs
 {
     struct ftor
     {
-        std::optional<std::function<void()>> on_create{std::nullopt};
-        std::optional<std::function<void()>> on_update{std::nullopt};
-        std::optional<std::function<void()>> on_destruct{std::nullopt};
-        std::optional<std::function<void()>> on_post_update{std::nullopt};
+        std::function<void()> on_create{nullptr};
+        std::function<void()> on_update{nullptr};
+        std::function<void()> on_destruct{nullptr};
+        std::function<void()> on_post_update{nullptr};
     };
 
     template<typename SystemType>
@@ -44,29 +43,29 @@ namespace antara::gaming::ecs
                   lambda_name_(
                           std::move(lambda_name))
         {
-            if (lambda_contents_.on_create.has_value()) {
-                lambda_contents_.on_create.value()();
+            if (lambda_contents_.on_create != nullptr) {
+                lambda_contents_.on_create();
             }
         }
 
         void update() noexcept final
         {
-            if (lambda_contents_.on_update.has_value()) {
-                lambda_contents_.on_update.value()();
+            if (lambda_contents_.on_update != nullptr) {
+                lambda_contents_.on_update();
             }
         }
 
         ~lambda_system() noexcept
         {
-            if (lambda_contents_.on_destruct.has_value()) {
-                lambda_contents_.on_destruct.value()();
+            if (lambda_contents_.on_destruct != nullptr) {
+                lambda_contents_.on_destruct();
             }
         }
 
         void post_update() noexcept final
         {
-            if (lambda_contents_.on_post_update.has_value()) {
-                lambda_contents_.on_post_update.value()();
+            if (lambda_contents_.on_post_update != nullptr) {
+                lambda_contents_.on_post_update();
             }
         }
     };
