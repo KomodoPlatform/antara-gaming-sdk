@@ -1,6 +1,6 @@
 add_library(sfml_shared_resources INTERFACE)
 target_include_directories(sfml_shared_resources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sfml_shared_resources INTERFACE antara::ecs antara::config antara::resources antara::audio)
+target_link_libraries(sfml_shared_resources INTERFACE antara::ecs antara::config antara::resources antara::audio $<$<BOOL:${USE_IMGUI_ANTARA_WRAPPER}>:ImGui-SFML::ImGui-SFML>)
 add_library(antara::sfml_shared_resources ALIAS sfml_shared_resources)
 
 add_library(antara_sfml_audio STATIC)

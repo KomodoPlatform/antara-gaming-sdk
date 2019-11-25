@@ -47,6 +47,7 @@ namespace antara::gaming::sfml
     {
     public:
         graphic_system(entt::registry &registry) noexcept;
+        ~graphic_system() noexcept;;
 
         void refresh_render_texture() noexcept;
 

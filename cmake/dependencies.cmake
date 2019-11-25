@@ -86,6 +86,12 @@ if (USE_LUA_ANTARA_WRAPPER)
     )
 endif ()
 
+if (USE_IMGUI_ANTARA_WRAPPER)
+    FetchContent_Declare(imgui
+            URL https://github.com/ocornut/imgui/archive/v1.73.zip)
+    FetchContent_MakeAvailable(imgui)
+endif()
+
 if (USE_SFML_ANTARA_WRAPPER)
     if (APPLE)
         set(BUILD_SHARED_LIBS OFF CACHE BOOL "Override option" FORCE)
@@ -148,6 +154,13 @@ FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_
 
 if (USE_SFML_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(SFML)
+    if (USE_IMGUI_ANTARA_WRAPPER)
+        add_definitions(-DIMGUI_AND_SFML_ENABLED)
+        set(IMGUI_SFML_FIND_SFML OFF CACHE BOOL "Override option" FORCE)
+        set(IMGUI_DIR ${imgui_SOURCE_DIR})
+        FetchContent_Declare(imgui-sfml URL https://github.com/eliasdaler/imgui-sfml/archive/master.zip)
+        FetchContent_MakeAvailable(imgui-sfml)
+    endif()
 endif ()
 
 if (USE_SDL_ANTARA_WRAPPER)
