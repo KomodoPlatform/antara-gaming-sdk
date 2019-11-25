@@ -144,7 +144,7 @@ namespace antara::gaming::ecs::tests {
                         .on_create = []() {},
                         .on_update = []() {}
                 });
-                CHECK_EQ(1ull, manager.update_systems(system_type::pre_update));
+                CHECK_GE(1ull, manager.update());
                 CHECK_EQ(2ull, manager.nb_systems());
     }
 }
