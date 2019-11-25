@@ -16,6 +16,8 @@
 
 #include <SFML/Window/Event.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
+#include <imgui-SFML.h>
+#include <antara/gaming/timer/time.step.hpp>
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/mouse.button.pressed.hpp"
 #include "antara/gaming/event/mouse.button.released.hpp"
@@ -104,6 +106,9 @@ namespace antara::gaming::sfml
     {
         sf::Event evt{};
         while (window_.pollEvent(evt)) {
+#if defined(IMGUI_AND_SFML_ENABLED)
+            ImGui::SFML::ProcessEvent(evt);
+#endif
             switch (evt.type) {
                 case sf::Event::Closed:
                     this->dispatcher_.trigger<event::quit_game>(0);
@@ -180,6 +185,11 @@ namespace antara::gaming::sfml
                     break;
             }
         }
+#if defined(IMGUI_AND_SFML_ENABLED)
+        sf::Time delta_time = sf::seconds(timer::time_step::get_fixed_delta_time());
+        ImGui::SFML::Update(window_, delta_time);
+#endif
     }
+
 }
 

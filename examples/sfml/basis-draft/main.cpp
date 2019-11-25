@@ -14,8 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
+#if defined(IMGUI_AND_SFML_ENABLED)
+
+#include <imgui.h>
+
+#endif
+
 #include <entt/entity/helper.hpp>
 #include <antara/gaming/animation2d/animation.2d.hpp>
+#include <antara/gaming/ecs/lambda.system.hpp>
+
 #include "antara/gaming/world/world.app.hpp"
 #include "antara/gaming/transform/component.position.hpp"
 #include "antara/gaming/geometry/component.rectangle.hpp"
@@ -35,10 +43,12 @@ class intro_scene;
 
 using namespace antara::gaming;
 
-class game_scene final : public antara::gaming::scenes::base_scene {
+class game_scene final : public antara::gaming::scenes::base_scene
+{
 public:
     game_scene(entt::registry &entity_registry, animation2d::anim_system &animation2d_system) noexcept : base_scene(
-            entity_registry), animation2d_system_(animation2d_system) {
+            entity_registry), animation2d_system_(animation2d_system)
+    {
         auto &window_size = entity_registry.ctx<graphics::canvas_2d>().canvas.size;
         auto text_entity = entity_registry.create();
         entity_registry.assign<graphics::fill_color>(text_entity, graphics::green);
@@ -47,7 +57,8 @@ public:
         entity_registry.assign<entt::tag<"game_scene"_hs>>(text_entity);
         entity_registry.assign<graphics::layer<0>>(text_entity);
 
-        auto another_text_entity = graphics::blueprint_text(entity_registry, {"another text"}, transform::position_2d{900.0f, 900.0f});
+        auto another_text_entity = graphics::blueprint_text(entity_registry, {"another text"},
+                                                            transform::position_2d{900.0f, 900.0f});
         entity_registry.assign<entt::tag<"game_scene"_hs>>(another_text_entity);
         entity_registry.assign<graphics::layer<0>>(another_text_entity);
 
@@ -94,7 +105,8 @@ public:
         this->dispatcher_.trigger<event::get_mouse_position>(out);
         this->dispatcher_.trigger<event::get_mouse_position>(out_relative, true);
 
-        DVLOG_F(loguru::Verbosity_INFO, "before out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(), out_relative.x(), out_relative.y());
+        DVLOG_F(loguru::Verbosity_INFO, "before out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(),
+                out_relative.x(), out_relative.y());
 
         this->dispatcher_.trigger<event::set_mouse_position>(out + 10);
         this->dispatcher_.trigger<event::set_mouse_position>(out_relative + 10, true);
@@ -102,7 +114,8 @@ public:
         this->dispatcher_.trigger<event::get_mouse_position>(out);
         this->dispatcher_.trigger<event::get_mouse_position>(out_relative, true);
 
-        DVLOG_F(loguru::Verbosity_INFO, "after out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(), out_relative.x(), out_relative.y());
+        DVLOG_F(loguru::Verbosity_INFO, "after out: [{} : {}], out_relative: [{} : {}]", out.x(), out.y(),
+                out_relative.x(), out_relative.y());
         //!
         //auto& anim_cmp = entity_registry.get<animation2d::anim_component>(animated2_entity);
         //anim_cmp.elapsed = animation2d::anim_component::seconds(0.f);
@@ -110,23 +123,27 @@ public:
         //anim_cmp.current_status = animation2d::anim_component::playing;
     }
 
-    void update() noexcept final {
-
+    void update() noexcept final
+    {
     }
 
-    bool on_key_pressed(const antara::gaming::event::key_pressed &) noexcept final {
+    bool on_key_pressed(const antara::gaming::event::key_pressed &) noexcept final
+    {
         return false;
     }
 
-    bool on_key_released(const antara::gaming::event::key_released &) noexcept final {
+    bool on_key_released(const antara::gaming::event::key_released &) noexcept final
+    {
         return false;
     }
 
-    std::string scene_name() noexcept final {
+    std::string scene_name() noexcept final
+    {
         return "game_scene";
     }
 
-    ~game_scene() noexcept final {
+    ~game_scene() noexcept final
+    {
         auto view = entity_registry_.view<entt::tag<"game_scene"_hs>>();
         entity_registry_.destroy(view.begin(), view.end());
     }
@@ -136,9 +153,19 @@ private:
     //antara::gaming::sfml::resources_manager resource_mgr;
 };
 
-class my_world : public antara::gaming::world::app {
+class my_world : public antara::gaming::world::app
+{
 public:
-    my_world() noexcept {
+    my_world() noexcept
+    {
+#if defined(IMGUI_AND_SFML_ENABLED)
+        system_manager_ += std::make_unique<ecs::lambda_post_system>(entity_registry_, ecs::ftor{.on_update = []() {
+            ImGui::Begin("Hello, world!");
+            ImGui::Button("Look at this pretty button");
+            ImGui::End();
+            //ImGui::ShowTestWindow();
+        }});
+#endif
         auto &graphic_system = this->system_manager_.create_system<antara::gaming::sfml::graphic_system>();
         this->entity_registry_.set<antara::gaming::sfml::resources_system>(this->entity_registry_);
         auto &anim_system = this->system_manager_.create_system<antara::gaming::animation2d::anim_system>();
@@ -153,7 +180,8 @@ public:
     }
 };
 
-int main() {
+int main()
+{
     my_world game_app;
     return game_app.run();
 }

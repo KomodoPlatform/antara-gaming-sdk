@@ -17,8 +17,9 @@
 #include <type_traits>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
-#include <antara/gaming/event/key.pressed.hpp>
+#include <imgui-SFML.h>
 #include <meta/detection/detection.hpp>
+#include <antara/gaming/event/key.pressed.hpp>
 #include <antara/gaming/ecs/interpolation.system.hpp>
 #include <antara/gaming/event/fill.image.properties.hpp>
 #include <antara/gaming/timer/time.step.hpp>
@@ -67,6 +68,9 @@ namespace antara::gaming::sfml
     {
         auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
         this->window_.setVerticalSyncEnabled(canvas_2d.vsync);
+#if defined(IMGUI_AND_SFML_ENABLED)
+        ImGui::SFML::Init(window_);
+#endif
         dispatcher_.sink<event::window_resized>().connect<&graphic_system::on_window_resized_event>(*this);
         dispatcher_.sink<event::key_pressed>().connect<&graphic_system::on_key_pressed>(*this);
         dispatcher_.sink<event::fill_image_properties>().connect<&graphic_system::on_fill_image_properties>(*this);
@@ -124,6 +128,9 @@ namespace antara::gaming::sfml
             fps_text.setFont(handle.get());
             window_.draw(fps_text);
         }
+#if defined(IMGUI_AND_SFML_ENABLED)
+        ImGui::SFML::Render(window_);
+#endif
         window_.display();
     }
 
@@ -522,5 +529,12 @@ namespace antara::gaming::sfml
         auto handle = resources_system.load_texture(evt.appearance.c_str());
         auto[width, height] = handle->getSize();
         evt.image_size.set_xy(width, height);
+    }
+
+    graphic_system::~graphic_system() noexcept
+    {
+#if defined(IMGUI_AND_SFML_ENABLED)
+        ImGui::SFML::Shutdown();
+#endif
     }
 }
