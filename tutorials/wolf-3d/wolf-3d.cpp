@@ -596,6 +596,7 @@ public:
         portal_entity_sprite_ = graphics::blueprint_sprite(registry, graphics::sprite{.appearance = "portal.png"},
                                                            portal_target_pos);
 
+        registry.assign<entt::tag<"portal"_hs>>(portal_entity_sprite_);
         auto portal_rt_drawables = graphics::drawable_registry{
                 {"0_portal_sprite", graphics::drawable_info{
                         .entity = portal_entity_sprite_,
