@@ -16,10 +16,8 @@
 
 #pragma once
 
-namespace antara::gaming::audio
-{
-    enum status
-    {
+namespace antara::gaming::audio {
+    enum status {
         wait_for_first_run = 0,
         stopped = 1,
         paused = 2,

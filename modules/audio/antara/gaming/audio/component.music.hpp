@@ -16,14 +16,15 @@
 
 #pragma once
 
-#include <functional>
-#include <string>
-#include <antara/gaming/audio/audio.status.hpp>
+//! C++ System Headers
+#include <functional> ///< std::function
+#include <string> ///< std::string
 
-namespace antara::gaming::audio
-{
-    struct music
-    {
+//! SDK Headers
+#include "antara/gaming/audio/audio.status.hpp" ///< audio::status
+
+namespace antara::gaming::audio {
+    struct music {
         std::string music_id;
         status music_status{status::wait_for_first_run};
         float pitch{1.f};
