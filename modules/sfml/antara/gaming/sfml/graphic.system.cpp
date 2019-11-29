@@ -69,6 +69,8 @@ namespace antara::gaming::sfml {
     graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry) {
         auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
         this->window_.setVerticalSyncEnabled(canvas_2d.vsync);
+        this->window_.setMouseCursorVisible(canvas_2d.mouse_visible);
+        this->window_.setMouseCursorGrabbed(canvas_2d.mouse_grabbed);
 #if defined(IMGUI_AND_SFML_ENABLED)
         ImGui::SFML::Init(window_);
 #endif

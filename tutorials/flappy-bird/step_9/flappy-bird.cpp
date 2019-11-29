@@ -329,7 +329,8 @@ namespace {
                                                                .speed = animation2d::anim_component::seconds(0.13f),
                                                                .loop = true},
                                                        transform::position_2d{constants.player_pos_x,
-                                                                              canvas_height * 0.5f}, graphics::white, transform::properties{.scale = 0.22f});
+                                                                              canvas_height * 0.5f}, graphics::white,
+                                                       transform::properties{.scale = 0.22f});
         registry.assign<antara::gaming::graphics::layer<5>>(entity);
         registry.assign<entt::tag<"player"_hs>>(entity);
         tag_game_scene(registry, entity, true);
@@ -467,7 +468,7 @@ public:
         auto &props = registry.get<transform::properties>(player_);
 
         // Increase the rotation a little by applying delta time
-       props.rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
+        props.rotation = props.rotation + constants.rotate_speed * timer::time_step::get_fixed_delta_time();
 
         // If jump button is tapped, reset rotation,
         // If rotation is higher than the max angle, set it to max angle
@@ -515,7 +516,7 @@ private:
             if (collisions::basic_collision_system::query_rect(registry, player_, entity)) {
                 // Mark player died as true
                 player_died_ = true;
-                auto& animation = entity_registry_.get<animation2d::anim_component>(player_);
+                auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
                 animation.current_status = animation2d::anim_component::stopped;
             }
         }
@@ -568,7 +569,7 @@ private:
             // Game starts, player started playing
             started_playing_ = true;
             if (entity_registry_.valid(player_)) {
-                auto& animation = entity_registry_.get<animation2d::anim_component>(player_);
+                auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
                 animation.current_status = animation2d::anim_component::status::playing;
             }
             resume_physics();

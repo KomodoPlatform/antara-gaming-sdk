@@ -50,6 +50,18 @@ namespace antara::gaming::graphics
             game_maker_cfg.vsync = false;
         }
 
+        if (json_data.find("mouse_visible") != json_data.end()) {
+            json_data.at("mouse_visible").get_to(game_maker_cfg.mouse_visible);
+        } else {
+            game_maker_cfg.mouse_visible = true;
+        }
+
+        if (json_data.find("mouse_grabbed") != json_data.end()) {
+            json_data.at("mouse_grabbed").get_to(game_maker_cfg.mouse_grabbed);
+        } else {
+            game_maker_cfg.mouse_grabbed = false;
+        }
+
         json_data.at("window_title").get_to(game_maker_cfg.window_title);
         auto vec = json_data.at("background_color").get<std::vector<int>>();
         game_maker_cfg.background_color = graphics::fill_color(vec[0], vec[1], vec[2], vec[3]);
@@ -66,6 +78,8 @@ namespace antara::gaming::graphics
         json_data["custom_canvas_width"] = game_maker_cfg.custom_canvas_width;
         json_data["custom_canvas_height"] = game_maker_cfg.custom_canvas_height;
         json_data["vsync"] = game_maker_cfg.vsync;
+        json_data["mouse_visible"] = game_maker_cfg.mouse_visible;
+        json_data["mouse_grabbed"] = game_maker_cfg.mouse_grabbed;
         auto[r, g, b, a] = game_maker_cfg.background_color;
         json_data["background_color"] = {r, g, b, a};
         switch (game_maker_cfg.current_scaling_mode) {
