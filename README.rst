@@ -167,6 +167,15 @@ Acknowledgments
 * Viktor Kirilov `onqtam <https://github.com/onqtam>`_ for the awesome ``doctest`` framework.
 * Michele Caini  `skypjack <https://github.com/skypjack>`_ for the awesome ``EnTT`` framework and his help.
 
+Gallery
+-------
+
+.. image:: gallery/wolf.png
+.. image:: gallery/flappy.png
+.. image:: docs/assets/tictactoe_o_win.png
+.. image:: docs/assets/tictactoe_x_win.png
+.. image:: docs/assets/tictactoe_tie.png
+
 Badges
 ------
 
