@@ -16,7 +16,13 @@
 
 #include <SFML/Window/Event.hpp>
 #include <antara/gaming/graphics/component.canvas.hpp>
+
+#if defined(IMGUI_AND_SFML_ENABLED)
+
 #include <imgui-SFML.h>
+
+#endif
+
 #include <antara/gaming/timer/time.step.hpp>
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/mouse.button.pressed.hpp"
@@ -28,20 +34,16 @@
 #include "antara/gaming/sfml/input.system.hpp"
 #include "graphic.system.hpp"
 
-namespace antara::gaming::input
-{
-    bool is_key_pressed(input::key key) noexcept
-    {
+namespace antara::gaming::input {
+    bool is_key_pressed(input::key key) noexcept {
         return sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(key));
     }
 
-    bool is_mouse_button_pressed(input::mouse_button button) noexcept
-    {
+    bool is_mouse_button_pressed(input::mouse_button button) noexcept {
         return sf::Mouse::isButtonPressed(static_cast<sf::Mouse::Button>(button));
     }
 
-    math::vec2i get_mouse_position(bool relative_to_the_window) noexcept
-    {
+    math::vec2i get_mouse_position(bool relative_to_the_window) noexcept {
         if (not relative_to_the_window) {
             auto[x, y] = sf::Mouse::getPosition();
             return {x, y};
@@ -51,10 +53,8 @@ namespace antara::gaming::input
     }
 }
 
-namespace antara::gaming::sfml
-{
-    void input_system::on_fill_mouse_position(const event::get_mouse_position &evt) noexcept
-    {
+namespace antara::gaming::sfml {
+    void input_system::on_fill_mouse_position(const event::get_mouse_position &evt) noexcept {
         if (not evt.relative_to_the_window) {
             auto[x, y] = sf::Mouse::getPosition();
             evt.pos = math::vec2i{x, y};
@@ -65,8 +65,7 @@ namespace antara::gaming::sfml
     }
 
 
-    void input_system::on_set_mouse_position(const event::set_mouse_position &evt) noexcept
-    {
+    void input_system::on_set_mouse_position(const event::set_mouse_position &evt) noexcept {
         if (not evt.relative_to_the_window) {
             sf::Mouse::setPosition(sf::Vector2i{evt.to.x(), evt.to.y()});
         } else {
@@ -75,14 +74,12 @@ namespace antara::gaming::sfml
     }
 
     input_system::input_system(entt::registry &registry, sf::RenderWindow &window) noexcept
-            : system(registry), window_(window)
-    {
+            : system(registry), window_(window) {
         this->dispatcher_.sink<event::get_mouse_position>().connect<&input_system::on_fill_mouse_position>(*this);
         this->dispatcher_.sink<event::set_mouse_position>().connect<&input_system::on_set_mouse_position>(*this);
     }
 
-    auto input_system::translate_window_coord(const int x, const int y) const
-    {
+    auto input_system::translate_window_coord(const int x, const int y) const {
         // Translate Window pixel position to coordinate using the view
         auto window_pos = window_.mapPixelToCoords(sf::Vector2i(x, y));
 
@@ -102,8 +99,7 @@ namespace antara::gaming::sfml
         return std::make_tuple(rt_coord, window_pos);
     }
 
-    void input_system::update() noexcept
-    {
+    void input_system::update() noexcept {
         sf::Event evt{};
         while (window_.pollEvent(evt)) {
 #if defined(IMGUI_AND_SFML_ENABLED)
