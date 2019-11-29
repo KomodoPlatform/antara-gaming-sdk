@@ -24,7 +24,6 @@ struct flappy_bird_constants {
     const unsigned long long font_size{32ull};
 
     // Player
-    const std::string player_image_name{"player.png"};
     const float player_pos_x{400.0f};
     const float gravity{2000.f};
     const float jump_force{650.f};
@@ -324,7 +323,7 @@ namespace {
                                                  transform::position_2d{constants.player_pos_x, canvas_height * 0.5f});*/
 
         auto entity = animation2d::blueprint_animation(registry,
-                                                       animation2d::anim_component{.animation_id = "flappy_fly",
+                                                       animation2d::anim_component{.animation_id = "dragon_jump",
                                                                .current_status = animation2d::anim_component::status::paused,
                                                                .speed = animation2d::anim_component::seconds(0.13f),
                                                                .loop = true},
@@ -449,7 +448,13 @@ public:
         bool jump_key_tapped = input::virtual_input::is_tapped("jump");
 
         // If jump is tapped, jump by adding jump force to the movement speed Y
-        if (jump_key_tapped) movement_speed_.set_y(-constants.jump_force);
+        if (jump_key_tapped) {
+            movement_speed_.set_y(-constants.jump_force);
+
+            auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
+
+            animation.animation_id = "dragon_fall";
+        }
 
         // Add movement speed to position to make the character move, but apply over time with delta time
         pos += movement_speed_ * timer::time_step::get_fixed_delta_time();
@@ -691,7 +696,9 @@ struct flappy_bird_world : world::app {
 
         auto &anim_system = system_manager_.create_system<antara::gaming::animation2d::anim_system>();
 
-        anim_system.add_animation("flappy_fly", "fly_sheet.png", 1, 1, 2);
+        anim_system.add_animation("dragon_hurt", "dragon_hurt.png", 1, 1, 1);
+        anim_system.add_animation("dragon_fall", "dragon_fall.png", 1, 1, 2);
+        anim_system.add_animation("dragon_jump", "dragon_jump.png", 1, 1, 2);
         // Create virtual input system
         system_manager_.create_system<ecs::virtual_input_system>();
 
