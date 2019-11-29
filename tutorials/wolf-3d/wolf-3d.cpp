@@ -21,7 +21,6 @@ using st_direction = st::type<math::vec2f, struct st_direction_tag>;
 using st_bobbing = st::type<float, struct bobbing_tag>;
 using st_plane = st::type<math::vec2f, struct plane_tag>;
 using st_tile_size = st::type<float, struct tile_size_tag>;
-using st_zbuffer = st::type<float[], struct zbuffer_tag>;
 
 inline constexpr std::size_t map_width = 24ull;
 inline constexpr std::size_t map_height = 24ull;
