@@ -226,6 +226,8 @@ jobs:
       - name: Run Tests (Windows)
         working-directory: build/bin/unit_tests
         if: runner.os == 'Windows'
+        env: # Or as an environment variable
+          SECRET_WIF_WALLET: ${{ secrets.SECRET_WIF_WALLET }}
         shell: powershell
         run: |
           $filePattern = '*_tests.exe'
