@@ -131,6 +131,11 @@ if (ENABLE_BLOCKCHAIN_MODULES)
                 nspv
                 URL https://github.com/SirSevenG/libnspv/releases/download/4/nspv-linux-691360cf0e110faa9f6e13a81df3a2bc000beadc.tar.gz
         )
+    elseif (WIN32)
+        FetchContent_Declare(
+                nspv
+                URL https://github.com/SirSevenG/libnspv/releases/download/4/nspv-win-691360cf0e110faa9f6e13a81df3a2bc000beadc.zip
+        )
     endif ()
     FetchContent_MakeAvailable(nspv restclient-cpp)
     find_package(CURL REQUIRED)
