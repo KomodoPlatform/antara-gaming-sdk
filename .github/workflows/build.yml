@@ -159,6 +159,7 @@ jobs:
         run: |
           iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
           scoop install ninja llvm --global
+          vcpkg install curl:x64-Windows
 
           if ("${{ matrix.compiler }}" -eq "clang") {
             echo "::set-env name=CC::clang"
