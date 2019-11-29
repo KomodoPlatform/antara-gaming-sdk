@@ -14,5 +14,7 @@
   "window_height": 1080.0,
   "window_title": "Wolf3D - Antara Gaming SDK",
   "window_width": 1920.0,
+  "mouse_grabbed": true,
+  "mouse_visible": false,
   "vsync": false
 }
