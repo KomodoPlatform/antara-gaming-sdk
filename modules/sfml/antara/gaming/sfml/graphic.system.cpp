@@ -17,7 +17,13 @@
 #include <type_traits>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/zip.hpp>
+
+#if defined(IMGUI_AND_SFML_ENABLED)
+
 #include <imgui-SFML.h>
+
+#endif
+
 #include <meta/detection/detection.hpp>
 #include <antara/gaming/event/key.pressed.hpp>
 #include <antara/gaming/ecs/interpolation.system.hpp>
@@ -31,13 +37,11 @@
 #include "antara/gaming/graphics/component.layer.hpp"
 #include "resources.manager.hpp"
 
-namespace
-{
+namespace {
     using namespace antara::gaming;
 
     template<typename TSFMLEntity>
-    void fill_properties(transform::properties *props, TSFMLEntity &underlying_entity)
-    {
+    void fill_properties(transform::properties *props, TSFMLEntity &underlying_entity) {
         auto[scale_x, scale_y] = (*props).scale;
         underlying_entity.setScale(scale_x, scale_y);
         underlying_entity.setRotation(props->rotation);
@@ -54,18 +58,15 @@ namespace
 
     template<typename TSFMLEntity>
     void fill_properties_sfml_entity(entt::registry &registry, entt::entity entity,
-                                     TSFMLEntity &underlying_entity) noexcept
-    {
+                                     TSFMLEntity &underlying_entity) noexcept {
         if (auto properties = registry.try_get<transform::properties>(entity); properties != nullptr) {
             fill_properties(properties, underlying_entity);
         }
     }
 }
 
-namespace antara::gaming::sfml
-{
-    graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry)
-    {
+namespace antara::gaming::sfml {
+    graphic_system::graphic_system(entt::registry &registry) noexcept : system(registry) {
         auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
         this->window_.setVerticalSyncEnabled(canvas_2d.vsync);
 #if defined(IMGUI_AND_SFML_ENABLED)
@@ -92,8 +93,7 @@ namespace antara::gaming::sfml
         refresh_render_texture();
     }
 
-    void graphic_system::refresh_render_texture() noexcept
-    {
+    void graphic_system::refresh_render_texture() noexcept {
         auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
 
         auto[view_pos_x, view_pos_y] = canvas_2d.view_port.position;
@@ -113,8 +113,7 @@ namespace antara::gaming::sfml
         render_texture_sprite_.setPosition(rt_texture_pos_x, rt_texture_pos_y);
     }
 
-    void graphic_system::update() noexcept
-    {
+    void graphic_system::update() noexcept {
         window_.clear();
         render_texture_.clear();
         draw_all_layers();
@@ -134,14 +133,12 @@ namespace antara::gaming::sfml
         window_.display();
     }
 
-    sf::RenderWindow &graphic_system::get_window() noexcept
-    {
+    sf::RenderWindow &graphic_system::get_window() noexcept {
         return window_;
     }
 
     template<size_t Layer, typename DrawableType>
-    void graphic_system::draw() noexcept
-    {
+    void graphic_system::draw() noexcept {
         auto draw_functor = [this](entt::entity entity, auto &&drawable) {
             if constexpr (doom::meta::is_detected_v<have_global_bounds, DrawableType>)
                 if (this->debug_mode_)
@@ -164,8 +161,7 @@ namespace antara::gaming::sfml
     }
 
     template<typename Drawable>
-    void graphic_system::draw_vertices(entt::entity entity, Drawable &drawable) const
-    {
+    void graphic_system::draw_vertices(entt::entity entity, Drawable &drawable) const {
         auto &vertices = entity_registry_.get<geometry::vertex_array>(entity);
         if (vertices.texture_id.has_value()) {
             auto &res_system = entity_registry_.ctx<resources_system>();
@@ -183,8 +179,7 @@ namespace antara::gaming::sfml
     }
 
     template<typename Drawable>
-    void graphic_system::draw_debug(Drawable &drawable) const
-    {
+    void graphic_system::draw_debug(Drawable &drawable) const {
         auto[capsule_left, capsule_top, capsule_width, capsule_height] = drawable.drawable.getGlobalBounds();
         auto[_, __, width, height] = drawable.drawable.getLocalBounds();
 
@@ -219,8 +214,7 @@ namespace antara::gaming::sfml
     }
 
     template<typename Drawable>
-    void graphic_system::draw_dynamic_entities(entt::entity entity, Drawable &drawable) const
-    {
+    void graphic_system::draw_dynamic_entities(entt::entity entity, Drawable &drawable) const {
         if constexpr (doom::meta::is_detected_v<have_set_position, Drawable>) {
             auto org_pos = entity_registry_.get<transform::position_2d>(entity); //! save org
             auto prev_pos = entity_registry_.get<transform::previous_position_2d>(entity); //! save org
@@ -237,8 +231,7 @@ namespace antara::gaming::sfml
     }
 
     template<typename Drawable>
-    void graphic_system::draw_render_texture(entt::entity entity, Drawable &drawable) const
-    {
+    void graphic_system::draw_render_texture(entt::entity entity, Drawable &drawable) const {
         auto &rt = entity_registry_.get<graphics::render_texture_2d>(entity);
         auto[r, g, b, a] = rt.clear_color;
         sf::RenderTexture &rt_underlying = *drawable.drawable;
@@ -279,32 +272,27 @@ namespace antara::gaming::sfml
     }
 
     template<size_t Layer, typename... DrawableType>
-    void graphic_system::draw(doom::meta::list<DrawableType...>) noexcept
-    {
+    void graphic_system::draw(doom::meta::list<DrawableType...>) noexcept {
         (draw<Layer, DrawableType>(), ...);
     }
 
     template<size_t... Is>
-    void graphic_system::draw_all_layers(std::index_sequence<Is...>) noexcept
-    {
+    void graphic_system::draw_all_layers(std::index_sequence<Is...>) noexcept {
         (draw<Is>(drawable_list{}), ...);
     }
 
-    void graphic_system::draw_all_layers() noexcept
-    {
+    void graphic_system::draw_all_layers() noexcept {
         draw_all_layers(std::make_index_sequence<graphics::max_layer>{});
     }
 
-    void graphic_system::on_window_resized_event(const event::window_resized &) noexcept
-    {
+    void graphic_system::on_window_resized_event(const event::window_resized &) noexcept {
         refresh_render_texture();
         this->dispatcher_.trigger<event::canvas_resized>();
     }
 
     void graphic_system::on_circle_construct(entt::entity entity,
                                              entt::registry &registry,
-                                             geometry::circle &circle) noexcept
-    {
+                                             geometry::circle &circle) noexcept {
         auto &sfml_circle = registry.assign_or_replace<sfml::circle>(entity, sf::CircleShape(circle.radius));
         if (auto out_color = registry.try_get<graphics::outline_color>(entity); out_color != nullptr) {
             sfml_circle.drawable.setOutlineColor(sf::Color(out_color->r, out_color->g, out_color->b, out_color->a));
@@ -340,8 +328,7 @@ namespace antara::gaming::sfml
     }
 
     void graphic_system::on_rectangle_construct(entt::entity entity, entt::registry &registry,
-                                                geometry::rectangle &rectangle) noexcept
-    {
+                                                geometry::rectangle &rectangle) noexcept {
         auto[width, height] = rectangle.size;
         sf::RectangleShape &sfml_rectangle = registry.assign_or_replace<sfml::rectangle>(entity,
                                                                                          sf::RectangleShape()).drawable;
@@ -367,8 +354,7 @@ namespace antara::gaming::sfml
     }
 
     void graphic_system::on_vertex_array_construct(entt::entity entity, entt::registry &registry,
-                                                   geometry::vertex_array &cmp_vertex_array) noexcept
-    {
+                                                   geometry::vertex_array &cmp_vertex_array) noexcept {
         auto &sf_vertex_array = registry.assign_or_replace<sfml::vertex_array>(entity, sf::VertexArray(
                 static_cast<sf::PrimitiveType>(cmp_vertex_array.geometry_type),
                 cmp_vertex_array.vertices.size())).drawable;
@@ -392,21 +378,18 @@ namespace antara::gaming::sfml
     }
 
     void graphic_system::on_position_2d_construct(entt::entity entity, entt::registry &,
-                                                  transform::position_2d &pos) noexcept
-    {
+                                                  transform::position_2d &pos) noexcept {
         set_position(entity, pos, drawable_list_transformable{});
     }
 
     template<typename... DrawableType>
     void graphic_system::set_position(entt::entity entity, transform::position_2d &pos,
-                                      doom::meta::list<DrawableType...>) noexcept
-    {
+                                      doom::meta::list<DrawableType...>) noexcept {
         (... || set_position<DrawableType>(entity, pos));
     }
 
     template<typename DrawableType>
-    bool graphic_system::set_position(entt::entity entity, transform::position_2d &pos) noexcept
-    {
+    bool graphic_system::set_position(entt::entity entity, transform::position_2d &pos) noexcept {
         if (auto cmp = this->entity_registry_.try_get<DrawableType>(entity); cmp != nullptr) {
             cmp->drawable.setPosition(pos.x(), pos.y());
             fill_properties_sfml_entity(entity_registry_, entity, cmp->drawable);
@@ -416,8 +399,7 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept
-    {
+    graphic_system::on_text_construct(entt::entity entity, entt::registry &registry, graphics::text &text) noexcept {
         auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto handle = resources_system.load_font(text.appearance);
         sf::Text &sf_text = registry.assign_or_replace<sfml::text>(entity, sf::Text(text.contents, handle.get(),
@@ -458,8 +440,7 @@ namespace antara::gaming::sfml
     }
 
     void graphic_system::on_rt_construct(entt::entity entity, entt::registry &registry,
-                                         graphics::render_texture_2d &rt) noexcept
-    {
+                                         graphics::render_texture_2d &rt) noexcept {
         std::unique_ptr<sf::RenderTexture> &sfml_rt = registry.assign_or_replace<sfml::render_texture>(entity).drawable;
         sfml_rt->create(rt.size.x(), rt.size.y());
         sfml_rt->setSmooth(rt.smooth);
@@ -467,8 +448,7 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept
-    {
+    graphic_system::on_sprite_construct(entt::entity entity, entt::registry &registry, graphics::sprite &spr) noexcept {
         auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto handle = resources_system.load_texture(spr.appearance.c_str());
         sf::Sprite &native_sprite = registry.assign_or_replace<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
@@ -493,29 +473,25 @@ namespace antara::gaming::sfml
         fill_properties_sfml_entity(entity_registry_, entity, native_sprite);
     }
 
-    void graphic_system::on_key_pressed(const event::key_pressed &evt) noexcept
-    {
+    void graphic_system::on_key_pressed(const event::key_pressed &evt) noexcept {
         if (evt.key == input::key::f4) {
             debug_mode_ = !debug_mode_;
         }
     }
 
     void graphic_system::on_properties_replaced(entt::entity entity, entt::registry &,
-                                                transform::properties &props) noexcept
-    {
+                                                transform::properties &props) noexcept {
         set_properties(entity, props, drawable_list_transformable{});
     }
 
     template<typename... DrawableType>
     void graphic_system::set_properties(entt::entity entity, transform::properties &props,
-                                        doom::meta::list<DrawableType...>) noexcept
-    {
+                                        doom::meta::list<DrawableType...>) noexcept {
         (... || set_properties<DrawableType>(entity, props));
     }
 
     template<typename DrawableType>
-    bool graphic_system::set_properties(entt::entity entity, transform::properties &props) noexcept
-    {
+    bool graphic_system::set_properties(entt::entity entity, transform::properties &props) noexcept {
         if (auto cmp = this->entity_registry_.try_get<DrawableType>(entity); cmp != nullptr) {
             fill_properties(&props, cmp->drawable);
             return true;
@@ -523,16 +499,14 @@ namespace antara::gaming::sfml
         return false;
     }
 
-    void graphic_system::on_fill_image_properties(const event::fill_image_properties &evt) noexcept
-    {
+    void graphic_system::on_fill_image_properties(const event::fill_image_properties &evt) noexcept {
         auto &resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto handle = resources_system.load_texture(evt.appearance.c_str());
         auto[width, height] = handle->getSize();
         evt.image_size.set_xy(width, height);
     }
 
-    graphic_system::~graphic_system() noexcept
-    {
+    graphic_system::~graphic_system() noexcept {
 #if defined(IMGUI_AND_SFML_ENABLED)
         ImGui::SFML::Shutdown();
 #endif
