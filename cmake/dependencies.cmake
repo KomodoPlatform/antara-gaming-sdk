@@ -139,6 +139,7 @@ if (ENABLE_BLOCKCHAIN_MODULES)
     endif ()
     FetchContent_MakeAvailable(nspv restclient-cpp)
     find_package(CURL REQUIRED)
+
     add_library(restclient_obj STATIC)
     target_sources(restclient_obj PRIVATE
             ${restclient-cpp_SOURCE_DIR}/source/connection.cc
@@ -152,7 +153,12 @@ if (ENABLE_BLOCKCHAIN_MODULES)
     IF (UNIX)
         configure_file(${nspv_SOURCE_DIR}/nspv ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/nspv COPYONLY)
         configure_file(${nspv_SOURCE_DIR}/coins ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/coins COPYONLY)
-    endif ()
+    endif()
+    IF (WIN32)
+        configure_file(${nspv_SOURCE_DIR}/nspv.exe ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/nspv.exe COPYONLY)
+        configure_file(${nspv_SOURCE_DIR}/libwinpthread-1.dll ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/libwinpthread-1.dll COPYONLY)
+        configure_file(${nspv_SOURCE_DIR}/coins ${CMAKE_CURRENT_SOURCE_DIR}/modules/blockchain/assets/tools/coins COPYONLY)
+    endif()
 endif ()
 
 FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes loguru fmt reproc)
