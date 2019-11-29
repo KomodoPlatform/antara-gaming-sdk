@@ -47,7 +47,7 @@ struct flappy_bird_constants {
     // Background
     const float ground_thickness{100.0f};
     const float grass_thickness{20.0f};
-    const graphics::color background_color{82, 189, 199};
+    const int background_image_height{2048};
     const graphics::color ground_color{220, 209, 143};
     const graphics::color grass_color{132, 227, 90};
     const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
@@ -274,9 +274,11 @@ namespace {
             transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
 
             // And the size is full canvas
-            math::vec2f size{canvas_width, canvas_height};
+            float scale = canvas_height/ constants.background_image_height;
 
-            auto sky = geometry::blueprint_rectangle(registry, size, constants.background_color, pos);
+            auto sky = graphics::blueprint_sprite(registry, graphics::sprite{"background.png"}, pos, graphics::white,
+                                                  transform::properties{{scale, scale}});
+
             registry.assign<graphics::layer<1>>(sky);
             tag_game_scene(registry, sky);
         }
