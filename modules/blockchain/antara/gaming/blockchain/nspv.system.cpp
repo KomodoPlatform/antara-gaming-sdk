@@ -14,13 +14,43 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <fstream>
-#include <nlohmann/json.hpp>
-#include <loguru.hpp>
-#include <reproc++/sink.hpp>
+//! C System headers
+#include <cstdlib> ///< std::getenv
+
+//! C++ System headers
+#include <fstream> ///< std::ifstream
+
+//! Dependencies Headers
+#include <loguru.hpp> ///< DVLOG_F, VLOG_SCOPE_F, LOG_SCOPE_FUNCTION
+#include <nlohmann/json.hpp> //! nlohmann::json
+
+//! SDK Headers
+#include "antara/gaming/blockchain/nspv.api.hpp"
 #include "antara/gaming/blockchain/nspv.system.hpp"
 
 namespace antara::gaming::blockchain {
+    //! nspv::nspv_process implementation
+    nspv::nspv_process::nspv_process(reproc::process background_, std::size_t rpcport_) noexcept:
+            background(std::move(background_)), rpcport(rpcport_),
+            endpoint("http://127.0.0.1:" + std::to_string(rpcport)) {
+    }
+
+    nspv::nspv_process::~nspv_process() {
+        reproc::stop_actions stop_actions = {
+                {reproc::stop::terminate, reproc::milliseconds(2000)},
+                {reproc::stop::kill,      reproc::milliseconds(5000)},
+                {reproc::stop::wait,      reproc::milliseconds(2000)}
+        };
+
+        auto ec = background.stop(stop_actions);
+        if (ec) {
+            VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
+        }
+    }
+}
+
+namespace antara::gaming::blockchain {
+    //! nspv::nspv implementation
     nspv::nspv(entt::registry &registry, fs::path tools_path) noexcept :
             system(registry), tools_path_(std::move(tools_path)) {
         LOG_SCOPE_FUNCTION(INFO);
@@ -28,11 +58,12 @@ namespace antara::gaming::blockchain {
         this->disable();
     }
 
-    void nspv::update() noexcept {}
-
     nspv::~nspv() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
     }
+
+    void nspv::update() noexcept {}
+
 
     bool nspv::spawn_nspv_instance(const std::string &coin, bool auto_login,
                                    std::optional<std::size_t> rpcport_in) noexcept {
