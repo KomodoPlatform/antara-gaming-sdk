@@ -141,6 +141,27 @@ macro(magic_game_app_image_generation from_dir desktop_file appdata_file app_ico
     endif ()
 endmacro()
 
+macro(import_antara_dlls TARGET_NAME)
+    if (WIN32)
+        if (ENABLE_BLOCKCHAIN_MODULES)
+            message(STATUS "importing blockchain DLLs")
+            get_target_property(target_runtime_directory ${TARGET_NAME} RUNTIME_OUTPUT_DIRECTORY)
+            message(STATUS "target: ${TARGET_NAME}, output_directory: ${target_runtime_directory}")
+            ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory "${reproc_BINARY_DIR}/reproc/lib" "${target_runtime_directory}"
+                    COMMENT "copying dlls …"
+                    $<TARGET_FILE_DIR:${TARGET_NAME}>
+                    )
+
+            ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory "${reproc_BINARY_DIR}/reproc++/lib" "${target_runtime_directory}"
+                    COMMENT "copying dlls …"
+                    $<TARGET_FILE_DIR:${TARGET_NAME}>
+                    )
+        endif()
+    endif()
+endmacro()
+
 macro(init_antara_env)
     init_apple_env()
     download_app_image()

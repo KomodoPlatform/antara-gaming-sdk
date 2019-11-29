@@ -28,7 +28,7 @@ if (ANTARA_BUILD_UNIT_TESTS)
 
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/bin/unit_tests/nspv/)
 
-
+    import_antara_dlls(antara_blockchain_tests)
     target_enable_coverage(antara_blockchain_tests)
     target_enable_tsan(antara_blockchain_tests)
     target_enable_asan(antara_blockchain_tests)
