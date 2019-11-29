@@ -82,7 +82,7 @@ if (USE_LUA_ANTARA_WRAPPER)
 
     FetchContent_Declare(
             sol2
-            URL https://github.com/ThePhD/sol2/archive/develop.zip
+            URL https://github.com/ThePhD/sol2/archive/21c030933f0c470ca328cdec51d847968370cd23.zip
     )
 endif ()
 
