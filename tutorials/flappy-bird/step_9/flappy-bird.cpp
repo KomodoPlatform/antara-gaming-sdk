@@ -51,7 +51,7 @@ struct flappy_bird_constants {
     const float grass_thickness{20.0f};
     const int background_image_height{2048};
     const graphics::color ground_color{220, 209, 143};
-    const graphics::color grass_color{132, 227, 90};
+    const graphics::color grass_color{176, 218, 110};
     const graphics::outline_color grass_outline_color{2.0f, graphics::color{76, 47, 61}};
 };
 
