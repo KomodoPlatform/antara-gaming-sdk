@@ -48,11 +48,11 @@ namespace antara::gaming::graphics {
             this->a = a;
         }
 
-        void set_color(std::uint8_t value) noexcept { r = g = b = value; }
+        void set_unique_color(std::uint8_t value) noexcept { r = g = b = value; }
 
 
-        void set_color(std::uint8_t value, std::uint8_t alpha) noexcept {
-            set_color(value);
+        void set_unique_color(std::uint8_t value, std::uint8_t alpha) noexcept {
+            set_unique_color(value);
             a = alpha;
         }
 

@@ -101,7 +101,7 @@ namespace {
                         const float brightness_cap = 90.0f) {
         const float darkness = std::max(std::min(brightness_cap * distance / max_distance, brightness_cap), 0.0f);
         const float brightness = brightness_cap - darkness;
-        v.pixel_color.set_color(std::uint8_t(brightness));
+        v.pixel_color.set_unique_color(std::uint8_t(brightness));
     }
 }
 
@@ -292,7 +292,7 @@ private:
 
                 const float darkness = 150;
                 std::uint8_t color = type == 0 ? std::uint8_t(darkness) : 255;
-                for (int i = 0; i < 4; ++i) vertices[idx + i].pixel_color.set_color(color);
+                for (int i = 0; i < 4; ++i) vertices[idx + i].pixel_color.set_unique_color(color);
             }
         }
         this->entity_registry_.replace<geometry::vertex_array>(minimap_tiles_, vertices, geometry::quads, "csgo.png");
@@ -317,10 +317,10 @@ private:
 
         // Character point is visible
         const unsigned char color = 255;
-        fov_vertices[0].pixel_color.set_color(color, 60);
+        fov_vertices[0].pixel_color.set_unique_color(color, 60);
 
         // Then it goes invisible towards the end
-        for (int i = 1; i <= 2; ++i) fov_vertices[i].pixel_color.set_color(color, 0);
+        for (int i = 1; i <= 2; ++i) fov_vertices[i].pixel_color.set_unique_color(color, 0);
 
         this->entity_registry_.replace<geometry::vertex_array>(minimap_fov_, fov_vertices, geometry::triangles);
     }
