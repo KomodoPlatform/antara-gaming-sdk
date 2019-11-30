@@ -52,13 +52,14 @@ namespace antara::gaming::animation2d {
 
     anim_system::anim_system(entt::registry &registry) noexcept : system(registry) {
         registry.on_construct<anim_component>().connect<&anim_system::on_anim_cmp_create>(*this);
+        registry.on_replace<anim_component>().connect<&anim_system::on_anim_cmp_create>(*this);
     }
 
     void anim_system::on_anim_cmp_create(entt::entity entity, entt::registry &registry,
                                          const anim_component &anim_cmp) noexcept {
         auto&&[frames, appearance] = animations_.at(anim_cmp.animation_id);
         auto rect = frames[anim_cmp.current_frame];
-        registry.assign<graphics::sprite>(entity, appearance, false, rect);
+        registry.assign_or_replace<graphics::sprite>(entity, appearance, false, rect);
     }
 
     void
