@@ -27,55 +27,47 @@
 
 //! Anonymous Implementation
 namespace {
-    void on_position_construct(entt::entity entity, entt::registry &reg,
-                               antara::gaming::transform::position_2d &pos) {
-        using namespace antara::gaming;
-        reg.assign<transform::previous_position_2d>(entity, pos);
-    }
+    using namespace antara::gaming::transform;
+    using namespace entt;
+
+    void on_position_build(entity ett, registry &reg, position_2d &pos) { reg.assign<previous_position_2d>(ett, pos); }
 }
 
 //! Private implementation
 namespace antara::gaming::ecs {
-    base_system &
-    system_manager::add_system_(system_manager::system_ptr &&system,
-                                antara::gaming::ecs::system_type sys_type) noexcept {
+    base_system &system_manager::add_system_(system_ptr &&system, system_type sys_type) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
         return *systems_[sys_type].emplace_back(std::move(system));
     }
 
     void system_manager::sweep_systems_() noexcept {
-        ranges::for_each(systems_, [](auto &&vec_system) -> void {
-            ranges::actions::remove_if(vec_system, &base_system::is_marked);
-        });
-
+        using namespace ranges::actions;
+        ranges::for_each(systems_, [](auto &&vec_system) { remove_if(vec_system, &base_system::is_marked); });
         need_to_sweep_systems_ = false;
     }
 }
 
 //! Public implementation
 namespace antara::gaming::ecs {
-    system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept
-            : entity_registry_(
-            registry), dispatcher_(entity_registry_.ctx<entt::dispatcher>()) {
+    system_manager::system_manager(entt::registry &reg, bool susbscribe_to_internal_events) noexcept:
+            entity_registry_(reg),
+            dispatcher_(reg.ctx<entt::dispatcher>()) {
         LOG_SCOPE_FUNCTION(INFO);
         create_system<interpolation_system>();
-        entity_registry_.set<interpolation_system::st_interpolation>(0.f);
+        reg.set<interpolation_system::st_interpolation>(0.f);
         if (susbscribe_to_internal_events) {
             dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
-            entity_registry_.on_construct<transform::position_2d>().connect<&on_position_construct>();
+            reg.on_construct<transform::position_2d>().connect<&on_position_build>();
             assert(not dispatcher_.sink<event::add_base_system>().empty());
         }
     }
 
-    std::size_t system_manager::nb_systems(system_type sys_type) const noexcept {
-        return systems_[sys_type].size();
-    }
+    std::size_t system_manager::nb_systems(system_type sys_type) const noexcept { return systems_[sys_type].size(); }
 
     std::size_t system_manager::nb_systems() const noexcept {
-        return ranges::accumulate(systems_, size_t{0u}, [](size_t accumulator, auto &&vec) {
-            return accumulator + vec.size();
-        });
+        using namespace ranges;
+        return accumulate(systems_, 0ull, [](size_t accumulator, auto &&vec) { return accumulator + vec.size(); });
     }
 
 
@@ -142,13 +134,10 @@ namespace antara::gaming::ecs {
     void system_manager::start() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         game_is_running_ = true;
-
         antara::gaming::timer::time_step::reset_lag();
     }
 
-    system_manager::~system_manager() noexcept {
-        LOG_SCOPE_FUNCTION(INFO);
-    }
+    system_manager::~system_manager() noexcept { LOG_SCOPE_FUNCTION(INFO); }
 
     //LCOV_EXCL_START
     system_manager &system_manager::operator+=(system_manager::system_ptr system) noexcept {

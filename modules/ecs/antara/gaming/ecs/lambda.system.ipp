@@ -14,19 +14,35 @@
  *                                                                            *
  ******************************************************************************/
 
-//! Dependencies Headers
-#include <entt/entity/helper.hpp> ///< entt::tag
-
-//! SDK Headers
-#include "antara/gaming/ecs/interpolation.system.hpp"
-#include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d,previous_position2d
-
 namespace antara::gaming::ecs {
-    void interpolation_system::update() noexcept {
-        using namespace transform;
-        auto func = [](position_2d &pos, previous_position_2d &previous_pos) { previous_pos = pos; };
-        entity_registry_.view<entt::tag<"dynamic"_hs>, position_2d, previous_position_2d>().less(func);
+    template<typename SystemType>
+    lambda_system<SystemType>::lambda_system(entt::registry &registry,
+                                             ftor lambda_contents,
+                                             std::string lambda_name) noexcept :
+            TSystem::system(registry),
+            lambda_contents_(std::move(lambda_contents)),
+            lambda_name_(std::move(lambda_name)) {
+        if (lambda_contents_.on_create != nullptr) { lambda_contents_.on_create(); }
     }
 
-    interpolation_system::interpolation_system(entt::registry &registry) noexcept : system(registry) {}
+    template<typename SystemType>
+    lambda_system<SystemType>::~lambda_system() noexcept {
+        if (lambda_contents_.on_destruct != nullptr) {
+            lambda_contents_.on_destruct();
+        }
+    }
+
+    template<typename SystemType>
+    void lambda_system<SystemType>::update() noexcept {
+        if (lambda_contents_.on_update != nullptr) {
+            lambda_contents_.on_update();
+        }
+    }
+
+    template<typename SystemType>
+    void lambda_system<SystemType>::post_update() noexcept {
+        if (lambda_contents_.on_post_update != nullptr) {
+            lambda_contents_.on_post_update();
+        }
+    }
 }

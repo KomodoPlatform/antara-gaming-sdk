@@ -16,14 +16,21 @@
 
 #pragma once
 
-#include <memory> // std::unique_ptr
-#include "base.system.hpp"
+//! C++ System Headers
+#include <memory> ///< std::unique_ptr
 
-namespace antara::gaming::ecs::event
-{
-    struct add_base_system
-    {
-        add_base_system(std::unique_ptr<ecs::base_system> system_ptr_ = nullptr) noexcept;
+//! SDK Headers
+#include "antara/gaming/ecs/base.system.hpp" ///< ecs::base_system
+
+namespace antara::gaming::ecs::event {
+    struct add_base_system {
+        //! Typedefs
+        using base_system_ptr = std::unique_ptr<ecs::base_system>;
+
+        //! Constructor
+        add_base_system(base_system_ptr system_ptr_ = nullptr) noexcept;
+
+        //! Fields
         std::unique_ptr<ecs::base_system> system_ptr{nullptr};
     };
 }
