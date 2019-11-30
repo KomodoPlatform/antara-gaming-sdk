@@ -490,13 +490,10 @@ public:
 
         // Change to falling animation when angle is down enough
         if(props.rotation > constants.fall_angle) {
-            auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
-            if(animation.animation_id != "dragon_fall") {
-                entity_registry_.replace<animation2d::anim_component>(player_,
-                                                      animation2d::anim_component{.animation_id = "dragon_fall",
-                                                              .current_status = animation2d::anim_component::status::playing,
-                                                              .speed = animation2d::anim_component::seconds(0.13f),
-                                                              .loop = true});
+            auto &anim = entity_registry_.get<animation2d::anim_component>(player_);
+            if(anim.animation_id != "dragon_fall") {
+                anim.animation_id = "dragon_fall";
+                entity_registry_.replace<animation2d::anim_component>(player_, anim);
             }
         }
 
@@ -609,8 +606,8 @@ private:
             // Game starts, player started playing
             started_playing_ = true;
             if (entity_registry_.valid(player_)) {
-                auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
-                animation.current_status = animation2d::anim_component::status::playing;
+                auto &anim = entity_registry_.get<animation2d::anim_component>(player_);
+                anim.current_status = animation2d::anim_component::status::playing;
             }
             resume_physics();
         }
