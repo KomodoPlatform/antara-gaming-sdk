@@ -28,7 +28,9 @@ struct flappy_bird_constants {
     const float gravity{2000.f};
     const float jump_force{650.f};
     const float rotate_speed{100.f};
+    const float fall_angle{20.f};
     const float max_angle{60.f};
+    const float jump_rotation{-40.f};
 
     // Pipes
     const float gap_height{265.f};
@@ -454,9 +456,11 @@ public:
         if (jump_key_tapped) {
             movement_speed_.set_y(-constants.jump_force);
 
-            auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
-
-            animation.animation_id = "dragon_fall";
+            entity_registry_.replace<animation2d::anim_component>(player_,
+                                              animation2d::anim_component{.animation_id = "dragon_jump",
+                                                  .current_status = animation2d::anim_component::status::playing,
+                                                  .speed = animation2d::anim_component::seconds(0.13f),
+                                                  .loop = true});
         }
 
         // Add movement speed to position to make the character move, but apply over time with delta time
@@ -481,9 +485,21 @@ public:
         // If jump button is tapped, reset rotation,
         // If rotation is higher than the max angle, set it to max angle
         if (jump_key_tapped)
-            props.rotation = 0.f;
+            props.rotation = constants.jump_rotation;
         else if (props.rotation > constants.max_angle)
             props.rotation = constants.max_angle;
+
+        // Change to falling animation when angle is down enough
+        if(props.rotation > constants.fall_angle) {
+            auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
+            if(animation.animation_id != "dragon_fall") {
+                entity_registry_.replace<animation2d::anim_component>(player_,
+                                                      animation2d::anim_component{.animation_id = "dragon_fall",
+                                                              .current_status = animation2d::anim_component::status::playing,
+                                                              .speed = animation2d::anim_component::seconds(0.13f),
+                                                              .loop = true});
+            }
+        }
 
         // Set the properties
         registry.replace<transform::properties>(player_, props);
@@ -526,6 +542,10 @@ private:
                 player_died_ = true;
                 auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
                 animation.current_status = animation2d::anim_component::stopped;
+
+                entity_registry_.replace<animation2d::anim_component>(player_,
+                                              animation2d::anim_component{.animation_id = "dragon_hurt",
+                                                      .current_status = animation2d::anim_component::status::stopped});
             }
         }
     }
