@@ -28,9 +28,9 @@ struct flappy_bird_constants {
     const float gravity{2000.f};
     const float jump_force{650.f};
     const float rotate_speed{100.f};
-    const float fall_angle{20.f};
     const float max_angle{60.f};
     const float jump_rotation{-40.f};
+    const float fall_angle{-5.f};
 
     // Pipes
     const float gap_height{265.f};
