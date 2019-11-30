@@ -67,6 +67,9 @@ namespace antara::gaming::ecs {
         /// @brief sugar name for a multidimensional array of system_array (pre_update, logic_update, post_update)
         using system_registry = std::array<system_array, system_type::size>;
 
+        /// @brief sugar name for a queue of system pointer to add.
+        using systems_queue = std::queue<system_ptr>;
+
         //! Private member functions
         base_system &add_system_(system_ptr &&system, system_type sys_type) noexcept;
 
@@ -85,7 +88,7 @@ namespace antara::gaming::ecs {
         entt::dispatcher &dispatcher_;
         system_registry systems_{{}};
         bool need_to_sweep_systems_{false};
-        std::queue<system_ptr> systems_to_add_;
+        systems_queue systems_to_add_;
         bool game_is_running_{false};
     public:
         //! Constructor
