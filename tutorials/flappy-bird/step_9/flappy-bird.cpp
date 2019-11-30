@@ -457,11 +457,9 @@ public:
         if (jump_key_tapped) {
             movement_speed_.set_y(-constants.jump_force);
 
-            entity_registry_.replace<animation2d::anim_component>(player_,
-                                              animation2d::anim_component{.animation_id = "dragon_jump",
-                                                  .current_status = animation2d::anim_component::status::playing,
-                                                  .speed = animation2d::anim_component::seconds(0.13f),
-                                                  .loop = true});
+            auto& anim = entity_registry_.get<animation2d::anim_component>(player_);
+            anim.animation_id = "dragon_jump";
+            entity_registry_.replace<animation2d::anim_component>(player_, anim);
         }
 
         // Add movement speed to position to make the character move, but apply over time with delta time
@@ -553,12 +551,12 @@ private:
                 if (collisions::basic_collision_system::query_rect(entity_props->global_bounds, player_box)) {
                     // Mark player died as true
                     player_died_ = true;
-                    auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
-                    animation.current_status = animation2d::anim_component::stopped;
 
-                    entity_registry_.replace<animation2d::anim_component>(player_,
-                                                  animation2d::anim_component{.animation_id = "dragon_hurt",
-                                                          .current_status = animation2d::anim_component::status::stopped});
+                    auto& anim = entity_registry_.get<animation2d::anim_component>(player_);
+                    anim.animation_id = "dragon_hurt";
+                    anim.current_status = animation2d::anim_component::status::stopped;
+                    anim.current_frame = 0;
+                    entity_registry_.replace<animation2d::anim_component>(player_, anim);
                 }
             }
         }
