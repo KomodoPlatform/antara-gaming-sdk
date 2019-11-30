@@ -25,7 +25,7 @@
 #include "antara/gaming/ecs/system.manager.hpp"
 #include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d, transform::previous_position_2d
 
-
+//! Anonymous Implementation
 namespace {
     void on_position_construct(entt::entity entity, entt::registry &reg,
                                antara::gaming::transform::position_2d &pos) {
@@ -33,6 +33,27 @@ namespace {
         reg.assign<transform::previous_position_2d>(entity, pos);
     }
 }
+
+//! Private implementation
+namespace antara::gaming::ecs {
+    base_system &
+    system_manager::add_system_(system_manager::system_ptr &&system,
+                                antara::gaming::ecs::system_type sys_type) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+        DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
+        return *systems_[sys_type].emplace_back(std::move(system));
+    }
+
+    void system_manager::sweep_systems_() noexcept {
+        ranges::for_each(systems_, [](auto &&vec_system) -> void {
+            ranges::actions::remove_if(vec_system, &base_system::is_marked);
+        });
+
+        need_to_sweep_systems_ = false;
+    }
+}
+
+//! Public implementation
 namespace antara::gaming::ecs {
     system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept
             : entity_registry_(
@@ -57,21 +78,6 @@ namespace antara::gaming::ecs {
         });
     }
 
-    base_system &
-    system_manager::add_system_(system_manager::system_ptr &&system,
-                                antara::gaming::ecs::system_type sys_type) noexcept {
-        LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
-        return *systems_[sys_type].emplace_back(std::move(system));
-    }
-
-    void system_manager::sweep_systems_() noexcept {
-        ranges::for_each(systems_, [](auto &&vec_system) -> void {
-            ranges::actions::remove_if(vec_system, &base_system::is_marked);
-        });
-
-        need_to_sweep_systems_ = false;
-    }
 
     std::size_t system_manager::update() noexcept {
         if (not nb_systems() || not game_is_running_)
