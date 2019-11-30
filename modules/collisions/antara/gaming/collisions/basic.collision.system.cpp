@@ -14,6 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
+//! C++ System Headers
+#include <algorithm> ///< std::min, std::max
+
 //! SDK Headers
 #include "antara/gaming/collisions/basic.collision.system.hpp"
 #include "antara/gaming/math/vector.hpp" ///< math::vec2f
