@@ -16,30 +16,34 @@
 
 #pragma once
 
-#include <type_traits>
-#include <loguru.hpp>
+//! C++ System Headers
+#include <string> ///< std::string
+#include <type_traits> ///< std::is_same
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/base.system.hpp"
+//! Dependencies Headers
+#include <loguru.hpp> ///< LOG_SCOPE_FUNCTION, DVLOG_F
 
-namespace antara::gaming::ecs
-{
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< refl::reflect
+#include "antara/gaming/ecs/system.type.hpp" ///< ecs::st_system_logic[pre, post]_update
+#include "antara/gaming/ecs/base.system.hpp" ///< ecs::base_system
+
+namespace antara::gaming::ecs {
     template<typename TSystemDerived, typename TSystemType>
-    class system : public base_system
-    {
-    private:
-        template<typename T>
-        using is_kind_system = std::is_same<TSystemType, T>;
+    class system : public base_system {
     public:
+        //! Constructor
         template<typename ...TArgs>
         explicit system(TArgs &&...args) noexcept;
 
+        //! Destructor
         ~system() noexcept override;;
 
         //! Pure virtual functions
         void update() noexcept override = 0;
 
         //! Public static functions
+        static std::string get_class_name() noexcept;
 
         /**
          * \note this function allows you to retrieve the type of a system at compile time.
@@ -47,9 +51,7 @@ namespace antara::gaming::ecs
          */
         static constexpr system_type get_system_type() noexcept;
 
-
-
-        //! Public member functions overridden
+        //! Public member functions
         /**
         * \note this function allows you to retrieve the type of a system at runtime.
         * \return ​system_type of the derived system
@@ -61,63 +63,13 @@ namespace antara::gaming::ecs
         * \return name of the derived system.
         */
         [[nodiscard]] std::string get_name() const noexcept final;
-
-        static std::string get_class_name() noexcept;
     };
 }
 
 //! Implementation
-namespace antara::gaming::ecs
-{
-    template<typename TSystemDerived, typename TSystemType>
-    template<typename ... TArgs>
-    system<TSystemDerived, TSystemType>::system(TArgs &&... args) noexcept : base_system(std::forward<TArgs>(args)...)
-    {
-        LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "creating system {}", this->get_name());
-    }
+#include "antara/gaming/ecs/system.ipp"
 
-    template<typename TSystemDerived, typename TSystemType>
-    constexpr system_type system<TSystemDerived, TSystemType>::get_system_type() noexcept
-    {
-        if constexpr (std::is_same_v<TSystemType, st_system_logic_update>)
-            return system_type::logic_update;
-        else if constexpr (std::is_same_v<TSystemType, st_system_pre_update>)
-            return system_type::pre_update;
-        else if constexpr (std::is_same_v<TSystemType, st_system_post_update>)
-            return system_type::post_update;
-        return system_type::size; //LCOV_EXCL_LINE
-    }
-
-
-    template<typename TSystemDerived, typename TSystemType>
-    system_type system<TSystemDerived, TSystemType>::get_system_type_rtti() const noexcept
-    {
-        return system::get_system_type();
-    }
-
-    template<typename TSystemDerived, typename TSystemType>
-    std::string system<TSystemDerived, TSystemType>::get_name() const noexcept
-    {
-        return system::get_class_name();
-    }
-
-    template<typename TSystemDerived, typename TSystemType>
-    std::string system<TSystemDerived, TSystemType>::get_class_name() noexcept
-    {
-        return refl::reflect<TSystemDerived>().name.str();
-    }
-
-    template<typename TSystemDerived, typename TSystemType>
-    system<TSystemDerived, TSystemType>::~system() noexcept
-    {
-        LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "destroying system {}", this->get_name());
-    }
-}
-
-namespace antara::gaming::ecs
-{
+namespace antara::gaming::ecs {
     //! Generate predefined template
     /**
    * \typedef logic_update_system
