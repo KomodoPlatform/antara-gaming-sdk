@@ -18,6 +18,7 @@
 #include <antara/gaming/ecs/system.manager.hpp>
 #include <chrono>
 #include "nspv.system.hpp"
+#include "nspv.api.hpp"
 
 namespace antara::gaming::blockchain::tests {
     TEST_CASE ("nspv system creation") {

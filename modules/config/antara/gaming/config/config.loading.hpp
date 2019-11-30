@@ -16,18 +16,23 @@
 
 #pragma once
 
-#include <filesystem>
-#include <fstream>
-#include <nlohmann/json.hpp>
+//! C System Headers
+#include <cassert> ///< assert
 
-namespace antara::gaming::config
-{
-    namespace details
-    {
+//! C++ System Headers
+#include <filesystem> ///< fs::create_directories, fs::path, fs::exists
+#include <fstream> ///< std::ifstream, std::ofstream
+#include <string> ///< std::string
+#include <system_error> ///< std::error_code
+
+//! Dependencies Headers
+#include <nlohmann/json.hpp> ///< nlohmann::json
+
+namespace antara::gaming::config {
+    namespace details {
         template<typename TConfig>
         TConfig create_configuration(const std::filesystem::path &config_path,
-                                     const std::filesystem::path &full_path) noexcept
-        {
+                                     const std::filesystem::path &full_path) noexcept {
             TConfig config_to_export{};
             std::error_code ec;
             std::filesystem::create_directories(config_path, ec);
@@ -43,8 +48,7 @@ namespace antara::gaming::config
         }
 
         template<typename TConfig>
-        TConfig load_config(const std::filesystem::path &full_path) noexcept
-        {
+        TConfig load_config(const std::filesystem::path &full_path) noexcept {
             TConfig config_to_fill{};
             std::ifstream ifs(full_path);
             assert(ifs.is_open());
@@ -73,8 +77,7 @@ namespace antara::gaming::config
  *  @endcode
  */
     template<typename TConfig>
-    TConfig load_configuration(std::filesystem::path &&config_path, std::string filename) noexcept
-    {
+    TConfig load_configuration(std::filesystem::path &&config_path, std::string filename) noexcept {
         const auto &full_path = config_path / std::move(filename);
         if (!std::filesystem::exists(config_path) || !std::filesystem::exists(full_path)) {
             return details::create_configuration<TConfig>(config_path, full_path);

@@ -16,21 +16,31 @@
 
 #pragma once
 
-#include <chrono>
-#include <antara/gaming/transform/component.properties.hpp>
-#include <antara/gaming/transform/component.position.hpp>
-#include <antara/gaming/graphics/component.color.hpp>
-#include <antara/gaming/graphics/component.sprite.hpp>
+//! C System Headers
+#include <cstddef> ///< std::size_t
+
+//! C++ System Headers
+#include <chrono> ///< std::chrono::duration
+#include <string> ///< std::string
+
+//! Dependencies Headers
+#include <entt/entity/entity.hpp> ///< entt::entity
+#include <entt/entity/registry.hpp> ///< entt::registry
+
+//! SDK Headers
+#include <antara/gaming/transform/component.position.hpp> ///< transform::position
+#include <antara/gaming/transform/component.properties.hpp> ///< transform::properties
+#include <antara/gaming/graphics/component.color.hpp> ///< graphics::fill_color
 
 namespace antara::gaming::animation2d {
     struct anim_component {
-        enum status {
-            stopped,
-            paused,
-            playing
-        };
-
+        //! Typedefs
         using seconds = std::chrono::duration<float, std::ratio<1>>;
+
+        //! Enums
+        enum status { stopped, paused, playing };
+
+        //! Fields
         std::string animation_id;
         status current_status{stopped};
         seconds speed{0.9f};
@@ -40,17 +50,10 @@ namespace antara::gaming::animation2d {
         seconds elapsed{0};
     };
 
-
-    inline entt::entity blueprint_animation(entt::registry &registry,
-                                            const anim_component &anim,
-                                            transform::position_2d pos = math::vec2f::scalar(0.f),
-                                            graphics::fill_color spr_color = graphics::white,
-                                            const transform::properties &prop = {}) {
-        auto entity = registry.create();
-        registry.assign<transform::position_2d>(entity, pos);
-        registry.assign<graphics::fill_color>(entity, spr_color);
-        registry.assign<transform::properties>(entity, prop);
-        registry.assign<anim_component>(entity, anim);
-        return entity;
-    }
+    //! Factory for creation of animation.
+    entt::entity blueprint_animation(entt::registry &registry,
+                                     const anim_component &anim,
+                                     transform::position_2d pos = math::vec2f::scalar(0.f),
+                                     graphics::fill_color spr_color = graphics::white,
+                                     const transform::properties &prop = {}) noexcept;
 }

@@ -14,25 +14,18 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "antara/gaming/animation2d/component.animation.2d.hpp"
 
-//! C++ System Headers
-#include <functional> ///< std::function
-#include <string> ///< std::string
-
-//! SDK Headers
-#include "antara/gaming/audio/audio.status.hpp" ///< audio::status
-
-namespace antara::gaming::audio {
-    struct music {
-        std::string music_id;
-        status music_status{status::wait_for_first_run};
-        float pitch{1.f};
-        float volume{100.f};
-        bool loop{false};
-        std::function<void()> on_finish{[]() {}};
-        float minimum_distance{1.f};
-        float attenuation{1.f};
-        bool relative_to_listener{false};
-    };
+namespace antara::gaming::animation2d {
+    entt::entity blueprint_animation(entt::registry &registry,
+                                     const anim_component &anim, transform::position_2d pos,
+                                     graphics::fill_color spr_color,
+                                     const transform::properties &prop) noexcept {
+        auto entity = registry.create();
+        registry.assign<transform::position_2d>(entity, pos);
+        registry.assign<graphics::fill_color>(entity, spr_color);
+        registry.assign<transform::properties>(entity, prop);
+        registry.assign<anim_component>(entity, anim);
+        return entity;
+    }
 }
