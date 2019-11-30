@@ -28,8 +28,7 @@ inline constexpr std::size_t map_height = 24ull;
 //! TODO: better zbuffer through ctx variable
 inline float z_buffer[1920] = {};
 
-struct wolf_constants
-{
+struct wolf_constants {
     const std::size_t tex_width{256};
     const std::size_t tex_height{256};
     const float darkness_distance{8.0f};
@@ -75,63 +74,43 @@ struct wolf_constants
     };
 };
 
-namespace
-{
-    float random_float(float lower, float higher)
-    {
+namespace {
+    float random_float(float lower, float higher) {
         std::random_device rd;  // Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
         std::uniform_real_distribution<float> dist(lower, higher);
         return dist(gen);
     }
 
-    float vec_to_angle(const math::vec2f &vec)
-    {
+    float vec_to_angle(const math::vec2f &vec) {
         return math::vec2f::vec_to_angle(vec) + 90.f;
     }
 
-    math::vec2f get_texture_offset(const wolf_constants &constants, const math::vec2i &tex_idx)
-    {
+    math::vec2f get_texture_offset(const wolf_constants &constants, const math::vec2i &tex_idx) {
         return math::vec2f(float(tex_idx.x() * (constants.tex_width + 2) + 1),
                            float(tex_idx.y() * (constants.tex_height + 2) + 1));
     }
 
-    math::vec2f get_texture_offset(const wolf_constants &constants, const int type)
-    {
+    math::vec2f get_texture_offset(const wolf_constants &constants, const int type) {
         return get_texture_offset(constants, constants.wall_texture_indexes[type]);
     }
 
-    float magnitude(const math::vec2f &a)
-    {
+    float magnitude(const math::vec2f &a) {
         return std::sqrt(a.x() * a.x() + a.y() * a.y());
     }
 
-    void set_color(geometry::vertex &v, std::uint8_t value)
-    {
-        v.pixel_color.r = v.pixel_color.g = v.pixel_color.b = value;
-    }
-
-    void set_color(geometry::vertex &v, std::uint8_t value, std::uint8_t alpha)
-    {
-        set_color(v, value);
-        v.pixel_color.a = alpha;
-    }
-
     void set_brightness(geometry::vertex &v, const float distance, const float max_distance,
-                        const float brightness_cap = 90.0f)
-    {
+                        const float brightness_cap = 90.0f) {
         const float darkness = std::max(std::min(brightness_cap * distance / max_distance, brightness_cap), 0.0f);
         const float brightness = brightness_cap - darkness;
-        set_color(v, std::uint8_t(brightness));
+        v.pixel_color.set_color(std::uint8_t(brightness));
     }
 }
 
-class background_system final : public ecs::post_update_system<background_system>
-{
+class background_system final : public ecs::post_update_system<background_system> {
 public:
     explicit background_system(entt::registry &registry, entt::entity player) noexcept : system(registry),
-                                                                                         player_entity_(player)
-    {
+                                                                                         player_entity_(player) {
         auto ambient_sound = this->entity_registry_.create();
         audio::music msc{.music_id = "ambient.ogg", .loop = true, .music_status = audio::playing};
         entity_registry_.assign<audio::music>(ambient_sound, msc);
@@ -140,8 +119,7 @@ public:
         entity_registry_.assign<graphics::layer_0>(sky_);
     }
 
-    void update() noexcept final
-    {
+    void update() noexcept final {
         if (not entity_registry_.valid(player_entity_)) return;
         const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity_).value();
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
@@ -152,8 +130,7 @@ public:
     }
 
 private:
-    void prepare_floor(const float bobbing_y_offset, const float w, const float h) const noexcept
-    {
+    void prepare_floor(const float bobbing_y_offset, const float w, const float h) const noexcept {
         std::vector<geometry::vertex> floor_vertices(4);
         floor_vertices[0].pos = {0.0f, bobbing_y_offset + h * 0.5f};
         floor_vertices[1].pos = {w, bobbing_y_offset + h * 0.5f};
@@ -169,8 +146,7 @@ private:
         entity_registry_.assign_or_replace<geometry::vertex_array>(floor_, floor_vertices, geometry::quads);
     }
 
-    void prepare_sky(const float bobbing_y_offset, const float w, const float h) const noexcept
-    {
+    void prepare_sky(const float bobbing_y_offset, const float w, const float h) const noexcept {
         std::vector<geometry::vertex> sky_vertices(4);
         sky_vertices[0].pos = {0.0f, bobbing_y_offset};
         sky_vertices[1].pos = {w, bobbing_y_offset};
@@ -189,12 +165,10 @@ private:
 
 REFL_AUTO(type(background_system));
 
-class minimap_system final : public ecs::post_update_system<minimap_system>
-{
+class minimap_system final : public ecs::post_update_system<minimap_system> {
 public:
     minimap_system(entt::registry &registry, entt::entity player_entity) noexcept: system(registry),
-                                                                                   player_entity_(player_entity)
-    {
+                                                                                   player_entity_(player_entity) {
         load_minimap_textures();
         math::vec2u compass_inner_shadow_texture_size;
         dispatcher_.trigger<event::fill_image_properties>("compass_inner_shadow.png",
@@ -223,8 +197,7 @@ public:
         create_compass(registry, minimap_position);
     }
 
-    void update() noexcept final
-    {
+    void update() noexcept final {
         if (not entity_registry_.valid(player_entity_)) return;
         const auto &player_dir = entity_registry_.get<st_direction>(player_entity_).value();
         const float tile_size = entity_registry_.get<st_tile_size>(minimap_tiles_).value();
@@ -242,8 +215,7 @@ public:
     }
 
 private:
-    transform::position_2d create_minimap_circle(entt::registry &registry) const
-    {
+    transform::position_2d create_minimap_circle(entt::registry &registry) const {
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
         auto[_, height] = canvas.canvas.size;
         auto minimap_position = transform::position_2d{10 + minimap_height_,
@@ -255,8 +227,7 @@ private:
         return minimap_position;
     }
 
-    void create_minimap_rt_contents(const math::vec2u &minimap_size) noexcept
-    {
+    void create_minimap_rt_contents(const math::vec2u &minimap_size) noexcept {
         const float tile_size = static_cast<float>(minimap_size.y()) / map_width;
         std::vector<geometry::vertex> minimap_tiles_vertices(map_width * map_height * 4);
         minimap_tiles_ = entity_registry_.create();
@@ -273,8 +244,7 @@ private:
                                                     transform::properties{.scale= math::vec2f{1.0f, 1.5f}});
     }
 
-    void load_minimap_textures() const noexcept
-    {
+    void load_minimap_textures() const noexcept {
         std::vector<event::loading_settings> settings = {{"compass.png"},
                                                          {"compass_inner_shadow.png"},
                                                          {"compass_ring.png"},
@@ -282,8 +252,7 @@ private:
         dispatcher_.trigger<event::load_textures>(settings);
     }
 
-    void create_compass(entt::registry &registry, const transform::position_2d &minimap_position) noexcept
-    {
+    void create_compass(entt::registry &registry, const transform::position_2d &minimap_position) noexcept {
         auto compass_inner_shadow = graphics::blueprint_sprite(registry, graphics::sprite{"compass_inner_shadow.png"},
                                                                minimap_position);
         entity_registry_.assign<graphics::layer_5>(compass_inner_shadow);
@@ -296,8 +265,7 @@ private:
         entity_registry_.assign<graphics::layer_7>(compass_ring);
     }
 
-    void update_minimap_rotation(const math::vec2f &player_dir) const noexcept
-    {
+    void update_minimap_rotation(const math::vec2f &player_dir) const noexcept {
         auto &circle_props = entity_registry_.get<transform::properties>(minimap_);
         auto &compass_props = entity_registry_.get<transform::properties>(compass_);
         circle_props.rotation = vec_to_angle(player_dir);
@@ -306,8 +274,7 @@ private:
         entity_registry_.replace<transform::properties>(compass_, circle_props);
     }
 
-    void update_tiles(const wolf_constants &constants, const float tile_size) const noexcept
-    {
+    void update_tiles(const wolf_constants &constants, const float tile_size) const noexcept {
         auto &vertices = entity_registry_.get<geometry::vertex_array>(minimap_tiles_).vertices;
         for (std::size_t m_x = 0, idx = 0; m_x < map_width; ++m_x) {
             for (std::size_t m_y = 0; m_y < map_height; ++m_y, idx += 4) {
@@ -327,15 +294,14 @@ private:
 
                 const float darkness = 150;
                 std::uint8_t color = type == 0 ? std::uint8_t(darkness) : 255;
-                for (int i = 0; i < 4; ++i) set_color(vertices[idx + i], color);
+                for (int i = 0; i < 4; ++i) vertices[idx + i].pixel_color.set_color(color);
             }
         }
         this->entity_registry_.replace<geometry::vertex_array>(minimap_tiles_, vertices, geometry::quads, "csgo.png");
     }
 
     void update_fov(const wolf_constants &constants, const float tile_size, const math::vec2f &minimap_player_pos,
-                    const float minimap_player_dir_angle, const math::vec2u &minimap_rt_size) const noexcept
-    {
+                    const float minimap_player_dir_angle, const math::vec2u &minimap_rt_size) const noexcept {
         auto &fov_vertices = entity_registry_.get<geometry::vertex_array>(minimap_fov_).vertices;
 
         // Angles
@@ -353,17 +319,16 @@ private:
 
         // Character point is visible
         const unsigned char color = 255;
-        set_color(fov_vertices[0], color, 60);
+        fov_vertices[0].pixel_color.set_color(color, 60);
 
         // Then it goes invisible towards the end
-        for (int i = 1; i <= 2; ++i) set_color(fov_vertices[i], color, 0);
+        for (int i = 1; i <= 2; ++i) fov_vertices[i].pixel_color.set_color(color, 0);
 
         this->entity_registry_.replace<geometry::vertex_array>(minimap_fov_, fov_vertices, geometry::triangles);
     }
 
     void
-    update_minimap_arrow(const math::vec2f &minimap_player_pos, const float minimap_player_dir_angle) const noexcept
-    {
+    update_minimap_arrow(const math::vec2f &minimap_player_pos, const float minimap_player_dir_angle) const noexcept {
         auto &arrow_props = entity_registry_.get<transform::properties>(compass_arrow_);
         arrow_props.rotation = minimap_player_dir_angle;
         entity_registry_.replace<transform::properties>(compass_arrow_, arrow_props);
@@ -371,8 +336,7 @@ private:
     }
 
     void update_minimap_circle(const wolf_constants &constants, const math::vec2u &minimap_rt_size,
-                               const float tile_size, const math::vec2f &player_pos) const noexcept
-    {
+                               const float tile_size, const math::vec2f &player_pos) const noexcept {
 
         const math::vec2f minimap_pos_offset = -(math::vec2f{float(map_width), float(map_height)} * 0.5f +
                                                  math::vec2f{-player_pos.y(), -player_pos.x()}) * tile_size;
@@ -405,11 +369,9 @@ private:
 
 REFL_AUTO(type(minimap_system));
 
-class raycast_system final : public ecs::post_update_system<raycast_system>
-{
+class raycast_system final : public ecs::post_update_system<raycast_system> {
 private:
-    void perform_raycast()
-    {
+    void perform_raycast() {
         auto &canvas = entity_registry_.ctx<graphics::canvas_2d>();
         auto &constants = entity_registry_.ctx<wolf_constants>();
         auto size = canvas.canvas.size.to<math::vec2i>();
@@ -462,8 +424,7 @@ private:
 
     std::tuple<float, float>
     prepare_wall(wolf_constants &constants, int height, int x, int idx_vx, const math::vec2f &ray_dir,
-                 const math::vec2i &map_pos, int side, float perp_wall_dist)
-    {
+                 const math::vec2i &map_pos, int side, float perp_wall_dist) {
         auto &pos = entity_registry_.get<transform::position_2d>(player_entity_);
         const float bobbing_y_offset = entity_registry_.get<st_bobbing>(player_entity_).value();
         // Calculate height of line to draw on screen
@@ -503,8 +464,7 @@ private:
                     const math::vec2f &delta_dist,
                     math::vec2f &side_dist,
                     const math::vec2i &step,
-                    math::vec2i &map_pos) const
-    {
+                    math::vec2i &map_pos) const {
         auto &world_map = constants.world_map;
         // Perform DDA
         int side{0}; // Was a NS or a EW wall hit?
@@ -529,8 +489,7 @@ private:
     }
 
     void shot_ray(const math::vec2f &ray_dir, const math::vec2f &delta_dist, math::vec2f &side_dist, math::vec2i &step,
-                  const math::vec2i &map_pos) const
-    {
+                  const math::vec2i &map_pos) const {
         auto &pos = entity_registry_.get<transform::position_2d>(player_entity_);
         // X-direction
         if (ray_dir.x() < 0) {
@@ -553,15 +512,13 @@ private:
 
 public:
     explicit raycast_system(entt::registry &registry, entt::entity player) noexcept : system(registry),
-                                                                                      player_entity_(player)
-    {
+                                                                                      player_entity_(player) {
         std::vector<event::loading_settings> settings = {{"csgo.png"}};
         dispatcher_.trigger<event::load_textures>(settings);
         entity_registry_.assign<graphics::layer_1>(wall_entity);
     }
 
-    void update() noexcept final
-    {
+    void update() noexcept final {
         if (not entity_registry_.valid(player_entity_)) return;
         perform_raycast();
     }
@@ -576,12 +533,10 @@ private:
 
 REFL_AUTO(type(raycast_system));
 
-class portal_system final : public ecs::post_update_system<portal_system>
-{
+class portal_system final : public ecs::post_update_system<portal_system> {
 public:
     portal_system(entt::registry &registry, entt::entity player_entity) noexcept : system(registry),
-                                                                                   player_entity_(player_entity)
-    {
+                                                                                   player_entity_(player_entity) {
         //! Load texture smooth
         std::vector<event::loading_settings> settings = {{"portal.png"}};
         dispatcher_.trigger<event::load_textures>(settings);
@@ -619,8 +574,7 @@ public:
         registry.assign<graphics::layer_3>(portal_lines_);
     }
 
-    void update() noexcept final
-    {
+    void update() noexcept final {
         std::vector<geometry::vertex> lines;
         geometry::vertex vx;
 
@@ -708,11 +662,9 @@ private:
 
 REFL_AUTO(type(portal_system));
 
-class player_system final : public ecs::logic_update_system<player_system>
-{
+class player_system final : public ecs::logic_update_system<player_system> {
 public:
-    player_system(entt::registry &registry) noexcept : system(registry)
-    {
+    player_system(entt::registry &registry) noexcept : system(registry) {
         audio::music msc{.music_id = "breath.ogg", .loop = true, .music_status = audio::playing, .pitch = 1.5f};
         entity_registry_.assign<audio::music>(breath_, msc);
 
@@ -729,16 +681,14 @@ public:
         dispatcher_.trigger<event::get_mouse_position>(mouse_prev_pos, true);
     }
 
-    void on_mouse_moved(const event::mouse_moved &evt) noexcept
-    {
+    void on_mouse_moved(const event::mouse_moved &evt) noexcept {
         const auto &constants = entity_registry_.ctx<wolf_constants>();
         math::vec2i curr{math::vec2f{evt.x, evt.y}.to<math::vec2i>()};
         move_player_camera(constants.mouse_sensitivity * (float(curr.x() - mouse_prev_pos.x())), 1);
         mouse_prev_pos = curr;
     }
 
-    void update() noexcept final
-    {
+    void update() noexcept final {
         const auto[width, height] = entity_registry_.ctx<graphics::canvas_2d>().canvas.size;
         mouse_prev_pos = math::vec2i{int(width / 2), int(height / 2)};
         dispatcher_.trigger<event::set_mouse_position>(mouse_prev_pos, true);
@@ -763,8 +713,7 @@ public:
 
 
 private:
-    entt::entity create_sound(std::string name)
-    {
+    entt::entity create_sound(std::string name) {
         audio::sound_effect snd_effect{.sound_id = std::move(name), .sound_status = audio::wait_for_first_run,
                 .recycling = true};
         auto sound_entity = entity_registry_.create();
@@ -772,8 +721,7 @@ private:
         return sound_entity;
     }
 
-    void update_breath(bool moving, const float dt) const noexcept
-    {
+    void update_breath(bool moving, const float dt) const noexcept {
         const float target_pitch = moving ? 2.f : 1.f;
         auto &msc = entity_registry_.get<audio::music>(breath_);
         float curr_pitch = msc.pitch;
@@ -787,8 +735,7 @@ private:
         }
     }
 
-    void move_player_camera(const float amount, const float dt)
-    {
+    void move_player_camera(const float amount, const float dt) {
         auto &plane = entity_registry_.get<st_plane>(player_).value();
         auto &dir_player = entity_registry_.get<st_direction>(player_).value();
         const float rot_speed = amount * dt; // Constant value is in radians/second
@@ -802,8 +749,7 @@ private:
         plane.y_ref() = old_plane_x * std::sin(-rot_speed) + plane.y() * std::cos(-rot_speed);
     };
 
-    void play_walking_sound(const std::string &name, float pitch = 1.0f, float volume = 1.0f)
-    {
+    void play_walking_sound(const std::string &name, float pitch = 1.0f, float volume = 1.0f) {
         auto entity = sounds_.at(name);
         audio::sound_effect &snd_effect = this->entity_registry_.get<audio::sound_effect>(entity);
         snd_effect.sound_status = audio::playing;
@@ -812,8 +758,7 @@ private:
         entity_registry_.assign_or_replace<audio::sound_effect>(entity, snd_effect);
     }
 
-    void bobbing(const float dt, const float height, bool moving) noexcept
-    {
+    void bobbing(const float dt, const float height, bool moving) noexcept {
         auto &bobbing_y_offset = entity_registry_.get<st_bobbing>(player_).value();
         if (moving) walking_timer_ += dt;
         float sin_val = sin(15.0f * walking_timer_ + 2.0f * total_timer_);
@@ -833,8 +778,7 @@ private:
         } else walk_played = false;
     }
 
-    void move_player(const float dt, const wolf_constants &constants, const math::vec2f &input_dir) const noexcept
-    {
+    void move_player(const float dt, const wolf_constants &constants, const math::vec2f &input_dir) const noexcept {
         const auto &dir_player = entity_registry_.get<st_direction>(player_).value();
         auto &player_pos = entity_registry_.get<transform::position_2d>(player_);
         float move_speed = dt * constants.movement_speed;
@@ -864,10 +808,7 @@ private:
     }
 
 public:
-    [[nodiscard]] entt::entity get_player() const noexcept
-    {
-        return player_;
-    }
+    [[nodiscard]] entt::entity get_player() const noexcept { return player_; }
 
 private:
     std::unordered_map<std::string, entt::entity> sounds_;
@@ -881,13 +822,11 @@ private:
 REFL_AUTO(type(player_system));
 
 // Game Scene
-class game_scene final : public scenes::base_scene
-{
+class game_scene final : public scenes::base_scene {
 public:
     explicit game_scene(entt::registry &registry, ecs::system_manager &system_manager) noexcept : base_scene(registry),
                                                                                                   system_manager_(
-                                                                                                          system_manager)
-    {
+                                                                                                          system_manager) {
         //! Create player system
         auto &p_system = system_manager_.create_system<player_system>();
 
@@ -917,8 +856,7 @@ public:
         system_manager.create_system<minimap_system>(p_system.get_player());
     }
 
-    bool on_key_pressed(const event::key_pressed &evt) noexcept final
-    {
+    bool on_key_pressed(const event::key_pressed &evt) noexcept final {
         if (evt.key == input::key::escape) {
             this->dispatcher_.trigger<event::quit_game>(0);
         }
@@ -926,14 +864,12 @@ public:
     }
 
     // Scene name
-    std::string scene_name() noexcept final
-    {
+    std::string scene_name() noexcept final {
         return "game_scene";
     }
 
     // Update the game every tick
-    void update() noexcept final
-    {
+    void update() noexcept final {
     }
 
 private:
@@ -941,11 +877,9 @@ private:
 };
 
 // Game world
-struct wolf3d_world : world::app
-{
+struct wolf3d_world : world::app {
     // Game entry point
-    wolf3d_world() noexcept
-    {
+    wolf3d_world() noexcept {
         //! Load the resources system
         entity_registry_.set<sfml::resources_system>(entity_registry_);
 
@@ -978,8 +912,7 @@ struct wolf3d_world : world::app
     }
 };
 
-int main()
-{
+int main() {
     // Declare the world
     wolf3d_world game;
 
