@@ -14,15 +14,14 @@
  *                                                                            *
  ******************************************************************************/
 
+//! C++ System Headers
 #include <utility> //! std::move
+
+//! SDK Headers
 #include "antara/gaming/ecs/event.add.base.system.hpp"
 
-namespace antara::gaming::ecs
-{
+namespace antara::gaming::ecs {
+    using namespace ecs::event;
 
-    event::add_base_system::add_base_system(std::unique_ptr<ecs::base_system> system_ptr_) noexcept : system_ptr(
-            std::move(system_ptr_))
-    {
-
-    }
+    add_base_system::add_base_system(base_system_ptr system_ptr_) noexcept : system_ptr(std::move(system_ptr_)) {}
 }
