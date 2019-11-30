@@ -42,8 +42,6 @@ struct flappy_bird_constants {
     const float column_distance{400.f};
     const std::size_t column_count{6};
     const float pipe_cap_height{column_scale * pipe_cap_image_height};
-    const graphics::color pipe_color{92, 181, 61};
-    const graphics::outline_color pipe_outline_color{2.0f, graphics::color{76, 47, 61}};
     const float scroll_speed{200.f};
 
     // Background
