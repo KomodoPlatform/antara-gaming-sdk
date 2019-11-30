@@ -16,13 +16,23 @@
 
 #pragma once
 
-#include <antara/gaming/ecs/system.hpp>
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+#include <st/type.hpp> ///< st::type
+
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
 
 namespace antara::gaming::ecs {
     struct interpolation_system final : ecs::logic_update_system<interpolation_system> {
+        //! Typedefs
         using st_interpolation = st::type<float, struct interpolation_tag>;
+
+        //! Constructor
         interpolation_system(entt::registry &registry) noexcept;
 
+        //! Public member functions
         void update() noexcept final;
     };
 }
