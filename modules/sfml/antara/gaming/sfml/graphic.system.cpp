@@ -71,6 +71,7 @@ namespace antara::gaming::sfml {
         this->window_.setVerticalSyncEnabled(canvas_2d.vsync);
         this->window_.setMouseCursorVisible(canvas_2d.mouse_visible);
         this->window_.setMouseCursorGrabbed(canvas_2d.mouse_grabbed);
+        this->render_texture_.setSmooth(true);
 #if defined(IMGUI_AND_SFML_ENABLED)
         ImGui::SFML::Init(window_);
 #endif
