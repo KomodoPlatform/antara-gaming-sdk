@@ -20,29 +20,22 @@ namespace antara::gaming::ecs {
     //LCOV_EXCL_START
     template<typename SystemToSwap, typename SystemB>
     bool system_manager::prioritize_system() noexcept {
-        if (not has_systems<SystemToSwap, SystemB>())
-            return false;
-        if (SystemToSwap::get_system_type() != SystemB::get_system_type())
-            return false;
+        using namespace ranges;
+
+        if (not has_systems<SystemToSwap, SystemB>()) return false;
+        if (SystemToSwap::get_system_type() != SystemB::get_system_type()) return false;
+
         auto sys_type = SystemToSwap::get_system_type();
         auto &&sys_collection = systems_[sys_type];
-
-        auto it_system_to_swap = ranges::find_if(sys_collection,
-                                                 [name = SystemToSwap::get_class_name()](auto &&sys) {
-                                                     return sys->get_name() == name;
-                                                 });
-
-        auto it_system_b = ranges::find_if(sys_collection, [name = SystemB::get_class_name()](auto &&sys) {
-            return sys->get_name() == name;
-        });
+        auto name = SystemToSwap::get_class_name();
+        auto it_system_to_swap = find_if(sys_collection, [&name](auto &&sys) { return sys->get_name() == name; });
+        name = SystemB::get_class_name();
+        auto it_system_b = find_if(sys_collection, [&name](auto &&sys) { return sys->get_name() == name; });
 
         if (it_system_to_swap != systems_[sys_type].end() && it_system_b != systems_[sys_type].end()) {
-            if (it_system_to_swap > it_system_b) {
-                std::iter_swap(it_system_to_swap, it_system_b);
-            }
+            if (it_system_to_swap > it_system_b) { std::iter_swap(it_system_to_swap, it_system_b); }
             return true;
         }
-
         return false;
     }
 
