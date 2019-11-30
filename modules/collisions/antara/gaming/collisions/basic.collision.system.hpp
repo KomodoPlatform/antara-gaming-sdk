@@ -16,65 +16,36 @@
 
 #pragma once
 
-#include <entt/entity/entity.hpp>
-#include <entt/entity/registry.hpp>
-#include <antara/gaming/transform/component.position.hpp>
-#include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/transform/component.properties.hpp"
+//! Dependencies Headers
+#include <entt/entity/entity.hpp> ///< entt::entity
+#include <entt/entity/registry.hpp> ///< entt::registry
 
-namespace antara::gaming::collisions
-{
-    //LCOV_EXCL_START
-    class basic_collision_system final : ecs::logic_update_system<basic_collision_system>
-    {
+//! SDK Headers
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
+#include "antara/gaming/transform/component.position.hpp" ///< transform::position2d
+#include "antara/gaming/transform/component.properties.hpp" ///< transform::properties, transform::ts_rect
+
+namespace antara::gaming::collisions {
+    class basic_collision_system final : ecs::logic_update_system<basic_collision_system> {
     public:
-        ~basic_collision_system() noexcept final = default;
-
+        //! Constructor
         basic_collision_system(entt::registry &entity_registry) noexcept;
 
+        //! Destructor
+        ~basic_collision_system() noexcept final = default;
+
+        //! Public member functions
         void update() noexcept final;
 
-        static bool query_rect(transform::ts_rect first, transform::ts_rect second) noexcept
-        {
-            auto[entity_x, entity_y] = first.pos;
-            auto[entity_width, entity_height] = first.size;
-            auto[second_entity_x, second_entity_y] = second.pos;
-            auto[second_entity_width, second_entity_height] = second.size;
-            return entity_x < second_entity_x + second_entity_width &&
-                   entity_x + entity_width > second_entity_x &&
-                   entity_y < second_entity_y + second_entity_height &&
-                   entity_y + entity_height > second_entity_y;
-        }
+        //! Public static functions
+        static bool query_rect(transform::ts_rect first, transform::ts_rect second) noexcept;
 
-        static bool query_rect(entt::registry &registry, entt::entity entity, entt::entity second_entity)
-        {
-            auto properties_entity = registry.try_get<transform::properties>(entity);
-            auto properties_second_entity = registry.try_get<transform::properties>(second_entity);
-            return properties_entity == nullptr || properties_second_entity == nullptr ? false : query_rect(
-                    properties_entity->global_bounds, properties_second_entity->global_bounds);
-        }
+        static bool query_rect(entt::registry &registry, entt::entity entity, entt::entity second_entity) noexcept;
 
-        static bool query_point(transform::ts_rect box, transform::position_2d pos) noexcept
-        {
-            auto[left, top] = box.pos;
-            auto[width, height] = box.size;
-            auto[x, y] = static_cast<math::vec2f>(pos);
+        static bool query_point(transform::ts_rect box, transform::position_2d pos) noexcept;
 
-            auto minX = std::min(left, left + width);
-            auto maxX = std::max(left, left + width);
-            auto minY = std::min(top, top + height);
-            auto maxY = std::max(top, top + height);
-
-            return (x >= minX) && (x < maxX) && (y >= minY) && (y < maxY);
-        }
-
-        static bool query_point(entt::registry &registry, entt::entity entity, transform::position_2d pos) noexcept
-        {
-            auto properties_entity = registry.try_get<transform::properties>(entity);
-            return properties_entity == nullptr ? false : query_point(properties_entity->global_bounds, pos);
-        }
+        static bool query_point(entt::registry &registry, entt::entity entity, transform::position_2d pos) noexcept;
     };
-    //LCOV_EXCL_STOP
 }
 
 REFL_AUTO(type(antara::gaming::collisions::basic_collision_system))
