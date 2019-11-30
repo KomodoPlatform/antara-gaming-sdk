@@ -14,14 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <loguru.hpp>
-#include <range/v3/numeric.hpp>
-#include <range/v3/action/remove_if.hpp>
-#include <range/v3/view/filter.hpp>
-#include <entt/entity/helper.hpp>
-#include <antara/gaming/transform/component.position.hpp>
+//! Dependencies Headers
+#include <range/v3/numeric/accumulate.hpp> ///< ranges::accumulate
+#include <range/v3/action/remove_if.hpp> ///< ranges::actions::remove_if
+#include <range/v3/view/filter.hpp> ///< ranges::views::filter
+#include <range/v3/algorithm/for_each.hpp> ///< ranges::for_each
+
+//! SDK Headers
+#include "antara/gaming/ecs/interpolation.system.hpp" ///< ecs::interpolation_system
 #include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/ecs/interpolation.system.hpp"
+#include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d, transform::previous_position_2d
 
 
 namespace {
@@ -34,13 +36,13 @@ namespace {
 namespace antara::gaming::ecs {
     system_manager::system_manager(entt::registry &registry, bool susbscribe_to_internal_events) noexcept
             : entity_registry_(
-            registry), dispatcher_(this->entity_registry_.ctx<entt::dispatcher>()) {
+            registry), dispatcher_(entity_registry_.ctx<entt::dispatcher>()) {
         LOG_SCOPE_FUNCTION(INFO);
-        this->create_system<interpolation_system>();
-        this->entity_registry_.set<interpolation_system::st_interpolation>(0.f);
+        create_system<interpolation_system>();
+        entity_registry_.set<interpolation_system::st_interpolation>(0.f);
         if (susbscribe_to_internal_events) {
-            this->dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
-            this->entity_registry_.on_construct<transform::position_2d>().connect<&on_position_construct>();
+            dispatcher_.sink<event::add_base_system>().connect<&system_manager::receive_add_base_system>(*this);
+            entity_registry_.on_construct<transform::position_2d>().connect<&on_position_construct>();
             assert(not dispatcher_.sink<event::add_base_system>().empty());
         }
     }
@@ -68,11 +70,11 @@ namespace antara::gaming::ecs {
             ranges::actions::remove_if(vec_system, &base_system::is_marked);
         });
 
-        this->need_to_sweep_systems_ = false;
+        need_to_sweep_systems_ = false;
     }
 
     std::size_t system_manager::update() noexcept {
-        if (not nb_systems() || not game_is_running)
+        if (not nb_systems() || not game_is_running_)
             return 0u;
 
         std::size_t nb_systems_updated = 0u;
@@ -86,8 +88,8 @@ namespace antara::gaming::ecs {
         }
         //LCOV_EXCL_STOP
 
-        auto& interp = this->entity_registry_.ctx<interpolation_system::st_interpolation>();
-        interp = interpolation_system::st_interpolation{this->timestep_.get_interpolation()};
+        auto &interp = entity_registry_.ctx<interpolation_system::st_interpolation>();
+        interp = interpolation_system::st_interpolation{timestep_.get_interpolation()};
         nb_systems_updated += update_systems(system_type::post_update);
 
         if (need_to_sweep_systems_) {
@@ -102,7 +104,7 @@ namespace antara::gaming::ecs {
         if (not systems_to_add_.empty()) {
             while (not systems_to_add_.empty()) {
                 auto sys_type = systems_to_add_.front()->get_system_type_rtti();
-                this->add_system_(std::move(systems_to_add_.front()), sys_type);
+                add_system_(std::move(systems_to_add_.front()), sys_type);
                 systems_to_add_.pop();
             }
         }
@@ -124,16 +126,16 @@ namespace antara::gaming::ecs {
         LOG_SCOPE_FUNCTION(INFO);
         assert(evt.system_ptr != nullptr);
         ecs::system_type sys_type = evt.system_ptr->get_system_type_rtti();
-        if (not game_is_running) {
-            this->add_system_(std::move(const_cast<event::add_base_system &>(evt).system_ptr), sys_type);
+        if (not game_is_running_) {
+            add_system_(std::move(const_cast<event::add_base_system &>(evt).system_ptr), sys_type);
         } else {
-            this->systems_to_add_.push(std::move(const_cast<event::add_base_system &>(evt).system_ptr));
+            systems_to_add_.push(std::move(const_cast<event::add_base_system &>(evt).system_ptr));
         }
     }
 
     void system_manager::start() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
-        game_is_running = true;
+        game_is_running_ = true;
 
         antara::gaming::timer::time_step::reset_lag();
     }
@@ -141,4 +143,12 @@ namespace antara::gaming::ecs {
     system_manager::~system_manager() noexcept {
         LOG_SCOPE_FUNCTION(INFO);
     }
+
+    //LCOV_EXCL_START
+    system_manager &system_manager::operator+=(system_manager::system_ptr system) noexcept {
+        auto sys_type = system->get_system_type_rtti();
+        add_system_(std::move(system), sys_type);
+        return *this;
+    }
+    //LCOV_EXCL_STOP
 }

@@ -14,7 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <antara/gaming/ecs/virtual.input.system.hpp>
+//! SDK Headers
+#include "antara/gaming/ecs/virtual.input.system.hpp"
+#include "antara/gaming/input/virtual.hpp" ///< input::virtual_input::init, input::virtual_input::update
 
 namespace antara::gaming::ecs {
     virtual_input_system::virtual_input_system(entt::registry &registry) noexcept : system(registry) {
