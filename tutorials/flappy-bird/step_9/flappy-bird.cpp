@@ -35,7 +35,9 @@ struct flappy_bird_constants {
     const float column_start_distance{700.f};
     const float column_min{0.2f};
     const float column_max{0.8f};
+    const int pipe_body_image_width{175};
     const float column_thickness{100.f};
+    const float column_scale{column_thickness / pipe_body_image_width};
     const float column_distance{400.f};
     const std::size_t column_count{6};
     const float pipe_cap_extra_width{10.f};
@@ -185,20 +187,20 @@ namespace {
         // Top pipe is at Y: 0 and bottom pipe is at canvas_height, bottom of the canvas
         transform::position_2d body_pos{pos_x, is_top ? 0.f : canvas_height};
 
-        // Size X is the column thickness,
-        // Size Y is the important part.
+        // Scale X is the column scale,
+        // Scale Y is the important part. Since our pipe_body is 1px, scale will be the size.
         // If it's a top pipe, gap_start_pos_y should be bottom of the rectangle
         //  So half size should be gap_start_pos_y since center of the rectangle is at 0.
         // If it's the bottom pipe, top of the rectangle will be at gap_start_pos_y + gap_height
         //  So half size should be canvas_height - (gap_start_pos_y + gap_height)
         // Since these are half-sizes, and the position is at the screen border, we multiply these sizes by two
-        math::vec2f body_size{constants.column_thickness,
+        math::vec2f body_size{constants.column_scale,
                               is_top ?
                               gap_start_pos_y * 2.0f :
                               (canvas_height - (gap_start_pos_y + constants.gap_height)) * 2.0f};
 
-        auto body = geometry::blueprint_rectangle(registry, body_size, constants.pipe_color, body_pos,
-                                                  constants.pipe_outline_color);
+        auto body = graphics::blueprint_sprite(registry, graphics::sprite{"pipe_body.png"}, body_pos, graphics::white,
+                                              transform::properties{ body_size });
 
         // PIPE CAP
         // Let's prepare the pipe cap
@@ -274,7 +276,7 @@ namespace {
             transform::position_2d pos{canvas_width * 0.5f, canvas_height * 0.5f};
 
             // And the size is full canvas
-            float scale = canvas_height/ constants.background_image_height;
+            float scale = canvas_height / constants.background_image_height;
 
             auto sky = graphics::blueprint_sprite(registry, graphics::sprite{"background.png"}, pos, graphics::white,
                                                   transform::properties{{scale, scale}});
