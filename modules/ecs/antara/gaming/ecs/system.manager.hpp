@@ -16,32 +16,48 @@
 
 #pragma once
 
-#include <queue>
-#include <exception>
-#include <memory>
-#include <system_error>
-#include <tl/expected.hpp>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/algorithm/find_if.hpp>
-#include <range/v3/algorithm/any_of.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include <loguru.hpp>
-#include "antara/gaming/ecs/base.system.hpp"
-#include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/ecs/system.type.hpp"
-#include "antara/gaming/ecs/event.add.base.system.hpp"
-#include "antara/gaming/timer/time.step.hpp"
-#include "antara/gaming/event/fatal.error.hpp"
+//! C System Headers
+#include <cstddef> ///< std::size_t
 
-namespace antara::gaming::ecs
-{
+//! C++ System Headers
+#include <algorithm> ///< std::iter_swap
+#include <array> ///< std::array
+#include <functional> ///< std::reference_wrapper
+#include <memory> ///< std::unique_ptr
+#include <queue> ///< std::queue
+#include <system_error> ///< std::error_code
+#include <tuple> ///< std::tuple
+#include <type_traits> ///< std::add_lvalue_reference, std::add_const_t
+#include <utility> ///< std::forward, std::move
+#include <vector> ///< std::vector
+
+//! Dependencies Headers
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+#include <entt/entity/registry.hpp> ///< entt::registry
+#include <loguru.hpp> ///< LOG_SCOPE_FUNCTION
+#include <range/v3/algorithm/find_if.hpp> ///< ranges::find_if
+#include <range/v3/algorithm/any_of.hpp> ///< ranges::any_of
+#include <tl/expected.hpp> ///< tl::expected
+
+//! SDK Headers
+#include "antara/gaming/ecs/base.system.hpp" ///< ecs::base_system
+#include "antara/gaming/ecs/event.add.base.system.hpp" ///< event::add_base_system
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
+#include "antara/gaming/ecs/system.type.hpp" ///< ecs::system_type
+#include "antara/gaming/event/fatal.error.hpp" ///< event::fatal_error
+#include "antara/gaming/timer/time.step.hpp" ///< timer::time_step
+
+namespace antara::gaming::ecs {
     /**
      * @class system_manager
      * @brief This class allows the manipulation of systems, the addition, deletion, update of systems, deactivation of a system, etc.
      */
-    class system_manager
-    {
-    public:
+    class system_manager {
+        //! Private typedefs
+
+        /// @brief sugar name for an chrono steady clock
+        using clock = std::chrono::steady_clock;
+
         /// @brief sugar name for a pointer to base_system
         using system_ptr = std::unique_ptr<base_system>;
 
@@ -50,6 +66,29 @@ namespace antara::gaming::ecs
 
         /// @brief sugar name for a multidimensional array of system_array (pre_update, logic_update, post_update)
         using system_registry = std::array<system_array, system_type::size>;
+
+        //! Private member functions
+        base_system &add_system_(system_ptr &&system, system_type sys_type) noexcept;
+
+        void sweep_systems_() noexcept;
+
+        template<typename TSystem>
+        tl::expected<std::reference_wrapper<TSystem>, std::error_code> get_system_() noexcept;
+
+        template<typename TSystem>
+        [[nodiscard]] tl::expected<std::reference_wrapper<const TSystem>, std::error_code> get_system_() const noexcept;
+
+        //! Private data members
+        clock::time_point start_{clock::now()};
+        timer::time_step timestep_;
+        entt::registry &entity_registry_;
+        entt::dispatcher &dispatcher_;
+        system_registry systems_{{}};
+        bool need_to_sweep_systems_{false};
+        std::queue<system_ptr> systems_to_add_;
+        bool game_is_running_{false};
+    public:
+        //! Constructor
 
         /**
          * @param registry The entity_registry is provided to the system when it is created.
@@ -74,7 +113,11 @@ namespace antara::gaming::ecs
          * @endcode
          */
         explicit system_manager(entt::registry &registry, bool subscribe_to_internal_events = true) noexcept;
+
+        //! Destructor
         ~system_manager() noexcept;
+
+        //! Public member functions
 
         /**
          * @param evt The event that contains the system to add
@@ -652,73 +695,48 @@ namespace antara::gaming::ecs
         template<typename ...TSystems, typename ...TArgs>
         auto load_systems(TArgs &&...args) noexcept;
 
-        //LCOV_EXCL_START
-        template <typename SystemToSwap, typename SystemB>
-        bool prioritize_system()
-        {
-            if (not has_systems<SystemToSwap, SystemB>())
-                return false;
-            if (SystemToSwap::get_system_type() != SystemB::get_system_type())
-                return false;
-            auto sys_type = SystemToSwap::get_system_type();
-            auto&& sys_collection = systems_[sys_type];
 
-            auto it_system_to_swap = ranges::find_if(sys_collection, [name = SystemToSwap::get_class_name()](auto &&sys){
-                return sys->get_name() == name;
-            });
+        template<typename SystemToSwap, typename SystemB>
+        bool prioritize_system() noexcept;
 
-            auto it_system_b = ranges::find_if(sys_collection, [name = SystemB::get_class_name()](auto &&sys){
-                return sys->get_name() == name;
-            });
-
-            if (it_system_to_swap != systems_[sys_type].end() && it_system_b != systems_[sys_type].end()) {
-                if (it_system_to_swap > it_system_b) {
-                    std::iter_swap(it_system_to_swap, it_system_b);
-                }
-                return true;
-            }
-
-            return false;
-        }
-        //LCOV_EXCL_STOP
-
-        system_manager& operator+=(system_ptr system) noexcept
-        {
-            auto sys_type = system->get_system_type_rtti();
-            add_system_(std::move(system), sys_type);
-            return *this;
-        }
-    private:
-        //! Private member functions
-        base_system &add_system_(system_ptr &&system, system_type sys_type) noexcept;
-
-        void sweep_systems_() noexcept;
-
-        template<typename TSystem>
-        tl::expected<std::reference_wrapper<TSystem>, std::error_code> get_system_() noexcept;
-
-        template<typename TSystem>
-        [[nodiscard]] tl::expected<std::reference_wrapper<const TSystem>, std::error_code> get_system_() const noexcept;
-
-        //! Private data members
-        using clock = std::chrono::steady_clock;
-        clock::time_point start_{clock::now()};
-        timer::time_step timestep_;
-        [[maybe_unused]] entt::registry &entity_registry_;
-        [[maybe_unused]] entt::dispatcher &dispatcher_;
-        system_registry systems_{{}};
-        bool need_to_sweep_systems_{false};
-        std::queue<system_ptr> systems_to_add_;
-        bool game_is_running{false};
+        system_manager &operator+=(system_ptr system) noexcept;
     };
 }
 
 //! Implementation
-namespace antara::gaming::ecs
-{
+namespace antara::gaming::ecs {
+    //LCOV_EXCL_START
+    template<typename SystemToSwap, typename SystemB>
+    bool system_manager::prioritize_system() noexcept {
+        if (not has_systems<SystemToSwap, SystemB>())
+            return false;
+        if (SystemToSwap::get_system_type() != SystemB::get_system_type())
+            return false;
+        auto sys_type = SystemToSwap::get_system_type();
+        auto &&sys_collection = systems_[sys_type];
+
+        auto it_system_to_swap = ranges::find_if(sys_collection,
+                                                 [name = SystemToSwap::get_class_name()](auto &&sys) {
+                                                     return sys->get_name() == name;
+                                                 });
+
+        auto it_system_b = ranges::find_if(sys_collection, [name = SystemB::get_class_name()](auto &&sys) {
+            return sys->get_name() == name;
+        });
+
+        if (it_system_to_swap != systems_[sys_type].end() && it_system_b != systems_[sys_type].end()) {
+            if (it_system_to_swap > it_system_b) {
+                std::iter_swap(it_system_to_swap, it_system_b);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    //LCOV_EXCL_STOP
     template<typename TSystem>
-    const TSystem &system_manager::get_system() const noexcept
-    {
+    const TSystem &system_manager::get_system() const noexcept {
         const auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
             this->dispatcher_.trigger<gaming::event::fatal_error>(ec);
         });
@@ -726,8 +744,7 @@ namespace antara::gaming::ecs
     }
 
     template<typename TSystem>
-    TSystem &system_manager::get_system() noexcept
-    {
+    TSystem &system_manager::get_system() noexcept {
         auto ret = get_system_<TSystem>().or_else([this](const std::error_code &ec) {
             this->dispatcher_.trigger<gaming::event::fatal_error>(ec);
         });
@@ -735,20 +752,18 @@ namespace antara::gaming::ecs
     }
 
     template<typename... TSystems>
-    std::tuple<std::add_lvalue_reference_t<TSystems>...> system_manager::get_systems() noexcept
-    {
+    std::tuple<std::add_lvalue_reference_t<TSystems>...> system_manager::get_systems() noexcept {
         return {get_system<TSystems>()...};
     }
 
     template<typename... TSystems>
-    std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...> system_manager::get_systems() const noexcept
-    {
+    std::tuple<std::add_lvalue_reference_t<std::add_const_t<TSystems>>...>
+    system_manager::get_systems() const noexcept {
         return {get_system<TSystems>()...};
     }
 
     template<typename TSystem, typename... TSystemArgs>
-    TSystem &system_manager::create_system(TSystemArgs &&... args) noexcept
-    {
+    TSystem &system_manager::create_system(TSystemArgs &&... args) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         if (has_system<TSystem>()) {
             return get_system<TSystem>();
@@ -757,7 +772,7 @@ namespace antara::gaming::ecs
             return std::make_unique<TSystem>(this->entity_registry_,
                                              std::forward<decltype(args_)>(args_)...);
         };
-        
+
         system_ptr sys = creator(std::forward<TSystemArgs>(args)...);
         return static_cast<TSystem &>(add_system_(std::move(sys), TSystem::get_system_type()));
     }
@@ -766,7 +781,7 @@ namespace antara::gaming::ecs
     void system_manager::create_system_rt(TSystemArgs &&... args) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
         if (has_system<TSystem>()) {
-            return ;
+            return;
         }
         auto creator = [this](auto &&... args_) {
             return std::make_unique<TSystem>(this->entity_registry_,
@@ -777,15 +792,13 @@ namespace antara::gaming::ecs
     }
 
     template<typename... TSystems, typename... TArgs>
-    auto system_manager::load_systems(TArgs &&... args) noexcept
-    {
+    auto system_manager::load_systems(TArgs &&... args) noexcept {
         (create_system<TSystems>(std::forward<TArgs>(args)...), ...);
         return get_systems<TSystems ...>();
     }
 
     template<typename TSystem>
-    bool system_manager::has_system() const noexcept
-    {
+    bool system_manager::has_system() const noexcept {
         constexpr const auto sys_type = TSystem::get_system_type();
         return ranges::any_of(systems_[sys_type], [](auto &&ptr) {
             return ptr->get_name() == TSystem::get_class_name();
@@ -793,14 +806,12 @@ namespace antara::gaming::ecs
     }
 
     template<typename... TSystems>
-    bool system_manager::has_systems() const noexcept
-    {
+    bool system_manager::has_systems() const noexcept {
         return (has_system<TSystems>() && ...);
     }
 
     template<typename TSystem>
-    bool system_manager::mark_system() noexcept
-    {
+    bool system_manager::mark_system() noexcept {
         if (has_system<TSystem>()) {
             get_system<TSystem>().mark();
             need_to_sweep_systems_ = true;
@@ -811,14 +822,12 @@ namespace antara::gaming::ecs
     }
 
     template<typename... TSystems>
-    bool system_manager::mark_systems() noexcept
-    {
+    bool system_manager::mark_systems() noexcept {
         return (mark_system<TSystems>() && ...);
     }
 
     template<typename TSystem>
-    bool system_manager::enable_system() noexcept
-    {
+    bool system_manager::enable_system() noexcept {
         if (has_system<TSystem>()) {
             get_system<TSystem>().enable();
             return true;
@@ -827,14 +836,12 @@ namespace antara::gaming::ecs
     }
 
     template<typename... TSystems>
-    bool system_manager::enable_systems() noexcept
-    {
+    bool system_manager::enable_systems() noexcept {
         return (enable_system<TSystems>() && ...);
     }
 
     template<typename TSystem>
-    bool system_manager::disable_system() noexcept
-    {
+    bool system_manager::disable_system() noexcept {
         if (has_system<TSystem>()) {
             get_system<TSystem>().disable();
             return true;
@@ -843,14 +850,12 @@ namespace antara::gaming::ecs
     }
 
     template<typename... TSystems>
-    bool system_manager::disable_systems() noexcept
-    {
+    bool system_manager::disable_systems() noexcept {
         return (disable_system<TSystems>() && ...);
     }
 
     template<typename TSystem>
-    tl::expected<std::reference_wrapper<TSystem>, std::error_code> system_manager::get_system_() noexcept
-    {
+    tl::expected<std::reference_wrapper<TSystem>, std::error_code> system_manager::get_system_() noexcept {
         if (not nb_systems(TSystem::get_system_type())) {
             return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
         }
@@ -868,8 +873,7 @@ namespace antara::gaming::ecs
     }
 
     template<typename TSystem>
-    tl::expected<std::reference_wrapper<const TSystem>, std::error_code> system_manager::get_system_() const noexcept
-    {
+    tl::expected<std::reference_wrapper<const TSystem>, std::error_code> system_manager::get_system_() const noexcept {
         if (not nb_systems(TSystem::get_system_type())) {
             return tl::make_unexpected(std::make_error_code(std::errc::result_out_of_range)); //LCOV_EXCL_LINE
         }

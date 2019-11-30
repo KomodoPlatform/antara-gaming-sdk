@@ -16,9 +16,12 @@
 
 #pragma once
 
-#include <antara/gaming/core/safe.refl.hpp>
-#include <antara/gaming/input/virtual.hpp>
-#include <antara/gaming/ecs/system.hpp>
+//! Dependencies Headers
+#include <entt/entity/entity.hpp> ///< entt::registry
+
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
 
 namespace antara::gaming::ecs {
     struct virtual_input_system final : ecs::logic_update_system<virtual_input_system> {

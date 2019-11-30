@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include <filesystem>
+//! C++ System Headers
+#include <filesystem> ///< std::filesystem::path
 
 namespace antara::gaming::core
 {
