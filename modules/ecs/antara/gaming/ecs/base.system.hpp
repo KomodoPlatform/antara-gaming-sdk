@@ -16,14 +16,18 @@
 
 #pragma once
 
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.type.hpp"
+//! C++ System Headers
+#include <string> ///< std::string
 
-namespace antara::gaming::ecs
-{
-    class base_system
-    {
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+
+//! SDK Headers
+#include "antara/gaming/ecs/system.type.hpp" ///< ecs::system_type;
+
+namespace antara::gaming::ecs {
+    class base_system {
     public:
         //! Constructors
         base_system(entt::registry &entity_registry, bool im_a_plugin_system = false) noexcept;
@@ -33,8 +37,11 @@ namespace antara::gaming::ecs
 
         //! Pure virtual functions
         virtual void update() noexcept = 0;
+
         virtual void post_update() noexcept {};
+
         [[nodiscard]] virtual std::string get_name() const noexcept = 0;
+
         [[nodiscard]] virtual system_type get_system_type_rtti() const noexcept = 0;
 
 
@@ -97,6 +104,7 @@ namespace antara::gaming::ecs
          * \param data a void pointer representing the user data
          */
         void set_user_data(void *data) noexcept;
+
     protected:
         //! Protected data members
         entt::registry &entity_registry_;
