@@ -11,6 +11,7 @@
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/sfml/audio.system.hpp>
 #include <antara/gaming/world/world.app.hpp>
+#include <antara/gaming/input/virtual.hpp>
 
 
 // For convenience
