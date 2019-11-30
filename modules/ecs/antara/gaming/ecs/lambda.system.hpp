@@ -16,14 +16,23 @@
 
 #pragma once
 
-#include <functional>
-#include "antara/gaming/ecs/system.hpp"
+//! C++ System Headers
+#include <functional> ///< std::function
+#include <string> ///< std::string
+#include <utility> ///< std::move
+
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
+#include "antara/gaming/ecs/system.type.hpp" ///< ecs::st_system_logic[pre, post]_update
 
 
-namespace antara::gaming::ecs
-{
-    struct ftor
-    {
+namespace antara::gaming::ecs {
+    struct ftor {
+        //! Fields
         std::function<void()> on_create{nullptr};
         std::function<void()> on_update{nullptr};
         std::function<void()> on_destruct{nullptr};
@@ -31,49 +40,36 @@ namespace antara::gaming::ecs
     };
 
     template<typename SystemType>
-    class lambda_system final : public ecs::system<lambda_system<SystemType>, SystemType>
-    {
+    class lambda_system final : public ecs::system<lambda_system<SystemType>, SystemType> {
+        //! Private typedefs
         using TSystem = ecs::system<lambda_system<SystemType>, SystemType>;
+
+        //! Private fields
         ftor lambda_contents_;
         std::string lambda_name_{""};
     public:
-        lambda_system(entt::registry &registry, ftor lambda_contents, std::string lambda_name = "") noexcept
-                : TSystem::system(registry),
-                  lambda_contents_(std::move(lambda_contents)),
-                  lambda_name_(
-                          std::move(lambda_name))
-        {
-            if (lambda_contents_.on_create != nullptr) {
-                lambda_contents_.on_create();
-            }
-        }
+        //! Constructor
+        lambda_system(entt::registry &registry, ftor lambda_contents, std::string lambda_name = "") noexcept;
 
-        void update() noexcept final
-        {
-            if (lambda_contents_.on_update != nullptr) {
-                lambda_contents_.on_update();
-            }
-        }
+        //! Destructor
+        ~lambda_system() noexcept;
 
-        ~lambda_system() noexcept
-        {
-            if (lambda_contents_.on_destruct != nullptr) {
-                lambda_contents_.on_destruct();
-            }
-        }
+        //! Public member functions
+        void update() noexcept final;
 
-        void post_update() noexcept final
-        {
-            if (lambda_contents_.on_post_update != nullptr) {
-                lambda_contents_.on_post_update();
-            }
-        }
+        void post_update() noexcept final;
     };
 
+
+}
+
+//! Implementation
+#include "antara/gaming/ecs/lambda.system.ipp"
+
+namespace antara::gaming::ecs {
     using lambda_post_system = lambda_system<ecs::st_system_post_update>;
     using lambda_pre_system = lambda_system<ecs::st_system_pre_update>;
     using lambda_logic_system = lambda_system<ecs::st_system_logic_update>;
 }
 
-REFL_AUTO(template(
-                  (typename SystemType), (antara::gaming::ecs::lambda_system<SystemType>)))
+REFL_AUTO(template((typename SystemType), (antara::gaming::ecs::lambda_system<SystemType>)))
