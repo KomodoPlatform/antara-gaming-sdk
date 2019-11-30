@@ -82,9 +82,7 @@ namespace {
         return dist(gen);
     }
 
-    float vec_to_angle(const math::vec2f &vec) {
-        return math::vec2f::vec_to_angle(vec) + 90.f;
-    }
+    float vec_to_angle(const math::vec2f &vec) { return math::vec2f::vec_to_angle(vec) + 90.f; }
 
     math::vec2f get_texture_offset(const wolf_constants &constants, const math::vec2i &tex_idx) {
         return math::vec2f(float(tex_idx.x() * (constants.tex_width + 2) + 1),
