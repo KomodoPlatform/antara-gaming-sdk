@@ -16,25 +16,25 @@
 
 #pragma once
 
-#include <Box2D/Box2D.h>
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/ecs/system.hpp"
+//! Dependencies Headers
+#include <Box2D/Box2D.h> ///< b2Vec2, b2World
+#include <entt/entity/registry.hpp> ///< entt::registry
 
-namespace antara::gaming::box2d
-{
-    class box2d_system final : public ecs::logic_update_system<box2d_system>
-    {
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
+
+namespace antara::gaming::box2d {
+    class box2d_system final : public ecs::logic_update_system<box2d_system> {
+        //! Private fields
+        b2Vec2 gravity_{0.f, 9.8f};
+        b2World world_{gravity_};
     public:
         //! Constructors
         box2d_system(entt::registry &registry) noexcept;
 
+        //! Public member functions
         void update() noexcept final;
-
-    private:
-        b2Vec2 gravity_{0.f, 9.8f};
-        b2World world_{gravity_};
     };
 }
 
