@@ -16,8 +16,11 @@
 
 #pragma once
 
-#include <nlohmann/json.hpp>
-#include "antara/gaming/graphics/component.canvas.hpp"
+//! Dependencies Headers
+#include <nlohmann/json.hpp> ///< nlohmann::json
+
+//! SDK Headers
+#include "antara/gaming/graphics/component.canvas.hpp" ///< graphics::canvas_2d
 
 namespace antara::gaming::graphics
 {
