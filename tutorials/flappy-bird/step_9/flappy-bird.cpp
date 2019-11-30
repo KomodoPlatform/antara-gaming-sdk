@@ -38,10 +38,10 @@ struct flappy_bird_constants {
     const int pipe_body_image_width{175};
     const float column_thickness{100.f};
     const float column_scale{column_thickness / pipe_body_image_width};
+    const int pipe_cap_image_height{127};
     const float column_distance{400.f};
     const std::size_t column_count{6};
-    const float pipe_cap_extra_width{10.f};
-    const float pipe_cap_height{50.f};
+    const float pipe_cap_height{column_scale * pipe_cap_image_height};
     const graphics::color pipe_color{92, 181, 61};
     const graphics::outline_color pipe_outline_color{2.0f, graphics::color{76, 47, 61}};
     const float scroll_speed{200.f};
@@ -204,9 +204,6 @@ namespace {
 
         // PIPE CAP
         // Let's prepare the pipe cap
-        // Size of the cap is defined in constants
-        math::vec2f cap_size{constants.column_thickness + constants.pipe_cap_extra_width, constants.pipe_cap_height};
-
         // Position, X is same as the body. Bottom of the cap is aligned with bottom of the body,
         // or start of the gap, we will use start of the gap here, minus half of the cap height
         transform::position_2d cap_pos{body_pos.x(),
@@ -216,8 +213,12 @@ namespace {
         };
 
         // Construct the cap
-        auto cap = geometry::blueprint_rectangle(registry, cap_size, constants.pipe_color, cap_pos,
-                                                 constants.pipe_outline_color);
+        // Size of the cap is defined in constants
+        math::vec2f cap_size{constants.column_scale,
+                            constants.column_scale * (is_top ? -1.f : 1.f)};
+
+        auto cap = graphics::blueprint_sprite(registry, graphics::sprite{"pipe_cap.png"}, cap_pos, graphics::white,
+        transform::properties{cap_size});
 
         // Set layers, cap should be in front of body
         registry.assign<graphics::layer<4>>(cap);
