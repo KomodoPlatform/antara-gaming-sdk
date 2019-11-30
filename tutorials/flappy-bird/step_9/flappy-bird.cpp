@@ -31,6 +31,7 @@ struct flappy_bird_constants {
     const float max_angle{60.f};
     const float jump_rotation{-40.f};
     const float fall_angle{-5.f};
+    const math::vec2f collision_box_size{40.f, 40.f};
 
     // Pipes
     const float gap_height{265.f};
@@ -535,17 +536,30 @@ public:
 private:
     // Loop all columns to check collisions between player and the pipes
     void check_player_pipe_collision(entt::registry &registry) {
+        const auto constants = registry.ctx<flappy_bird_constants>();
+
         for (auto entity : registry.view<graphics::layer<3>>()) {
             // Check collision between player and a collidable object
-            if (collisions::basic_collision_system::query_rect(registry, player_, entity)) {
-                // Mark player died as true
-                player_died_ = true;
-                auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
-                animation.current_status = animation2d::anim_component::stopped;
+            auto entity_props = entity_registry_.try_get<transform::properties>(entity);
+            auto player_pos = entity_registry_.try_get<transform::position_2d>(player_);
 
-                entity_registry_.replace<animation2d::anim_component>(player_,
-                                              animation2d::anim_component{.animation_id = "dragon_hurt",
-                                                      .current_status = animation2d::anim_component::status::stopped});
+            // If this entity has a box
+            if(entity_props != nullptr && player_pos != nullptr) {
+                transform::ts_rect player_box{
+                        {*player_pos - constants.collision_box_size*0.5f},
+                        constants.collision_box_size
+                };
+
+                if (collisions::basic_collision_system::query_rect(entity_props->global_bounds, player_box)) {
+                    // Mark player died as true
+                    player_died_ = true;
+                    auto &animation = entity_registry_.get<animation2d::anim_component>(player_);
+                    animation.current_status = animation2d::anim_component::stopped;
+
+                    entity_registry_.replace<animation2d::anim_component>(player_,
+                                                  animation2d::anim_component{.animation_id = "dragon_hurt",
+                                                          .current_status = animation2d::anim_component::status::stopped});
+                }
             }
         }
     }
