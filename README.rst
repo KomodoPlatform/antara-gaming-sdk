@@ -172,6 +172,7 @@ Gallery
 
 .. image:: gallery/wolf.png
 .. image:: gallery/flappy.png
+.. image:: gallery/flappy-bird.gif
 .. image:: docs/assets/tictactoe_o_win.png
 .. image:: docs/assets/tictactoe_x_win.png
 .. image:: docs/assets/tictactoe_tie.png
