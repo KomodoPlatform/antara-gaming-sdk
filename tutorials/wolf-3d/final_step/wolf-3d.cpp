@@ -898,8 +898,8 @@ struct wolf3d_world : world::app {
         system_manager_.create_system<ecs::virtual_input_system>();
 
         //! Create virtual inputs
-        input::virtual_input::create("move_forward", {input::key::z, input::key::up}, {});
-        input::virtual_input::create("move_left", {input::key::q, input::key::left}, {});
+        input::virtual_input::create("move_forward", {input::key::w, input::key::up}, {});
+        input::virtual_input::create("move_left", {input::key::a, input::key::left}, {});
         input::virtual_input::create("move_down", {input::key::s, input::key::down}, {});
         input::virtual_input::create("move_right", {input::key::d, input::key::right}, {});
 
