@@ -21,7 +21,7 @@ namespace antara::gaming::event::tests
 {
     TEST_SUITE ("mouse button pressed test suite")
     {
-        TEST_CASE ("default constructible")
+        TEST_CASE ("default constructor")
         {
             event::mouse_button_pressed mouse_button_pressed_evt{};
             CHECK_EQ(mouse_button_pressed_evt.x, 0);

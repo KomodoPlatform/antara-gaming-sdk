@@ -21,7 +21,7 @@ namespace antara::gaming::geometry::tests
 {
     TEST_SUITE ("test component rectangle")
     {
-        TEST_CASE ("component rectangle is default constructible")
+        TEST_CASE ("component rectangle is default constructor")
         {
             geometry::rectangle c_rectangle{};
             CHECK_EQ(c_rectangle.size, math::vec2f{50.0f, 50.0f});

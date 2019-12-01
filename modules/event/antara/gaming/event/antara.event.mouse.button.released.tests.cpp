@@ -21,7 +21,7 @@ namespace antara::gaming::event::tests
 {
     TEST_SUITE ("mouse button released test suite")
     {
-        TEST_CASE ("default constructible")
+        TEST_CASE ("default constructor")
         {
             event::mouse_button_released mouse_button_released_evt{};
             CHECK_EQ(mouse_button_released_evt.x, 0);
