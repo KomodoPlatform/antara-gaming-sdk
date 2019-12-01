@@ -142,11 +142,12 @@ Built With
 * `loguru <https://github.com/emilk/loguru>`_ - A lightweight C++ logging library (Public Domain)
 * `fmt <https://github.com/fmtlib/fmt>`_ - A modern formatting library https://fmt.dev (MIT)
 * `EnTT <https://github.com/skypjack/entt>`_ - Gaming meets modern C++ - a fast and reliable entity-component system (ECS). (MIT)
-* `refl-cpp <https://github.com/veselink1/refl-cpp>`_ A compile-time reflection library for modern C++ 🔥 (MIT)
-* `range-v3 <https://github.com/ericniebler/range-v3>`_ Range library for C++14/17/20, basis for C++20's std::ranges (Boost Software License)
-* `expected <https://github.com/TartanLlama/expected>`_ C++11/14/17 std::expected with functional-style extensions https://tl.tartanllama.xyz (CC0 1.0 Universal)
-* (optional)\ `SFML <https://github.com/SFML/SFML>`_ Simple and Fast Multimedia Library http://www.sfml-dev.org/
-* (optional)\ `reproc <https://github.com/DaanDeMeyer/reproc>`_ Cross-platform (C99/C++11) process library (MIT)
+* `refl-cpp <https://github.com/veselink1/refl-cpp>`_ - A compile-time reflection library for modern C++ 🔥 (MIT)
+* `range-v3 <https://github.com/ericniebler/range-v3>`_ - Range library for C++14/17/20, basis for C++20's std::ranges (Boost Software License)
+* `expected <https://github.com/TartanLlama/expected>`_ - C++11/14/17 std::expected with functional-style extensions https://tl.tartanllama.xyz (CC0 1.0 Universal)
+* (optional)\ `ImGui <https://github.com/ocornut/imgui>`_ - Dear ImGui: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies (MIT)
+* (optional)\ `SFML <https://github.com/SFML/SFML>`_ - Simple and Fast Multimedia Library http://www.sfml-dev.org/
+* (optional)\ `reproc <https://github.com/DaanDeMeyer/reproc>`_ - Cross-platform (C99/C++11) process library (MIT)
 
 Code of Conduct
 ---------------
