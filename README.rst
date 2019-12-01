@@ -205,9 +205,9 @@ Gallery
    :align: center
 .. image:: docs/assets/gallery/tictactoe-gif.gif
    :align: center
-.. image:: docs/assets/tictactoe_o_win.png
-.. image:: docs/assets/tictactoe_x_win.png
-.. image:: docs/assets/tictactoe_tie.png
+.. image:: docs/assets/gallery/tictactoe-o-win.png
+.. image:: docs/assets/gallery/tictactoe-x-win.png
+.. image:: docs/assets/gallery/tictactoe-tie.png
 
 Badges
 ------
