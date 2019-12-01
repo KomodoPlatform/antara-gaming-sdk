@@ -59,6 +59,10 @@ There are also additional options with the CMake that allows to activate certain
      - Enable the SFML module of the SDK
      - ``-DUSE_SFML_ANTARA_WRAPPER=ON``
      - Requires SFML dependencies on Linux
+   * - ``USE_IMGUI_ANTARA_WRAPPER``
+     - Enable the IMGUI Support for the SDK
+     - ``-DUSE_IMGUI_ANTARA_WRAPPER=ON``
+     -
    * - ``ANTARA_BUILD_DOCS``
      - Enable the build of the documentation for the SDK
      - ``-DANTARA_BUILD_DOCS=ON``
