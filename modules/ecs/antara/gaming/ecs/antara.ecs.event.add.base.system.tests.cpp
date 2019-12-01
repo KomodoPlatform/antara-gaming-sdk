@@ -21,7 +21,7 @@ namespace antara::gaming::ecs::tests
 {
     TEST_SUITE ("test event add base system")
     {
-        TEST_CASE ("default constructible")
+        TEST_CASE ("default constructor")
         {
             antara::gaming::ecs::event::add_base_system evt{};
         }

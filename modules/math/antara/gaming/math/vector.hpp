@@ -16,12 +16,19 @@
 
 #pragma once
 
-#include <cmath>
-#include <array>
-#include <ostream>
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/math/utility.hpp"
+//! C System Headers
+#include <cmath> ///< std::sqrt
+
+//! C++ System Headers
+#include <array> ///< std::array
+#include <ostream> ///< std::ostream
+
+//! Dependencies Headers
+#include <meta/sequence/list.hpp> ///< doom::meta::list
+
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/math/utility.hpp" ///< RAD2DEG
 
 namespace antara::gaming::math {
     template<class Unit, size_t Size, template<class, class> class...Mixins>

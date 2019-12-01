@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include "antara/gaming/event/load.textures.hpp"
-#include "antara/gaming/ecs/system.hpp"
+//! SDK Headers
+#include "antara/gaming/event/load.textures.hpp" ///< event::load_textures
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
 
 namespace antara::gaming::resources
 {

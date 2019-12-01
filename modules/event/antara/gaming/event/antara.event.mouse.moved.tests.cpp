@@ -21,7 +21,7 @@ namespace antara::gaming::event::tests
 {
     TEST_SUITE ("mouse moved test suite")
     {
-        TEST_CASE ("default constructible")
+        TEST_CASE ("default constructor")
         {
             event::mouse_moved mouse_moved{};
             CHECK_EQ(mouse_moved.x, 0);
