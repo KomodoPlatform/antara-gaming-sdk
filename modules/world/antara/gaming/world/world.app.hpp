@@ -22,26 +22,35 @@
 //! Dependencies Headers
 #include <entt/entity/registry.hpp> ///< entt::registry
 #include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+
+//! SDK Headers
 #include "antara/gaming/ecs/system.manager.hpp" ///< ecs::system_manager
 #include "antara/gaming/event/quit.game.hpp" ///< event::quit_game
 
-namespace antara::gaming::world
-{
-    class app
-    {
-    public:
-        app(std::string config_maker_name = "game.config.maker.json") noexcept;
-        ~app() noexcept;
-        //! Public callbacks
-        void receive_quit_game(const event::quit_game &evt) noexcept;
-        int run() noexcept;
-        void process_one_frame();
-    private:
+namespace antara::gaming::world {
+    class app {
+        //! Private fields
         bool is_running_{false};
         int game_return_value_{0};
+    public:
+        //! Constructors
+        app(std::string config_maker_name = "game.config.maker.json") noexcept;
+
+        //! Destructor
+        ~app() noexcept;
+
+        //! Public callbacks
+        void receive_quit_game(const event::quit_game &evt) noexcept;
+
+        //! Public member functions
+        int run() noexcept;
+
+        void process_one_frame();
+
     protected:
+        //! Protected Fields
         entt::registry entity_registry_;
-        entt::dispatcher& dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
+        entt::dispatcher &dispatcher_{this->entity_registry_.set<entt::dispatcher>()};
         ecs::system_manager system_manager_{entity_registry_};
     };
 }
