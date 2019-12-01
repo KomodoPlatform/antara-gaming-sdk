@@ -205,6 +205,7 @@ Gallery
    :align: center
 .. image:: docs/assets/gallery/tictactoe-gif.gif
    :align: center
+.. image:: docs/assets/gallery/tictactoe-playing.png
 .. image:: docs/assets/gallery/tictactoe-o-win.png
 .. image:: docs/assets/gallery/tictactoe-x-win.png
 .. image:: docs/assets/gallery/tictactoe-tie.png

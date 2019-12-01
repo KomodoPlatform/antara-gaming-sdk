@@ -1040,19 +1040,19 @@ That's it! Here are the screenshots:
 
 During the match:
 
-.. image:: ../../assets/tictactoe_play.png
+.. image:: ../../assets/gallery/tictactoe-playing.png
 
 When Player X wins:
 
-.. image:: ../../assets/tictactoe_x_win.png
+.. image:: ../../assets/gallery/tictactoe-x-win.png
 
 When Player O wins:
 
-.. image:: ../../assets/tictactoe_o_win.png
+.. image:: ../../assets/gallery/tictactoe-o-win.png
 
 When it's a tie!
 
-.. image:: ../../assets/tictactoe_tie.png
+.. image:: ../../assets/gallery/tictactoe-tie.png
 
 Here is the complete code of the last step:
 
