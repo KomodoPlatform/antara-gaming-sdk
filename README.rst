@@ -198,17 +198,13 @@ Gallery
 
 .. image:: docs/assets/gallery/wolf.gif
    :align: center
-.. image:: docs/assets/gallery/wolf-ig.png
 .. image:: docs/assets/gallery/wolf-ig2.png
 .. image:: docs/assets/gallery/flappy.png
 .. image:: docs/assets/gallery/flappy-bird.gif
    :align: center
 .. image:: docs/assets/gallery/tictactoe-gif.gif
    :align: center
-.. image:: docs/assets/gallery/tictactoe-playing.png
-.. image:: docs/assets/gallery/tictactoe-o-win.png
 .. image:: docs/assets/gallery/tictactoe-x-win.png
-.. image:: docs/assets/gallery/tictactoe-tie.png
 
 Badges
 ------
