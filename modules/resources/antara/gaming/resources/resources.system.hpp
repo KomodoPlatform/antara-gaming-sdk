@@ -18,7 +18,7 @@
 
 //! SDK Headers
 #include "antara/gaming/event/load.textures.hpp" ///< event::load_textures
-#include "antara/gaming/ecs/system.hpp" ///< ecs::logic_update_system<system<UnderlyingResourceManager>>
+#include "antara/gaming/ecs/system.hpp" ///< ecs::system
 
 namespace antara::gaming::resources
 {

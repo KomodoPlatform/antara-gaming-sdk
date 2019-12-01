@@ -17,7 +17,7 @@
 #include <doctest/doctest.h>
 
 //! SDK Headers
-#include "antara/gaming/ecs/system.manager.hpp" ///< antara::gaming::ecs::system_manager
+#include "antara/gaming/ecs/system.manager.hpp" ///< ecs::system_manager
 #include "antara/gaming/resources/resources.system.hpp"
 
 namespace antara::gaming::resources::tests
