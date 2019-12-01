@@ -26,43 +26,42 @@
 #include "antara/gaming/core/real.path.hpp"
 #include "antara/gaming/ecs/system.hpp"
 
-namespace antara::gaming::lua
-{
-    class scripting_system final : public ecs::logic_update_system<lua::scripting_system>
-    {
+namespace antara::gaming::lua {
+    class scripting_system final : public ecs::logic_update_system<lua::scripting_system> {
     public:
-
-        template <typename T>
+        template<typename T>
         using member_type_constructors_detector = typename T::constructors;
 
         scripting_system(entt::registry &entity_registry,
-                std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua",
-                std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" / "systems" / "lua",
-                std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" / "scenes" / "lua",
-                std::filesystem::path script_lib_directory = core::assets_real_path() / "scripts" / "lib" / "lua") noexcept;
+                         std::filesystem::path script_directory = core::assets_real_path() / "scripts" / "lua",
+                         std::filesystem::path script_system_directory = core::assets_real_path() / "scripts" /
+                                                                         "systems" / "lua",
+                         std::filesystem::path script_scenes_directory = core::assets_real_path() / "scripts" /
+                                                                         "scenes" / "lua",
+                         std::filesystem::path script_lib_directory = core::assets_real_path() / "scripts" / "lib" /
+                                                                      "lua") noexcept;
 
         ~scripting_system() noexcept final = default;
 
         void update() noexcept final;
 
         sol::state &get_state() noexcept;
+
         std::shared_ptr<sol::state> get_state_ptr() noexcept;
 
         bool load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept;
 
         bool load_script(const std::string &file_name) noexcept;
 
-        bool load_scripts(const std::filesystem::path& directory_path) noexcept;
+        bool load_scripts(const std::filesystem::path &directory_path) noexcept;
 
         template<typename TypeToRegister>
-        void register_type(const char *replace_name = nullptr) noexcept
-        {
+        void register_type(const char *replace_name = nullptr) noexcept {
             register_type_impl<TypeToRegister>(refl::reflect<TypeToRegister>().members, replace_name);
         }
 
         template<typename TypeToRegister, typename ... Members>
-        void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept
-        {
+        void register_type_impl(refl::type_list<Members...>, const char *replace_name = nullptr) noexcept {
             std::string current_name = refl::reflect<TypeToRegister>().name.str();
             std::string final_name = current_name;
             if (std::size_t found = current_name.find_last_of(':'); found != std::string::npos) {
@@ -70,12 +69,13 @@ namespace antara::gaming::lua
                 final_name = current_name.substr(found + 1); //! LCOV_EXCL_LINE
             }
 
-            auto apply_functor = [this](auto &&final_table){
+            auto apply_functor = [this](auto &&final_table) {
                 try {
                     std::apply(
                             [this](auto &&...params) {
                                 //static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is flawed");
-                                this->lua_state_->new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
+                                this->lua_state_->new_usertype<TypeToRegister>(
+                                        std::forward<decltype(params)>(params)...);
                             }, final_table);
                 }
                 catch (const std::exception &error) {
@@ -86,7 +86,8 @@ namespace antara::gaming::lua
             auto name_table = std::make_tuple(replace_name == nullptr ? final_name : replace_name);
             if constexpr(doom::meta::is_detected_v<member_type_constructors_detector, TypeToRegister>) {
                 using ctor = typename TypeToRegister::constructors;
-                auto final_table = std::tuple_cat(name_table, std::make_tuple(ctor()), std::make_tuple(Members::name.c_str(), Members::pointer)...);
+                auto final_table = std::tuple_cat(name_table, std::make_tuple(ctor()),
+                                                  std::make_tuple(Members::name.c_str(), Members::pointer)...);
                 apply_functor(final_table);
             } else {
                 auto final_table = std::tuple_cat(name_table,
@@ -97,8 +98,7 @@ namespace antara::gaming::lua
 
         template<typename ...Args>
         std::optional<sol::unsafe_function_result>
-        execute_safe_function(std::string function_name, std::string table_name, Args &&...args)
-        {
+        execute_safe_function(std::string function_name, std::string table_name, Args &&...args) {
             try {
                 if (not table_name.empty()) {
                     //! table call
@@ -121,8 +121,7 @@ namespace antara::gaming::lua
         }
 
         template<typename TEvent>
-        void register_event() noexcept
-        {
+        void register_event() noexcept {
             using namespace std::string_literals;
             this->register_type<TEvent>();
             if constexpr (std::is_default_constructible_v<TEvent>) {
@@ -136,15 +135,14 @@ namespace antara::gaming::lua
                 } else {
                     (*this->lua_state_)["dispatcher"]["trigger_"s + final_name + "_event"s] = [](
                             entt::dispatcher &self) {
-                            self.trigger<TEvent>();
+                        self.trigger<TEvent>();
                     };
                 }
             }
         }
 
         template<typename TComponent>
-        void register_component() noexcept
-        {
+        void register_component() noexcept {
             using namespace std::literals;
             this->register_type<TComponent>();
             constexpr auto info = refl::reflect<TComponent>();
@@ -184,7 +182,7 @@ namespace antara::gaming::lua
             };
 
             (*this->lua_state_)["entity_registry"]["for_each_entities_which_have_" + final_name +
-                                          "_component"] = [](entt::registry &self, sol::function functor) {
+                                                   "_component"] = [](entt::registry &self, sol::function functor) {
                 auto view = self.view<TComponent>();
                 for (auto entity: view) {
                     functor(entity);
@@ -233,14 +231,12 @@ namespace antara::gaming::lua
         }
 
         template<typename ... TComponents>
-        void register_components_list(doom::meta::list<TComponents...>) noexcept
-        {
+        void register_components_list(doom::meta::list<TComponents...>) noexcept {
             (register_component<TComponents>(), ...);
         }
 
         template<typename ... TEvents>
-        void register_events_list(doom::meta::list<TEvents...>) noexcept
-        {
+        void register_events_list(doom::meta::list<TEvents...>) noexcept {
             (register_event<TEvents>(), ...);
         }
 
