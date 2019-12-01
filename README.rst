@@ -63,6 +63,10 @@ There are also additional options with the CMake that allows to activate certain
      - Enable the IMGUI Support for the SDK
      - ``-DUSE_IMGUI_ANTARA_WRAPPER=ON``
      -
+   * - ``ENABLE_BLOCKCHAIN_MODULES``
+     - Enable the Blockchain modules for the SDK (need additional dependencies)
+     - ``-DENABLE_BLOCKCHAIN_MODULES=ON``
+     -
    * - ``ANTARA_BUILD_DOCS``
      - Enable the build of the documentation for the SDK
      - ``-DANTARA_BUILD_DOCS=ON``
@@ -132,13 +136,15 @@ Deployment
 Built With
 ----------
 
-* `doctest <https://github.com/onqtam/doctest>`_ - The fastest feature-rich C++11/14/17/20 single-header testing framework for unit tests and TDD http://bit.ly/doctest-docs
-* `doom-st <https://github.com/doom/strong_type>`_ - C++ implementation of strong types
-* `EnTT <https://github.com/skypjack/entt>`_ - Gaming meets modern C++ - a fast and reliable entity-component system (ECS).
-* `refl-cpp <https://github.com/veselink1/refl-cpp>`_ A compile-time reflection library for modern C++ 🔥
-* `range-v3 <https://github.com/ericniebler/range-v3>`_ Range library for C++14/17/20, basis for C++20's std::ranges
-* `expected <https://github.com/TartanLlama/expected>`_ C++11/14/17 std::expected with functional-style extensions https://tl.tartanllama.xyz
+* `doctest <https://github.com/onqtam/doctest>`_ - The fastest feature-rich C++11/14/17/20 single-header testing framework for unit tests and TDD http://bit.ly/doctest-docs (MIT)
+* `doom-st <https://github.com/doom/strong_type>`_ - C++ implementation of strong types (MIT)
+* `doom-meta <https://github.com/doom/meta>`_ - Just a few metaprogramming utilities in C++ (MIT)
+* `EnTT <https://github.com/skypjack/entt>`_ - Gaming meets modern C++ - a fast and reliable entity-component system (ECS). (MIT)
+* `refl-cpp <https://github.com/veselink1/refl-cpp>`_ A compile-time reflection library for modern C++ 🔥 (MIT)
+* `range-v3 <https://github.com/ericniebler/range-v3>`_ Range library for C++14/17/20, basis for C++20's std::ranges (Boost Software License)
+* `expected <https://github.com/TartanLlama/expected>`_ C++11/14/17 std::expected with functional-style extensions https://tl.tartanllama.xyz (CC0 1.0 Universal)
 * (optional)\ `SFML <https://github.com/SFML/SFML>`_ Simple and Fast Multimedia Library http://www.sfml-dev.org/
+* (optional)\ `reproc <https://github.com/DaanDeMeyer/reproc>`_ Cross-platform (C99/C++11) process library (MIT)
 
 Code of Conduct
 ---------------
