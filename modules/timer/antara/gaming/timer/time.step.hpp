@@ -18,23 +18,29 @@
 
 //! C++ System Headers
 #include <string> ///< std::string, std::to_string
-#include <chrono> ///< std::chrono::nanoseconds, std::chrono::steady_clock, std::chrono::duration, std::chrono::duration_cast
+#include <chrono> ///< std::chrono::nanoseconds|steady_clock|duration|duration_cast
 
 //! SDK Headers
 #include "antara/gaming/timer/fps.hpp"
 
-namespace antara::gaming::timer
-{
-    class time_step
-    {
+namespace antara::gaming::timer {
+    class time_step {
+        //! Private typedefs
+        using clock = std::chrono::steady_clock;
+
+        //! Private fields
+        static std::chrono::nanoseconds tps_dt;
+        static float fixed_delta_time;
+        static std::chrono::nanoseconds lag_;
+        static clock::time_point start_;
+        static constexpr float fps_average_every_seconds_{1.0f};
+        static float fps_time_sum_;
+        static int fps_capture_count_;
     public:
+        //! Public static functions
         static void start() noexcept;
 
         static void start_frame() noexcept;
-
-        [[nodiscard]] bool is_update_required() const noexcept;
-        
-        [[nodiscard]] float get_interpolation() const noexcept;
 
         static void perform_update() noexcept;
 
@@ -44,18 +50,12 @@ namespace antara::gaming::timer
 
         static void reset_lag() noexcept;
 
-    public:
+        //! Public member functions
+        [[nodiscard]] bool is_update_required() const noexcept;
+
+        [[nodiscard]] float get_interpolation() const noexcept;
+
+        //! Public Fields
         static std::string fps_str_;
-
-    private:
-        static std::chrono::nanoseconds tps_dt;
-        static float fixed_delta_time;
-        using clock = std::chrono::steady_clock;
-        static std::chrono::nanoseconds lag_;
-        static clock::time_point start_;
-
-        static constexpr float fps_average_every_seconds_{1.0f};
-        static float fps_time_sum_;
-        static int fps_capture_count_;
     };
 }
