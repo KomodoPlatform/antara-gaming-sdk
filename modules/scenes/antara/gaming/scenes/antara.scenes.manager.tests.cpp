@@ -14,9 +14,13 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <memory>
 #include <doctest/doctest.h>
-#include "antara/gaming/scenes/scene.manager.hpp"
+
+//! C++ System Headers
+#include <memory> ///< std::make_unique, std::move
+
+//! SDK Headers
+#include "antara/gaming/scenes/scene.manager.hpp" ///< manager
 
 namespace antara::gaming::scenes::tests
 {

@@ -14,7 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-//! C++ System Headers
+//! C System Headers
 #include <cmath> ///< std::round
 
 //! SDK Headers

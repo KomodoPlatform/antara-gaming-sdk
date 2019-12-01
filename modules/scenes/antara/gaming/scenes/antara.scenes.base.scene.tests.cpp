@@ -14,9 +14,13 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <memory>
 #include <doctest/doctest.h>
-#include "antara/gaming/scenes/base.scene.hpp"
+
+//! C++ System Headers
+#include <memory> ///< std::unique_ptr, std::make_unique
+
+//! SDK Headers
+#include "antara/gaming/scenes/base.scene.hpp" ///< base_scene
 
 namespace antara::gaming::scenes::tests
 {

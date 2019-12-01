@@ -14,16 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
+//! C++ System Headers
 #include <utility>
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/graphics/component.canvas.hpp"
-#include "antara/gaming/geometry/component.rectangle.hpp"
-#include "antara/gaming/geometry/component.vertex.hpp"
+
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+
+//! SDK Headers
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
-#include "antara/gaming/sfml/event.play.sound.hpp"
-#include "antara/gaming/audio/component.sound.effect.hpp"
-#include "antara/gaming/graphics/component.sprite.hpp"
+#include "antara/gaming/timer/time.step.hpp" ///< timer::time_step::get_fixed_delta_time
+#include "antara/gaming/graphics/component.canvas.hpp" ///< graphics::canvas_2d
+#include "antara/gaming/graphics/component.sprite.hpp" ///< graphics::sprite, graphics::blueprint_sprite
+#include "antara/gaming/geometry/component.rectangle.hpp" ///< geometry::rectangle, geometry::blueprint_rectangle
+#include "antara/gaming/geometry/component.vertex.hpp" ///< geometry::vertex
+#include "antara/gaming/audio/component.sound.effect.hpp" ///< audio::sound_effect
 
 // Utility
 static bool ease(float *val, const float targetVal, const float rate, const float dt)
