@@ -15,8 +15,10 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include <antara/gaming/ecs/interpolation.system.hpp>
-#include "antara/gaming/world/world.app.hpp"
+
+//! SDK Headers
+#include "antara/gaming/ecs/interpolation.system.hpp" ///< ecs::interpolation_system
+#include "antara/gaming/world/world.app.hpp" ///< world::app
 
 namespace antara::gaming::world::tests
 {

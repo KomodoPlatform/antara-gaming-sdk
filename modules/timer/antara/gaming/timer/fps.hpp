@@ -16,13 +16,14 @@
 
 #pragma once
 
-#include <chrono>
+//! C++ System Headers
+#include <chrono> ///< std::chrono::nanoseconds, std::chrono_literals
 
 namespace antara::gaming::timer
 {
     using namespace std::chrono_literals;
 
-    constexpr std::chrono::nanoseconds _60fps{16666666ns};
-    constexpr std::chrono::nanoseconds _120fps{8333333ns};
-    constexpr std::chrono::nanoseconds _144fps{6944444ns};
+    constexpr std::chrono::nanoseconds _60tps_dt{16666666ns};
+    constexpr std::chrono::nanoseconds _120tps_dt{8333333ns};
+    constexpr std::chrono::nanoseconds _144tps_dt{6944444ns};
 }

@@ -17,10 +17,13 @@
 
 #pragma once
 
-#include <stack>
-#include "antara/gaming/ecs/system.hpp"
-#include "antara/gaming/scenes/base.scene.hpp"
-#include "antara/gaming/scenes/change.scene.event.hpp"
+//! C++ System Headers
+#include <stack> ///< std::stack
+
+//! SDK Headers
+#include "antara/gaming/ecs/system.hpp" ///< ecs::logic_update_system
+#include "antara/gaming/scenes/base.scene.hpp" ///< base_scene
+#include "antara/gaming/scenes/change.scene.event.hpp" ///< event::change_scene
 
 namespace antara::gaming::scenes
 {

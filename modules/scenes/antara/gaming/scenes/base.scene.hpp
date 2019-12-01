@@ -16,14 +16,16 @@
 
 #pragma once
 
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/mouse.button.pressed.hpp"
-#include "antara/gaming/event/mouse.button.released.hpp"
-#include "antara/gaming/event/mouse.moved.hpp"
-#include "antara/gaming/event/key.pressed.hpp"
-#include "antara/gaming/event/key.released.hpp"
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+
+//! SDK Headers
+#include "antara/gaming/event/mouse.button.pressed.hpp" ///< event::mouse_button_pressed
+#include "antara/gaming/event/mouse.button.released.hpp" ///< event::mouse_button_released
+#include "antara/gaming/event/mouse.moved.hpp" ///< event::mouse_moved
+#include "antara/gaming/event/key.pressed.hpp" ///< event::key_pressed
+#include "antara/gaming/event/key.released.hpp" ///< event::key_released
 
 namespace antara::gaming::scenes
 {

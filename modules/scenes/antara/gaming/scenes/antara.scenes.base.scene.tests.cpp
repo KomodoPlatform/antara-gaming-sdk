@@ -14,8 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <memory>
 #include <doctest/doctest.h>
+
+//! C++ System Headers
+#include <memory> ///< std::unique_ptr, std::make_unique
+
+//! SDK Headers
 #include "antara/gaming/scenes/base.scene.hpp"
 
 namespace antara::gaming::scenes::tests

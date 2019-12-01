@@ -16,14 +16,16 @@
 
 #pragma once
 
+//! Dependencies Headers
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
 
-#include <sol/sol.hpp>
+#include <sol/sol.hpp> ///< sol::constructors
 
 #endif
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/math/vector.hpp"
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/math/vector.hpp" ///< math::vec2f
 
 namespace antara::gaming::transform {
     struct previous_position_2d : public math::vec2f {

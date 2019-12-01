@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp" //! REFL_AUTO
-#include "antara/gaming/math/vector.hpp" //! vec2f
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/math/vector.hpp" ///< math::vec2f
 
 namespace antara::gaming::transform
 {

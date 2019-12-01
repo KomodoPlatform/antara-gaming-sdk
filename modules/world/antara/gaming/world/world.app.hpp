@@ -16,12 +16,14 @@
 
 #pragma once
 
-#include <string>
-#include <entt/core/utility.hpp>
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "antara/gaming/ecs/system.manager.hpp"
-#include "antara/gaming/event/quit.game.hpp"
+//! C++ System Headers
+#include <string> ///< std::string
+
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+#include "antara/gaming/ecs/system.manager.hpp" ///< ecs::system_manager
+#include "antara/gaming/event/quit.game.hpp" ///< event::quit_game
 
 namespace antara::gaming::world
 {

@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include "antara/gaming/scenes/base.scene.hpp"
+//! SDK Headers
+#include "antara/gaming/scenes/base.scene.hpp" ///< base_scene
 
 namespace antara::gaming::event
 {

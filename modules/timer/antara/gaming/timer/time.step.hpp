@@ -16,8 +16,11 @@
 
 #pragma once
 
-#include <string>
-#include <chrono>
+//! C++ System Headers
+#include <string> ///< std::string, std::to_string
+#include <chrono> ///< std::chrono::nanoseconds, std::chrono::steady_clock, std::chrono::duration, std::chrono::duration_cast
+
+//! SDK Headers
 #include "antara/gaming/timer/fps.hpp"
 
 namespace antara::gaming::timer
@@ -35,7 +38,7 @@ namespace antara::gaming::timer
 
         static void perform_update() noexcept;
 
-        static void change_fps(std::chrono::nanoseconds new_fps_rate);
+        static void change_tps(std::chrono::nanoseconds new_tps_rate);
 
         static float get_fixed_delta_time() noexcept;
 
@@ -45,7 +48,7 @@ namespace antara::gaming::timer
         static std::string fps_str_;
 
     private:
-        static std::chrono::nanoseconds fps_;
+        static std::chrono::nanoseconds tps_dt;
         static float fixed_delta_time;
         using clock = std::chrono::steady_clock;
         static std::chrono::nanoseconds lag_;

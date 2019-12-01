@@ -14,12 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <cmath>
+//! C System Headers
+#include <cmath> ///< std::round
+
+//! SDK Headers
 #include "antara/gaming/timer/time.step.hpp"
 
 namespace antara::gaming::timer
 {
-    std::chrono::nanoseconds time_step::fps_ = _60fps;
+    std::chrono::nanoseconds time_step::tps_dt = _60tps_dt;
     std::chrono::nanoseconds time_step::lag_ = 0ns;
 
     float time_step::fps_time_sum_ = 0.0f;
@@ -27,8 +30,8 @@ namespace antara::gaming::timer
     std::string time_step::fps_str_ = "";
     using clock = std::chrono::steady_clock;
     clock::time_point time_step::start_ = clock::now();
+    float time_step::fixed_delta_time{std::chrono::duration<float, std::ratio<1>>(tps_dt).count()};
 
-    float time_step::fixed_delta_time{std::chrono::duration<float, std::ratio<1>>(fps_).count()};
     void time_step::start() noexcept
     {
         start_ = clock::now();
@@ -58,18 +61,18 @@ namespace antara::gaming::timer
 
     bool time_step::is_update_required() const noexcept
     {
-        return (lag_ >= fps_);
+        return lag_ >= tps_dt;
     }
 
     void time_step::perform_update() noexcept
     {
-        lag_ -= fps_;
+        lag_ -= tps_dt;
     }
 
-    void time_step::change_fps(std::chrono::nanoseconds new_fps_rate)
+    void time_step::change_tps(std::chrono::nanoseconds new_tps_rate)
     {
-        fps_ = new_fps_rate;
-        fixed_delta_time = std::chrono::duration<float, std::ratio<1>>(fps_).count();
+        tps_dt = new_tps_rate;
+        fixed_delta_time = std::chrono::duration<float, std::ratio<1>>(tps_dt).count();
     }
 
     float time_step::get_fixed_delta_time() noexcept
@@ -78,7 +81,7 @@ namespace antara::gaming::timer
     }
 
     float time_step::get_interpolation() const noexcept {
-        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(fps_).count();
+        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(tps_dt).count();
     }
 
     void time_step::reset_lag() noexcept {
