@@ -13,7 +13,7 @@ Below is the list of prerequisites to use the ``antara-gaming-sdk`` on your mach
 
 
 * `CMake <https://cmake.org/download/>`_ 3.14 minimum
-* **clang-8** minimum (Windows/Linux/Osx) 
+* **clang-8** minimum (Windows/Linux/Osx) (clang and clang-cl both supported on Windows)
 * **Optional** emscripten latest (Web)
 * **Optional** Visual Studio 2019
 * **Optional** Clang VS Toolset (installable through visual studio installer)
@@ -38,6 +38,10 @@ To build the project please follow the instructions below:
    ## Release or Debug are available
    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=your_path_to_your_clang++ ../ #Linux / Osx 
    cmake -DCMAKE_BUILD_TYPE=Debug -G "Visual Studio 16 2019" -A x64 -T "ClangCl" -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang-cl.exe" ../ #Windows
+
+   ## We can even use Ninja for Windows / Linux / OSX
+   ## On Windows you may want to open x64 Visual Studio Terminal Prompt for using Ninja
+   cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=path_to_clang++ -DCMAKE_C_COMPILER=path_to_clang ../
 
    ## Build (Debug / Release available)
    cmake --build . --config Debug
