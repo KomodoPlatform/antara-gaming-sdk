@@ -146,8 +146,11 @@ Built With
 * `range-v3 <https://github.com/ericniebler/range-v3>`_ - Range library for C++14/17/20, basis for C++20's std::ranges (Boost Software License)
 * `expected <https://github.com/TartanLlama/expected>`_ - C++11/14/17 std::expected with functional-style extensions https://tl.tartanllama.xyz (CC0 1.0 Universal)
 * (optional)\ `ImGui <https://github.com/ocornut/imgui>`_ - Dear ImGui: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies (MIT)
+* (optional)\ `ImGui-SFML <https://github.com/eliasdaler/imgui-sfml>`_ - ImGui binding for use with SFML (MIT)
 * (optional)\ `SFML <https://github.com/SFML/SFML>`_ - Simple and Fast Multimedia Library http://www.sfml-dev.org/
 * (optional)\ `reproc <https://github.com/DaanDeMeyer/reproc>`_ - Cross-platform (C99/C++11) process library (MIT)
+* (optional)\ `lua <https://github.com/lua/lua>`_ - The Lua repo, as seen by the Lua team. (MIT)
+* (optional)\ `sol2 <https://github.com/ThePhD/sol2>`_ - Sol3 (sol2 v3.0) - a C++ <-> Lua API wrapper with advanced features and top notch performance - is here, and it's great! Documentation: http://sol2.rtfd.io/ (MIT)
 
 Code of Conduct
 ---------------
