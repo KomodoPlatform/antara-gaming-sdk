@@ -22,7 +22,7 @@ namespace antara::gaming::graphics::tests
 {
     TEST_SUITE("test component color")
     {
-        TEST_CASE("component color is default constructible")
+        TEST_CASE("component color is default constructor")
         {
             graphics::color c_color;
             CHECK_EQ(c_color, graphics::black);

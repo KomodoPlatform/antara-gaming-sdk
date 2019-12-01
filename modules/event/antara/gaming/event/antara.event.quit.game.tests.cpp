@@ -21,13 +21,13 @@ namespace antara::gaming::event::tests
 {
     TEST_SUITE("quit game event")
     {
-        TEST_CASE("default constructable")
+        TEST_CASE("default constructor")
         {
             quit_game q_event{};
             CHECK_EQ(q_event.return_value_, 0);
         }
 
-        TEST_CASE("constructable with a value")
+        TEST_CASE("constructor with a value")
         {
             quit_game q_event{-1};
             CHECK_EQ(q_event.return_value_, -1);

@@ -19,7 +19,7 @@
 
 namespace antara::gaming::math::tests
 {
-    TEST_CASE("all vector default constructible")
+    TEST_CASE("all vector default constructor")
     {
         math::vec2f vec2_float;
         CHECK_EQ(vec2_float, math::vec2f{});
@@ -27,7 +27,7 @@ namespace antara::gaming::math::tests
         CHECK_EQ(vec2_float.y(), 0.f);
     }
 
-    TEST_CASE("constructible from values")
+    TEST_CASE("constructor from values")
     {
         math::vec2f vec2_float{42.f, 42.f};
         CHECK_EQ(vec2_float, math::vec2f{42.f, 42.f});

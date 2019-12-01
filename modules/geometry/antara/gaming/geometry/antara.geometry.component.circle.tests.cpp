@@ -21,7 +21,7 @@ namespace antara::gaming::geometry::tests
 {
     TEST_SUITE("test component circle")
     {
-        TEST_CASE("component circle is default constructible")
+        TEST_CASE("component circle is default constructor")
         {
             geometry::circle c_circle{};
             CHECK_EQ(c_circle.radius, 0.0f);
