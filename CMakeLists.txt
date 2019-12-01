@@ -50,7 +50,7 @@ option(COVERAGE_CLION_TOOLS "Enable Clion internal coverage tools" OFF)
 
 add_subdirectory(modules)
 if (ANTARA_BUILD_EXAMPLES)
-    add_subdirectory(examples)
+    add_subdirectory(messy_playground)
 endif ()
 
 if (ANTARA_BUILD_DOCS)
