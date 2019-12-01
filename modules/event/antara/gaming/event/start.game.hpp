@@ -18,10 +18,8 @@
 
 #include "antara/gaming/core/safe.refl.hpp"
 
-namespace antara::gaming::event
-{
-    struct start_game
-    {
+namespace antara::gaming::event {
+    struct start_game {
         start_game() noexcept = default;
     };
 }
