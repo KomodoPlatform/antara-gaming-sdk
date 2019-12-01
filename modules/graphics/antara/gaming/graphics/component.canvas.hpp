@@ -71,7 +71,7 @@ namespace antara::gaming::graphics
         bool mouse_grabbed{false};
         scale_mode current_scaling_mode{fit};
         rectangle view_port;
-        std::string window_title{"game title"};
+        std::string window_title{"Antara Gaming SDK"};
         fill_color background_color{graphics::black};
         math::vec2f canvas_texture_scaling{1.0f, 1.0f};
 
