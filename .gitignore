@@ -20,7 +20,7 @@ Icon
 
 
 # Extras
-examples/sfml/flappy-bird-scripted/assets/scripts/systems/lua/scenes_system.lua
+messy_playground/sfml/flappy-bird-scripted/assets/scripts/systems/lua/scenes_system.lua
 modules/lua/assets/lua_assets/scripts/systems/scenes_system.lua
 antara-gaming-sdk.srctrlbm
 antara-gaming-sdk.srctrldb
@@ -481,20 +481,20 @@ _deps
 cmake-build-*
 .idea
 
-examples/sfml/*/assets/textures/logo.png
-examples/sfml/*/assets/textures/name.png
-examples/sfml/*/assets/sounds/intro1.wav
-examples/sfml/*/assets/sounds/intro2.wav
+messy_playground/sfml/*/assets/textures/logo.png
+messy_playground/sfml/*/assets/textures/name.png
+messy_playground/sfml/*/assets/sounds/intro1.wav
+messy_playground/sfml/*/assets/sounds/intro2.wav
 
-examples/blockchain/*/assets/fonts/sansation.ttf
-examples/blockchain/*/assets/textures/logo.png
-examples/blockchain/*/assets/textures/name.png
-examples/blockchain/*/assets/sounds/intro1.wav
-examples/blockchain/*/assets/sounds/intro2.wav
+messy_playground/blockchain/*/assets/fonts/sansation.ttf
+messy_playground/blockchain/*/assets/textures/logo.png
+messy_playground/blockchain/*/assets/textures/name.png
+messy_playground/blockchain/*/assets/sounds/intro1.wav
+messy_playground/blockchain/*/assets/sounds/intro2.wav
 
-/examples/sfml/*/assets/scripts/lib/lua/*.lua
-/examples/sfml/*/assets/scripts/systems/lua/scenes_system.lua
-/examples/sfml/*/assets/fonts/
+/messy_playground/sfml/*/assets/scripts/lib/lua/*.lua
+/messy_playground/sfml/*/assets/scripts/systems/lua/scenes_system.lua
+/messy_playground/sfml/*/assets/fonts/
 /modules/lua/assets/lua_assets/*
 /tutorials/*/*/cmake-*
 /tutorials/*/*/.idea
