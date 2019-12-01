@@ -152,6 +152,8 @@ Built With
 * (optional)\ `reproc <https://github.com/DaanDeMeyer/reproc>`_ - Cross-platform (C99/C++11) process library (MIT)
 * (optional)\ `lua <https://github.com/lua/lua>`_ - The Lua repo, as seen by the Lua team. (MIT)
 * (optional)\ `sol2 <https://github.com/ThePhD/sol2>`_ - Sol3 (sol2 v3.0) - a C++ <-> Lua API wrapper with advanced features and top notch performance - is here, and it's great! Documentation: http://sol2.rtfd.io/ (MIT)
+* (optional)\ `restclient-cpp <https://github.com/mrtazz/restclient-cpp>`_ - C++ client for making HTTP/REST requests http://code.mrtazz.com/restclient-cpp/ (MIT)
+* (optional)\ `box2D <https://github.com/erincatto/Box2D>`_ - Box2D is a 2D physics engine for games http://box2d.org (ZLib)
 
 Code of Conduct
 ---------------
