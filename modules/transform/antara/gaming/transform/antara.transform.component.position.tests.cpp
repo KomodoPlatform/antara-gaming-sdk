@@ -15,13 +15,15 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include "antara/gaming/transform/component.position.hpp"
+
+//! SDK Headers
+#include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d
 
 namespace antara::gaming::transform::tests
 {
     TEST_SUITE ("test component position")
     {
-        TEST_CASE ("component position is default constructible")
+        TEST_CASE ("component position is default constructable")
         {
             position_2d c_pos{};
             CHECK_EQ(c_pos.x(), 0.0f);
