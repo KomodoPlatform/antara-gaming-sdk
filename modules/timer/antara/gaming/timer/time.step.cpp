@@ -69,9 +69,9 @@ namespace antara::gaming::timer
         lag_ -= fps_;
     }
 
-    void time_step::change_fps(std::chrono::nanoseconds new_fps_rate)
+    void time_step::change_tps(std::chrono::nanoseconds new_tps_rate)
     {
-        fps_ = new_fps_rate;
+        fps_ = new_tps_rate;
         fixed_delta_time = std::chrono::duration<float, std::ratio<1>>(fps_).count();
     }
 

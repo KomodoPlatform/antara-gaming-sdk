@@ -38,7 +38,7 @@ namespace antara::gaming::timer
 
         static void perform_update() noexcept;
 
-        static void change_fps(std::chrono::nanoseconds new_fps_rate);
+        static void change_tps(std::chrono::nanoseconds new_tps_rate);
 
         static float get_fixed_delta_time() noexcept;
 

@@ -48,9 +48,9 @@ namespace antara::gaming::timer::tests {
         }
 
         TEST_CASE ("change delta time") {
-            time_step::change_fps(_120tps);
+            time_step::change_tps(_120tps);
                     CHECK_GT(time_step::get_fixed_delta_time(), 0.0f);
-            time_step::change_fps(_144tps);
+            time_step::change_tps(_144tps);
                     CHECK_GT(time_step::get_fixed_delta_time(), 0.0f);
         }
 
