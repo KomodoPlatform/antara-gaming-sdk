@@ -1,5 +1,4 @@
-#  (2019-12-01)
-
+# [1.2.0-alpha](https://github.com/KomodoPlatform/antara-gaming-sdk/compare/1.0.0-alpha...1.2.0-alpha) (2019-12-01)
 
 ### Bug Fixes
 
@@ -110,6 +109,7 @@
 * **readme:** adding flappy bird gif ([d7f09da](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/d7f09da7117cf22e6c0b8d22dd40d6a1a17d690f))
 * **readme:** align center ([c96ac76](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/c96ac763d77e24b93ab9e1e5d9035c87cd37152e))
 * **readme:** better image ([9104ed2](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/9104ed2e556bc1bd5a4296cdacd7a66eaac28780))
+* **release:** release 1.2.0-alpha ([4114e26](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/4114e26979fec9c2f52dc4f56a3d103a1a2d27b8))
 * **repo:** better building ([f91cce1](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/f91cce1400b790985125f8051999dff464978f50))
 * **resources:** add load.textures.hpp ([dc174f0](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/dc174f093f099e47f749479320359a05974a0af6))
 * **resources:** Handling loading multiple textures through event ([d9acbc7](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/d9acbc76fe44cb2dd6652032f4ccefc59d47e7b7))
@@ -140,10 +140,7 @@
 * **wolf:** remove useless code ([44c146c](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/44c146c46e12f5f1861327d8b9c47f39faa3f566))
 * **wolf:** starting portals ([996cb37](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/996cb37563ee5fc430cd462ef59ef1a5f8e41b1e))
 
-
-
 # [1.1.0-alpha](https://github.com/KomodoPlatform/antara-gaming-sdk/compare/1.0.0-alpha...1.1.0-alpha) (2019-11-06)
-
 
 ### Bug Fixes
 
