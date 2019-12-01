@@ -14,21 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
+//! SDK Headers
 #include "antara/gaming/event/key.pressed.hpp"
 
-namespace antara::gaming::event
-{
-    key_pressed::key_pressed(input::key key_, bool alt_,
+namespace antara::gaming::event {
+    key_pressed::key_pressed(input::key key_,
+                             bool alt_,
                              bool control_,
                              bool shift_,
-                             bool system_) noexcept : key(key_), alt(alt_), control(control_), shift(shift_),
-                                                      system(system_)
-    {
+                             bool system_) noexcept
+            : key(key_), alt(alt_), control(control_), shift(shift_), system(system_) {}
 
-    }
-
-    key_pressed::key_pressed() noexcept : key(input::key::a), alt(false), control(false), shift(false), system(false)
-    {
-
-    }
+    key_pressed::key_pressed() noexcept : key(input::key::a), alt(false), control(false), shift(false), system(false) {}
 }

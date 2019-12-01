@@ -14,17 +14,11 @@
  *                                                                            *
  ******************************************************************************/
 
+//! SDK Headers
 #include "antara/gaming/event/quit.game.hpp"
 
-namespace antara::gaming::event
-{
-    quit_game::quit_game(int return_value) noexcept : return_value_(return_value)
-    {
+namespace antara::gaming::event {
+    quit_game::quit_game(int return_value) noexcept : return_value_(return_value) {}
 
-    }
-
-    quit_game::quit_game() : return_value_{0}
-    {
-
-    }
+    quit_game::quit_game() : return_value_{0} {}
 }

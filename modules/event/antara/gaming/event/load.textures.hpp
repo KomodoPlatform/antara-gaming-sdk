@@ -16,19 +16,19 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
+//! C++ System Headers
+#include <string> ///< std::string
+#include <vector> ///< std::vector
 
-namespace antara::gaming::event
-{
-    struct loading_settings
-    {
+namespace antara::gaming::event {
+    struct loading_settings {
+        //! Fields
         std::string texture_id;
         bool smooth{true};
     };
-    
-    struct load_textures
-    {
+
+    struct load_textures {
+        //! Fields
         std::vector<loading_settings> textures_settings;
     };
 }

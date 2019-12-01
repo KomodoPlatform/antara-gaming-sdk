@@ -16,14 +16,18 @@
 
 #pragma once
 
-#include <utility>
-#include <meta/detection/detection.hpp>
+//! C++ System Headers
+#include <utility> ///< std::declval
 
-namespace antara::gaming::event
-{
+//! Dependencies Headers
+#include <meta/detection/detection.hpp> ///< doom::meta::is_detected
+
+namespace antara::gaming::event {
+    //! Typedefs
     template<typename T>
     using constructor_arg_t = decltype(std::declval<T &>().invoker);
 
+    //! Meta-functions
     template<typename T>
     inline constexpr bool has_constructor_arg_type_v = doom::meta::is_detected_v<constructor_arg_t, T>;
 }

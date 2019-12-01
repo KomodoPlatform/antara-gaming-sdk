@@ -51,7 +51,7 @@ There are also additional options with the CMake that allows to activate certain
 .. role:: raw-html(raw)
     :format: html
 
-.. list-table:: Modules Tables
+.. list-table:: CMake Options
    :header-rows: 1
    :align: center
 

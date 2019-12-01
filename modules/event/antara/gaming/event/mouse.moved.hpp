@@ -16,16 +16,17 @@
 
 #pragma once
 
-#include <antara/gaming/core/safe.refl.hpp>
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 
-namespace antara::gaming::event
-{
-    struct mouse_moved
-    {
+namespace antara::gaming::event {
+    struct mouse_moved {
+        //! Constructors
         mouse_moved() noexcept = default;
 
         mouse_moved(float x_, float y_, float window_x_, float window_y_) noexcept;
 
+        //! Fields
         float x;
         float y;
         float window_x;

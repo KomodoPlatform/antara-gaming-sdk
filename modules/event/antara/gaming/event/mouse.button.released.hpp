@@ -16,17 +16,19 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/input/mouse.hpp"
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/input/mouse.hpp" ///< input::mouse
 
-namespace antara::gaming::event
-{
-    struct mouse_button_released
-    {
+namespace antara::gaming::event {
+    struct mouse_button_released {
+        //! Constructors
         mouse_button_released() noexcept = default;
 
-        mouse_button_released(input::mouse_button button_, float x_, float y_, float window_x_, float window_y_) noexcept;
+        mouse_button_released(input::mouse_button button_, float x_, float y_, float window_x_,
+                              float window_y_) noexcept;
 
+        //! Fields
         input::mouse_button button;
         float x;
         float y;

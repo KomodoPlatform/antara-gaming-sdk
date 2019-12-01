@@ -17,18 +17,18 @@
 
 #pragma once
 
-#include <utility>
-#include <entt/signal/dispatcher.hpp>
+//! C++ System Headers
+#include <utility> ///< std::forward
 
-namespace antara::gaming::event
-{
+//! Dependencies Headers
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+
+namespace antara::gaming::event {
     template<typename Event, typename ...Arguments>
-    struct invoker_dispatcher
-    {
+    struct invoker_dispatcher {
         constexpr invoker_dispatcher() noexcept = default;
 
-        void operator()(entt::dispatcher &self, Arguments &&...args)
-        {
+        void operator()(entt::dispatcher &self, Arguments &&...args) {
             self.trigger<Event>(std::forward<Arguments>(args)...);
         }
     };

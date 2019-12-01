@@ -16,27 +16,26 @@
 
 #pragma once
 
-#include <antara/gaming/math/vector.hpp>
+//! SDK Headers
+#include "antara/gaming/math/vector.hpp" ///< math::vec2i
 
-namespace antara::gaming::event
-{
-    struct get_mouse_position
-    {
+namespace antara::gaming::event {
+    struct get_mouse_position {
+        //! Constructors
         get_mouse_position(math::vec2i &in, bool relative_to_the_window_ = false) noexcept :
                 pos(in),
-                relative_to_the_window(relative_to_the_window_)
-        {
-
-        }
+                relative_to_the_window(relative_to_the_window_) {}
 
         get_mouse_position(const get_mouse_position &) noexcept = default;
 
+        //! Operators
         get_mouse_position &operator=(const get_mouse_position &other) noexcept {
             this->pos = other.pos;
             this->relative_to_the_window = other.relative_to_the_window;
             return *this;
         }
 
+        //! Fields
         math::vec2i &pos;
         bool relative_to_the_window{false};
     };
