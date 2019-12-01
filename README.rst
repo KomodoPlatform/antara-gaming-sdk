@@ -173,15 +173,18 @@ We use `SemVer <http://semver.org/>`_ for versioning. For the versions available
 Authors
 -------
 
-
 * **Roman Sztergbaum** - *Co-Creator* & *Lead Dev* - `Milerius <https://github.com/Milerius>`_
 * **Tolga Ay** - *Co-Creator* - `naezith <https://github.com/Naezith>`_
 
 See also the list of `contributors <./CONTRIBUTORS.md>`_ who participated in this project.
 
+Contributors
+------------
+
+Please read `CONTRIBUTORS.md <./CONTRIBUTORS.md>`_\ , contains the list of contributors.
+
 Acknowledgments
 ---------------
-
 
 * Viktor Kirilov `onqtam <https://github.com/onqtam>`_ for the awesome ``doctest`` framework.
 * Michele Caini  `skypjack <https://github.com/skypjack>`_ for the awesome ``EnTT`` framework and his help.
