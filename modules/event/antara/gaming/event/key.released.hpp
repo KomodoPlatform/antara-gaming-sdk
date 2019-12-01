@@ -16,11 +16,11 @@
 
 #pragma once
 
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/input/keyboard.hpp"
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/input/keyboard.hpp" ///< input::key
 
-namespace antara::gaming::event
-{
+namespace antara::gaming::event {
     /**
      * @struct key_released
      * @brief triggered when releasing a key on the keyboard.
@@ -30,8 +30,9 @@ namespace antara::gaming::event
      *         This class is automatically reflected for scripting systems such as lua, python.
      * @endverbatim
      */
-    struct key_released
-    {
+    struct key_released {
+        //! Constructors
+
         /**
          * constructor with args
          * @param key_ represents the keyboard key currently released
@@ -69,7 +70,8 @@ namespace antara::gaming::event
          */
         key_released() noexcept;
 
-        antara::gaming::input::key key; ///< key released
+        //! Fields
+        input::key key; ///< key released
         bool alt{false}; ///< is alt released at the same time.
         bool control{false}; ///< is ctrl released at the same time.
         bool shift{false}; ///< is shift released at the same time.

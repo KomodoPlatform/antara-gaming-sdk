@@ -15,21 +15,16 @@
  *                                                                            *
  ******************************************************************************/
 
+//! SDK Headers
 #include "antara/gaming/event/key.released.hpp"
 
-namespace antara::gaming::event
-{
+namespace antara::gaming::event {
     key_released::key_released(antara::gaming::input::key key_, bool alt_,
                                bool control_,
                                bool shift_,
-                               bool system_) noexcept : key(key_), alt(alt_), control(control_), shift(shift_),
-                                                        system(system_)
-    {
+                               bool system_) noexcept
+            : key(key_), alt(alt_), control(control_), shift(shift_), system(system_) {}
 
-    }
-
-    key_released::key_released() noexcept : key(input::key::a), alt(false), control(false), shift(false), system(false)
-    {
-
-    }
+    key_released::key_released() noexcept
+            : key(input::key::a), alt(false), control(false), shift(false), system(false) {}
 }
