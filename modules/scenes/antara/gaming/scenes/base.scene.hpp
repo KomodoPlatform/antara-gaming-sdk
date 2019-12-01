@@ -27,30 +27,24 @@
 #include "antara/gaming/event/key.pressed.hpp" ///< event::key_pressed
 #include "antara/gaming/event/key.released.hpp" ///< event::key_released
 
-namespace antara::gaming::scenes
-{
-    class base_scene
-    {
+namespace antara::gaming::scenes {
+    class base_scene {
     public:
         base_scene(entt::registry &entity_registry) noexcept;
 
         virtual void update() noexcept = 0;
+
         virtual void post_update() noexcept {};
 
-        virtual bool on_key_pressed(const event::key_pressed &) noexcept
-        { return true; };
+        virtual bool on_key_pressed(const event::key_pressed &) noexcept { return true; };
 
-        virtual bool on_key_released(const event::key_released &) noexcept
-        { return true; };
+        virtual bool on_key_released(const event::key_released &) noexcept { return true; };
 
-        virtual bool on_mouse_moved(const event::mouse_moved &) noexcept
-        { return true; };
+        virtual bool on_mouse_moved(const event::mouse_moved &) noexcept { return true; };
 
-        virtual bool on_mouse_button_pressed(const event::mouse_button_pressed &) noexcept
-        { return true; }
+        virtual bool on_mouse_button_pressed(const event::mouse_button_pressed &) noexcept { return true; }
 
-        virtual bool on_mouse_button_released(const event::mouse_button_released &) noexcept
-        { return true; }
+        virtual bool on_mouse_button_released(const event::mouse_button_released &) noexcept { return true; }
 
         virtual std::string scene_name() noexcept = 0;
 

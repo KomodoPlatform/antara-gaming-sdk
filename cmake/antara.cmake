@@ -45,6 +45,7 @@ macro(target_enable_coverage target)
         message(STATUS "coverage enaled, configuring...")
         if (COVERAGE_CLION_TOOLS)
             message(STATUS "clion coverage tools enabled")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
             target_compile_options(${target} PUBLIC
                     $<$<AND:$<PLATFORM_ID:Linux>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
                     $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>)

@@ -14,14 +14,11 @@
  *                                                                            *
  ******************************************************************************/
 
+//! SDK Headers
 #include "antara/gaming/scenes/base.scene.hpp"
 
-namespace antara::gaming::scenes
-{
+namespace antara::gaming::scenes {
     base_scene::base_scene(entt::registry &entity_registry) noexcept
             : entity_registry_(entity_registry),
-              dispatcher_(entity_registry_.ctx<entt::dispatcher>())
-    {
-
-    }
+              dispatcher_(entity_registry_.ctx<entt::dispatcher>()) {}
 }

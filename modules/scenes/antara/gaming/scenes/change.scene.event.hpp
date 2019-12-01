@@ -17,12 +17,10 @@
 #pragma once
 
 //! SDK Headers
-#include "antara/gaming/scenes/base.scene.hpp" ///< base_scene
+#include "antara/gaming/scenes/base.scene.hpp" ///< scenes::base_scene
 
-namespace antara::gaming::event
-{
-    struct change_scene
-    {
+namespace antara::gaming::event {
+    struct change_scene {
         std::unique_ptr<scenes::base_scene> scene_ptr;
         bool just_push_scene{false};
     };

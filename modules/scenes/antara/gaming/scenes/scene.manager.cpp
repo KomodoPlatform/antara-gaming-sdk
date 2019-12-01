@@ -14,19 +14,17 @@
  *                                                                            *
  ******************************************************************************/
 
+//! SDK Headers
 #include "antara/gaming/scenes/scene.manager.hpp"
 
-namespace antara::gaming::scenes
-{
-    void antara::gaming::scenes::manager::update() noexcept
-    {
+namespace antara::gaming::scenes {
+    void antara::gaming::scenes::manager::update() noexcept {
         if (not scenes_.empty()) {
-            this->scenes_.top()->update();
+            scenes_.top()->update();
         }
     }
 
-    bool manager::previous_scene()
-    {
+    bool manager::previous_scene() {
         if (not scenes_.empty()) {
             scenes_.pop();
             return true;
@@ -34,87 +32,75 @@ namespace antara::gaming::scenes
         return false;
     }
 
-    void manager::clear() noexcept
-    {
+    void manager::clear() noexcept {
         scenes_ = {};
     }
 
-    void manager::change_scene(manager::scene_ptr &&scene, bool just_push_scene) noexcept
-    {
+    void manager::change_scene(manager::scene_ptr &&scene, bool just_push_scene) noexcept {
         if (not just_push_scene) {
             clear();
         }
         scenes_.push(std::move(scene));
     }
 
-    manager::manager(entt::registry& entity_registry) noexcept : system(entity_registry)
-    {
-        this->dispatcher_.sink<event::key_pressed>().connect<&manager::receive_key_pressed>(*this);
-        this->dispatcher_.sink<event::key_released>().connect<&manager::receive_key_released>(*this);
-        this->dispatcher_.sink<event::mouse_moved>().connect<&manager::receive_mouse_moved>(*this);
-        this->dispatcher_.sink<event::mouse_button_pressed>().connect<&manager::receive_mouse_button_pressed>(*this);
-        this->dispatcher_.sink<event::mouse_button_released>().connect<&manager::receive_mouse_button_released>(*this);
-        this->dispatcher_.sink<event::change_scene>().connect<&manager::receive_change_scene>(*this);
+    manager::manager(entt::registry &entity_registry) noexcept : system(entity_registry) {
+        dispatcher_.sink<event::key_pressed>().connect<&manager::receive_key_pressed>(*this);
+        dispatcher_.sink<event::key_released>().connect<&manager::receive_key_released>(*this);
+        dispatcher_.sink<event::mouse_moved>().connect<&manager::receive_mouse_moved>(*this);
+        dispatcher_.sink<event::mouse_button_pressed>().connect<&manager::receive_mouse_button_pressed>(*this);
+        dispatcher_.sink<event::mouse_button_released>().connect<&manager::receive_mouse_button_released>(*this);
+        dispatcher_.sink<event::change_scene>().connect<&manager::receive_change_scene>(*this);
     }
 
-    base_scene &manager::current_scene() noexcept
-    {
+    base_scene &manager::current_scene() noexcept {
         assert(not scenes_.empty());
         return *scenes_.top();
     }
 
-    void manager::receive_key_pressed(const event::key_pressed &evt) noexcept
-    {
+    void manager::receive_key_pressed(const event::key_pressed &evt) noexcept {
         if (not scenes_.empty()) {
             scenes_.top()->on_key_pressed(evt);
         }
     }
 
-    void manager::receive_key_released(const event::key_released &evt) noexcept
-    {
+    void manager::receive_key_released(const event::key_released &evt) noexcept {
         if (not scenes_.empty()) {
             scenes_.top()->on_key_released(evt);
         }
     }
 
-    void manager::receive_mouse_moved(const event::mouse_moved &evt) noexcept
-    {
+    void manager::receive_mouse_moved(const event::mouse_moved &evt) noexcept {
         if (not scenes_.empty()) {
             scenes_.top()->on_mouse_moved(evt);
         }
     }
 
-    void manager::receive_mouse_button_released(const event::mouse_button_released &evt) noexcept
-    {
+    void manager::receive_mouse_button_released(const event::mouse_button_released &evt) noexcept {
         if (not scenes_.empty()) {
             scenes_.top()->on_mouse_button_released(evt);
         }
     }
 
-    void manager::receive_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept
-    {
+    void manager::receive_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept {
         if (not scenes_.empty()) {
             scenes_.top()->on_mouse_button_pressed(evt);
         }
     }
 
-    void manager::receive_change_scene(const event::change_scene &evt) noexcept
-    {
-        change_scene(std::move(const_cast<event::change_scene&>(evt).scene_ptr), evt.just_push_scene);
+    void manager::receive_change_scene(const event::change_scene &evt) noexcept {
+        change_scene(std::move(const_cast<event::change_scene &>(evt).scene_ptr), evt.just_push_scene);
     }
 
-    manager::~manager() noexcept
-    {
-        this->dispatcher_.sink<event::key_pressed>().disconnect<&manager::receive_key_pressed>(*this);
-        this->dispatcher_.sink<event::key_released>().disconnect<&manager::receive_key_released>(*this);
-        this->dispatcher_.sink<event::mouse_moved>().disconnect<&manager::receive_mouse_moved>(*this);
-        this->dispatcher_.sink<event::mouse_button_pressed>().disconnect<&manager::receive_mouse_button_pressed>(*this);
-        this->dispatcher_.sink<event::mouse_button_released>().disconnect<&manager::receive_mouse_button_released>(*this);
-        this->dispatcher_.sink<event::change_scene>().disconnect<&manager::receive_change_scene>(*this);
+    manager::~manager() noexcept {
+        dispatcher_.sink<event::key_pressed>().disconnect<&manager::receive_key_pressed>(*this);
+        dispatcher_.sink<event::key_released>().disconnect<&manager::receive_key_released>(*this);
+        dispatcher_.sink<event::mouse_moved>().disconnect<&manager::receive_mouse_moved>(*this);
+        dispatcher_.sink<event::mouse_button_pressed>().disconnect<&manager::receive_mouse_button_pressed>(*this);
+        dispatcher_.sink<event::mouse_button_released>().disconnect<&manager::receive_mouse_button_released>(*this);
+        dispatcher_.sink<event::change_scene>().disconnect<&manager::receive_change_scene>(*this);
     }
 
-    void manager::post_update() noexcept
-    {
+    void manager::post_update() noexcept {
         if (not scenes_.empty()) {
             scenes_.top()->post_update();
         }

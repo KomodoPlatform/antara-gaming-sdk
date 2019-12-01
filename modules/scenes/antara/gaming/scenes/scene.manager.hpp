@@ -21,17 +21,20 @@
 #include <stack> ///< std::stack
 
 //! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 #include "antara/gaming/ecs/system.hpp" ///< ecs::logic_update_system
 #include "antara/gaming/scenes/base.scene.hpp" ///< base_scene
 #include "antara/gaming/scenes/change.scene.event.hpp" ///< event::change_scene
 
-namespace antara::gaming::scenes
-{
-    class manager final : public ecs::logic_update_system<manager>
-    {
-    public:
+namespace antara::gaming::scenes {
+    class manager final : public ecs::logic_update_system<manager> {
+        //! Private typedefs
         using scene_ptr = std::unique_ptr<base_scene>;
 
+        //! Private Fields
+        std::stack<scene_ptr> scenes_;
+    public:
+        //! Constructor
         manager(entt::registry &entity_registry) noexcept;
 
         //! Destructor
@@ -39,26 +42,29 @@ namespace antara::gaming::scenes
 
         //! Public callbacks
         void receive_key_pressed(const event::key_pressed &evt) noexcept;
+
         void receive_key_released(const event::key_released &evt) noexcept;
+
         void receive_mouse_moved(const event::mouse_moved &evt) noexcept;
+
         void receive_mouse_button_pressed(const event::mouse_button_pressed &evt) noexcept;
+
         void receive_mouse_button_released(const event::mouse_button_released &evt) noexcept;
+
         void receive_change_scene(const event::change_scene &evt) noexcept;
-        //!
+
+        //! Public member function
         void update() noexcept final;
 
         void post_update() noexcept final;
 
-        //! Public member function
         void change_scene(scene_ptr &&scene, bool just_push_scene = false) noexcept;
 
         bool previous_scene();
 
-		void clear() noexcept;
-        base_scene &current_scene() noexcept;
+        void clear() noexcept;
 
-    private:
-        std::stack<scene_ptr> scenes_;
+        base_scene &current_scene() noexcept;
     };
 }
 
