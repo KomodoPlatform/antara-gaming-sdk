@@ -141,6 +141,7 @@ Built With
 * `doom-meta <https://github.com/doom/meta>`_ - Just a few metaprogramming utilities in C++ (MIT)
 * `loguru <https://github.com/emilk/loguru>`_ - A lightweight C++ logging library (Public Domain)
 * `fmt <https://github.com/fmtlib/fmt>`_ - A modern formatting library https://fmt.dev (MIT)
+* `nlohmann-json <https://github.com/nlohmann/json>`_ - JSON for Modern C++ https://nlohmann.github.io/json/ (MIT)
 * `EnTT <https://github.com/skypjack/entt>`_ - Gaming meets modern C++ - a fast and reliable entity-component system (ECS). (MIT)
 * `refl-cpp <https://github.com/veselink1/refl-cpp>`_ - A compile-time reflection library for modern C++ 🔥 (MIT)
 * `range-v3 <https://github.com/ericniebler/range-v3>`_ - Range library for C++14/17/20, basis for C++20's std::ranges (Boost Software License)
