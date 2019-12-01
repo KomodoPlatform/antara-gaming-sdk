@@ -20,7 +20,7 @@
 #include <memory> ///< std::make_unique, std::move
 
 //! SDK Headers
-#include "antara/gaming/scenes/scene.manager.hpp" ///< manager
+#include "antara/gaming/scenes/scene.manager.hpp"
 
 namespace antara::gaming::scenes::tests
 {

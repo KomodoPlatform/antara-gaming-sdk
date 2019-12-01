@@ -23,12 +23,12 @@
 
 //! SDK Headers
 #include "antara/gaming/sfml/komodo.intro.scene.hpp"
-#include "antara/gaming/timer/time.step.hpp" ///< timer::time_step::get_fixed_delta_time
-#include "antara/gaming/graphics/component.canvas.hpp" ///< graphics::canvas_2d
-#include "antara/gaming/graphics/component.sprite.hpp" ///< graphics::sprite, graphics::blueprint_sprite
+#include "antara/gaming/audio/component.sound.effect.hpp" ///< audio::sound_effect
 #include "antara/gaming/geometry/component.rectangle.hpp" ///< geometry::rectangle, geometry::blueprint_rectangle
 #include "antara/gaming/geometry/component.vertex.hpp" ///< geometry::vertex
-#include "antara/gaming/audio/component.sound.effect.hpp" ///< audio::sound_effect
+#include "antara/gaming/graphics/component.canvas.hpp" ///< graphics::canvas_2d
+#include "antara/gaming/graphics/component.sprite.hpp" ///< graphics::sprite, graphics::blueprint_sprite
+#include "antara/gaming/timer/time.step.hpp" ///< timer::time_step::get_fixed_delta_time
 
 // Utility
 static bool ease(float *val, const float targetVal, const float rate, const float dt)
