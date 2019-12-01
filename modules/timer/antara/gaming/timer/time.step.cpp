@@ -22,7 +22,7 @@
 
 namespace antara::gaming::timer
 {
-    std::chrono::nanoseconds time_step::tps_ = _60tps;
+    std::chrono::nanoseconds time_step::tps_dt = _60tps;
     std::chrono::nanoseconds time_step::lag_ = 0ns;
 
     float time_step::fps_time_sum_ = 0.0f;
@@ -31,7 +31,7 @@ namespace antara::gaming::timer
     using clock = std::chrono::steady_clock;
     clock::time_point time_step::start_ = clock::now();
 
-    float time_step::fixed_delta_time{std::chrono::duration<float, std::ratio<1>>(tps_).count()};
+    float time_step::fixed_delta_time{std::chrono::duration<float, std::ratio<1>>(tps_dt).count()};
     void time_step::start() noexcept
     {
         start_ = clock::now();
@@ -61,18 +61,18 @@ namespace antara::gaming::timer
 
     bool time_step::is_update_required() const noexcept
     {
-        return lag_ >= tps_;
+        return lag_ >= tps_dt;
     }
 
     void time_step::perform_update() noexcept
     {
-        lag_ -= tps_;
+        lag_ -= tps_dt;
     }
 
     void time_step::change_tps(std::chrono::nanoseconds new_tps_rate)
     {
-        tps_ = new_tps_rate;
-        fixed_delta_time = std::chrono::duration<float, std::ratio<1>>(tps_).count();
+        tps_dt = new_tps_rate;
+        fixed_delta_time = std::chrono::duration<float, std::ratio<1>>(tps_dt).count();
     }
 
     float time_step::get_fixed_delta_time() noexcept
@@ -81,7 +81,7 @@ namespace antara::gaming::timer
     }
 
     float time_step::get_interpolation() const noexcept {
-        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(tps_).count();
+        return std::chrono::duration<float, std::ratio<1>>(lag_).count() / std::chrono::duration<float, std::ratio<1>>(tps_dt).count();
     }
 
     void time_step::reset_lag() noexcept {

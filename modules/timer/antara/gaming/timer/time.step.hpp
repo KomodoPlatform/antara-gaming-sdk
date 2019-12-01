@@ -48,7 +48,7 @@ namespace antara::gaming::timer
         static std::string fps_str_;
 
     private:
-        static std::chrono::nanoseconds tps_;
+        static std::chrono::nanoseconds tps_dt;
         static float fixed_delta_time;
         using clock = std::chrono::steady_clock;
         static std::chrono::nanoseconds lag_;
