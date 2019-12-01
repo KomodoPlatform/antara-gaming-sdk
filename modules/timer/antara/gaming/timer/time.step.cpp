@@ -22,7 +22,7 @@
 
 namespace antara::gaming::timer
 {
-    std::chrono::nanoseconds time_step::tps_dt = _60tps;
+    std::chrono::nanoseconds time_step::tps_dt = _60tps_dt;
     std::chrono::nanoseconds time_step::lag_ = 0ns;
 
     float time_step::fps_time_sum_ = 0.0f;
@@ -30,8 +30,8 @@ namespace antara::gaming::timer
     std::string time_step::fps_str_ = "";
     using clock = std::chrono::steady_clock;
     clock::time_point time_step::start_ = clock::now();
-
     float time_step::fixed_delta_time{std::chrono::duration<float, std::ratio<1>>(tps_dt).count()};
+
     void time_step::start() noexcept
     {
         start_ = clock::now();
