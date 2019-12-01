@@ -16,12 +16,14 @@
 
 #pragma once
 
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/geometry/component.circle.hpp"
-#include "antara/gaming/geometry/component.rectangle.hpp"
-#include "antara/gaming/geometry/component.vertex.hpp"
+//! Dependencies Headers
+#include <meta/sequence/list.hpp> ///< doom::meta::list
 
-namespace antara::gaming::geometry
-{
+//! SDK Headers
+#include "antara/gaming/geometry/component.circle.hpp" ///< geometry::circle
+#include "antara/gaming/geometry/component.rectangle.hpp" ///< geometry::rectangle
+#include "antara/gaming/geometry/component.vertex.hpp" ///< geometry::vertex, geometry::vertex_array
+
+namespace antara::gaming::geometry {
     using components_list = doom::meta::list<circle, vertex, vertex_array, rectangle>;
 }
