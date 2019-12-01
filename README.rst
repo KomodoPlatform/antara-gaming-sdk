@@ -192,14 +192,14 @@ Acknowledgments
 Gallery
 -------
 
-.. image:: gallery/wolf.gif
+.. image:: docs/assets/gallery/wolf.gif
    :align: center
-.. image:: gallery/wolf-ig.png
-.. image:: gallery/wolf-ig2.png
-.. image:: gallery/flappy.png
-.. image:: gallery/flappy-bird.gif
+.. image:: docs/assets/gallery/wolf-ig.png
+.. image:: docs/assets/gallery/wolf-ig2.png
+.. image:: docs/assets/gallery/flappy.png
+.. image:: docs/assets/gallery/flappy-bird.gif
    :align: center
-.. image:: gallery/tictactoe-gif.gif
+.. image:: docs/assets/gallery/tictactoe-gif.gif
    :align: center
 .. image:: docs/assets/tictactoe_o_win.png
 .. image:: docs/assets/tictactoe_x_win.png

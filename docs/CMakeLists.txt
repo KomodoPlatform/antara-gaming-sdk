@@ -73,6 +73,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/lua.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/box2d.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/ecs.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/animation2d.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/resources.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/sfml.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/timer.rst
@@ -80,6 +81,9 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/event.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/transform.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/geometry.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/audio.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/blockchain.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/collisions.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/graphics.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/modules/math.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/tutorials/tutorials.rst

@@ -78,9 +78,30 @@ Antara Gaming Modules
      - |:no_entry_sign:|
      - Roman Sztergbaum
      -
+   * - :doc:`antara::audio<audio>`
+     - Module Containing all the common audio components (music, sound_effect)
+     - |:no_entry_sign:|
+     - |:white_check_mark:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
    * - :doc:`antara::ecs<ecs>`
      - Module allowing us the manipulations of systems such as adding, updating, disabling, or removing systems (Contains a system manager, and system abtract class)
      - EnTT_ :raw-html:`<br />` strong_type_ :raw-html:`<br />` expected_ :raw-html:`<br />` range_v3_ :raw-html:`<br />` doom_meta_ :doc:`antara::timer<timer>` :doc:`antara::event<event>` :doc:`antara::core<core>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
+   * - :doc:`antara::animation2d<animation2d>`
+     - Module allowing us the 2D sprite sheet animation management
+     - :doc:`antara::ecs<ecs>` :doc:`antara::graphics<graphics>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
+   * - :doc:`antara::collisions<collisions>`
+     - Module containing collisions detection functions/systems
+     - :doc:`antara::ecs<ecs>` :doc:`antara::math<math>` :doc:`antara::event<event>`
      - |:no_entry_sign:|
      - |:no_entry_sign:|
      - Roman Sztergbaum
@@ -102,6 +123,13 @@ Antara Gaming Modules
    * - :doc:`antara::world<world>`
      - Module allowing the creation of application just by inheriting a simple class, contains all the necessary for the development of your video game
      -  :doc:`antara::config<config>` :doc:`antara::core<core>` :doc:`antara::ecs<ecs>`
+     - |:no_entry_sign:|
+     - |:no_entry_sign:|
+     - Roman Sztergbaum
+     -
+   * - :doc:`antara::blockchain<blockchain>`
+     - Modules containing blockchain generic systems (nSPV)
+     - nlohmann_json_ :raw-html:`<br />` reproc_ :raw-html:`<br />` restclient-cpp_ :raw-html:`<br />` :doc:`antara::ecs<ecs>`
      - |:no_entry_sign:|
      - |:no_entry_sign:|
      - Roman Sztergbaum
@@ -139,3 +167,5 @@ Antara Gaming Modules
 .. _Lua: https://github.com/lua/lua
 .. _sol2: https://github.com/ThePhD/sol2
 .. _SFML: https://github.com/SFML/SFML
+.. _reproc: https://github.com/DaanDeMeyer/reproc
+.. _restclient-cpp: https://github.com/mrtazz/restclient-cpp
