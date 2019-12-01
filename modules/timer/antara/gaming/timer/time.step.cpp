@@ -22,7 +22,7 @@
 
 namespace antara::gaming::timer
 {
-    std::chrono::nanoseconds time_step::fps_ = _60fps;
+    std::chrono::nanoseconds time_step::fps_ = _60tps;
     std::chrono::nanoseconds time_step::lag_ = 0ns;
 
     float time_step::fps_time_sum_ = 0.0f;
