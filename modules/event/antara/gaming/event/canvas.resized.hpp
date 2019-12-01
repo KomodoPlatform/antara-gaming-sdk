@@ -16,10 +16,8 @@
 
 #pragma once
 
-namespace antara::gaming::event
-{
-    struct canvas_resized
-    {
+namespace antara::gaming::event {
+    struct canvas_resized {
         canvas_resized() noexcept = default;
     };
 }
