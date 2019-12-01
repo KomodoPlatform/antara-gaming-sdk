@@ -16,8 +16,11 @@
 
 #pragma once
 
-#include <string>
-#include <chrono>
+//! C++ System Headers
+#include <string> ///< std::string, std::to_string
+#include <chrono> ///< std::chrono::nanoseconds, std::chrono::steady_clock, std::chrono::duration, std::chrono::duration_cast
+
+//! SDK Headers
 #include "antara/gaming/timer/fps.hpp"
 
 namespace antara::gaming::timer

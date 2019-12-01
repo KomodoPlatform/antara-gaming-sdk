@@ -14,7 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <cmath>
+//! C++ System Headers
+#include <cmath> ///< std::round
+
+//! SDK Headers
 #include "antara/gaming/timer/time.step.hpp"
 
 namespace antara::gaming::timer
@@ -58,7 +61,7 @@ namespace antara::gaming::timer
 
     bool time_step::is_update_required() const noexcept
     {
-        return (lag_ >= fps_);
+        return lag_ >= fps_;
     }
 
     void time_step::perform_update() noexcept

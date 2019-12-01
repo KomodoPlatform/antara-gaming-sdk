@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include <chrono>
+//! C++ System Headers
+#include <chrono> ///< std::chrono::nanoseconds, std::chrono_literals
 
 namespace antara::gaming::timer
 {

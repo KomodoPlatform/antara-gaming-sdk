@@ -15,7 +15,9 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
-#include "antara/gaming/timer/time.step.hpp"
+
+//! SDK Headers
+#include "antara/gaming/timer/time.step.hpp" ///< time_step
 
 namespace antara::gaming::timer::tests {
     TEST_SUITE ("timestep tests") {
