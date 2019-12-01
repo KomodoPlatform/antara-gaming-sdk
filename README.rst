@@ -170,9 +170,14 @@ Acknowledgments
 Gallery
 -------
 
-.. image:: gallery/wolf.png
+.. image:: gallery/wolf.gif
+   :align: center
+.. image:: gallery/wolf-ig.png
+.. image:: gallery/wolf-ig2.png
 .. image:: gallery/flappy.png
 .. image:: gallery/flappy-bird.gif
+   :align: center
+.. image:: gallery/tictactoe-gif.gif
    :align: center
 .. image:: docs/assets/tictactoe_o_win.png
 .. image:: docs/assets/tictactoe_x_win.png
