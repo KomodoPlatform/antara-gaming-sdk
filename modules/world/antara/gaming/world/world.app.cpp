@@ -14,16 +14,20 @@
  *                                                                            *
  ******************************************************************************/
 
+//! Dependencies Headers
+#include <loguru.hpp> ///< loguru::Verbosity_WARNING, loguru::Verbosity_INFO
+
 #if defined(__EMSCRIPTEN__) && defined(EMSCRIPTEN_ONLY_WEB)
-#include <emscripten.h>
+#include <emscripten.h> ///< emscripten_cancel_main_loop, emscripten_set_main_loop_arg
 #endif
 
-#include <loguru.hpp>
-#include "antara/gaming/core/real.path.hpp"
-#include "antara/gaming/config/config.loading.hpp"
-#include "antara/gaming/config/config.game.maker.hpp"
-#include "antara/gaming/event/start.game.hpp"
+
+//! SDK Headers
 #include "antara/gaming/world/world.app.hpp"
+#include "antara/gaming/core/real.path.hpp" ///< core::assets_real_path
+#include "antara/gaming/config/config.loading.hpp" ///< config::load_configuration
+#include "antara/gaming/config/config.game.maker.hpp" ///< config::load_configuration<graphics::canvas_2d>
+#include "antara/gaming/event/start.game.hpp" ///< event::start_game, event::quit_game
 
 //LCOV_EXCL_START
 void emscripten_antara_loop(void *world) {
