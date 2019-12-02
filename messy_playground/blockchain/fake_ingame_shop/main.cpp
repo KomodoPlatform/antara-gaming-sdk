@@ -13,14 +13,39 @@ using namespace antara::gaming;
 class gui_system final : public ecs::post_update_system<gui_system> {
 public:
     gui_system(entt::registry &registry) noexcept : system(registry) {
-
+        // Fill store
+        for(int i = 0; i < 25; ++i)
+            store_items.push_back("item_" + std::to_string(i));
     }
 
     void update() noexcept final {
-        ImGui::Begin("Hello, world!");
-        ImGui::Button("Look at this pretty button");
-        ImGui::End();
+        // Store
+        {
+            ImGui::Begin("Store");
+
+            // Items
+            for(auto& item : store_items) {
+                ImGui::Button(item.c_str());
+            }
+            ImGui::End();
+        }
+
+        // Inventory
+        {
+            ImGui::Begin("Inventory");
+
+            // Items
+            for(auto& item : inventory_items) {
+                ImGui::Button(item.c_str());
+            }
+
+            ImGui::End();
+        }
     }
+
+    // Item lists
+    std::vector<std::string> store_items;
+    std::vector<std::string> inventory_items;
 };
 
 REFL_AUTO(type(gui_system))
