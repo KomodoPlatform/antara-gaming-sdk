@@ -13,10 +13,10 @@ using namespace antara::gaming;
 class gui_system final : public ecs::post_update_system<gui_system> {
     struct item {
         int id;
-        std::string name;
-        std::string description;
         int quantity;
         int price;
+        std::string name;
+        std::string description;
     };
 
 public:
@@ -24,19 +24,21 @@ public:
         // Fill store
         {
             int id = -1;
-            ++id; store_items[id] = {id, "Burgundy", "Méo-Camuzet 'Vosne Romanée Les Chaumes' Burgundy, France 2009", 5, 1900};
-            ++id; store_items[id] = {id, "Saint-Émilion", "Château Vieux 'Château des Combes” Grand Cru Classé Saint-Émilion, France 2011", 5, 390};
-            ++id; store_items[id] = {id, "Entre Deux-Mers", "Château Labatut, Cuvée Prestige,Bordeaux Supérieur Entre Deux-Mers, France 2009", 5, 1900};
-            ++id; store_items[id] = {id, "Médoc", "Château la Pirouette, Cru Bourgeois AOC, Médoc, France 2009", 5, 260};
-            ++id; store_items[id] = {id, "Saint-Julien", "Château Léoville Las Cases, Grand Cru Classé, Saint-Julien, France 2004", 5, 2850};
-            ++id; store_items[id] = {id, "Moulis", "L’Héritage De Chasse Spleen, AOC Moulis, Moulis, France 2003", 5, 950};
-            ++id; store_items[id] = {id, "Margaux", "Château Giscours, La Siréne de Giscours, Grand Cru Classé, 2008", 5, 950};
-            ++id; store_items[id] = {id, "Pessac-Léognan", "Château Haut Brion, A.O.C. Pessac-Léognan, 1er Grand Cru Classé, Pessac-Léognan, France 1999", 5, 7000};
-            ++id; store_items[id] = {id, "Pauillac", "La Rose Bel Air, Grand Vin de Bordeaux, Pauillac, France 2008", 5, 390};
-            ++id; store_items[id] = {id, "Cahors", "Château du Cédre 'Le Cédre” AOC Cahors, France 2006", 5, 950};
-            ++id; store_items[id] = {id, "Rhône", "Mourvedre, Grenache, Syrah, Counoise, Cinsault, Rhône, France 2010", 5, 1850};
-            ++id; store_items[id] = {id, "Tuscany", "Cecchi 'Chianti” Sangiovese, DOCG,Tuscany, Italy 2013", 5, 320};
-            ++id; store_items[id] = {id, "Bolgheri Superiore", "Tenuta dell’Ornellaia 'Ornellaia” Cabernet Sauvignon, Merlot, Cabernet Franc, P.Verdot Bolgheri Superiore, DOC, Bolgheri, Tuscany 2010", 5, 1900};
+            ++id; store_items[id] = {id, 5, 1, "Roma", "Sometimes nothing beats a classic. We make ours the same way the original Italian masterpiece was prepared for Queen Margherita. A simple classic pie layered with fresh made whole milk mozzarella and finished with cold pressed olive oil fruttato drizzle and organic basil leaf chiffonade."};
+            ++id; store_items[id] = {id, 5, 2, "5-Points", "Named after one of the oldest neighborhoods in Denver, The 5-Points is our homage to the diversity of this historic district. We use our house red sauce and layer this cheese pizza with 5 delectable varieties. Mozzarella, provolone, muenster, cheddar and creamy ricotta impastata cheese, finished with fresh basil chiffonade."};
+            ++id; store_items[id] = {id, 5, 2, "The Boulder", "Our classic Colorado Pizza done veggie style, with green peppers, red onion, white button mushrooms, black olives and roma tomato."};
+            ++id; store_items[id] = {id, 5, 2, "Twin Sisters", "Named after the Colorado peaks of the same name, this pie is a classic beauty. We layer a pizza with house cut premium imported Italian pepperoni and imported soppressata salami."};
+            ++id; store_items[id] = {id, 5, 3, "Durango", "We take our classic pie and layer mozzarella and provolone and then add a wonderful garlic and fennel Italian sausage and white button mushrooms."};
+            ++id; store_items[id] = {id, 5, 3, "The Baby Doe", "Baby Doe Tabor was a 1st generation Irish American and one of Colorado's most colorful historic figures. A true \"Rags to Riches...back to Rags\" kind of gal. As such we created a pizza that showed her humble roots as well as her panache for the extravagant. We layer mozzarella and provolone, then add thin sliced oven roasted organic red and yukon gold potatoes, thick cut applewood bacon, red onions and fresh picked rosemary. We finish it with a white truffle oil drizzle and Parmigiano-Reggiano. NO SAUCE- Roasted garlic & olive oil base."};
+            ++id; store_items[id] = {id, 5, 3, "Kebler", "Colorado is home to one of the largest Aspen groves in the world, a single sprawling mass connected via a single root system located in Kebler Pass. After seeing those leaves in autumn we knew we had to name a pizza after it. So we take a pie cover it in our house pesto pomodoro sauce, mozzarella and add garlic fennel Italian sausage, green and tri-colored bell peppers."};
+            ++id; store_items[id] = {id, 5, 4, "The Pueblo", "Pueblo is not only known as a a southern neighbor but also a haven for some of the state's best chili producers. We take a pie and spread a layer of creamy neufchatel cheese and fire roasted poblano peppers then cover in smoked gouda and mozzarella and finish with roasted corn."};
+            ++id; store_items[id] = {id, 5, 4, "The Greek", "A base of EVOO, roasted garlic and Greek oregano is covered in a layer of mozzarella. We add artichoke hearts, organic spinach, imported Mykonos kalamata olives, imported Sicilian sun dried tomatoes, red onions and finished with fresh feta crumble."};
+            ++id; store_items[id] = {id, 5, 4, "Molly Brown", "This pizza is just gold! Our house pomodoro covered in mozzarella and aged Tilamook sharp cheddar with applewood smoked bacon, roma tomatoes, roasted garlic and fresh organic spinach."};
+            ++id; store_items[id] = {id, 5, 5, "Clyde & Chauncey", "The infamous \"Don of Denver\" and his brother ran their criminal enterprises out of a restaurant in North Denver where their mama would hand roll meatballs that were nearly as famous as her sons. So it only seemed right we named this classic after those two meatball mafiosi. We start with our classic pie and add a mozzarella and provolone blend then cover in sliced house made and hand rolled meatballs(70%beef/30%pork) and caramelized onions. We finish the pie with grated Parmigiano-Reggiano and fresh Italian parsley."};
+            ++id; store_items[id] = {id, 5, 5, "1876", "We layer a pie with our red sauce, mozzarella and provolone and then add tri-colored bell peppers, white button mushrooms, red onions, black olives and imported pepperoni."};
+            ++id; store_items[id] = {id, 5, 6, "Rankin Kelly", "El Paso County's 1st sheriff was a character legends were built on. Rough and formidable on the outside and surprisingly soft and tender on the inside, Rankin was a man to be admired. We realized we had a pizza just like him! We take our classic pie and layer globs of fresh ricotta impastata then cover with mozzarella and provolone blend and top with sliced house made meatballs, garlic & fennel Italian sausage and organic spinach."};
+            ++id; store_items[id] = {id, 5, 6, "BLT", "We love the sandwich so much we had to make a pie to pay homage. We start with a roasted garlic & olive oil base then cover in mozzarella and provolone. We layer juicy Organic heirloom tomatoes and thick cut apple-wood bacon on top and finish with Organic arugula and a balsamic reduction drizzle."};
+            ++id; store_items[id] = {id, 5, 7, "Mt Massive.", "In an attempt to woo the carnivores out there, we layer our classic pie with sliced house made meatballs, imported pepperoni, Italian sausage, spiral cut ham and thick cut applewood bacon."};
         }
     }
 
