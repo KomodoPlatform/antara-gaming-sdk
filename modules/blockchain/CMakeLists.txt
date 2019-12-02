@@ -19,6 +19,7 @@ if (ANTARA_BUILD_UNIT_TESTS)
             )
 
     target_link_libraries(antara_blockchain_tests PRIVATE doctest PUBLIC antara::nspv)
+    target_compile_definitions(antara_blockchain_tests PRIVATE $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>)
     target_sources(antara_blockchain_tests PRIVATE
             antara/gaming/blockchain/antara.blockchain.tests.cpp
             antara/gaming/blockchain/nspv.system.tests.cpp)
