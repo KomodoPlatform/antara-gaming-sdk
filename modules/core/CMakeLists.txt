@@ -9,7 +9,7 @@ if (APPLE)
     mark_as_advanced(APPLE_FOUNDATION_FRAMEWORK_LIBRARY APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
 endif ()
 target_include_directories(antara_core_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR}>)
-target_link_libraries(antara_core_shared_sources PUBLIC antara::default_settings EnTT antara::refl-cpp $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_LIBRARY}>)
+target_link_libraries(antara_core_shared_sources PUBLIC antara::log antara::default_settings EnTT antara::refl-cpp $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_LIBRARY}>)
 add_library(antara::core ALIAS antara_core_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)
