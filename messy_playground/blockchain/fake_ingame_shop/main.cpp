@@ -105,7 +105,7 @@ public:
                     if (ImGui::BeginTabItem("Details")) {
                         ImGui::Text("ID: %d", curr_item.id);
                         ImGui::Text("Quantity: %d", curr_item.quantity);
-                        ImGui::Text("Unit Price: %d", curr_item.price);
+                        ImGui::Text("Unit Price: %d %s", curr_item.price, currency_name.c_str());
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -147,7 +147,7 @@ public:
 
     // Item lists
     int store_balance{0};
-    int inventory_balance{20000};
+    int inventory_balance{60};
     std::string currency_name{"RICK"};
     std::unordered_map<int, item> store_items;
     std::unordered_map<int, item> inventory_items;
