@@ -39,6 +39,9 @@
 #include "antara/gaming/sfml/resources.manager.hpp"
 #include "antara/gaming/audio/component.sound.effect.hpp"
 
+
+#include <antara/gaming/core/open.url.browser.hpp>
+
 class intro_scene;
 
 using namespace antara::gaming;
@@ -182,6 +185,7 @@ public:
 
 int main()
 {
+    //antara::gaming::core::open_url_browser("https://www.google.fr");
     my_world game_app;
     return game_app.run();
 }
