@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include <antara/gaming/math/vector.hpp>
+//! SDK Headers
+#include "antara/gaming/math/vector.hpp" ///< math::vec2i
 
 namespace antara::gaming::input
 {
