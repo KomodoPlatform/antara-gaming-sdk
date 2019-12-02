@@ -16,16 +16,17 @@
 
 #pragma once
 
-#include <cstddef>
-#include "antara/gaming/core/safe.refl.hpp"
+//! C System Headers
+#include <cstddef> ///< std::size_t
 
-namespace antara::gaming::graphics
-{
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+
+namespace antara::gaming::graphics {
     inline constexpr std::size_t max_layer = 12ull;
 
     template<std::size_t N>
-    struct layer
-    {
+    struct layer {
     };
 
     using layer_0 = layer<0>;
