@@ -3,12 +3,17 @@
 //
 
 #include <imgui.h>
+
+#include <thread>
+#include <chrono>
+
 #include <antara/gaming/world/world.app.hpp>
 #include <antara/gaming/sfml/graphic.system.hpp>
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/sfml/input.system.hpp>
 
 using namespace antara::gaming;
+using namespace std::chrono_literals;
 
 class gui_system final : public ecs::post_update_system<gui_system> {
     struct item {
@@ -48,8 +53,63 @@ public:
         }
     }
 
-    void display_balance(const inventory& inv) {
-        ImGui::Text("Balance: %d", inv.balance);
+    ~gui_system() {
+        // Wait for transactions
+        for(auto& t : transaction_threads) t.join();
+    }
+
+    void display_balance(const inventory& inv, bool show_pending_count = false) {
+        if(show_pending_count) ImGui::Text("Pending Transactions: %d", pending_transaction_count);
+        ImGui::Text(std::string(std::string("Balance: %d") +
+            std::string(inv.pending_balance == 0 ? "" : std::string(inv.pending_balance > 0 ? "(+" : "(") + "%d)")).c_str(),
+                inv.balance, inv.pending_balance);
+    }
+
+    bool user_has_enough_funds(int price) {
+        return user.balance >= price;
+    }
+
+    void complete_transaction(const int price) {
+        user.pending_balance += price;
+        store.pending_balance -= price;
+        --pending_transaction_count;
+    }
+
+    void buy(const int price) {
+        ++pending_transaction_count;
+
+        // Drop from user balance
+        user.balance -= price;
+        user.pending_balance -= price;
+
+        // Increase the store balance
+        store.pending_balance += price;
+        store.balance += price;
+
+        // Simulate pending
+        transaction_threads.emplace_back([this, price]{
+            std::this_thread::sleep_for(2s);
+            complete_transaction(price);
+        });
+    }
+
+    void transfer(item& store_item) {
+        // Pay
+        buy(store_item.price);
+
+        // Lower the stock
+        --store_item.quantity;
+
+        // Give the item
+        // If user already has this item, just increase the quantity
+        if(user.items.find(store_item.id) != user.items.end()) {
+            ++user.items[store_item.id].quantity;
+        }
+            // Else, add this item, set quantity as 1
+        else {
+            user.items[store_item.id] = store_item;
+            user.items[store_item.id].quantity = 1;
+        }
     }
 
     void update() noexcept final {
@@ -81,13 +141,13 @@ public:
         {
             ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
             if (ImGui::Begin("Store")) {
-                display_balance(store);
+                display_balance(store, true);
 
                 auto& items = store.items;
-                auto& target_items = user.items;
+
                 // Left
-                static int selected = 0;
                 static int curr_item_id = items.begin()->second.id;
+                static int selected = 0;
 
                 ImGui::BeginChild("left pane", ImVec2(150, 0), true);
                 int i = 0;
@@ -123,29 +183,13 @@ public:
                 ImGui::EndChild();
 
                 bool has_stock = curr_item.quantity > 0;
-                bool has_funds = user.balance >= curr_item.price;
+                bool has_funds = user_has_enough_funds(curr_item.price);
                 if (ImGui::Button(std::string(
                         !has_funds ? std::string("Not enough funds (" + std::to_string(curr_item.price) + " " + currency_name + ")") :
                         !has_stock ? "Out of stock" :
                         ("Buy 1 for " + std::to_string(curr_item.price) + " " + currency_name)).c_str())) {
                     if(has_stock && has_funds) {
-                        // Pay
-                        user.balance -= curr_item.price;
-                        store.balance += curr_item.price;
-
-                        // Lower the stock
-                        --curr_item.quantity;
-
-                        // Give the item
-                        // If user already has this item, just increase the quantity
-                        if(target_items.find(curr_item.id) != target_items.end()) {
-                            ++target_items[curr_item.id].quantity;
-                        }
-                        // Else, add this item, set quantity as 1
-                        else {
-                            target_items[curr_item.id] = curr_item;
-                            target_items[curr_item.id].quantity = 1;
-                        }
+                        transfer(curr_item);
                     }
                 }
                 ImGui::SameLine();
@@ -159,6 +203,9 @@ public:
     inventory store{0};
     inventory user{60};
     std::string currency_name{"RICK"};
+
+    int pending_transaction_count{0};
+    std::vector<std::thread> transaction_threads;
 };
 
 REFL_AUTO(type(gui_system))
