@@ -16,7 +16,7 @@ class gui_system final : public ecs::post_update_system<gui_system> {
         std::string name;
         std::string description;
         int quantity{0};
-        float price{0.f};
+        int price{0};
     };
 
 public:
@@ -41,30 +41,6 @@ public:
     }
 
     void update() noexcept final {
-        // Store
-        {
-            ImGui::Begin("Store");
-
-            // Items
-            auto& items = store_items;
-            auto& target_list = inventory_items;
-            for(auto it = items.begin(); it != items.end();) {
-                ImGui::PushID(it->id);
-
-                // If button is clicked, remove this item, add it to the other list
-                if(ImGui::Button(it->name.c_str())) {
-                    target_list.push_back(*it);
-                    it = items.erase(it);
-                }
-                // Iterate
-                else ++it;
-
-                ImGui::PopID();
-            }
-
-            ImGui::End();
-        }
-
         // Inventory
         {
             ImGui::Begin("Inventory");
@@ -88,9 +64,56 @@ public:
 
             ImGui::End();
         }
+
+
+        // Store
+        {
+            ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
+            if (ImGui::Begin("Store")) {
+                // Left
+                static int selected = 0;
+                ImGui::BeginChild("left pane", ImVec2(150, 0), true);
+                auto& items = store_items;
+                int i = 0;
+                for (auto it = items.begin(); it != items.end(); ++it, ++i) {
+                    if (ImGui::Selectable(it->name.c_str(), selected == i))
+                        selected = i;
+                }
+                ImGui::EndChild();
+                ImGui::SameLine();
+
+                // Right
+                auto& curr_item = items[selected];
+                ImGui::BeginGroup();
+                ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+                ImGui::TextWrapped("%s  x%d", curr_item.name.c_str(), curr_item.quantity);
+                ImGui::Separator();
+                if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
+                    if (ImGui::BeginTabItem("Description")) {
+                        ImGui::TextWrapped("%s", curr_item.description.c_str());
+                        ImGui::EndTabItem();
+                    }
+                    if (ImGui::BeginTabItem("Details")) {
+                        ImGui::Text("ID: %d", curr_item.id);
+                        ImGui::Text("Quantity: %d", curr_item.quantity);
+                        ImGui::Text("Unit Price: %d", curr_item.price);
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
+                }
+                ImGui::EndChild();
+                if (ImGui::Button(std::string("Buy 1 for " + std::to_string(curr_item.price) + " " + currency_name).c_str())) {}
+                ImGui::SameLine();
+                ImGui::EndGroup();
+            }
+            ImGui::End();
+        }
     }
 
     // Item lists
+    int store_balance{0};
+    int inventory_balance{20000};
+    std::string currency_name{"RICK"};
     std::vector<item> store_items;
     std::vector<item> inventory_items;
 };
