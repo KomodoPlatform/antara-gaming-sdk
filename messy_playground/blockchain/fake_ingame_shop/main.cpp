@@ -14,8 +14,10 @@ class gui_system final : public ecs::post_update_system<gui_system> {
 public:
     gui_system(entt::registry &registry) noexcept : system(registry) {
         // Fill store
-        for(int i = 0; i < 25; ++i)
-            store_items.push_back("item_" + std::to_string(i));
+        {
+            for(int i = 0; i < 25; ++i)
+                store_items.push_back("Item " + std::to_string(i));
+        }
     }
 
     void update() noexcept final {
@@ -24,9 +26,18 @@ public:
             ImGui::Begin("Store");
 
             // Items
-            for(auto& item : store_items) {
-                ImGui::Button(item.c_str());
+            auto& items = store_items;
+            auto& target_list = inventory_items;
+            for(auto it = items.begin(); it != items.end();) {
+                // If button is clicked, remove this item, add it to the other list
+                if(ImGui::Button(it->c_str())) {
+                    target_list.push_back(*it);
+                    it = items.erase(it);
+                }
+                // Iterate
+                else ++it;
             }
+
             ImGui::End();
         }
 
@@ -35,8 +46,16 @@ public:
             ImGui::Begin("Inventory");
 
             // Items
-            for(auto& item : inventory_items) {
-                ImGui::Button(item.c_str());
+            auto& items = inventory_items;
+            auto& target_list = store_items;
+            for(auto it = items.begin(); it != items.end();) {
+                // If button is clicked, remove this item, add it to the other list
+                if(ImGui::Button(it->c_str())) {
+                    target_list.push_back(*it);
+                    it = items.erase(it);
+                }
+                // Iterate
+                else ++it;
             }
 
             ImGui::End();
