@@ -25,10 +25,11 @@ namespace antara::gaming::core::details
 {
     std::filesystem::path binary_real_path() noexcept
     {
-        HMODULE hModule = GetModuleHandleW(NULL);
+        HMODULE hModule = GetModuleHandleW(nullptr);
         assert(hModule != nullptr);
         WCHAR path[MAX_PATH];
         auto result = GetModuleFileNameW(hModule, path, MAX_PATH);
+        assert(result);
         return std::filesystem::path(path);
     }
 
