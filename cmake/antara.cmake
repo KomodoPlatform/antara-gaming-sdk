@@ -31,8 +31,8 @@ macro(init_windows_env)
         if (${real_compiler} STREQUAL "clang-cl")
             set(ClangCL ON)
             message(STATUS "clang cl detected")
-        endif()
-    endif()
+        endif ()
+    endif ()
 endmacro()
 
 init_windows_env()
@@ -144,10 +144,11 @@ endmacro()
 
 macro(import_antara_dlls TARGET_NAME)
     if (WIN32)
+        get_target_property(target_runtime_directory ${TARGET_NAME} RUNTIME_OUTPUT_DIRECTORY)
+        message(STATUS "target: ${TARGET_NAME}, output_directory: ${target_runtime_directory}")
+        set(ANTARA_DLLS "")
         if (ENABLE_BLOCKCHAIN_MODULES)
             message(STATUS "importing blockchain DLLs")
-            get_target_property(target_runtime_directory ${TARGET_NAME} RUNTIME_OUTPUT_DIRECTORY)
-            message(STATUS "target: ${TARGET_NAME}, output_directory: ${target_runtime_directory}")
             ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory "${reproc_BINARY_DIR}/reproc/lib" "${target_runtime_directory}"
                     COMMENT "copying dlls …"
@@ -159,8 +160,31 @@ macro(import_antara_dlls TARGET_NAME)
                     COMMENT "copying dlls …"
                     $<TARGET_FILE_DIR:${TARGET_NAME}>
                     )
-        endif()
-    endif()
+        endif ()
+        if (USE_IMGUI_ANTARA_WRAPPER)
+            if (USE_SFML_ANTARA_WRAPPER)
+                ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME}  POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy "${imgui-sfml_BINARY_DIR}/Imgui-SFML.dll" "${CMAKE_BINARY_DIR}/bin/"
+                        COMMENT "copying dlls …"
+                        $<TARGET_FILE_DIR:antara-blockchain-ingame-shop-example>
+                        )
+            endif ()
+        endif ()
+
+        if (USE_SFML_ANTARA_WRAPPER)
+            ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib" "${target_runtime_directory}"
+                    COMMENT "copying dlls …"
+                    $<TARGET_FILE_DIR:${TARGET_NAME}>
+                    )
+            ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_SOURCE_DIR}/extlibs/bin/x64" "${target_runtime_directory}"
+                    COMMENT "copying dlls …"
+                    $<TARGET_FILE_DIR:${TARGET_NAME}>
+                   )
+        endif ()
+
+    endif ()
 endmacro()
 
 macro(init_antara_env)

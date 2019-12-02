@@ -4,7 +4,7 @@ set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
 add_executable(antara-blockchain-ingame-shop-example MACOSX_BUNDLE ${ICON} main.cpp)
-target_link_libraries(antara-blockchain-ingame-shop-example PUBLIC antara::world antara::scenes antara::sfml antara::audio antara::animation2d)
+target_link_libraries(antara-blockchain-ingame-shop-example PUBLIC antara::world antara::scenes antara::nspv antara::sfml antara::audio antara::animation2d)
 
 set_target_properties(antara-blockchain-ingame-shop-example
         PROPERTIES
@@ -27,21 +27,6 @@ endif ()
 
 
 if (WIN32)
+    import_antara_dlls(antara-blockchain-ingame-shop-example)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-    ADD_CUSTOM_COMMAND(TARGET antara-blockchain-ingame-shop-example POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/bin/"
-            COMMENT "copying dlls …"
-            $<TARGET_FILE_DIR:antara-blockchain-ingame-shop-example>
-            )
-    ADD_CUSTOM_COMMAND(TARGET antara-blockchain-ingame-shop-example POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_SOURCE_DIR}/extlibs/bin/x64" "${CMAKE_BINARY_DIR}/bin/"
-            COMMENT "copying dlls …"
-            $<TARGET_FILE_DIR:antara-blockchain-ingame-shop-example>
-            )
-
-    #ADD_CUSTOM_COMMAND(TARGET antara-blockchain-ingame-shop-example POST_BUILD
-    #        COMMAND ${CMAKE_COMMAND} -E copy_directory "${imgui-sfml_BINARY_DIR}/" "${CMAKE_BINARY_DIR}/bin/"
-    #        COMMENT "copying dlls …"
-    #        $<TARGET_FILE_DIR:antara-blockchain-ingame-shop-example>
-    #        )
 endif ()
