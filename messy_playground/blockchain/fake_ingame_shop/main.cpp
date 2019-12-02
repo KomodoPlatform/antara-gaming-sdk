@@ -19,27 +19,37 @@ class gui_system final : public ecs::post_update_system<gui_system> {
         std::string description;
     };
 
+    struct inventory {
+        int balance{0};
+        int pending_balance{0};
+        std::unordered_map<int, item> items;
+    };
+
 public:
     gui_system(entt::registry &registry) noexcept : system(registry) {
         // Fill store
         {
             int id = -1;
-            ++id; store_items[id] = {id, 5, 1, "Roma", "Sometimes nothing beats a classic. We make ours the same way the original Italian masterpiece was prepared for Queen Margherita. A simple classic pie layered with fresh made whole milk mozzarella and finished with cold pressed olive oil fruttato drizzle and organic basil leaf chiffonade."};
-            ++id; store_items[id] = {id, 5, 2, "5-Points", "Named after one of the oldest neighborhoods in Denver, The 5-Points is our homage to the diversity of this historic district. We use our house red sauce and layer this cheese pizza with 5 delectable varieties. Mozzarella, provolone, muenster, cheddar and creamy ricotta impastata cheese, finished with fresh basil chiffonade."};
-            ++id; store_items[id] = {id, 5, 2, "The Boulder", "Our classic Colorado Pizza done veggie style, with green peppers, red onion, white button mushrooms, black olives and roma tomato."};
-            ++id; store_items[id] = {id, 5, 2, "Twin Sisters", "Named after the Colorado peaks of the same name, this pie is a classic beauty. We layer a pizza with house cut premium imported Italian pepperoni and imported soppressata salami."};
-            ++id; store_items[id] = {id, 5, 3, "Durango", "We take our classic pie and layer mozzarella and provolone and then add a wonderful garlic and fennel Italian sausage and white button mushrooms."};
-            ++id; store_items[id] = {id, 5, 3, "The Baby Doe", "Baby Doe Tabor was a 1st generation Irish American and one of Colorado's most colorful historic figures. A true \"Rags to Riches...back to Rags\" kind of gal. As such we created a pizza that showed her humble roots as well as her panache for the extravagant. We layer mozzarella and provolone, then add thin sliced oven roasted organic red and yukon gold potatoes, thick cut applewood bacon, red onions and fresh picked rosemary. We finish it with a white truffle oil drizzle and Parmigiano-Reggiano. NO SAUCE- Roasted garlic & olive oil base."};
-            ++id; store_items[id] = {id, 5, 3, "Kebler", "Colorado is home to one of the largest Aspen groves in the world, a single sprawling mass connected via a single root system located in Kebler Pass. After seeing those leaves in autumn we knew we had to name a pizza after it. So we take a pie cover it in our house pesto pomodoro sauce, mozzarella and add garlic fennel Italian sausage, green and tri-colored bell peppers."};
-            ++id; store_items[id] = {id, 5, 4, "The Pueblo", "Pueblo is not only known as a a southern neighbor but also a haven for some of the state's best chili producers. We take a pie and spread a layer of creamy neufchatel cheese and fire roasted poblano peppers then cover in smoked gouda and mozzarella and finish with roasted corn."};
-            ++id; store_items[id] = {id, 5, 4, "The Greek", "A base of EVOO, roasted garlic and Greek oregano is covered in a layer of mozzarella. We add artichoke hearts, organic spinach, imported Mykonos kalamata olives, imported Sicilian sun dried tomatoes, red onions and finished with fresh feta crumble."};
-            ++id; store_items[id] = {id, 5, 4, "Molly Brown", "This pizza is just gold! Our house pomodoro covered in mozzarella and aged Tilamook sharp cheddar with applewood smoked bacon, roma tomatoes, roasted garlic and fresh organic spinach."};
-            ++id; store_items[id] = {id, 5, 5, "Clyde & Chauncey", "The infamous \"Don of Denver\" and his brother ran their criminal enterprises out of a restaurant in North Denver where their mama would hand roll meatballs that were nearly as famous as her sons. So it only seemed right we named this classic after those two meatball mafiosi. We start with our classic pie and add a mozzarella and provolone blend then cover in sliced house made and hand rolled meatballs(70%beef/30%pork) and caramelized onions. We finish the pie with grated Parmigiano-Reggiano and fresh Italian parsley."};
-            ++id; store_items[id] = {id, 5, 5, "1876", "We layer a pie with our red sauce, mozzarella and provolone and then add tri-colored bell peppers, white button mushrooms, red onions, black olives and imported pepperoni."};
-            ++id; store_items[id] = {id, 5, 6, "Rankin Kelly", "El Paso County's 1st sheriff was a character legends were built on. Rough and formidable on the outside and surprisingly soft and tender on the inside, Rankin was a man to be admired. We realized we had a pizza just like him! We take our classic pie and layer globs of fresh ricotta impastata then cover with mozzarella and provolone blend and top with sliced house made meatballs, garlic & fennel Italian sausage and organic spinach."};
-            ++id; store_items[id] = {id, 5, 6, "BLT", "We love the sandwich so much we had to make a pie to pay homage. We start with a roasted garlic & olive oil base then cover in mozzarella and provolone. We layer juicy Organic heirloom tomatoes and thick cut apple-wood bacon on top and finish with Organic arugula and a balsamic reduction drizzle."};
-            ++id; store_items[id] = {id, 5, 7, "Mt Massive.", "In an attempt to woo the carnivores out there, we layer our classic pie with sliced house made meatballs, imported pepperoni, Italian sausage, spiral cut ham and thick cut applewood bacon."};
+            ++id; store.items[id] = {id, 5, 1, "Roma", "Sometimes nothing beats a classic. We make ours the same way the original Italian masterpiece was prepared for Queen Margherita. A simple classic pie layered with fresh made whole milk mozzarella and finished with cold pressed olive oil fruttato drizzle and organic basil leaf chiffonade."};
+            ++id; store.items[id] = {id, 5, 2, "5-Points", "Named after one of the oldest neighborhoods in Denver, The 5-Points is our homage to the diversity of this historic district. We use our house red sauce and layer this cheese pizza with 5 delectable varieties. Mozzarella, provolone, muenster, cheddar and creamy ricotta impastata cheese, finished with fresh basil chiffonade."};
+            ++id; store.items[id] = {id, 5, 2, "The Boulder", "Our classic Colorado Pizza done veggie style, with green peppers, red onion, white button mushrooms, black olives and roma tomato."};
+            ++id; store.items[id] = {id, 5, 2, "Twin Sisters", "Named after the Colorado peaks of the same name, this pie is a classic beauty. We layer a pizza with house cut premium imported Italian pepperoni and imported soppressata salami."};
+            ++id; store.items[id] = {id, 5, 3, "Durango", "We take our classic pie and layer mozzarella and provolone and then add a wonderful garlic and fennel Italian sausage and white button mushrooms."};
+            ++id; store.items[id] = {id, 5, 3, "The Baby Doe", "Baby Doe Tabor was a 1st generation Irish American and one of Colorado's most colorful historic figures. A true \"Rags to Riches...back to Rags\" kind of gal. As such we created a pizza that showed her humble roots as well as her panache for the extravagant. We layer mozzarella and provolone, then add thin sliced oven roasted organic red and yukon gold potatoes, thick cut applewood bacon, red onions and fresh picked rosemary. We finish it with a white truffle oil drizzle and Parmigiano-Reggiano. NO SAUCE- Roasted garlic & olive oil base."};
+            ++id; store.items[id] = {id, 5, 3, "Kebler", "Colorado is home to one of the largest Aspen groves in the world, a single sprawling mass connected via a single root system located in Kebler Pass. After seeing those leaves in autumn we knew we had to name a pizza after it. So we take a pie cover it in our house pesto pomodoro sauce, mozzarella and add garlic fennel Italian sausage, green and tri-colored bell peppers."};
+            ++id; store.items[id] = {id, 5, 4, "The Pueblo", "Pueblo is not only known as a a southern neighbor but also a haven for some of the state's best chili producers. We take a pie and spread a layer of creamy neufchatel cheese and fire roasted poblano peppers then cover in smoked gouda and mozzarella and finish with roasted corn."};
+            ++id; store.items[id] = {id, 5, 4, "The Greek", "A base of EVOO, roasted garlic and Greek oregano is covered in a layer of mozzarella. We add artichoke hearts, organic spinach, imported Mykonos kalamata olives, imported Sicilian sun dried tomatoes, red onions and finished with fresh feta crumble."};
+            ++id; store.items[id] = {id, 5, 4, "Molly Brown", "This pizza is just gold! Our house pomodoro covered in mozzarella and aged Tilamook sharp cheddar with applewood smoked bacon, roma tomatoes, roasted garlic and fresh organic spinach."};
+            ++id; store.items[id] = {id, 5, 5, "Clyde & Chauncey", "The infamous \"Don of Denver\" and his brother ran their criminal enterprises out of a restaurant in North Denver where their mama would hand roll meatballs that were nearly as famous as her sons. So it only seemed right we named this classic after those two meatball mafiosi. We start with our classic pie and add a mozzarella and provolone blend then cover in sliced house made and hand rolled meatballs(70%beef/30%pork) and caramelized onions. We finish the pie with grated Parmigiano-Reggiano and fresh Italian parsley."};
+            ++id; store.items[id] = {id, 5, 5, "1876", "We layer a pie with our red sauce, mozzarella and provolone and then add tri-colored bell peppers, white button mushrooms, red onions, black olives and imported pepperoni."};
+            ++id; store.items[id] = {id, 5, 6, "Rankin Kelly", "El Paso County's 1st sheriff was a character legends were built on. Rough and formidable on the outside and surprisingly soft and tender on the inside, Rankin was a man to be admired. We realized we had a pizza just like him! We take our classic pie and layer globs of fresh ricotta impastata then cover with mozzarella and provolone blend and top with sliced house made meatballs, garlic & fennel Italian sausage and organic spinach."};
+            ++id; store.items[id] = {id, 5, 6, "BLT", "We love the sandwich so much we had to make a pie to pay homage. We start with a roasted garlic & olive oil base then cover in mozzarella and provolone. We layer juicy Organic heirloom tomatoes and thick cut apple-wood bacon on top and finish with Organic arugula and a balsamic reduction drizzle."};
+            ++id; store.items[id] = {id, 5, 7, "Mt Massive.", "In an attempt to woo the carnivores out there, we layer our classic pie with sliced house made meatballs, imported pepperoni, Italian sausage, spiral cut ham and thick cut applewood bacon."};
         }
+    }
+
+    void display_balance(const inventory& inv) {
+        ImGui::Text("Balance: %d", inv.balance);
     }
 
     void update() noexcept final {
@@ -47,13 +57,13 @@ public:
         {
             ImGui::Begin("Inventory");
 
-            ImGui::Text("Balance: %d", inventory_balance);
+            display_balance(user);
 
             ImGui::Separator();
 
             // Items
-            auto& items = inventory_items;
-            auto& target_list = store_items;
+            auto& items = user.items;
+            auto& target_list = store.items;
             for(auto it = items.begin(); it != items.end(); ++it) {
                 auto& item = it->second;
                 ImGui::PushID(item.id);
@@ -71,10 +81,10 @@ public:
         {
             ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
             if (ImGui::Begin("Store")) {
-                ImGui::Text("Balance: %d", store_balance);
+                display_balance(store);
 
-                auto& items = store_items;
-                auto& target_items = inventory_items;
+                auto& items = store.items;
+                auto& target_items = user.items;
                 // Left
                 static int selected = 0;
                 static int curr_item_id = items.begin()->second.id;
@@ -113,15 +123,15 @@ public:
                 ImGui::EndChild();
 
                 bool has_stock = curr_item.quantity > 0;
-                bool has_funds = inventory_balance >= curr_item.price;
+                bool has_funds = user.balance >= curr_item.price;
                 if (ImGui::Button(std::string(
                         !has_funds ? std::string("Not enough funds (" + std::to_string(curr_item.price) + " " + currency_name + ")") :
                         !has_stock ? "Out of stock" :
                         ("Buy 1 for " + std::to_string(curr_item.price) + " " + currency_name)).c_str())) {
                     if(has_stock && has_funds) {
                         // Pay
-                        inventory_balance -= curr_item.price;
-                        store_balance += curr_item.price;
+                        user.balance -= curr_item.price;
+                        store.balance += curr_item.price;
 
                         // Lower the stock
                         --curr_item.quantity;
@@ -146,11 +156,9 @@ public:
     }
 
     // Item lists
-    int store_balance{0};
-    int inventory_balance{60};
+    inventory store{0};
+    inventory user{60};
     std::string currency_name{"RICK"};
-    std::unordered_map<int, item> store_items;
-    std::unordered_map<int, item> inventory_items;
 };
 
 REFL_AUTO(type(gui_system))
