@@ -16,16 +16,22 @@
 
 #pragma once
 
+//! C System Headers
+#include <cstdint> ///< std::uint8_t
+
+//! C++ System Headers
+#include <utility> ///< std::forward
+#include <ostream> ///< std::ostream
+
+//! Dependencies Headers
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
 
-#include <sol/sol.hpp>
+#include <sol/sol.hpp>  ///< sol::constructors
 
 #endif
 
-#include <cstdint>
-#include <utility>
-#include <ostream>
-#include "antara/gaming/core/safe.refl.hpp"
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 
 namespace antara::gaming::graphics {
     struct color {
@@ -128,7 +134,7 @@ namespace antara::gaming::graphics {
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
         using constructors = sol::constructors<fill_color(), fill_color(graphics::color),
-        fill_color(std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
+                fill_color(std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
 #endif
     };
 }

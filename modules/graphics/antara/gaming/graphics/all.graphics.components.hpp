@@ -16,15 +16,17 @@
 
 #pragma once
 
-#include <meta/sequence/list.hpp>
-#include "antara/gaming/graphics/component.layer.hpp"
-#include "antara/gaming/graphics/component.color.hpp"
-#include "antara/gaming/graphics/component.canvas.hpp"
-#include "antara/gaming/graphics/component.text.hpp"
-#include "antara/gaming/graphics/component.sprite.hpp"
+//! Dependencies Headers
+#include <meta/sequence/list.hpp> ///< doom::meta::list
 
-namespace antara::gaming::graphics
-{
+//! SDK Headers
+#include "antara/gaming/graphics/component.layer.hpp" ///< graphics::layer
+#include "antara/gaming/graphics/component.color.hpp" ///< graphics::color|outline_color|fill_color
+#include "antara/gaming/graphics/component.canvas.hpp" ///< graphics::canvas
+#include "antara/gaming/graphics/component.text.hpp" ///< graphics::text
+#include "antara/gaming/graphics/component.sprite.hpp" ///< graphics::sprite, graphics::rect
+
+namespace antara::gaming::graphics {
     using components_list = doom::meta::list<layer_0,
             layer_1,
             layer_2,

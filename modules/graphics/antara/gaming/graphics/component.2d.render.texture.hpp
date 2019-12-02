@@ -16,31 +16,33 @@
 
 #pragma once
 
-#include <string>
-#include <map>
-#include <antara/gaming/math/vector.hpp>
-#include <antara/gaming/graphics/component.color.hpp>
+//! C++ System Headers
+#include <string>  ///< std::string
+#include <map> ///< std::map
 
-namespace antara::gaming::graphics
-{
-    enum drawable_type
-    {
+//! Dependencies Headers
+#include <entt/entity/entity.hpp> ///< entt::entity
+
+//! SDK Headers
+#include "antara/gaming/math/vector.hpp" ///< math::vec2u
+#include "antara/gaming/graphics/component.color.hpp" ///< graphics::color
+
+namespace antara::gaming::graphics {
+    enum drawable_type {
         d_sprite,
         d_vertex_array,
         d_circle,
         d_rectangle
     };
 
-    struct drawable_info
-    {
+    struct drawable_info {
         entt::entity entity;
         drawable_type dt;
     };
 
     using drawable_registry = std::map<std::string, drawable_info>;
 
-    struct render_texture_2d
-    {
+    struct render_texture_2d {
         std::string id;
         math::vec2u size;
         drawable_registry to_draw;

@@ -16,23 +16,27 @@
 
 #pragma once
 
-#include <string> //! std::string
-#include "antara/gaming/graphics/component.color.hpp"
-#include "antara/gaming/transform/component.properties.hpp"
-#include "antara/gaming/transform/component.position.hpp"
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/math/vector.hpp"
+//! C++ System Headers
+#include <string> ///< std::string
 
-namespace antara::gaming::graphics
-{
-    struct rect
-    {
+//! Dependencies Headers
+#include <entt/entity/entity.hpp> ///< entt::entity
+#include <entt/entity/registry.hpp> ///< entt::registry
+
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/graphics/component.color.hpp" ///< graphics::fill_color
+#include "antara/gaming/transform/component.properties.hpp" ///< transform::properties
+#include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d
+#include "antara/gaming/math/vector.hpp" ///< math::vec2f
+
+namespace antara::gaming::graphics {
+    struct rect {
         math::vec2f pos;
         math::vec2f size;
     };
 
-    struct sprite
-    {
+    struct sprite {
         std::string appearance; //! texture id
         bool native_size{true}; //! take the whole size by default
         rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
@@ -42,8 +46,7 @@ namespace antara::gaming::graphics
                                          const sprite &spr,
                                          transform::position_2d pos = math::vec2f::scalar(0.f),
                                          fill_color spr_color = graphics::white,
-                                         const transform::properties &prop = {}) noexcept
-    {
+                                         const transform::properties &prop = {}) noexcept {
         auto spr_entity = registry.create();
         registry.assign<fill_color>(spr_entity, spr_color);
         registry.assign<transform::properties>(spr_entity, prop);
@@ -57,8 +60,7 @@ namespace antara::gaming::graphics
                                  const sprite &spr,
                                  transform::position_2d pos = math::vec2f::scalar(0.f),
                                  fill_color spr_color = graphics::white,
-                                 const transform::properties &prop = {}) noexcept
-    {
+                                 const transform::properties &prop = {}) noexcept {
         registry.assign<fill_color>(spr_entity, spr_color);
         registry.assign<transform::properties>(spr_entity, prop);
         registry.assign<sprite>(spr_entity, spr);
