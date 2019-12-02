@@ -24,8 +24,8 @@ public:
         // Fill store
         {
             int id = -1;
-            ++id; store_items[id] = {id, "Burgundy", "Méo-Camuzet ''Vosne Romanée Les Chaumes'' Burgundy, France 2009", 5, 1900};
-            ++id; store_items[id] = {id, "Saint-Émilion", "Château Vieux “Château des Combes” Grand Cru Classé Saint-Émilion, France 2011", 5, 390};
+            ++id; store_items[id] = {id, "Burgundy", "Méo-Camuzet 'Vosne Romanée Les Chaumes' Burgundy, France 2009", 5, 1900};
+            ++id; store_items[id] = {id, "Saint-Émilion", "Château Vieux 'Château des Combes” Grand Cru Classé Saint-Émilion, France 2011", 5, 390};
             ++id; store_items[id] = {id, "Entre Deux-Mers", "Château Labatut, Cuvée Prestige,Bordeaux Supérieur Entre Deux-Mers, France 2009", 5, 1900};
             ++id; store_items[id] = {id, "Médoc", "Château la Pirouette, Cru Bourgeois AOC, Médoc, France 2009", 5, 260};
             ++id; store_items[id] = {id, "Saint-Julien", "Château Léoville Las Cases, Grand Cru Classé, Saint-Julien, France 2004", 5, 2850};
@@ -33,10 +33,10 @@ public:
             ++id; store_items[id] = {id, "Margaux", "Château Giscours, La Siréne de Giscours, Grand Cru Classé, 2008", 5, 950};
             ++id; store_items[id] = {id, "Pessac-Léognan", "Château Haut Brion, A.O.C. Pessac-Léognan, 1er Grand Cru Classé, Pessac-Léognan, France 1999", 5, 7000};
             ++id; store_items[id] = {id, "Pauillac", "La Rose Bel Air, Grand Vin de Bordeaux, Pauillac, France 2008", 5, 390};
-            ++id; store_items[id] = {id, "Cahors", "Château du Cédre “Le Cédre” AOC Cahors, France 2006", 5, 950};
+            ++id; store_items[id] = {id, "Cahors", "Château du Cédre 'Le Cédre” AOC Cahors, France 2006", 5, 950};
             ++id; store_items[id] = {id, "Rhône", "Mourvedre, Grenache, Syrah, Counoise, Cinsault, Rhône, France 2010", 5, 1850};
-            ++id; store_items[id] = {id, "Tuscany", "Cecchi “Chianti” Sangiovese, DOCG,Tuscany, Italy 2013", 5, 320};
-            ++id; store_items[id] = {id, "Bolgheri Superiore", "Tenuta dell’Ornellaia “Ornellaia” Cabernet Sauvignon, Merlot, Cabernet Franc, P.Verdot Bolgheri Superiore, DOC, Bolgheri, Tuscany 2010", 5, 1900};
+            ++id; store_items[id] = {id, "Tuscany", "Cecchi 'Chianti” Sangiovese, DOCG,Tuscany, Italy 2013", 5, 320};
+            ++id; store_items[id] = {id, "Bolgheri Superiore", "Tenuta dell’Ornellaia 'Ornellaia” Cabernet Sauvignon, Merlot, Cabernet Franc, P.Verdot Bolgheri Superiore, DOC, Bolgheri, Tuscany 2010", 5, 1900};
         }
     }
 
