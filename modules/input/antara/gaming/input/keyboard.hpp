@@ -16,10 +16,8 @@
 
 #pragma once
 
-namespace antara::gaming::input
-{
-    enum key
-    {
+namespace antara::gaming::input {
+    enum key {
         a,
         b,
         c,

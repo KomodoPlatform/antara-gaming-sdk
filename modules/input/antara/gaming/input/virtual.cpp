@@ -14,10 +14,13 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <range/v3/view/iota.hpp>
-#include <range/v3/view/zip.hpp>
-#include <range/v3/algorithm/any_of.hpp>
-#include <antara/gaming/event/mouse.button.pressed.hpp>
+//! Dependencies Headers
+#include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
+#include <range/v3/algorithm/any_of.hpp> ///< ranges::any_of
+#include <range/v3/view/iota.hpp> ///< ranges::view::ints
+#include <range/v3/view/zip.hpp> ///< ranges::view::zip
+
+//! SDK Headers
 #include "antara/gaming/input/virtual.hpp"
 
 namespace antara::gaming::input {
