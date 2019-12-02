@@ -12,31 +12,31 @@ using namespace antara::gaming;
 
 class gui_system final : public ecs::post_update_system<gui_system> {
     struct item {
-        int id{0};
+        int id;
         std::string name;
         std::string description;
-        int quantity{0};
-        int price{0};
+        int quantity;
+        int price;
     };
 
 public:
     gui_system(entt::registry &registry) noexcept : system(registry) {
         // Fill store
         {
-            int id = 0;
-            store_items.push_back({id++, "Burgundy", "Méo-Camuzet ''Vosne Romanée Les Chaumes'' Burgundy, France 2009", 5, 1900});
-            store_items.push_back({id++, "Saint-Émilion", "Château Vieux “Château des Combes” Grand Cru Classé Saint-Émilion, France 2011", 5, 390});
-            store_items.push_back({id++, "Entre Deux-Mers", "Château Labatut, Cuvée Prestige,Bordeaux Supérieur Entre Deux-Mers, France 2009", 5, 1900});
-            store_items.push_back({id++, "Médoc", "Château la Pirouette, Cru Bourgeois AOC, Médoc, France 2009", 5, 260});
-            store_items.push_back({id++, "Saint-Julien", "Château Léoville Las Cases, Grand Cru Classé, Saint-Julien, France 2004", 5, 2850});
-            store_items.push_back({id++, "Moulis", "L’Héritage De Chasse Spleen, AOC Moulis, Moulis, France 2003", 5, 950});
-            store_items.push_back({id++, "Margaux", "Château Giscours, La Siréne de Giscours, Grand Cru Classé, 2008", 5, 950});
-            store_items.push_back({id++, "Pessac-Léognan", "Château Haut Brion, A.O.C. Pessac-Léognan, 1er Grand Cru Classé, Pessac-Léognan, France 1999", 5, 7000});
-            store_items.push_back({id++, "Pauillac", "La Rose Bel Air, Grand Vin de Bordeaux, Pauillac, France 2008", 5, 390});
-            store_items.push_back({id++, "Cahors", "Château du Cédre “Le Cédre” AOC Cahors, France 2006", 5, 950});
-            store_items.push_back({id++, "Rhône", "Mourvedre, Grenache, Syrah, Counoise, Cinsault, Rhône, France 2010", 5, 1850});
-            store_items.push_back({id++, "Tuscany", "Cecchi “Chianti” Sangiovese, DOCG,Tuscany, Italy 2013", 5, 320});
-            store_items.push_back({id++, "Bolgheri Superiore", "Tenuta dell’Ornellaia “Ornellaia” Cabernet Sauvignon, Merlot, Cabernet Franc, P.Verdot Bolgheri Superiore, DOC, Bolgheri, Tuscany 2010", 5, 1900});
+            int id = -1;
+            ++id; store_items[id] = {id, "Burgundy", "Méo-Camuzet ''Vosne Romanée Les Chaumes'' Burgundy, France 2009", 5, 1900};
+            ++id; store_items[id] = {id, "Saint-Émilion", "Château Vieux “Château des Combes” Grand Cru Classé Saint-Émilion, France 2011", 5, 390};
+            ++id; store_items[id] = {id, "Entre Deux-Mers", "Château Labatut, Cuvée Prestige,Bordeaux Supérieur Entre Deux-Mers, France 2009", 5, 1900};
+            ++id; store_items[id] = {id, "Médoc", "Château la Pirouette, Cru Bourgeois AOC, Médoc, France 2009", 5, 260};
+            ++id; store_items[id] = {id, "Saint-Julien", "Château Léoville Las Cases, Grand Cru Classé, Saint-Julien, France 2004", 5, 2850};
+            ++id; store_items[id] = {id, "Moulis", "L’Héritage De Chasse Spleen, AOC Moulis, Moulis, France 2003", 5, 950};
+            ++id; store_items[id] = {id, "Margaux", "Château Giscours, La Siréne de Giscours, Grand Cru Classé, 2008", 5, 950};
+            ++id; store_items[id] = {id, "Pessac-Léognan", "Château Haut Brion, A.O.C. Pessac-Léognan, 1er Grand Cru Classé, Pessac-Léognan, France 1999", 5, 7000};
+            ++id; store_items[id] = {id, "Pauillac", "La Rose Bel Air, Grand Vin de Bordeaux, Pauillac, France 2008", 5, 390};
+            ++id; store_items[id] = {id, "Cahors", "Château du Cédre “Le Cédre” AOC Cahors, France 2006", 5, 950};
+            ++id; store_items[id] = {id, "Rhône", "Mourvedre, Grenache, Syrah, Counoise, Cinsault, Rhône, France 2010", 5, 1850};
+            ++id; store_items[id] = {id, "Tuscany", "Cecchi “Chianti” Sangiovese, DOCG,Tuscany, Italy 2013", 5, 320};
+            ++id; store_items[id] = {id, "Bolgheri Superiore", "Tenuta dell’Ornellaia “Ornellaia” Cabernet Sauvignon, Merlot, Cabernet Franc, P.Verdot Bolgheri Superiore, DOC, Bolgheri, Tuscany 2010", 5, 1900};
         }
     }
 
@@ -45,19 +45,18 @@ public:
         {
             ImGui::Begin("Inventory");
 
+            ImGui::Text("Balance: %d", inventory_balance);
+
+            ImGui::Separator();
+
             // Items
             auto& items = inventory_items;
             auto& target_list = store_items;
-            for(auto it = items.begin(); it != items.end();) {
-                ImGui::PushID(it->id);
+            for(auto it = items.begin(); it != items.end(); ++it) {
+                auto& item = it->second;
+                ImGui::PushID(item.id);
 
-                // If button is clicked, remove this item, add it to the other list
-                if(ImGui::Button(it->name.c_str())) {
-                    target_list.push_back(*it);
-                    it = items.erase(it);
-                }
-                // Iterate
-                else ++it;
+                if(ImGui::Button(std::string(std::to_string(item.quantity) + "x " + item.name).c_str())) {}
 
                 ImGui::PopID();
             }
@@ -70,20 +69,28 @@ public:
         {
             ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
             if (ImGui::Begin("Store")) {
+                ImGui::Text("Balance: %d", store_balance);
+
+                auto& items = store_items;
+                auto& target_items = inventory_items;
                 // Left
                 static int selected = 0;
+                static int curr_item_id = items.begin()->second.id;
+
                 ImGui::BeginChild("left pane", ImVec2(150, 0), true);
-                auto& items = store_items;
                 int i = 0;
                 for (auto it = items.begin(); it != items.end(); ++it, ++i) {
-                    if (ImGui::Selectable(it->name.c_str(), selected == i))
+                    auto& item = it->second;
+                    if (ImGui::Selectable(item.name.c_str(), selected == i)) {
                         selected = i;
+                        curr_item_id = item.id;
+                    }
                 }
                 ImGui::EndChild();
                 ImGui::SameLine();
 
                 // Right
-                auto& curr_item = items[selected];
+                auto& curr_item = items[curr_item_id];
                 ImGui::BeginGroup();
                 ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
                 ImGui::TextWrapped("%s  x%d", curr_item.name.c_str(), curr_item.quantity);
@@ -102,7 +109,33 @@ public:
                     ImGui::EndTabBar();
                 }
                 ImGui::EndChild();
-                if (ImGui::Button(std::string("Buy 1 for " + std::to_string(curr_item.price) + " " + currency_name).c_str())) {}
+
+                bool has_stock = curr_item.quantity > 0;
+                bool has_funds = inventory_balance >= curr_item.price;
+                if (ImGui::Button(std::string(
+                        !has_funds ? std::string("Not enough funds (" + std::to_string(curr_item.price) + " " + currency_name + ")") :
+                        !has_stock ? "Out of stock" :
+                        ("Buy 1 for " + std::to_string(curr_item.price) + " " + currency_name)).c_str())) {
+                    if(has_stock && has_funds) {
+                        // Pay
+                        inventory_balance -= curr_item.price;
+                        store_balance += curr_item.price;
+
+                        // Lower the stock
+                        --curr_item.quantity;
+
+                        // Give the item
+                        // If user already has this item, just increase the quantity
+                        if(target_items.find(curr_item.id) != target_items.end()) {
+                            ++target_items[curr_item.id].quantity;
+                        }
+                        // Else, add this item, set quantity as 1
+                        else {
+                            target_items[curr_item.id] = curr_item;
+                            target_items[curr_item.id].quantity = 1;
+                        }
+                    }
+                }
                 ImGui::SameLine();
                 ImGui::EndGroup();
             }
@@ -114,8 +147,8 @@ public:
     int store_balance{0};
     int inventory_balance{20000};
     std::string currency_name{"RICK"};
-    std::vector<item> store_items;
-    std::vector<item> inventory_items;
+    std::unordered_map<int, item> store_items;
+    std::unordered_map<int, item> inventory_items;
 };
 
 REFL_AUTO(type(gui_system))
