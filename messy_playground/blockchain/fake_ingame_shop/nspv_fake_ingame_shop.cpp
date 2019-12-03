@@ -98,7 +98,8 @@ public:
                     // Update pending transactions count
                     blockchain::nspv_api::mempool_request request{user.wallet_address};
 
-                    int m_tx_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency), request).txids.size();
+                    int m_tx_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency),
+                                                                   request).txids.size();
                     {
                         std::scoped_lock st_lock(user_mutex);
                         mempool_transaction_count = m_tx_count;
@@ -233,7 +234,8 @@ public:
                         std::scoped_lock lck(tx_ids_mutex);
                         tx_ids.push_back(tx.broadcast_answer.value().broadcast);
                     }
-                    std::cout << "Send complete, Transaction ID: " << tx.broadcast_answer.value().broadcast << std::endl;
+                    std::cout << "Send complete, Transaction ID: " << tx.broadcast_answer.value().broadcast
+                              << std::endl;
 
                     // Check pending status
                     if (!application_quits)
@@ -386,9 +388,12 @@ public:
             ImGui::Separator();
 
             // Items
-            for (auto &tx_id : tx_ids) {
-                if (ImGui::Button(std::string(tx_id).c_str())) {
-                    core::open_url_browser("http://" + currency_lc + "." + explorer_url + "/tx/" + tx_id);
+            {
+                std::scoped_lock lck(tx_ids_mutex);
+                for (auto &tx_id : tx_ids) {
+                    if (ImGui::Button(std::string(tx_id).c_str())) {
+                        core::open_url_browser("http://" + currency_lc + "." + explorer_url + "/tx/" + tx_id);
+                    }
                 }
             }
 
@@ -397,7 +402,7 @@ public:
     }
 
     // State
-    bool application_quits{false};
+    std::atomic<bool> application_quits{false};
 
     // Inventories
     std::mutex store_mutex;
