@@ -54,7 +54,7 @@ public:
         user.nspv_balance = nspv_system_user_.get_balance(currency);
 
         // Safe to update local balance if there are no pending transactions
-        if(pending_transaction_count == 0) {
+        if(pending_transaction_count == 0 && mempool_transaction_count == 0) {
             store.balance = store.nspv_balance;
             user.balance = user.nspv_balance;
         }
@@ -78,24 +78,17 @@ public:
             update_balances();
         }
 
-        // Refresh user balance asynchronously
+        // Refresh mempool transaction count and update balances accordingly
         {
             nspv_threads.emplace_back([this] {
                 while(!application_quits) {
                     std::this_thread::sleep_for(5s);
-                    update_balances();
-                }
-            });
-        }
-
-        // Refresh pending transaction count asynchronously
-        {
-            nspv_threads.emplace_back([this] {
-                while(!application_quits) {
                     // Update pending transactions count
-                    pending_transaction_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency)).txids.size();
+                    blockchain::nspv_api::mempool_request request{user.wallet_address};
+                    mempool_transaction_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency), request).txids.size();
 
-                    std::this_thread::sleep_for(5s);
+                    // Update balances
+                    update_balances();
                 }
             });
         }
@@ -130,7 +123,7 @@ public:
     }
 
     void display_balance(const inventory& inv, bool show_pending_count = false) {
-        if(show_pending_count) ImGui::Text("Pending Transactions: %d", pending_transaction_count);
+        if(show_pending_count) ImGui::Text("Pending Transactions: %d, Mempool: %d", pending_transaction_count, mempool_transaction_count);
 
         bool pending = inv.pending_balance != 0;
         ImGui::Text(std::string(std::string("Balance: %.2lf") +
@@ -160,6 +153,7 @@ public:
     void clear_pending(const int price) {
         user.pending_balance += price;
         store.pending_balance -= price;
+        --pending_transaction_count;
     }
 
     void pay_and_transfer(item& store_item) {
@@ -170,6 +164,8 @@ public:
         store.balance += price;
 
         // Set pending balance
+        ++pending_transaction_count;
+
         user.pending_balance -= price;
         store.pending_balance += price;
 
@@ -330,6 +326,7 @@ public:
 
     // Threads
     int pending_transaction_count{0};
+    int mempool_transaction_count{0};
     std::vector<std::thread> transaction_threads;
     std::vector<std::thread> nspv_threads;
 
