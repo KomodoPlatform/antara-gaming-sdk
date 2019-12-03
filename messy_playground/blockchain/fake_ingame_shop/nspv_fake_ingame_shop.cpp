@@ -222,14 +222,14 @@ public:
                 std::cout << "Sending " << price << " to " << store.wallet_address << "..." << std::endl;
                 auto tx = nspv_system_user_.send(currency, store.wallet_address, price);
 
-                {
-                    std::scoped_lock lck(tx_ids_mutex);
-                    tx_ids.push_back(tx.broadcast_answer.value().broadcast);
-                }
-                std::cout << "Send complete, Transaction ID: " << tx.broadcast_answer.value().broadcast << std::endl;
-
                 // If payment is successful, check for pending
                 if (tx.broadcast_answer.has_value()) {
+                    {
+                        std::scoped_lock lck(tx_ids_mutex);
+                        tx_ids.push_back(tx.broadcast_answer.value().broadcast);
+                    }
+                    std::cout << "Send complete, Transaction ID: " << tx.broadcast_answer.value().broadcast << std::endl;
+
                     // Check pending status
                     if (!application_quits)
                         transaction_threads.emplace_back([this, price, tx, &store_item] {
