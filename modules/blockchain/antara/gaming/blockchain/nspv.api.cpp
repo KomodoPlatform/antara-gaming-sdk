@@ -37,9 +37,19 @@ namespace antara::gaming::blockchain {
         j.at("balance").get_to(cfg.balance);
     }
 
+    void nspv_api::from_json(const nlohmann::json &j, mempool_answer &cfg) {
+        j.at("result").get_to(cfg.result);
+        j.at("txids").get_to(cfg.txids);
+    }
+
+    void nspv_api::from_json(const nlohmann::json &j, nspv_api::txproof_answer &cfg) {
+        j.at("txid").get_to(cfg.txid);
+    }
+
     void nspv_api::from_json(const nlohmann::json &j, nspv_api::spend_answer &cfg) {
         j.at("result").get_to(cfg.result);
         j.at("hex").get_to(cfg.hex);
+        j.at("vout").get_to(cfg.vout);
     }
 
     void nspv_api::from_json(const nlohmann::json &j, nspv_api::broadcast_answer &cfg) {
@@ -79,6 +89,29 @@ namespace antara::gaming::blockchain {
         json_data["params"].push_back(amount);
         auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
         return rpc_process_answer<spend_answer>(resp);
+    }
+
+
+    nspv_api::mempool_answer nspv_api::mempool(const std::string &endpoint, std::optional<mempool_request> request) {
+        LOG_SCOPE_FUNCTION(INFO);
+        auto json_data = template_request("mempool");
+        if (request.has_value()) {
+            if (request.value().address.has_value()) {
+                json_data["params"].push_back(request.value().address.value());
+            }
+        }
+        auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
+        return rpc_process_answer<mempool_answer>(resp);
+    }
+
+
+    nspv_api::txproof_answer nspv_api::txproof(const std::string &endpoint, const nspv_api::txproof_request &request) {
+        LOG_SCOPE_FUNCTION(INFO);
+        auto json_data = template_request("txproof");
+        json_data["params"].push_back(request.txid);
+        json_data["params"].push_back(request.vout);
+        auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
+        return rpc_process_answer<txproof_answer>(resp);
     }
 
     nspv_api::broadcast_answer nspv_api::broadcast(const std::string &endpoint, const std::string &hex) {
