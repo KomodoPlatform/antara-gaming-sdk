@@ -53,5 +53,14 @@ namespace antara::gaming::blockchain::tests {
         CHECK_GT(unspent_answer.balance, 0.0);
 
         CHECK_GT(nspv_system.get_balance("RICK"), 0.0);
+
+        auto mempool_answer = blockchain::nspv_api::mempool(endpoint);
+        CHECK_EQ(mempool_answer.result, "success");
+
+        nspv_api::txproof_request rq{.txid ="123", .vout = 123};
+        auto txproof_answer = blockchain::nspv_api::txproof(endpoint, rq);
+        CHECK_EQ(txproof_answer.rpc_result_code, -1);
+
+        CHECK(nspv_system.is_transaction_pending("RICK", "1", 1));
     }
 }

@@ -32,11 +32,17 @@
 //! SDK Headers
 #include "antara/gaming/core/real.path.hpp" ///< core::assets_real_path
 #include "antara/gaming/ecs/system.hpp" ///< ecs::system
+#include "nspv.api.hpp"
 
 //! Namespace shortcuts.
 namespace fs = std::filesystem;
 
 namespace antara::gaming::blockchain {
+    struct nspv_tx_answer
+    {
+        nspv_api::spend_answer send_answer;
+        std::optional<nspv_api::broadcast_answer> broadcast_answer{std::nullopt};
+    };
     class nspv final : public ecs::logic_update_system<nspv> {
         //! Private data structure
         struct nspv_process {
@@ -74,6 +80,8 @@ namespace antara::gaming::blockchain {
         //! Public member functions
         void update() noexcept final;
 
+        bool is_transaction_pending(const std::string& coin, const std::string& txid, std::size_t vout) noexcept;
+
         void set_pin_for_the_session(const std::string &pin);
 
         [[nodiscard]] const std::string &get_address(const std::string &coin) const;
@@ -90,7 +98,7 @@ namespace antara::gaming::blockchain {
         [[nodiscard]] const std::string &get_endpoint(const std::string &coin) const noexcept;
 
         //! this function process a spend + broadcast on the given coin and given amount
-        bool send(const std::string &coin, const std::string &address, double amount) noexcept;
+        nspv_tx_answer send(const std::string &coin, const std::string &address, double amount) noexcept;
     };
 }
 

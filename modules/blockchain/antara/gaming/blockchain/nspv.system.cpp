@@ -22,7 +22,8 @@
 
 //! Dependencies Headers
 #include <loguru.hpp> ///< DVLOG_F, VLOG_SCOPE_F, LOG_SCOPE_FUNCTION
-#include <nlohmann/json.hpp> //! nlohmann::json
+#include <nlohmann/json.hpp> ///< nlohmann::json
+#include <range/v3/algorithm/any_of.hpp> ///< ranges::any_of
 
 //! SDK Headers
 #include "antara/gaming/blockchain/nspv.api.hpp"
@@ -139,18 +140,38 @@ namespace antara::gaming::blockchain {
         return result.result == "success";
     }
 
-    bool nspv::send(const std::string &coin, const std::string &address, double amount) noexcept {
+    nspv_tx_answer nspv::send(const std::string &coin, const std::string &address, double amount) noexcept {
         LOG_SCOPE_FUNCTION(INFO);
+        nspv_tx_answer tx;
         //! assume we are login before call send
-        auto result = nspv_api::spend(get_endpoint(coin), address, amount);
-        if (result.result == "success") {
-            auto broadcast_result = nspv_api::broadcast(get_endpoint(coin), result.hex);
-            return broadcast_result.result == "success";
+        tx.send_answer = nspv_api::spend(get_endpoint(coin), address, amount);
+        if (tx.send_answer.result == "success") {
+            tx.broadcast_answer = nspv_api::broadcast(get_endpoint(coin), tx.send_answer.hex);
+            return tx;
         }
-        return false;
+        return tx;
     }
 
     const std::string &nspv::get_address(const std::string &coin) const {
         return registry_.at(coin).address;
+    }
+
+    bool nspv::is_transaction_pending(const std::string &coin, const std::string &txid, std::size_t vout) noexcept {
+        LOG_SCOPE_FUNCTION(INFO);
+        auto result = nspv_api::mempool(get_endpoint(coin));
+        if (result.rpc_result_code == -1) {
+            VLOG_F(loguru::Verbosity_ERROR, "mempool rpc call failed: {}", result.raw_result);
+            return true;
+        }
+        bool is_pending = ranges::any_of(result.txids, [txid](const std::string &current_txid) { return current_txid == txid; });
+        //! We still need to verify with txproof
+        if (not is_pending) {
+            nspv_api::txproof_request rq{.txid = txid, .vout = vout};
+            auto tx_result = nspv_api::txproof(get_endpoint(coin), rq);
+            if (tx_result.rpc_result_code != -1) {
+                return false; //! Transaction is confirmed
+            }
+        }
+        return true;
     }
 }
