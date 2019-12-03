@@ -2,6 +2,7 @@ add_library(antara_nspv STATIC)
 target_sources(antara_nspv PRIVATE antara/gaming/blockchain/nspv.system.cpp antara/gaming/blockchain/nspv.api.cpp)
 target_include_directories(antara_nspv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(antara_nspv PUBLIC antara::default_settings antara::ecs reproc++ nlohmann_json::nlohmann_json antara::http_client)
+target_compile_definitions(antara_nspv PRIVATE  $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>)
 add_library(antara::nspv ALIAS antara_nspv)
 
 if (ANTARA_BUILD_UNIT_TESTS)
@@ -18,6 +19,7 @@ if (ANTARA_BUILD_UNIT_TESTS)
             )
 
     target_link_libraries(antara_blockchain_tests PRIVATE doctest PUBLIC antara::nspv)
+    target_compile_definitions(antara_blockchain_tests PRIVATE $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>)
     target_sources(antara_blockchain_tests PRIVATE
             antara/gaming/blockchain/antara.blockchain.tests.cpp
             antara/gaming/blockchain/nspv.system.tests.cpp)

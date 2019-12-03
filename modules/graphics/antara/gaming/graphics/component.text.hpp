@@ -16,16 +16,22 @@
 
 #pragma once
 
-#include <entt/entity/entity.hpp>
-#include <entt/entity/registry.hpp>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/graphics/component.color.hpp"
-#include "antara/gaming/transform/component.position.hpp"
+//! C System Headers
+#include <cstddef> ///< std::size_t
 
-namespace antara::gaming::graphics
-{
-    enum text_style : int
-    {
+//! C++ System Headers
+#include <string> ///< std::string
+
+//! Dependencies Headers
+#include <entt/entity/registry.hpp> ///< entt::registry
+
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/graphics/component.color.hpp" ///< graphics::color
+#include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d
+
+namespace antara::gaming::graphics {
+    enum text_style : int {
         regular,
         bold,
         italic,
@@ -33,8 +39,7 @@ namespace antara::gaming::graphics
         strike_through
     };
 
-    struct text
-    {
+    struct text {
         text(const text &other) = default;
 
         text &operator=(const text &other) = default;
@@ -48,9 +53,9 @@ namespace antara::gaming::graphics
     };
 
     entt::entity blueprint_text(entt::registry &registry,
-                                       const text &txt,
-                                       transform::position_2d pos = math::vec2f::scalar(0.f),
-                                       fill_color txt_color = graphics::white) noexcept;
+                                const text &txt,
+                                transform::position_2d pos = math::vec2f::scalar(0.f),
+                                fill_color txt_color = graphics::white) noexcept;
 }
 
 REFL_AUTO(type(antara::gaming::graphics::text), field(appearance), field(contents), field(style), field(character_size),

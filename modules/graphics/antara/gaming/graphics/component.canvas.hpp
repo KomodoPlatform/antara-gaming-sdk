@@ -16,41 +16,37 @@
 
 #pragma once
 
-#include <ostream>
-#include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/math/vector.hpp"
-#include "antara/gaming/graphics/component.color.hpp"
+//! C++ System Headers
+#include <ostream> ///< std::ostream
 
-namespace antara::gaming::graphics
-{
-    struct rectangle
-    {
+//! SDK Headers
+#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/math/vector.hpp" ///< math::vec2f
+#include "antara/gaming/graphics/component.color.hpp" ///< graphics::fill_color
+
+namespace antara::gaming::graphics {
+    struct rectangle {
         math::vec2f size; //! width/height
         math::vec2f position;
 
-        bool operator==(const rectangle &rhs) const
-        {
+        bool operator==(const rectangle &rhs) const {
             return size == rhs.size &&
                    position == rhs.position;
         }
 
-        bool operator!=(const rectangle &rhs) const
-        {
+        bool operator!=(const rectangle &rhs) const {
             return !(rhs == *this);
         }
 
         //! pos of the rectangle
-        friend std::ostream &operator<<(std::ostream &os, const rectangle &rectangle)
-        {
+        friend std::ostream &operator<<(std::ostream &os, const rectangle &rectangle) {
             os << "size: " << rectangle.size << " position: " << rectangle.position;
             return os;
         }
     };
 
-    struct canvas_2d
-    {
-        enum scale_mode
-        {
+    struct canvas_2d {
+        enum scale_mode {
             none,
             stretch,
             crop,
@@ -75,8 +71,7 @@ namespace antara::gaming::graphics
         fill_color background_color{graphics::black};
         math::vec2f canvas_texture_scaling{1.0f, 1.0f};
 
-        void reset_canvas() noexcept
-        {
+        void reset_canvas() noexcept {
             auto&&[window_width, window_height] = window.size;
             auto&&[canvas_width, canvas_height] = canvas.size;
             auto&&[canvas_texture_width, canvas_texture_height] = canvas_texture.size;
@@ -116,8 +111,7 @@ namespace antara::gaming::graphics
             canvas_texture.position = math::vec2f{window_width * 0.5f, window_height * 0.5f};
         }
 
-        bool operator==(const canvas_2d &rhs) const
-        {
+        bool operator==(const canvas_2d &rhs) const {
             return window == rhs.window &&
                    canvas == rhs.canvas &&
                    current_scaling_mode == rhs.current_scaling_mode &&
@@ -126,8 +120,7 @@ namespace antara::gaming::graphics
                    background_color == rhs.background_color;
         }
 
-        friend inline std::ostream &operator<<(std::ostream &os, const canvas_2d &d)
-        {
+        friend inline std::ostream &operator<<(std::ostream &os, const canvas_2d &d) {
             os << "window: " << d.window << " canvas: " << d.canvas << " canvas_texture: " << d.canvas_texture
                << " custom_canvas_width: " << d.custom_canvas_width << " custom_canvas_height: "
                << d.custom_canvas_height << " native_desktop_mode: " << d.native_desktop_mode << " is_fullscreen: "
@@ -137,11 +130,9 @@ namespace antara::gaming::graphics
             return os;
         }
 
-        bool operator!=(const canvas_2d &rhs) const
-        {
+        bool operator!=(const canvas_2d &rhs) const {
             return !(rhs == *this);
         }
-
 
 
         canvas_2d() = default;

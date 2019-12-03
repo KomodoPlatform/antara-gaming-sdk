@@ -16,13 +16,13 @@
 
 #pragma once
 
-#include <string>
+//! C++ System Headers
+#include <string> ///< std::string
 
-namespace antara::gaming::lua
-{
-    struct component_script
-    {
+namespace antara::gaming::lua {
+    struct component_script {
         component_script(std::string script_, std::string table_name_) noexcept;
+
         component_script() noexcept;
 
         std::string script;

@@ -14,16 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
-//! SDK Headers
-#include "antara/gaming/graphics/component.text.hpp"
+#pragma once
 
-namespace antara::gaming::graphics {
-    entt::entity blueprint_text(entt::registry &registry, const text &txt, const transform::position_2d pos,
-                                fill_color txt_color) noexcept {
-        auto text_entity = registry.create();
-        registry.assign<fill_color>(text_entity, txt_color);
-        registry.assign<text>(text_entity, txt);
-        registry.assign<transform::position_2d>(text_entity, pos);
-        return text_entity;
+//! SDK Headers
+#ifdef _WIN32
+
+#include "antara/gaming/core/details/windows/open.url.browser.hpp"
+
+#elif __APPLE__ || __linux__
+
+#include "antara/gaming/core/details/posix/open.url.browser.hpp"
+
+#endif
+
+namespace antara::gaming::core {
+    inline void open_url_browser(const std::string &url) noexcept {
+        details::open_url_browser(url);
     }
 }

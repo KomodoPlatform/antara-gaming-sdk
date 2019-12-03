@@ -14,16 +14,17 @@
  *                                                                            *
  ******************************************************************************/
 
-//! SDK Headers
-#include "antara/gaming/graphics/component.text.hpp"
+#pragma once
 
-namespace antara::gaming::graphics {
-    entt::entity blueprint_text(entt::registry &registry, const text &txt, const transform::position_2d pos,
-                                fill_color txt_color) noexcept {
-        auto text_entity = registry.create();
-        registry.assign<fill_color>(text_entity, txt_color);
-        registry.assign<text>(text_entity, txt);
-        registry.assign<transform::position_2d>(text_entity, pos);
-        return text_entity;
+//! C System Headers
+#include <cstdlib> ///< std::system
+
+//! C++ System Headers
+#include <string> ///< std::string
+
+namespace antara::gaming::core::details {
+    inline void open_url_browser(const std::string &url) noexcept {
+        using namespace std::literals::string_literals;
+        std::system(("start "s + url).c_str());
     }
 }
