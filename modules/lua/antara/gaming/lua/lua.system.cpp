@@ -15,44 +15,42 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "antara/gaming/core/version.hpp"
-#include "antara/gaming/core/reflection.entity.registry.hpp"
+//! SDK Headers
+#include "antara/gaming/core/version.hpp" ///< core::version
+#include "antara/gaming/core/reflection.entity.registry.hpp" ///< reflected registry
 #include "antara/gaming/ecs/all.components.hpp"
-#include "antara/gaming/ecs/event.add.base.system.hpp"
+#include "antara/gaming/ecs/event.add.base.system.hpp" ///< event::add_base_system
 #include "antara/gaming/event/all.events.hpp"
-#include "antara/gaming/input/keyboard.hpp"
-#include "antara/gaming/input/mouse.hpp"
+#include "antara/gaming/input/keyboard.hpp" ///< input::key
+#include "antara/gaming/input/mouse.hpp" ///< input::mouse_button
+#include "antara/gaming/lua/component.lua.hpp" /// lua::component_script
+#include "antara/gaming/lua/details/lua.scripted.system.hpp" ///< lua::details::scripted_system
 #include "antara/gaming/lua/lua.system.hpp"
-#include "antara/gaming/lua/component.lua.hpp"
-#include "antara/gaming/lua/details/lua.scripted.system.hpp"
 
-namespace antara::gaming::lua
-{
-    void scripting_system::update() noexcept
-    {
+namespace antara::gaming::lua {
+    void scripting_system::update() noexcept {
         entity_registry_.view<lua::component_script>().each([this](auto entity_id, auto &&comp) {
             execute_safe_function("on_update", comp.table_name, entity_id);
         });
     }
 
     scripting_system::scripting_system(entt::registry &entity_registry,
-                                       std::filesystem::path script_directory,
-                                       std::filesystem::path systems_directory,
-                                       std::filesystem::path script_scenes_directory,
-                                       std::filesystem::path script_lib_directory) noexcept :
+                                       fs::path script_directory,
+                                       fs::path systems_directory,
+                                       fs::path script_scenes_directory,
+                                       fs::path script_lib_directory) noexcept :
             system(entity_registry),
             directory_path_(std::move(script_directory)), systems_directory_path_(
             std::move(systems_directory)),
             scenes_directory_path_(std::move(script_scenes_directory)),
-            script_lib_directory_(std::move(script_lib_directory))
-    {
+            script_lib_directory_(std::move(script_lib_directory)) {
         lua_state_->open_libraries();
         register_entity_registry();
         lua_state_->new_usertype<entt::dispatcher>("dispatcher");
-        assert(std::filesystem::exists(scenes_directory_path_));
-        assert(std::filesystem::exists(systems_directory_path_));
-        assert(std::filesystem::exists(script_lib_directory_));
-        assert(std::filesystem::exists(directory_path_));
+        assert(fs::exists(scenes_directory_path_));
+        assert(fs::exists(systems_directory_path_));
+        assert(fs::exists(script_lib_directory_));
+        assert(fs::exists(directory_path_));
         auto res = this->load_scripts(script_lib_directory_);
         if (!res)
             std::abort();
@@ -193,7 +191,7 @@ namespace antara::gaming::lua
         (*this->lua_state_)["antara"]["get_all_scripts_scenes"] = [this]() {
             std::vector<std::string> path_scenes_entries;
             std::vector<std::string> filename_scenes;
-            for (auto &&p: std::filesystem::directory_iterator(scenes_directory_path_)) {
+            for (auto &&p: fs::directory_iterator(scenes_directory_path_)) {
                 if (p.is_regular_file()) {
                     path_scenes_entries.push_back(p.path().string());
                     filename_scenes.push_back(p.path().filename().string());
@@ -212,8 +210,7 @@ namespace antara::gaming::lua
                                                                     "dispatcher", std::ref(this->dispatcher_));
     }
 
-    void scripting_system::register_entity_registry()
-    {
+    void scripting_system::register_entity_registry() {
         register_type<entt::registry>("entity_registry");
         (*this->lua_state_)["entity_registry"]["create"] = [](entt::registry &self) {
             return self.create();
@@ -242,13 +239,11 @@ namespace antara::gaming::lua
         };
     }
 
-    sol::state &scripting_system::get_state() noexcept
-    {
+    sol::state &scripting_system::get_state() noexcept {
         return (*this->lua_state_);
     }
 
-    bool scripting_system::load_script_from_entities() noexcept
-    {
+    bool scripting_system::load_script_from_entities() noexcept {
         bool res = true;
         entity_registry_.view<lua::component_script>().each([this, &res](auto entity_id, auto &&comp) {
             res &= this->load_script(comp.script);
@@ -259,12 +254,11 @@ namespace antara::gaming::lua
         return res;
     }
 
-    bool scripting_system::load_scripted_system(const std::string &script_name) noexcept
-    {
+    bool scripting_system::load_scripted_system(const std::string &script_name) noexcept {
         bool res = load_script(script_name, systems_directory_path_);
         if (not res)
             return false;
-        auto table_name = std::filesystem::path(script_name).stem().string() + "_table";
+        auto table_name = fs::path(script_name).stem().string() + "_table";
         ecs::system_type sys_type = (*this->lua_state_)[table_name]["system_type"];
         switch (sys_type) {
             case ecs::pre_update:
@@ -290,34 +284,31 @@ namespace antara::gaming::lua
         return res;
     }
 
-    std::shared_ptr<sol::state> scripting_system::get_state_ptr() noexcept
-    {
+    std::shared_ptr<sol::state> scripting_system::get_state_ptr() noexcept {
         return lua_state_;
     }
 
     bool
-    scripting_system::load_script(const std::string &file_name, const std::filesystem::path &script_directory) noexcept
-    {
+    scripting_system::load_script(const std::string &file_name,
+                                  const fs::path &script_directory) noexcept {
         try {
             this->lua_state_->script_file((script_directory / file_name).string());
         }
         catch (const std::exception &error) {
-            std::cerr << "error when loading script " << file_name << " err: " << error.what() << " script_directory: "
-                      << script_directory << std::endl;
+            VLOG_F(loguru::Verbosity_ERROR, "error when loading script: {} err: {} script_directory: {}",
+                   file_name, error.what(), script_directory.string());
             return false;
         }
         return true;
     }
 
-    bool scripting_system::load_script(const std::string &file_name) noexcept
-    {
+    bool scripting_system::load_script(const std::string &file_name) noexcept {
         return load_script(file_name, this->directory_path_);
     }
 
-    bool scripting_system::load_scripts(const std::filesystem::path& directory_path) noexcept
-    {
+    bool scripting_system::load_scripts(const fs::path &directory_path) noexcept {
         bool res = true;
-        for(auto& p: std::filesystem::directory_iterator(directory_path)) {
+        for (auto &p: fs::directory_iterator(directory_path)) {
             res &= load_script(p.path().filename().string(), script_lib_directory_);
         }
         return res;
