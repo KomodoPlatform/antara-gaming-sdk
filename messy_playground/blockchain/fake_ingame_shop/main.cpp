@@ -11,27 +11,80 @@
 #include <antara/gaming/sfml/graphic.system.hpp>
 #include <antara/gaming/sfml/resources.manager.hpp>
 #include <antara/gaming/sfml/input.system.hpp>
+#include <antara/gaming/blockchain/nspv.system.hpp>
+#include <iostream>
 
 using namespace antara::gaming;
 using namespace std::chrono_literals;
 
-class gui_system final : public ecs::post_update_system<gui_system> {
+namespace {
+    static std::string currency{"RICK"};
+#include <sstream>
+
+    template <typename T>
+    static std::string double_to_str(const T a_value, const int n = 2)
+    {
+        std::ostringstream out;
+        out.precision(n);
+        out << std::fixed << a_value;
+        return out.str();
+    }
+}
+
+class fake_shop final : public ecs::post_update_system<fake_shop> {
     struct item {
         int id;
         int quantity;
-        int price;
+        double price;
         std::string name;
         std::string description;
     };
 
     struct inventory {
-        int balance{0};
-        int pending_balance{0};
+        double balance{0};
+        double pending_balance{0};
+        double nspv_balance{0};
         std::unordered_map<int, item> items;
+        std::string wallet_address;
     };
 
 public:
-    gui_system(entt::registry &registry) noexcept : system(registry) {
+    void update_balances() {
+        store.nspv_balance = nspv_system_store_.get_balance(currency);
+        user.nspv_balance = nspv_system_user_.get_balance(currency);
+    }
+
+    fake_shop(entt::registry &registry, blockchain::nspv& nspv_system_user) noexcept : system(registry), nspv_system_user_(nspv_system_user) {
+        // Spawn nSPV for shop
+        {
+            nspv_system_store_.spawn_nspv_instance(currency, false, 7777);
+            nspv_system_store_.load_from_env(currency, "SHOP_WIF_WALLET");
+        }
+
+        // Set wallet addresses
+        {
+            store.wallet_address = nspv_system_store_.get_address(currency);
+            user.wallet_address = nspv_system_user_.get_address(currency);
+        }
+
+        // Set balances at start
+        {
+            update_balances();
+
+            store.balance = store.nspv_balance;
+            user.balance = user.nspv_balance;
+        }
+
+        // Refresh user balance asynchronously
+        {
+            nspv_threads.emplace_back([this] {
+                while(!application_quits) {
+                    std::this_thread::sleep_for(5s);
+                    update_balances();
+                }
+            });
+        }
+
         // Fill store
         {
             int id = -1;
@@ -53,44 +106,55 @@ public:
         }
     }
 
-    ~gui_system() {
+    ~fake_shop() {
+        application_quits = true;
+
         // Wait for transactions
         for(auto& t : transaction_threads) t.join();
+        for(auto& t : nspv_threads) t.join();
     }
 
     void display_balance(const inventory& inv, bool show_pending_count = false) {
         if(show_pending_count) ImGui::Text("Pending Transactions: %d", pending_transaction_count);
-        ImGui::Text(std::string(std::string("Balance: %d") +
-            std::string(inv.pending_balance == 0 ? "" : std::string(inv.pending_balance > 0 ? "(+" : "(") + "%d)")).c_str(),
-                inv.balance, inv.pending_balance);
+
+        bool pending = inv.pending_balance != 0;
+        ImGui::Text(std::string(std::string("Balance: %.2lf") +
+            std::string(!pending ? "" : std::string(inv.pending_balance > 0 ? "(+" : "(") + "%.2lf)") +
+            std::string("    nSPV Balance: %.2lf")).c_str(),
+                inv.balance, pending ? inv.pending_balance : inv.nspv_balance, inv.nspv_balance);
     }
 
     bool user_has_enough_funds(int price) {
         return user.balance >= price;
     }
 
-    void complete_transaction(const int price) {
+    void clear_pending(const int price) {
         user.pending_balance += price;
         store.pending_balance -= price;
         --pending_transaction_count;
     }
 
     void buy(const int price) {
-        ++pending_transaction_count;
+        // Try send
+        if(nspv_system_user_.send(currency, store.wallet_address, price)) {
+            ++pending_transaction_count;
 
-        // Drop from user balance
-        user.balance -= price;
-        user.pending_balance -= price;
+            // Drop from user balance
+            user.balance -= price;
 
-        // Increase the store balance
-        store.pending_balance += price;
-        store.balance += price;
+            // Increase the store balance
+            store.balance += price;
 
-        // Simulate pending
-        transaction_threads.emplace_back([this, price]{
-            std::this_thread::sleep_for(2s);
-            complete_transaction(price);
-        });
+            // Set pending balance
+            user.pending_balance -= price;
+            store.pending_balance += price;
+
+            // Simulate pending clear
+            transaction_threads.emplace_back([this, price] {
+                std::this_thread::sleep_for(2s);
+                clear_pending(price);
+            });
+        }
     }
 
     void transfer(item& store_item) {
@@ -175,7 +239,7 @@ public:
                     if (ImGui::BeginTabItem("Details")) {
                         ImGui::Text("ID: %d", curr_item.id);
                         ImGui::Text("Quantity: %d", curr_item.quantity);
-                        ImGui::Text("Unit Price: %d %s", curr_item.price, currency_name.c_str());
+                        ImGui::Text("Unit Price: %.2lf %s", curr_item.price, currency.c_str());
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -185,9 +249,9 @@ public:
                 bool has_stock = curr_item.quantity > 0;
                 bool has_funds = user_has_enough_funds(curr_item.price);
                 if (ImGui::Button(std::string(
-                        !has_funds ? std::string("Not enough funds (" + std::to_string(curr_item.price) + " " + currency_name + ")") :
+                        !has_funds ? std::string("Not enough funds (" + double_to_str(curr_item.price) + " " + currency + ")") :
                         !has_stock ? "Out of stock" :
-                        ("Buy 1 for " + std::to_string(curr_item.price) + " " + currency_name)).c_str())) {
+                        ("Buy 1 for " + double_to_str(curr_item.price) + " " + currency)).c_str())) {
                     if(has_stock && has_funds) {
                         transfer(curr_item);
                     }
@@ -199,30 +263,44 @@ public:
         }
     }
 
-    // Item lists
-    inventory store{0};
-    inventory user{60};
-    std::string currency_name{"RICK"};
+    // State
+    bool application_quits{false};
 
+    // Inventories
+    inventory store{0};
+    inventory user{0};
+
+    // Threads
     int pending_transaction_count{0};
     std::vector<std::thread> transaction_threads;
+    std::vector<std::thread> nspv_threads;
+
+    // nSPV
+    blockchain::nspv& nspv_system_user_;
+    blockchain::nspv nspv_system_store_{entity_registry_};
 };
 
-REFL_AUTO(type(gui_system))
+REFL_AUTO(type(fake_shop))
 
 class my_world : public world::app {
 public:
     my_world() noexcept {
+        auto &nspv_system = this->system_manager_.create_system<blockchain::nspv>();
+        nspv_system.spawn_nspv_instance(currency, true);
+
         auto &graphic_system = this->system_manager_.create_system<sfml::graphic_system>();
         this->entity_registry_.set<sfml::resources_system>(this->entity_registry_);
         this->system_manager_.create_system<sfml::input_system>(graphic_system.get_window());
-        system_manager_.create_system<gui_system>();
-        system_manager_.prioritize_system<gui_system, sfml::graphic_system>();
+        system_manager_.create_system<fake_shop>(nspv_system);
+        system_manager_.prioritize_system<fake_shop, sfml::graphic_system>();
     }
 };
 
 
 int main() {
+    assert(std::getenv("SECRET_WIF_WALLET") != nullptr);
+    assert(std::getenv("SHOP_WIF_WALLET") != nullptr);
+
     my_world world;
     return world.run();
 }
