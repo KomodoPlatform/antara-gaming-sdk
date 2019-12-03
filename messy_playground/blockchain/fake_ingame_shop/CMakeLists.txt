@@ -4,7 +4,7 @@ get_nspv_assets(${CMAKE_CURRENT_SOURCE_DIR})
 set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
-add_executable(antara-blockchain-ingame-shop-example MACOSX_BUNDLE ${ICON} main.cpp)
+add_executable(antara-blockchain-ingame-shop-example MACOSX_BUNDLE ${ICON} nspv_fake_ingame_shop.cpp)
 target_enable_tsan(antara-blockchain-ingame-shop-example)
 target_link_libraries(antara-blockchain-ingame-shop-example PUBLIC antara::world antara::scenes antara::nspv antara::sfml antara::audio antara::animation2d)
 

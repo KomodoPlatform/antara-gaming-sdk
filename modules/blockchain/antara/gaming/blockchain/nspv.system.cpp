@@ -160,6 +160,7 @@ namespace antara::gaming::blockchain {
         LOG_SCOPE_FUNCTION(INFO);
         auto result = nspv_api::mempool(get_endpoint(coin));
         if (result.rpc_result_code == -1) {
+            //! TODO: add a out parameter for error
             VLOG_F(loguru::Verbosity_ERROR, "mempool rpc call failed: {}", result.raw_result);
             return true;
         }

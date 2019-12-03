@@ -5,6 +5,7 @@
 #include <imgui.h>
 
 #include <thread>
+#include <mutex>
 #include <chrono>
 
 #include <antara/gaming/world/world.app.hpp>
@@ -53,6 +54,8 @@ class fake_shop final : public ecs::post_update_system<fake_shop> {
 
 public:
     void update_balances() {
+        std::scoped_lock st_lock(store_mutex, user_mutex);
+
         store.nspv_balance = nspv_system_store_.get_balance(currency);
         user.nspv_balance = nspv_system_user_.get_balance(currency);
 
@@ -88,7 +91,12 @@ public:
                     std::this_thread::sleep_for(5s);
                     // Update pending transactions count
                     blockchain::nspv_api::mempool_request request{user.wallet_address};
-                    mempool_transaction_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency), request).txids.size();
+
+                    {
+                        std::scoped_lock st_lock(user_mutex);
+                        mempool_transaction_count = blockchain::nspv_api::mempool(
+                                nspv_system_user_.get_endpoint(currency), request).txids.size();
+                    }
 
                     // Update balances
                     update_balances();
@@ -126,6 +134,7 @@ public:
     }
 
     void display_balance(const inventory& inv, bool show_pending_count = false) {
+        std::scoped_lock st_lock(store_mutex, user_mutex);
         if(show_pending_count) ImGui::Text("Pending Transactions: %d, Mempool: %d", pending_transaction_count, mempool_transaction_count);
 
         bool pending = inv.pending_balance != 0;
@@ -136,6 +145,7 @@ public:
     }
 
     bool user_has_enough_funds(int price) {
+        std::scoped_lock lock(user_mutex);
         return user.balance >= price;
     }
 
@@ -341,6 +351,8 @@ public:
     bool application_quits{false};
 
     // Inventories
+    std::mutex store_mutex;
+    std::mutex user_mutex;
     inventory store{0};
     inventory user{0};
 
