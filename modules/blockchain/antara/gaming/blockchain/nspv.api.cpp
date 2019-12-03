@@ -100,6 +100,9 @@ namespace antara::gaming::blockchain {
                 json_data["params"].push_back(request.value().address.value());
             }
         }
+
+        DVLOG_F(loguru::Verbosity_INFO, "req: {}", json_data.dump());
+
         auto resp = RestClient::post(endpoint, "application/json", json_data.dump());
         return rpc_process_answer<mempool_answer>(resp);
     }
