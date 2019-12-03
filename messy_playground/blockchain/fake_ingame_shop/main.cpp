@@ -14,12 +14,15 @@
 #include <antara/gaming/blockchain/nspv.system.hpp>
 #include <iostream>
 #include <sstream>
+#include <antara/gaming/core/open.url.browser.hpp>
 
 using namespace antara::gaming;
 using namespace std::chrono_literals;
 
 namespace {
-    static std::string currency{"RICK"};
+    static const std::string currency{"RICK"};
+    static const std::string currency_lc{"rick"};
+    static const std::string explorer_url{"explorer.dexstats.info"};
 
     template <typename T>
     static std::string double_to_str(const T a_value, const int n = 2)
@@ -139,7 +142,7 @@ public:
     bool wait_until_pending_completion(blockchain::nspv_tx_answer tx) {
         bool success = false;
         bool done = false;
-        while(!done) {
+        while(!application_quits && !done) {
             std::this_thread::sleep_for(10s);
             if(!nspv_system_user_.is_transaction_pending(currency, tx.broadcast_answer.value().broadcast, tx.send_answer.vout)) {
                 done = true;
@@ -170,16 +173,16 @@ public:
         store.pending_balance += price;
 
         // Try send asynchronously
-        transaction_threads.emplace_back([this, price, &store_item] {
+        if(!application_quits) transaction_threads.emplace_back([this, price, &store_item] {
             std::cout << "Sending " << price << " to " << store.wallet_address << "..." << std::endl;
             auto tx = nspv_system_user_.send(currency, store.wallet_address, price);
-
+            tx_ids.push_back(tx.broadcast_answer.value().broadcast);
             std::cout << "Send complete, Transaction ID: " << tx.broadcast_answer.value().broadcast << std::endl;
 
             // If payment is successful, check for pending
             if(tx.broadcast_answer.has_value()) {
                 // Check pending status
-                transaction_threads.emplace_back([this, price, tx, &store_item] {
+                if(!application_quits) transaction_threads.emplace_back([this, price, tx, &store_item] {
                     bool success = wait_until_pending_completion(tx);
                     clear_pending(price);
                     post_payment_tasks(success, &store_item);
@@ -315,6 +318,23 @@ public:
             }
             ImGui::End();
         }
+
+        // Transactions
+        {
+            ImGui::Begin("Transactions");
+            ImGui::Text("%d Transactions", tx_ids.size());
+
+            ImGui::Separator();
+
+            // Items
+            for(auto& tx_id : tx_ids) {
+                if(ImGui::Button(std::string(tx_id).c_str())) {
+                    core::open_url_browser("http://" + currency_lc + "." + explorer_url + "/tx/" + tx_id);
+                }
+            }
+
+            ImGui::End();
+        }
     }
 
     // State
@@ -329,6 +349,8 @@ public:
     int mempool_transaction_count{0};
     std::vector<std::thread> transaction_threads;
     std::vector<std::thread> nspv_threads;
+
+    std::vector<std::string> tx_ids;
 
     // nSPV
     blockchain::nspv& nspv_system_user_;
