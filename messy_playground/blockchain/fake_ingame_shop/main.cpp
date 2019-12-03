@@ -128,52 +128,90 @@ public:
         return user.balance >= price;
     }
 
+    bool wait_until_pending_completion(/*const std::string&*/bool tx_id) {
+        // TODO: Check if pending ended
+        std::this_thread::sleep_for(2s);
+        return true;
+    }
+
     void clear_pending(const int price) {
         user.pending_balance += price;
         store.pending_balance -= price;
         --pending_transaction_count;
     }
 
-    void buy(const int price) {
-        // Try send
-        if(nspv_system_user_.send(currency, store.wallet_address, price)) {
-            ++pending_transaction_count;
+    void pay_and_transfer(item& store_item) {
+        const int price = store_item.price;
 
-            // Drop from user balance
-            user.balance -= price;
+        // Do the transaction locally
+        ++pending_transaction_count;
 
-            // Increase the store balance
-            store.balance += price;
+        // Exchange balance
+        user.balance -= price;
+        store.balance += price;
 
-            // Set pending balance
-            user.pending_balance -= price;
-            store.pending_balance += price;
+        // Set pending balance
+        user.pending_balance -= price;
+        store.pending_balance += price;
 
-            // Simulate pending clear
-            transaction_threads.emplace_back([this, price] {
-                std::this_thread::sleep_for(2s);
-                clear_pending(price);
-            });
+        // Try send asynchronously
+        transaction_threads.emplace_back([this, price, &store_item] {
+            auto tx_id = nspv_system_user_.send(currency, store.wallet_address, price);
+
+            std::cout << "Transaction ID: " << tx_id << std::endl;
+
+            // If payment is successful, check for pending
+            if(!tx_id) {
+                // Check pending status
+                transaction_threads.emplace_back([this, price, tx_id, &store_item] {
+                    bool success = wait_until_pending_completion(tx_id);
+                    clear_pending(price);
+                    post_payment_tasks(success, &store_item);
+                });
+            }
+            // If payment failed, no need to wait for pending
+            else {
+                post_payment_tasks(false, &store_item);
+            }
+        });
+    }
+
+    void pre_payment_tasks(item& store_item) {
+        // Lower the stock
+        --store_item.quantity;
+    }
+
+    void post_payment_tasks(bool success, item* store_item = nullptr) {
+        // If payment is successful,
+        if(success) {
+            // Transfer the item
+            transfer_item(*store_item);
+        }
+        else {
+            // Increase the stock back
+            ++store_item->quantity;
         }
     }
 
-    void transfer(item& store_item) {
-        // Pay
-        buy(store_item.price);
-
-        // Lower the stock
-        --store_item.quantity;
-
+    void transfer_item(item& store_item) {
         // Give the item
         // If user already has this item, just increase the quantity
         if(user.items.find(store_item.id) != user.items.end()) {
             ++user.items[store_item.id].quantity;
         }
-            // Else, add this item, set quantity as 1
+        // Else, add this item, set quantity as 1
         else {
             user.items[store_item.id] = store_item;
             user.items[store_item.id].quantity = 1;
         }
+    }
+
+    void sell(item& store_item) {
+        // Prepare the payment
+        pre_payment_tasks(store_item);
+
+        // Pay and transfer on success
+        pay_and_transfer(store_item);
     }
 
     void update() noexcept final {
@@ -253,7 +291,7 @@ public:
                         !has_stock ? "Out of stock" :
                         ("Buy 1 for " + double_to_str(curr_item.price) + " " + currency)).c_str())) {
                     if(has_stock && has_funds) {
-                        transfer(curr_item);
+                        sell(curr_item);
                     }
                 }
                 ImGui::SameLine();
