@@ -53,15 +53,20 @@ class fake_shop final : public ecs::post_update_system<fake_shop> {
 
 public:
     void update_balances() {
-        std::scoped_lock st_lock(store_mutex, user_mutex);
+        double s_balance = nspv_system_store_.get_balance(currency);
+        double u_balance = nspv_system_user_.get_balance(currency);
 
-        store.nspv_balance = nspv_system_store_.get_balance(currency);
-        user.nspv_balance = nspv_system_user_.get_balance(currency);
+        {
+            std::scoped_lock st_lock(store_mutex, user_mutex);
 
-        // Safe to update local balance if there are no pending transactions
-        if (pending_transaction_count == 0 && mempool_transaction_count == 0) {
-            store.balance = store.nspv_balance;
-            user.balance = user.nspv_balance;
+            store.nspv_balance = s_balance;
+            user.nspv_balance = u_balance;
+
+            // Safe to update local balance if there are no pending transactions
+            if (pending_transaction_count == 0 && mempool_transaction_count == 0) {
+                store.balance = store.nspv_balance;
+                user.balance = user.nspv_balance;
+            }
         }
     }
 
@@ -93,10 +98,10 @@ public:
                     // Update pending transactions count
                     blockchain::nspv_api::mempool_request request{user.wallet_address};
 
+                    int m_tx_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency), request).txids.size();
                     {
                         std::scoped_lock st_lock(user_mutex);
-                        mempool_transaction_count = blockchain::nspv_api::mempool(
-                                nspv_system_user_.get_endpoint(currency), request).txids.size();
+                        mempool_transaction_count = m_tx_count;
                     }
 
                     // Update balances
