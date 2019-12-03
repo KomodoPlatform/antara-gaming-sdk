@@ -13,13 +13,13 @@
 #include <antara/gaming/sfml/input.system.hpp>
 #include <antara/gaming/blockchain/nspv.system.hpp>
 #include <iostream>
+#include <sstream>
 
 using namespace antara::gaming;
 using namespace std::chrono_literals;
 
 namespace {
     static std::string currency{"RICK"};
-#include <sstream>
 
     template <typename T>
     static std::string double_to_str(const T a_value, const int n = 2)
@@ -52,6 +52,12 @@ public:
     void update_balances() {
         store.nspv_balance = nspv_system_store_.get_balance(currency);
         user.nspv_balance = nspv_system_user_.get_balance(currency);
+
+        // Safe to update local balance if there are no pending transactions
+        if(pending_transaction_count == 0) {
+            store.balance = store.nspv_balance;
+            user.balance = user.nspv_balance;
+        }
     }
 
     fake_shop(entt::registry &registry, blockchain::nspv& nspv_system_user) noexcept : system(registry), nspv_system_user_(nspv_system_user) {
@@ -70,9 +76,6 @@ public:
         // Set balances at start
         {
             update_balances();
-
-            store.balance = store.nspv_balance;
-            user.balance = user.nspv_balance;
         }
 
         // Refresh user balance asynchronously
@@ -81,6 +84,18 @@ public:
                 while(!application_quits) {
                     std::this_thread::sleep_for(5s);
                     update_balances();
+                }
+            });
+        }
+
+        // Refresh pending transaction count asynchronously
+        {
+            nspv_threads.emplace_back([this] {
+                while(!application_quits) {
+                    // Update pending transactions count
+                    pending_transaction_count = blockchain::nspv_api::mempool(nspv_system_user_.get_endpoint(currency)).txids.size();
+
+                    std::this_thread::sleep_for(5s);
                 }
             });
         }
@@ -128,23 +143,27 @@ public:
         return user.balance >= price;
     }
 
-    bool wait_until_pending_completion(/*const std::string&*/bool tx_id) {
-        // TODO: Check if pending ended
-        std::this_thread::sleep_for(2s);
-        return true;
+    bool wait_until_pending_completion(blockchain::nspv_tx_answer tx) {
+        bool success = false;
+        bool done = false;
+        while(!done) {
+            std::this_thread::sleep_for(10s);
+            if(!nspv_system_user_.is_transaction_pending(currency, tx.broadcast_answer.value().broadcast, tx.send_answer.vout)) {
+                done = true;
+                // TODO: Set success correctly here
+                success = true;
+            }
+        }
+        return success;
     }
 
     void clear_pending(const int price) {
         user.pending_balance += price;
         store.pending_balance -= price;
-        --pending_transaction_count;
     }
 
     void pay_and_transfer(item& store_item) {
         const int price = store_item.price;
-
-        // Do the transaction locally
-        ++pending_transaction_count;
 
         // Exchange balance
         user.balance -= price;
@@ -156,15 +175,16 @@ public:
 
         // Try send asynchronously
         transaction_threads.emplace_back([this, price, &store_item] {
-            auto tx_id = nspv_system_user_.send(currency, store.wallet_address, price);
+            std::cout << "Sending " << price << " to " << store.wallet_address << "..." << std::endl;
+            auto tx = nspv_system_user_.send(currency, store.wallet_address, price);
 
-            std::cout << "Transaction ID: " << tx_id << std::endl;
+            std::cout << "Send complete, Transaction ID: " << tx.broadcast_answer.value().broadcast << std::endl;
 
             // If payment is successful, check for pending
-            if(!tx_id) {
+            if(tx.broadcast_answer.has_value()) {
                 // Check pending status
-                transaction_threads.emplace_back([this, price, tx_id, &store_item] {
-                    bool success = wait_until_pending_completion(tx_id);
+                transaction_threads.emplace_back([this, price, tx, &store_item] {
+                    bool success = wait_until_pending_completion(tx);
                     clear_pending(price);
                     post_payment_tasks(success, &store_item);
                 });
