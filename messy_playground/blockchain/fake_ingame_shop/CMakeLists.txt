@@ -1,5 +1,6 @@
 get_resources_basics_assets(${CMAKE_CURRENT_SOURCE_DIR})
 get_sfml_intro_assets(${CMAKE_CURRENT_SOURCE_DIR})
+get_nspv_assets(${CMAKE_CURRENT_SOURCE_DIR})
 set(ICON)
 configure_icon_osx(data/osx/kmd_logo.icns ICON kmd_logo.icns)
 
