@@ -65,6 +65,7 @@ namespace antara::gaming::graphics {
         bool vsync{false};
         bool mouse_visible{true};
         bool mouse_grabbed{false};
+        bool no_style{false};
         scale_mode current_scaling_mode{fit};
         rectangle view_port;
         std::string window_title{"Antara Gaming SDK"};

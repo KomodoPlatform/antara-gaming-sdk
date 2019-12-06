@@ -74,6 +74,7 @@ namespace antara::gaming::config::tests
   "vsync": false,
   "mouse_visible": true,
   "mouse_grabbed": false,
+  "no_style": false,
   "background_color": [
     0,
     0,

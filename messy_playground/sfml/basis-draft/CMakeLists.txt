@@ -26,16 +26,8 @@ endif ()
 
 if (WIN32)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-    ADD_CUSTOM_COMMAND(TARGET antara-sfml-example POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_BINARY_DIR}/lib" "${CMAKE_BINARY_DIR}/bin/"
-            COMMENT "copying dlls …"
-            $<TARGET_FILE_DIR:antara-sfml-example>
-            )
-    ADD_CUSTOM_COMMAND(TARGET antara-sfml-example POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${SFML_SOURCE_DIR}/extlibs/bin/x64" "${CMAKE_BINARY_DIR}/bin/"
-            COMMENT "copying dlls …"
-            $<TARGET_FILE_DIR:antara-sfml-example>
-            )
+
+    import_antara_dlls(antara-sfml-example)
 endif ()
 
 get_resources_basics_assets(${CMAKE_CURRENT_SOURCE_DIR})
