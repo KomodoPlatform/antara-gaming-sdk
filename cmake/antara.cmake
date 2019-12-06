@@ -166,7 +166,7 @@ macro(import_antara_dlls TARGET_NAME)
                 ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME}  POST_BUILD
                         COMMAND ${CMAKE_COMMAND} -E copy "${imgui-sfml_BINARY_DIR}/Imgui-SFML.dll" "${CMAKE_BINARY_DIR}/bin/"
                         COMMENT "copying dlls …"
-                        $<TARGET_FILE_DIR:antara-blockchain-ingame-shop-example>
+                        $<TARGET_FILE_DIR:${TARGET_NAME}>
                         )
             endif ()
         endif ()
