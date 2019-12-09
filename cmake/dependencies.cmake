@@ -203,12 +203,18 @@ if (USE_SDL_ANTARA_WRAPPER)
                 ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp
                 ${imgui_SOURCE_DIR}/imgui_widgets.cpp
                 ${imgui_SOURCE_DIR}/imgui.cpp
-                $<$<PLATFORM_ID:Darwin>:${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mm>)
+                $<$<PLATFORM_ID:Darwin>:${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mm>
+                $<$<PLATFORM_ID:Windows>:${imgui_SOURCE_DIR}/examples/imgui_impl_win32.cpp>)
         target_include_directories(imgui_sdl PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/examples/)
-        target_link_libraries(imgui_sdl PUBLIC glad::glad SDL2::SDL2main SDL2::SDL2-static)
+        target_link_libraries(imgui_sdl PUBLIC glad::glad
+                SDL2::SDL2main
+                $<$<PLATFORM_ID:Darwin>:SDL2::SDL2-static>
+                $<$<PLATFORM_ID:Windows>:SDL2::SDL2>)
         target_link_libraries(antara_sdl_external INTERFACE imgui_sdl)
     else()
-        target_link_libraries(antara_sdl_external INTERFACE glad::glad SDL2::SDL2main SDL2::SDL2-static)
+        target_link_libraries(antara_sdl_external INTERFACE glad::glad SDL2::SDL2main
+                $<$<PLATFORM_ID:Darwin>:SDL2::SDL2-static>
+                $<$<PLATFORM_ID:Windows>:SDL2::SDL2>)
     endif ()
     add_library(antara::external_sdl ALIAS antara_sdl_external)
 endif ()

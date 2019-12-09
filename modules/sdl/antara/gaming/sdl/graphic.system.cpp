@@ -24,6 +24,12 @@
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 
+#ifdef _WIN32
+
+#include <imgui_impl_win32.h>
+
+#endif
+
 #endif
 
 #include "antara/gaming/core/api.scaling.hpp"
@@ -60,6 +66,9 @@ namespace antara::gaming::sdl {
     }
 
     graphic_system::graphic_system(entt::registry &registry) : system(registry) {
+#if _WIN32
+        ImGui_ImplWin32_EnableDpiAwareness();
+#endif
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
             std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
             this->dispatcher_.trigger<event::quit_game>(-1);
@@ -75,11 +84,11 @@ namespace antara::gaming::sdl {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #else
         // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        const char *glsl_version = "#version 130";
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
 
         auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();

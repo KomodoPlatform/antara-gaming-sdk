@@ -10,12 +10,16 @@ set_target_properties(antara-sdl-example
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
         )
 
+#if (WIN32)
+#    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+#endif()
+
 magic_game_app_image_generation("${CMAKE_CURRENT_SOURCE_DIR}/data/linux"
         "org.antara.gaming.sdl.basisdraft.desktop"
         "org.antara.gaming.sdl.basisdraft.appdata.xml"
         "komodo_icon.png"
         antara-sdl-example
-        AntaraSFMLExampleAppDir
+        AntaraSDLExampleAppDir
         ${CMAKE_CURRENT_SOURCE_DIR}/assets
         )
 

@@ -26,7 +26,10 @@ public:
     }
 };
 
-int main() {
+int main(int argc, char* argv[])
+{
+    //void(argc);
+    //void(argv);
     my_world app;
     return app.run();
 }
