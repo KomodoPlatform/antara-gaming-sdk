@@ -123,6 +123,8 @@ namespace antara::gaming::sdl {
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
         io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
+        io.ConfigViewportsNoAutoMerge = true;
+        io.ConfigViewportsNoDefaultParent = true;
         ImGui::StyleColorsDark();
         ImGuiStyle &style = ImGui::GetStyle();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
