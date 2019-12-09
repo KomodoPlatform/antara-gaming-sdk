@@ -88,7 +88,7 @@ endif ()
 
 if (USE_IMGUI_ANTARA_WRAPPER)
     FetchContent_Declare(imgui
-            URL https://github.com/ocornut/imgui/archive/v1.73.zip)
+            URL https://github.com/rokups/imgui/archive/hdpi-support.zip)
     FetchContent_MakeAvailable(imgui)
 endif ()
 
@@ -182,6 +182,30 @@ if (USE_GLFW_ANTARA_WRAPPER)
         target_link_libraries(antara_glfw_external INTERFACE glad::glad glfw)
     endif ()
     add_library(antara::external_glfw ALIAS antara_glfw_external)
+endif ()
+
+if (USE_SDL_ANTARA_WRAPPER)
+    find_package(glad CONFIG REQUIRED)
+    find_package(SDL2 CONFIG REQUIRED)
+    add_library(antara_sdl_external INTERFACE)
+    if (USE_IMGUI_ANTARA_WRAPPER)
+        add_definitions(-DIMGUI_AND_SDL_ENABLED)
+        add_library(imgui_sdl STATIC)
+        target_sources(imgui_sdl PUBLIC
+                ${imgui_SOURCE_DIR}/imgui_demo.cpp
+                ${imgui_SOURCE_DIR}/imgui_draw.cpp
+                ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.cpp
+                ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp
+                ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+                ${imgui_SOURCE_DIR}/imgui.cpp
+                $<$<PLATFORM_ID:Darwin>:${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mm>)
+        target_include_directories(imgui_sdl PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/examples/)
+        target_link_libraries(imgui_sdl PUBLIC glad::glad SDL2::SDL2main SDL2::SDL2-static)
+        target_link_libraries(antara_sdl_external INTERFACE imgui_sdl)
+    else()
+        target_link_libraries(antara_sdl_external INTERFACE glad::glad SDL2::SDL2main SDL2::SDL2-static)
+    endif ()
+    add_library(antara::external_sdl ALIAS antara_sdl_external)
 endif ()
 
 

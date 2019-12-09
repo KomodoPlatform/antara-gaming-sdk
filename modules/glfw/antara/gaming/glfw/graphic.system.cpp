@@ -194,7 +194,7 @@ namespace antara::gaming::glfw {
         glViewport(0, 0, actualWindowWidth, actualWindowHeight);
 
 #if defined(IMGUI_AND_GLFW_ENABLED)
-        IMGUI_CHECKVERSION();
+        //IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO &io = ImGui::GetIO();
         (void) io;
