@@ -209,10 +209,12 @@ if (USE_SDL_ANTARA_WRAPPER)
         target_link_libraries(imgui_sdl PUBLIC glad::glad
                 SDL2::SDL2main
                 $<$<PLATFORM_ID:Darwin>:SDL2::SDL2-static>
+                $<$<PLATFORM_ID:Linux>:SDL2::SDL2-static>
                 $<$<PLATFORM_ID:Windows>:SDL2::SDL2>)
         target_link_libraries(antara_sdl_external INTERFACE imgui_sdl)
     else()
         target_link_libraries(antara_sdl_external INTERFACE glad::glad SDL2::SDL2main
+                $<$<PLATFORM_ID:Linux>:SDL2::SDL2-static>
                 $<$<PLATFORM_ID:Darwin>:SDL2::SDL2-static>
                 $<$<PLATFORM_ID:Windows>:SDL2::SDL2>)
     endif ()
