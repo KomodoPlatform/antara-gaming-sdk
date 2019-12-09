@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <antara/gaming/glfw/input.system.hpp>
+#include <antara/gaming/event/quit.game.hpp>
 
 #if defined(IMGUI_AND_GLFW_ENABLED)
 
@@ -24,9 +25,17 @@
 
 #endif
 
+namespace {
+    void window_close_callback(GLFWwindow* window) {
+        auto &entity_registry = *static_cast<entt::registry *>(glfwGetWindowUserPointer(window));
+        auto& dispatcher = entity_registry.ctx<entt::dispatcher>();
+        dispatcher.trigger<antara::gaming::event::quit_game>(0);
+    }
+}
+
 namespace antara::gaming::glfw {
     input_system::input_system(entt::registry &registry, GLFWwindow *window) : system(registry), window_(window) {
-
+        glfwSetWindowCloseCallback(window, window_close_callback);
     }
 
     void input_system::update() noexcept {
