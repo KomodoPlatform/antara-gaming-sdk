@@ -52,6 +52,7 @@ namespace antara::gaming::sdl {
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
             SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+            SDL_HideWindow(backup_current_window);
         }
 #endif
 
@@ -97,7 +98,6 @@ namespace antara::gaming::sdl {
                                    real_height, window_flags);
         gl_context_ = SDL_GL_CreateContext(window_);
         SDL_GL_MakeCurrent(window_, gl_context_);
-        SDL_HideWindow(window_);
         if (canvas_2d.vsync) {
             SDL_GL_SetSwapInterval(1); // Enable vsync
         }
