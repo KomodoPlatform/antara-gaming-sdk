@@ -87,8 +87,13 @@ if (USE_LUA_ANTARA_WRAPPER)
 endif ()
 
 if (USE_IMGUI_ANTARA_WRAPPER)
+    if(USE_SDL_ANTARA_WRAPPER)
     FetchContent_Declare(imgui
             URL https://github.com/rokups/imgui/archive/hdpi-support.zip)
+    else()
+        FetchContent_Declare(imgui
+                URL https://github.com/ocornut/imgui/archive/master.zip)
+    endif()
     FetchContent_MakeAvailable(imgui)
 endif ()
 
