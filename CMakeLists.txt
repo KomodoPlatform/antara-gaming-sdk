@@ -22,6 +22,7 @@ endif ()
 
 option(ANTARA_BUILD_DOCS "Enable to build the documentation" OFF)
 option(USE_SFML_ANTARA_WRAPPER "Use SFML antara wrapper" OFF)
+option(USE_GLFW_ANTARA_WRAPPER "Use GLFW antara wrapper" OFF)
 option(USE_LUA_ANTARA_WRAPPER "Use LUA antara wrapper" OFF)
 option(USE_BOX2D_ANTARA_WRAPPER "Use Box2D antara wrapper" OFF)
 option(USE_IMGUI_ANTARA_WRAPPER "Use Imgui antara wrapper" OFF)

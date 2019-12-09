@@ -161,6 +161,29 @@ if (USE_SFML_ANTARA_WRAPPER)
     endif ()
 endif ()
 
+if (USE_GLFW_ANTARA_WRAPPER)
+    find_package(glad CONFIG REQUIRED)
+    find_package(glfw3 CONFIG REQUIRED)
+    add_library(antara_glfw_external INTERFACE)
+    if (USE_IMGUI_ANTARA_WRAPPER)
+        add_definitions(-DIMGUI_AND_GLFW_ENABLED)
+        add_library(imgui_glfw STATIC)
+        target_sources(imgui_glfw PUBLIC
+                ${imgui_SOURCE_DIR}/imgui_demo.cpp
+                ${imgui_SOURCE_DIR}/imgui_draw.cpp
+                ${imgui_SOURCE_DIR}/examples/imgui_impl_glfw.cpp
+                ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp
+                ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+                ${imgui_SOURCE_DIR}/imgui.cpp)
+        target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/examples/)
+        target_link_libraries(imgui_glfw PUBLIC glad::glad glfw)
+        target_link_libraries(antara_glfw_external INTERFACE imgui_glfw)
+    else()
+        target_link_libraries(antara_glfw_external INTERFACE glad::glad glfw)
+    endif ()
+    add_library(antara::external_glfw ALIAS antara_glfw_external)
+endif ()
+
 
 add_library(antara_log STATIC)
 target_sources(antara_log PRIVATE ${loguru_SOURCE_DIR}/loguru.cpp)
