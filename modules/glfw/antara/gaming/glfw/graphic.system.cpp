@@ -94,10 +94,6 @@ namespace antara::gaming::glfw {
         glfwWindowHint(GLFW_DEPTH_BITS, 24);
         glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
-        glfwWindowHint(
-                GLFW_OPENGL_PROFILE,
-                GLFW_OPENGL_CORE_PROFILE
-        );
 
         std::string glsl_version = "";
 #ifdef __APPLE__
@@ -109,16 +105,26 @@ namespace antara::gaming::glfw {
         );
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(
+                GLFW_OPENGL_PROFILE,
+                GLFW_OPENGL_CORE_PROFILE
+        );
+
 #elif __linux__
         // GL 3.2 + GLSL 150
     glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(
+                GLFW_OPENGL_PROFILE,
+                GLFW_OPENGL_CORE_PROFILE
+        );
+
 #elif _WIN32
     // GL 3.0 + GLSL 130
     glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 #endif
 
         float &factor = this->entity_registry_.set<st_high_dpi_factor>(1.0f).value();
