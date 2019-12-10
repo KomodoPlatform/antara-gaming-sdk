@@ -18,14 +18,14 @@
 
 #include <filesystem>
 
-namespace atomic_dex
+namespace antara::gaming::sdl
 {
-    struct image
+    struct opengl_image
     {
         unsigned int id;
         int width;
         int height;
     };
 
-    bool load_image(const std::filesystem::path& path, image& image);
+    bool load_image(const std::filesystem::path& path, opengl_image& image);
 }

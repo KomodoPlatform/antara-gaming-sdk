@@ -53,6 +53,8 @@ namespace {
     }
 }
 
-bool atomic_dex::load_image(const std::filesystem::path &path, atomic_dex::image &image) {
-    return LoadTextureFromFile(path.string().c_str(), &image.id, &image.width, &image.height);
+namespace antara::gaming::sdl {
+    bool load_image(const std::filesystem::path &path, opengl_image &image) {
+        return LoadTextureFromFile(path.string().c_str(), &image.id, &image.width, &image.height);
+    }
 }
