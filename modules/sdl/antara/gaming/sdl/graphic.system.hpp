@@ -18,6 +18,7 @@
 
 #include <SDL2/SDL.h>
 #include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/sdl/sdl.timer.hpp"
 
 namespace antara::gaming::sdl {
     using st_high_dpi_factor = st::type<float, struct high_dpi_factor>;
@@ -30,11 +31,17 @@ namespace antara::gaming::sdl {
 
         void update() noexcept final;
 
+        void render() noexcept;
+
+        void set_framerate_limit(int fps) noexcept { fps_cap_ = fps; };
+
         [[nodiscard]] SDL_Window *get_window() const noexcept { return window_; }
 
     private:
         SDL_Window *window_{nullptr};
         SDL_GLContext gl_context_;
+        timer timer_;
+        int fps_cap_{60};
     };
 }
 

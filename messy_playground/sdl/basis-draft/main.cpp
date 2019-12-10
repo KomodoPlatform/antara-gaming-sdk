@@ -20,6 +20,7 @@ class my_world : public antara::gaming::world::app {
 public:
     my_world() noexcept {
         auto &graphic_system = this->system_manager_.create_system<antara::gaming::sdl::graphic_system>();
+        graphic_system.set_framerate_limit(30);
         system_manager_.create_system<antara::gaming::sdl::input_system>(graphic_system.get_window());
         system_manager_.create_system<my_gui_system>();
         system_manager_.prioritize_system<my_gui_system, antara::gaming::sdl::graphic_system>();
