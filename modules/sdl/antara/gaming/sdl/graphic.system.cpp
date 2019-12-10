@@ -49,10 +49,11 @@ namespace antara::gaming::sdl {
 
         render();
         //If frame finished early
-        int frameTicks = timer_.getTicks();
-        if (frameTicks < fps_cap_) {
+        int frame_ticks = timer_.getTicks();
+        int fps_cap_ms = 1000 / fps_cap_;
+        if (frame_ticks < fps_cap_ms) {
             //Wait remaining time
-            SDL_Delay((1000 / fps_cap_) - frameTicks);
+            SDL_Delay(fps_cap_ms - frame_ticks);
         }
 
         //Start cap timer
