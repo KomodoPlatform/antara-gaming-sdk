@@ -5,6 +5,7 @@
 #include <antara/gaming/sdl/sdl.opengl.image.loading.hpp>
 #include <antara/gaming/core/real.path.hpp>
 #include <filesystem>
+#include <iostream>
 
 class my_gui_system final : public antara::gaming::ecs::post_update_system<my_gui_system> {
 public:
@@ -19,9 +20,19 @@ public:
         static bool res = true;
         ImGui::Image((void*)(intptr_t)(img_.id), ImVec2{static_cast<float>(img_.width), static_cast<float>(img_.height)});
         ImGui::ShowDemoWindow(&res);
+
+        nb_iteration += 1;
+        if (nb_iteration == 1500) {
+            std::cout << "loading runtime" << std::endl;
+            std::filesystem::path p = antara::gaming::core::assets_real_path() / "textures/kmd.png";
+            bool res = antara::gaming::sdl::load_image(p, another_img_);
+            assert(res);
+        }
     }
 private:
+    std::size_t nb_iteration{0};
     antara::gaming::sdl::opengl_image img_;
+    antara::gaming::sdl::opengl_image another_img_;
 };
 
 REFL_AUTO(type(my_gui_system));
