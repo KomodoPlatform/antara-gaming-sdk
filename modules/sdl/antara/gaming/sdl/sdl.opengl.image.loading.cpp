@@ -19,7 +19,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
-#include <SDL2/SDL_opengl.h>
+#include <glad/glad.h>
 
 namespace {
 // Simple helper function to load an image into a OpenGL texture with common settings
