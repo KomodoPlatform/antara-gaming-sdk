@@ -16,9 +16,13 @@
 
 #pragma once
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#ifndef _MSC_VER
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wunused-parameter"
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #include <refl.hpp>
 
+#ifndef _MSC_VER
 #pragma clang diagnostic pop
+#endif

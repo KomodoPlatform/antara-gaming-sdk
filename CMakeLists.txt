@@ -16,8 +16,10 @@ project(antara-gaming-sdk
 
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-        message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
-    endif()
+        if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            message(FATAL_ERROR "Only Clang is supported (minimum LLVM 8.0)")
+        endif ()
+    endif ()
 endif ()
 
 option(ANTARA_BUILD_DOCS "Enable to build the documentation" OFF)

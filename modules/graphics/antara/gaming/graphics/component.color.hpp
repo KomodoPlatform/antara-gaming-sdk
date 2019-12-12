@@ -47,11 +47,11 @@ namespace antara::gaming::graphics {
         }
 
         void set_color(const color &to) noexcept {
-            auto[r, g, b, a] = to;
-            this->r = r;
-            this->g = g;
-            this->b = b;
-            this->a = a;
+            auto[_r, _g, _b, _a] = to;
+            this->r = _r;
+            this->g = _g;
+            this->b = _b;
+            this->a = _a;
         }
 
         void set_unique_color(std::uint8_t value) noexcept { r = g = b = value; }

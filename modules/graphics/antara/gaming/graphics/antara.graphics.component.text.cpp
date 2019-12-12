@@ -22,7 +22,8 @@ namespace antara::gaming::graphics::tests
     TEST_CASE ("blueprint text")
     {
         entt::registry entity_registry;
-        auto entity = graphics::blueprint_text(entity_registry, {"another text"});
+        text txt{""};
+        auto entity = graphics::blueprint_text(entity_registry, txt);
         CHECK(entity_registry.valid(entity));
     }
 }

@@ -13,14 +13,19 @@ target_compile_options(
         $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
         $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:-Wall -Wextra -Wfatal-errors>
         $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
-        $<$<AND:$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>,$<CXX_COMPILER_ID:Clang>>:/W4 /permissive->)
+        $<$<AND:$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>,$<CXX_COMPILER_ID:Clang>>:/W4 /permissive->
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:MSVC>>:/W4 /permissive- /std:c++latest>)
 
 # $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wfatal-errors>
 # $<$<AND:$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>,$<CXX_COMPILER_ID:Clang>>:/W4 /permissive->
 ##! We are using C++ 17 for all of our targets
 add_library(antara_defaults_features INTERFACE)
 add_library(antara::defaults_features ALIAS antara_defaults_features)
-target_compile_features(antara_defaults_features INTERFACE cxx_std_17)
+if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_features(antara_defaults_features INTERFACE cxx_std_17)
+else()
+    target_compile_features(antara_defaults_features INTERFACE cxx_std_20)
+endif()
 
 add_library(antara_optimize_settings INTERFACE)
 add_library(antara::optimize_settings ALIAS antara_optimize_settings)
@@ -43,44 +48,48 @@ target_compile_options(antara_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<NOT:$<BOOL:${ClangCL}>>>:-O3 -march=native -ffast-math>
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/Zi /FS /DEBUG /Od /MDd /Oy->
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:MSVC>>:/Zi /FS /DEBUG /Od /MDd /Oy->
+        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/Ox -DNDEBUG>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>,$<PLATFORM_ID:Windows>,$<BOOL:${ClangCL}>>:/Ox -DNDEBUG>
         )
 
 
-if (NOT APPLE)
-    find_package(OpenMP)
-    if (OpenMP_CXX_FOUND)
-        message(STATUS "OpenMP found, adding it to targets")
-        target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP_CXX)
-    endif ()
-else()
-    find_library(OpenMP_LIBRARY
-            NAMES omp
-            )
-
-    find_path(OpenMP_INCLUDE_DIR
-            omp.h
-            )
-
-    mark_as_advanced(OpenMP_LIBRARY OpenMP_INCLUDE_DIR)
-
-    include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args(OpenMP DEFAULT_MSG
-            OpenMP_LIBRARY OpenMP_INCLUDE_DIR)
-
-    if (OpenMP_FOUND)
-        set(OpenMP_LIBRARIES ${OpenMP_LIBRARY})
-        set(OpenMP_INCLUDE_DIRS ${OpenMP_INCLUDE_DIR})
-        set(OpenMP_COMPILE_OPTIONS -Xpreprocessor -fopenmp)
-
-        add_library(OpenMP::OpenMP SHARED IMPORTED)
-        set_target_properties(OpenMP::OpenMP PROPERTIES
-                IMPORTED_LOCATION ${OpenMP_LIBRARIES}
-                INTERFACE_INCLUDE_DIRECTORIES "${OpenMP_INCLUDE_DIRS}"
-                INTERFACE_COMPILE_OPTIONS "${OpenMP_COMPILE_OPTIONS}"
+if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    if (NOT APPLE)
+        find_package(OpenMP)
+        if (OpenMP_CXX_FOUND)
+            message(STATUS "OpenMP found, adding it to targets")
+            target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP_CXX)
+        endif ()
+    else ()
+        find_library(OpenMP_LIBRARY
+                NAMES omp
                 )
-        target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP)
-    endif()
+
+        find_path(OpenMP_INCLUDE_DIR
+                omp.h
+                )
+
+        mark_as_advanced(OpenMP_LIBRARY OpenMP_INCLUDE_DIR)
+
+        include(FindPackageHandleStandardArgs)
+        find_package_handle_standard_args(OpenMP DEFAULT_MSG
+                OpenMP_LIBRARY OpenMP_INCLUDE_DIR)
+
+        if (OpenMP_FOUND)
+            set(OpenMP_LIBRARIES ${OpenMP_LIBRARY})
+            set(OpenMP_INCLUDE_DIRS ${OpenMP_INCLUDE_DIR})
+            set(OpenMP_COMPILE_OPTIONS -Xpreprocessor -fopenmp)
+
+            add_library(OpenMP::OpenMP SHARED IMPORTED)
+            set_target_properties(OpenMP::OpenMP PROPERTIES
+                    IMPORTED_LOCATION ${OpenMP_LIBRARIES}
+                    INTERFACE_INCLUDE_DIRECTORIES "${OpenMP_INCLUDE_DIRS}"
+                    INTERFACE_COMPILE_OPTIONS "${OpenMP_COMPILE_OPTIONS}"
+                    )
+            target_link_libraries(antara_optimize_settings INTERFACE OpenMP::OpenMP)
+        endif ()
+    endif ()
 endif ()
 
 ## Cross filesystem

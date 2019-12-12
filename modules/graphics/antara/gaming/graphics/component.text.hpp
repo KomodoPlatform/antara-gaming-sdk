@@ -40,9 +40,10 @@ namespace antara::gaming::graphics {
     };
 
     struct text {
-        text(const text &other) = default;
+        //text() = default;
+        //text(const text &other) = default;
 
-        text &operator=(const text &other) = default;
+        //text &operator=(const text &other) = default;
 
         std::string contents; //! text contents
         std::size_t character_size{30ull}; //! size of each characters
