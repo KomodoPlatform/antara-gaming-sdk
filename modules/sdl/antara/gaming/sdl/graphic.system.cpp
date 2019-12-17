@@ -122,14 +122,14 @@ namespace antara::gaming::sdl {
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         SDL_WindowFlags window_flags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-                                                          SDL_WINDOW_ALLOW_HIGHDPI);
+                                                          SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN);
         auto[real_width, real_height] = canvas_2d.window.size.to<math::vec2i>() /
                                         math::vec2f{core::get_scaling_factor().first,
                                                     core::get_scaling_factor().second}.to<math::vec2i>();
         canvas_2d.window.size.set_xy(real_width, real_height);
-        window_ = SDL_CreateWindow(canvas_2d.window_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                   real_width,
-                                   real_height, window_flags);
+        window_ = SDL_CreateWindow(canvas_2d.window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   1,
+                                   1, window_flags);
         gl_context_ = SDL_GL_CreateContext(window_);
         SDL_GL_MakeCurrent(window_, gl_context_);
         if (canvas_2d.vsync) {
