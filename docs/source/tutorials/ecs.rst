@@ -88,7 +88,7 @@ Now, if you compile your program and start it you will quit your game after 10 i
 
 Below all the code of this tutorial:
 
-.. literalinclude:: ../../../examples/ecs/system.example.cpp
+.. literalinclude:: ../../../messy_playground/ecs/system.example.cpp
    :language: cpp
 
 **Congratulations, you have managed to create your own system and add it to your game world !**

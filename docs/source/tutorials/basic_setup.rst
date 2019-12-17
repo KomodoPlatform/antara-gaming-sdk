@@ -41,7 +41,7 @@ Firstly we will need a **CMakeLists.txt**:
 
 As the ``CMakeLists.txt`` suggests we also need a **C++** files named ``my_example_system.cpp`` with the following contents:
 
-.. literalinclude:: ../../../examples/common/step_basis_world_compiling.cpp
+.. literalinclude:: ../../../messy_playground/common/step_basis_world_compiling.cpp
    :language: cpp
 
 And now we can successfully build the setup project that we just made:
