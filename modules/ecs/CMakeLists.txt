@@ -40,3 +40,7 @@ if (ANTARA_BUILD_UNIT_TESTS)
         endif ()
     endif ()
 endif ()
+
+if (CMAKE_VERSION VERSION_GREATER 3.15)
+    set_target_properties(antara_ecs_shared_sources PROPERTIES UNITY_BUILD ON)
+endif()
