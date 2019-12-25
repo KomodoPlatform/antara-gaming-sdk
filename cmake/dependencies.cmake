@@ -1,16 +1,24 @@
 ##! Dependancies
 include(FetchContent)
 
-set(DOCTEST_WITH_MAIN_IN_STATIC_LIB OFF CACHE BOOL "Override option" FORCE)
-FetchContent_Declare(
-        doctest
-        URL https://github.com/onqtam/doctest/archive/2.3.3.tar.gz
-)
+if (ANTARA_USE_VCPKG)
+    find_package(doctest CONFIG REQUIRED)
+else ()
+    set(DOCTEST_WITH_MAIN_IN_STATIC_LIB OFF CACHE BOOL "Override option" FORCE)
+    FetchContent_Declare(
+            doctest
+            URL https://github.com/onqtam/doctest/archive/2.3.3.tar.gz
+    )
+endif ()
 
-FetchContent_Declare(
-        entt
-        URL https://github.com/skypjack/entt/archive/master.zip
-)
+if (ANTARA_USE_VCPKG)
+    find_package(EnTT CONFIG REQUIRED)
+else ()
+    FetchContent_Declare(
+            entt
+            URL https://github.com/skypjack/entt/archive/master.zip
+    )
+endif ()
 
 set(BUILD_TESTING OFF CACHE BOOL "Override option" FORCE)
 set(REPROC++ ON CACHE BOOL "" FORCE)
@@ -20,10 +28,14 @@ FetchContent_Declare(
         URL https://github.com/emilk/loguru/archive/v2.1.0.zip
 )
 
-FetchContent_Declare(
-        fmt
-        URL https://github.com/fmtlib/fmt/releases/download/6.0.0/fmt-6.0.0.zip
-)
+if (ANTARA_USE_VCPKG)
+    find_package(fmt CONFIG REQUIRED)
+else ()
+    FetchContent_Declare(
+            fmt
+            URL https://github.com/fmtlib/fmt/releases/download/6.0.0/fmt-6.0.0.zip
+    )
+endif ()
 
 FetchContent_Declare(
         doom_st
@@ -37,10 +49,15 @@ FetchContent_Declare(
 
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
 SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
-FetchContent_Declare(
-        nlohmann_json
-        URL https://github.com/nlohmann/json/releases/download/v3.7.0/include.zip
-)
+
+if (ANTARA_USE_VCPKG)
+    find_package(nlohmann_json CONFIG REQUIRED)
+else ()
+    FetchContent_Declare(
+            nlohmann_json
+            URL https://github.com/nlohmann/json/releases/download/v3.7.0/include.zip
+    )
+endif ()
 
 FetchContent_Declare(
         reproc
@@ -53,10 +70,14 @@ FetchContent_Declare(
         URL https://github.com/Milerius/expected/archive/patch-1.zip
 )
 
-FetchContent_Declare(
-        range-v3
-        URL https://github.com/ericniebler/range-v3/archive/master.zip
-)
+
+if (ANTARA_USE_VCPKG)
+    find_package(range-v3 CONFIG REQUIRED)
+else ()
+    FetchContent_Declare(
+            range-v3
+            URL https://github.com/ericniebler/range-v3/archive/master.zip)
+endif ()
 
 FetchContent_Declare(
         refl-cpp
@@ -87,30 +108,34 @@ if (USE_LUA_ANTARA_WRAPPER)
 endif ()
 
 if (USE_IMGUI_ANTARA_WRAPPER)
-    if(USE_SDL_ANTARA_WRAPPER)
-    FetchContent_Declare(imgui
-            URL https://github.com/rokups/imgui/archive/hdpi-support.zip)
-    else()
+    if (USE_SDL_ANTARA_WRAPPER)
+        FetchContent_Declare(imgui
+                URL https://github.com/rokups/imgui/archive/hdpi-support.zip)
+    else ()
         FetchContent_Declare(imgui
                 URL https://github.com/ocornut/imgui/archive/master.zip)
-    endif()
+    endif ()
     FetchContent_MakeAvailable(imgui)
     if (CMAKE_VERSION VERSION_GREATER 3.15)
         message("Disabling objc imgui stuff")
         set_source_files_properties(${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mmPROPERTIES SKIP_PRECOMPILE_HEADERS ON)
         set_property(SOURCE ${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mm PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
         set_source_files_properties(${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mm PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
-    endif()
+    endif ()
 endif ()
 
 if (USE_SFML_ANTARA_WRAPPER)
     if (APPLE)
         set(BUILD_SHARED_LIBS OFF CACHE BOOL "Override option" FORCE)
     endif ()
-    FetchContent_Declare(
-            SFML
-            URL https://github.com/Milerius/SFML/archive/patch-1.zip
-    )
+    if (ANTARA_USE_VCPKG)
+        find_package(SFML 2 COMPONENTS graphics audio REQUIRED)
+    else ()
+        FetchContent_Declare(
+                SFML
+                URL https://github.com/Milerius/SFML/archive/patch-1.zip
+        )
+    endif ()
 endif ()
 
 
@@ -159,13 +184,22 @@ if (ENABLE_BLOCKCHAIN_MODULES)
     endif ()
 endif ()
 
-FetchContent_MakeAvailable(doctest entt doom_st expected range-v3 refl-cpp doom_meta nlohmann_json joboccara-pipes loguru fmt reproc)
+if (NOT ANTARA_USE_VCPKG)
+    FetchContent_MakeAvailable(range-v3 nlohmann_json doctest fmt entt)
+else()
+    add_library(EnTT INTERFACE)
+    target_link_libraries(EnTT INTERFACE EnTT::EnTT)
+endif ()
+
+FetchContent_MakeAvailable(doom_st expected refl-cpp doom_meta joboccara-pipes loguru reproc)
 
 if (USE_SFML_ANTARA_WRAPPER)
-    FetchContent_MakeAvailable(SFML)
+    if (NOT ANTARA_USE_VCPKG)
+        FetchContent_MakeAvailable(SFML)
+        set(IMGUI_SFML_FIND_SFML OFF CACHE BOOL "Override option" FORCE)
+    endif ()
     if (USE_IMGUI_ANTARA_WRAPPER)
         add_definitions(-DIMGUI_AND_SFML_ENABLED)
-        set(IMGUI_SFML_FIND_SFML OFF CACHE BOOL "Override option" FORCE)
         set(IMGUI_DIR ${imgui_SOURCE_DIR})
         FetchContent_Declare(imgui-sfml URL https://github.com/eliasdaler/imgui-sfml/archive/master.zip)
         FetchContent_MakeAvailable(imgui-sfml)
@@ -189,7 +223,7 @@ if (USE_GLFW_ANTARA_WRAPPER)
         target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/examples/)
         target_link_libraries(imgui_glfw PUBLIC glad::glad glfw)
         target_link_libraries(antara_glfw_external INTERFACE imgui_glfw)
-    else()
+    else ()
         target_link_libraries(antara_glfw_external INTERFACE glad::glad glfw)
     endif ()
     add_library(antara::external_glfw ALIAS antara_glfw_external)
@@ -218,7 +252,7 @@ if (USE_SDL_ANTARA_WRAPPER)
                 $<$<PLATFORM_ID:Linux>:SDL2::SDL2-static>
                 $<$<PLATFORM_ID:Windows>:SDL2::SDL2>)
         target_link_libraries(antara_sdl_external INTERFACE imgui_sdl)
-    else()
+    else ()
         target_link_libraries(antara_sdl_external INTERFACE glad::glad SDL2::SDL2main
                 $<$<PLATFORM_ID:Linux>:SDL2::SDL2-static>
                 $<$<PLATFORM_ID:Darwin>:SDL2::SDL2-static>
@@ -245,9 +279,11 @@ endif ()
 
 add_library(antara::log ALIAS antara_log)
 
-add_library(nlohmann_json INTERFACE)
-target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR})
-add_library(nlohmann_json::nlohmann_json ALIAS nlohmann_json)
+if (NOT ANTARA_USE_VCPKG)
+    add_library(nlohmann_json INTERFACE)
+    target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR})
+    add_library(nlohmann_json::nlohmann_json ALIAS nlohmann_json)
+endif ()
 
 if (USE_BOX2D_ANTARA_WRAPPER)
     FetchContent_MakeAvailable(box2d)

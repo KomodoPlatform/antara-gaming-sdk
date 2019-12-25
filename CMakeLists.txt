@@ -22,6 +22,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     endif ()
 endif ()
 
+option(ANTARA_USE_VCPKG "Enable to use VCPKG for find dependencies" OFF)
 option(ANTARA_BUILD_DOCS "Enable to build the documentation" OFF)
 option(USE_SFML_ANTARA_WRAPPER "Use SFML antara wrapper" OFF)
 option(USE_GLFW_ANTARA_WRAPPER "Use GLFW antara wrapper" OFF)
