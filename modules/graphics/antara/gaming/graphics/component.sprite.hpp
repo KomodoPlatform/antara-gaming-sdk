@@ -42,19 +42,6 @@ namespace antara::gaming::graphics {
         rect texture_rec{}; //! Set the sub-rectangle of the texture that the sprite will display if native_size is false
     };
 
-    inline entt::entity blueprint_sprite(entt::registry &registry,
-                                         const sprite &spr,
-                                         transform::position_2d pos = math::vec2f::scalar(0.f),
-                                         fill_color spr_color = graphics::white,
-                                         const transform::properties &prop = {}) noexcept {
-        auto spr_entity = registry.create();
-        registry.assign<fill_color>(spr_entity, spr_color);
-        registry.assign<transform::properties>(spr_entity, prop);
-        registry.assign<sprite>(spr_entity, spr);
-        registry.assign<transform::position_2d>(spr_entity, pos);
-        return spr_entity;
-    }
-
     inline void blueprint_sprite(entt::entity spr_entity,
                                  entt::registry &registry,
                                  const sprite &spr,
@@ -65,6 +52,16 @@ namespace antara::gaming::graphics {
         registry.assign<transform::properties>(spr_entity, prop);
         registry.assign<sprite>(spr_entity, spr);
         registry.assign<transform::position_2d>(spr_entity, pos);
+    }
+
+    inline entt::entity blueprint_sprite(entt::registry &registry,
+                                         const sprite &spr,
+                                         transform::position_2d pos = math::vec2f::scalar(0.f),
+                                         fill_color spr_color = graphics::white,
+                                         const transform::properties &prop = {}) noexcept {
+        auto spr_entity = registry.create();
+        blueprint_sprite(spr_entity, registry, spr, pos, spr_color, prop);
+        return spr_entity;
     }
 }
 
