@@ -189,6 +189,9 @@ if (NOT ANTARA_USE_VCPKG)
 else()
     add_library(EnTT INTERFACE)
     target_link_libraries(EnTT INTERFACE EnTT::EnTT)
+
+    add_library(doctest INTERFACE)
+    target_link_libraries(doctest INTERFACE doctest::doctest)
 endif ()
 
 FetchContent_MakeAvailable(doom_st expected refl-cpp doom_meta joboccara-pipes loguru reproc)
