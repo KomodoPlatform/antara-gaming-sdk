@@ -99,4 +99,49 @@ namespace antara::gaming::animation2d {
 
         animations_.emplace(animation_id, anim_internal{frames, texture_appeareance});
     }
+
+    void anim_system::add_animation(const std::string &texture_appearance,
+                                    std::size_t nb_columns,
+                                    std::size_t nb_lines,
+                                    const ranged_anim& ranged_animation) noexcept
+    {
+        frame_array frames;
+
+        //! retrieve the texture size to determine the frame size.
+        math::vec2u size;
+        dispatcher_.trigger<event::fill_image_properties>(texture_appearance, size);
+        math::vec2f frame_size{float(size.x() / nb_columns), float(size.y() / nb_lines)};
+
+        auto add_frame = [nb_columns = nb_columns]
+            (frame_array& frames, math::vec2f frame_size, std::size_t indice)
+            {
+                auto [frame_width, frame_height] = frame_size;
+
+                auto column = indice > 0 ? indice % nb_columns : 0;
+                auto line = indice > 0 ? indice / nb_columns : 0;
+
+                auto x = column * frame_width;
+                auto y = line * frame_height;
+
+                frames.emplace_back(
+                            graphics::rect{
+                                .pos = {float(x), float(y)},
+                                .size = frame_size});
+            };
+
+        const auto& [begin_indice, end_indice, anim_id] = ranged_animation;
+        for (auto indice = begin_indice; indice <= end_indice; indice++)
+            add_frame(frames, frame_size, indice);
+
+        animations_.emplace(anim_id, anim_internal{frames, texture_appearance});
+    }
+
+    void anim_system::add_animations(const std::string& texture_appearance,
+                                     std::size_t nb_columns,
+                                     std::size_t nb_lines,
+                                     const ranged_anim_array& ranged_animations) noexcept
+    {
+        for (const auto& ranged_animation : ranged_animations)
+            add_animation(texture_appearance, nb_columns, nb_lines, ranged_animation);
+    }
 }

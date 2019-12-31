@@ -29,6 +29,7 @@
 
 //! SDK Headers
 #include "antara/gaming/animation2d/component.animation.2d.hpp" ///< animation2d::anim_component
+#include "antara/gaming/animation2d/antara.animation2d.ranged_anim.hpp" ///< animation2d::ranged_anim
 #include "antara/gaming/ecs/system.hpp" ///< ecs::logic_update_system
 #include "antara/gaming/event/fill.image.properties.hpp" ///< event::fill_image_properties
 #include "antara/gaming/graphics/component.sprite.hpp" ///< graphics::sprite
@@ -60,6 +61,16 @@ namespace antara::gaming::animation2d {
                            std::size_t nb_columns,
                            std::size_t nb_lines,
                            std::size_t nb_anims) noexcept;
+        
+        void add_animation(const std::string &texture_appeareance,
+                           std::size_t nb_columns,
+                           std::size_t nb_lines,
+                           const ranged_anim& ranged_animation) noexcept;
+        
+        void add_animations(const std::string& texture_appearance,
+                            std::size_t nb_columns,
+                            std::size_t nb_lines,
+                            const ranged_anim_array& ranged_animations) noexcept;
 
         void update() noexcept final;
     };
