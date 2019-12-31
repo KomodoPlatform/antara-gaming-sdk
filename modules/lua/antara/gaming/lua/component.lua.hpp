@@ -19,8 +19,10 @@
 //! C++ System Headers
 #include <string> ///< std::string
 
-namespace antara::gaming::lua {
-    struct component_script {
+namespace antara::gaming::lua
+{
+    struct component_script
+    {
         component_script(std::string script_, std::string table_name_) noexcept;
 
         component_script() noexcept;
@@ -28,4 +30,4 @@ namespace antara::gaming::lua {
         std::string script;
         std::string table_name;
     };
-}
+} // namespace antara::gaming::lua

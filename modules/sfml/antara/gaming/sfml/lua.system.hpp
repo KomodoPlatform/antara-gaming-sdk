@@ -16,23 +16,24 @@
 
 #pragma once
 
-#include <memory>
-#include <sol/state.hpp>
 #include "antara/gaming/core/safe.refl.hpp"
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/sfml/resources.manager.hpp"
+#include <memory>
+#include <sol/state.hpp>
 
 namespace antara::gaming::sfml
 {
     class lua_system final : public ecs::post_update_system<lua_system>
     {
-    public:
-        lua_system(entt::registry &registry, std::shared_ptr<sol::state> state) noexcept;
+      public:
+        lua_system(entt::registry& registry, std::shared_ptr<sol::state> state) noexcept;
         void update() noexcept final;
-    private:
-        std::shared_ptr<sol::state> state_;
+
+      private:
+        std::shared_ptr<sol::state>             state_;
         antara::gaming::sfml::resources_manager resource_mgr_;
     };
-}
+} // namespace antara::gaming::sfml
 
 REFL_AUTO(type(antara::gaming::sfml::lua_system));

@@ -14,30 +14,29 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/geometry/component.rectangle.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::geometry::tests
 {
-    TEST_SUITE ("test component rectangle")
+    TEST_SUITE("test component rectangle")
     {
-        TEST_CASE ("component rectangle is default constructor")
+        TEST_CASE("component rectangle is default constructor")
         {
             geometry::rectangle c_rectangle{};
             CHECK_EQ(c_rectangle.size, math::vec2f{50.0f, 50.0f});
         }
 
-        TEST_CASE ("component rectangle constructor with value")
+        TEST_CASE("component rectangle constructor with value")
         {
             geometry::rectangle c_rectangle{{42.0f, 42.0f}};
             CHECK_EQ(c_rectangle.size, math::vec2f{42.0f, 42.0f});
         }
 
-        TEST_CASE ("blueprint rectangle")
+        TEST_CASE("blueprint rectangle")
         {
-
             entt::registry entity_registry;
             CHECK(entity_registry.valid(geometry::blueprint_rectangle(entity_registry, {120.f})));
         }
     }
-}
+} // namespace antara::gaming::geometry::tests

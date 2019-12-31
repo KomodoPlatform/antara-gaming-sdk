@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include <utility>
-#include <SFML/Graphics.hpp>
 #include "meta/sequence/list.hpp"
+#include <SFML/Graphics.hpp>
+#include <utility>
 
 namespace antara::gaming::sfml
 {
@@ -73,6 +73,6 @@ namespace antara::gaming::sfml
     };
     // LCOV_EXCL_STOP
 
-    using drawable_list = doom::meta::list<sprite, circle, text, vertex_array, rectangle, render_texture>;
+    using drawable_list               = doom::meta::list<sprite, circle, text, vertex_array, rectangle, render_texture>;
     using drawable_list_transformable = doom::meta::list<sprite, circle, text, rectangle>;
-}
+} // namespace antara::gaming::sfml

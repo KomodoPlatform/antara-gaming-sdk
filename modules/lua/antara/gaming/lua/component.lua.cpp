@@ -20,10 +20,13 @@
 //! SDK Headers
 #include "antara/gaming/lua/component.lua.hpp"
 
-namespace antara::gaming::lua {
-    component_script::component_script(std::string script_, std::string table_name_) noexcept :
-            script(std::move(script_)),
-            table_name(std::move(table_name_)) {}
+namespace antara::gaming::lua
+{
+    component_script::component_script(std::string script_, std::string table_name_) noexcept : script(std::move(script_)), table_name(std::move(table_name_))
+    {
+    }
 
-    component_script::component_script() noexcept : script(""), table_name("") {}
-}
+    component_script::component_script() noexcept : script(""), table_name("")
+    {
+    }
+} // namespace antara::gaming::lua

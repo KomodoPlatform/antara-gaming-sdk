@@ -19,8 +19,8 @@
 #include <SFML/Audio.hpp>
 
 #include "antara/gaming/core/safe.refl.hpp"
-#include "antara/gaming/sfml/event.play.sound.hpp"
 #include "antara/gaming/ecs/system.hpp"
+#include "antara/gaming/sfml/event.play.sound.hpp"
 
 namespace antara::gaming::sfml
 {
@@ -30,17 +30,17 @@ namespace antara::gaming::sfml
      */
     class audio_system final : public ecs::pre_update_system<audio_system>
     {
-    public:
+      public:
         /**
          * @param registry The entity_registry is provided to the system when it is created.
          */
-        audio_system(entt::registry &registry) noexcept;
+        audio_system(entt::registry& registry) noexcept;
 
         /**
          * @brief This function destroys and cleans up the sounds which are completed playing.
          */
         void update() noexcept final;
     };
-}
+} // namespace antara::gaming::sfml
 
 REFL_AUTO(type(antara::gaming::sfml::audio_system));

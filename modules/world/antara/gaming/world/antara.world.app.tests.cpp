@@ -18,14 +18,15 @@
 
 //! SDK Headers
 #include "antara/gaming/ecs/interpolation.system.hpp" ///< ecs::interpolation_system
-#include "antara/gaming/world/world.app.hpp" ///< world::app
+#include "antara/gaming/world/world.app.hpp"          ///< world::app
 
 namespace antara::gaming::world::tests
 {
     class empty_concrete_world : public world::app
     {
-    public:
-        empty_concrete_world() {
+      public:
+        empty_concrete_world()
+        {
             system_manager_.mark_system<ecs::interpolation_system>();
             system_manager_.start();
             system_manager_.update();
@@ -36,26 +37,28 @@ namespace antara::gaming::world::tests
 
     class concrete_pre_system final : public ecs::pre_update_system<concrete_pre_system>
     {
-    public:
-        concrete_pre_system(entt::registry &registry) : system(registry)
+      public:
+        concrete_pre_system(entt::registry& registry) : system(registry)
         {
         }
 
-        void update() noexcept final
+        void
+        update() noexcept final
         {
             counter += 1;
-            if (counter == 10ull) {
+            if (counter == 10ull)
+            {
                 this->dispatcher_.trigger<event::quit_game>(42);
             }
         }
 
-    private:
+      private:
         std::size_t counter{0ull};
     };
 
     class concrete_world : public world::app
     {
-    public:
+      public:
         concrete_world()
         {
             system_manager_.mark_system<ecs::interpolation_system>();
@@ -66,20 +69,20 @@ namespace antara::gaming::world::tests
         }
     };
 
-    TEST_SUITE ("world test suite")
+    TEST_SUITE("world test suite")
     {
-        TEST_CASE ("empty world")
+        TEST_CASE("empty world")
         {
             empty_concrete_world world;
             CHECK_EQ(world.run(), 0);
         }
 
-        TEST_CASE ("concrete world")
+        TEST_CASE("concrete world")
         {
             concrete_world world;
             CHECK_EQ(world.run(), 42);
         }
     }
-}
+} // namespace antara::gaming::world::tests
 
 REFL_AUTO(type(antara::gaming::world::tests::concrete_pre_system));

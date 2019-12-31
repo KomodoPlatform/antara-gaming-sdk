@@ -17,8 +17,10 @@
 //! SDK Headers
 #include "antara/gaming/event/mouse.button.released.hpp"
 
-namespace antara::gaming::event {
-    mouse_button_released::mouse_button_released(input::mouse_button button_, float x_, float y_, float window_x_,
-                                                 float window_y_) noexcept
-            : button(button_), x(x_), y(y_), window_x(window_x_), window_y(window_y_) {}
-}
+namespace antara::gaming::event
+{
+    mouse_button_released::mouse_button_released(input::mouse_button button_, float x_, float y_, float window_x_, float window_y_) noexcept :
+        button(button_), x(x_), y(y_), window_x(window_x_), window_y(window_y_)
+    {
+    }
+} // namespace antara::gaming::event

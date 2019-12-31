@@ -16,19 +16,21 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
 #include "antara/gaming/ecs/system.hpp"
+#include <SDL2/SDL.h>
 
-namespace antara::gaming::sdl {
-    
-    class input_system final : public ecs::pre_update_system<input_system> {
-    public:
-        explicit input_system(entt::registry &registry, SDL_Window* window);
+namespace antara::gaming::sdl
+{
+    class input_system final : public ecs::pre_update_system<input_system>
+    {
+      public:
+        explicit input_system(entt::registry& registry, SDL_Window* window);
         ~input_system() noexcept final = default;
         void update() noexcept final;
-    private:
-        SDL_Window *window_;
+
+      private:
+        SDL_Window* window_;
     };
-}
+} // namespace antara::gaming::sdl
 
 REFL_AUTO(type(antara::gaming::sdl::input_system))

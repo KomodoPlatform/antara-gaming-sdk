@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/graphics/component.color.hpp"
+#include <doctest/doctest.h>
 
 
 namespace antara::gaming::graphics::tests
@@ -57,4 +57,4 @@ namespace antara::gaming::graphics::tests
             CHECK_EQ(c_fill_color, graphics::yellow);
         }
     }
-}
+} // namespace antara::gaming::graphics::tests

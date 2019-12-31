@@ -16,55 +16,55 @@
 
 #pragma once
 
-#include <tuple>
-#include <functional>
-#include <entt/signal/dispatcher.hpp>
-#include <entt/entity/helper.hpp>
-#include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/graphics/component.layer.hpp"
-#include "antara/gaming/transform/component.position.hpp"
-#include "antara/gaming/sfml/resources.manager.hpp"
+#include "antara/gaming/scenes/base.scene.hpp"
 #include "antara/gaming/sfml/component.audio.hpp"
+#include "antara/gaming/sfml/resources.manager.hpp"
+#include "antara/gaming/transform/component.position.hpp"
+#include <entt/entity/helper.hpp>
+#include <entt/signal/dispatcher.hpp>
+#include <functional>
+#include <tuple>
 
 
 namespace antara::gaming::sfml
 {
     struct intro_scene_factory
     {
-    private:
-        static auto get_window_and_screen(entt::registry &entity_registry);
+      private:
+        static auto get_window_and_screen(entt::registry& entity_registry);
 
-    public:
-        static entt::entity create_sound(entt::registry &entity_registry, const std::string &sound_name);
+      public:
+        static entt::entity create_sound(entt::registry& entity_registry, const std::string& sound_name);
 
-        static entt::entity create_foreground(entt::registry &entity_registry);
+        static entt::entity create_foreground(entt::registry& entity_registry);
 
-        static entt::entity create_background(entt::registry &entity_registry);
+        static entt::entity create_background(entt::registry& entity_registry);
 
-        static auto create_logo(entt::registry &entity_registry);
+        static auto create_logo(entt::registry& entity_registry);
 
-        static auto create_name(entt::registry &entity_registry, float logo_final_scale, math::vec2f logo_target_position);
+        static auto create_name(entt::registry& entity_registry, float logo_final_scale, math::vec2f logo_target_position);
     };
 
     class intro_scene final : public antara::gaming::scenes::base_scene
     {
-    public:
+      public:
         using on_finish_functor = std::function<void()>;
 
-        intro_scene(entt::registry &entity_registry, on_finish_functor on_finish_functor) noexcept;
+        intro_scene(entt::registry& entity_registry, on_finish_functor on_finish_functor) noexcept;
 
         void update() noexcept final;
 
-        bool on_key_pressed(const event::key_pressed &evt) noexcept final;
+        bool on_key_pressed(const event::key_pressed& evt) noexcept final;
 
         std::string scene_name() noexcept final;
 
         ~intro_scene() noexcept final;
 
-    private:
+      private:
         struct animation
         {
-        public:
+          public:
             animation() = delete;
 
             explicit animation(float start_time, std::function<bool(float)> animation);
@@ -75,17 +75,17 @@ namespace antara::gaming::sfml
 
             const float start_time;
 
-        private:
+          private:
             std::function<bool(float)> animate;
-            bool done;
+            bool                       done;
         };
 
         std::vector<animation> actions;
-        float global_time{0.f};
+        float                  global_time{0.f};
 
         on_finish_functor on_finish_functor_;
-        bool intro_finished{false};
+        bool              intro_finished{false};
 
         antara::gaming::sfml::resources_manager resource_mgr;
     };
-}
+} // namespace antara::gaming::sfml

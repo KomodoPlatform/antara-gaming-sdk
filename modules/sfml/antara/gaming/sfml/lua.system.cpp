@@ -19,24 +19,24 @@
 
 namespace antara::gaming::sfml
 {
-    void lua_system::update() noexcept
+    void
+    lua_system::update() noexcept
     {
-
     }
 
-    lua_system::lua_system(entt::registry &registry, std::shared_ptr<sol::state> state) noexcept : system(registry), state_(state)
+    lua_system::lua_system(entt::registry& registry, std::shared_ptr<sol::state> state) noexcept : system(registry), state_(state)
     {
         this->disable();
-        auto text_functor = [this](const char* text, const char *font_id, unsigned int size = 30) {
+        auto text_functor = [this](const char* text, const char* font_id, unsigned int size = 30) {
             auto entity = this->entity_registry_.create();
             auto handle = this->resource_mgr_.load_font(font_id);
             this->entity_registry_.assign<sfml::text>(entity, sf::Text(text, handle.get(), size));
             return entity;
         };
 
-        auto overload_set = sol::overload(text_functor, [&text_functor](const char* text, const char *font_id) {
+        auto overload_set                               = sol::overload(text_functor, [&text_functor](const char* text, const char* font_id) {
             return text_functor(text, font_id);
         });
         (*this->state_)["antara"]["create_text_entity"] = overload_set;
     }
-}
+} // namespace antara::gaming::sfml

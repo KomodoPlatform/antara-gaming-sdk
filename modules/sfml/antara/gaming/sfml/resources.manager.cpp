@@ -18,30 +18,29 @@
 
 namespace antara::gaming::sfml
 {
-
-    texture_handle resources_manager::load_texture(const char *resource_id, bool smooth)
+    texture_handle
+    resources_manager::load_texture(const char* resource_id, bool smooth)
     {
-        auto handle = resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id,
-                                                                               (textures_path_ / resource_id).string());
+        auto handle = resources_manager::load<textures_loader, textures_cache>(textures_cache_, resource_id, (textures_path_ / resource_id).string());
         handle->setSmooth(smooth);
         return handle;
     }
 
-    font_handle resources_manager::load_font(const char *resource_id)
+    font_handle
+    resources_manager::load_font(const char* resource_id)
     {
-        return resources_manager::load<fonts_loader, fonts_cache>(fonts_cache_, resource_id,
-                                                                  (fonts_path_ / resource_id).string());
+        return resources_manager::load<fonts_loader, fonts_cache>(fonts_cache_, resource_id, (fonts_path_ / resource_id).string());
     }
 
-    sound_handle resources_manager::load_sound(const char *resource_id)
+    sound_handle
+    resources_manager::load_sound(const char* resource_id)
     {
-        return resources_manager::load<sounds_loader, sounds_cache>(sounds_cache_, resource_id,
-                                                                    (sounds_path / resource_id).string());
+        return resources_manager::load<sounds_loader, sounds_cache>(sounds_cache_, resource_id, (sounds_path / resource_id).string());
     }
 
-    music_handle resources_manager::load_music(const char *resource_id)
+    music_handle
+    resources_manager::load_music(const char* resource_id)
     {
-        return resources_manager::load<musics_loader, musics_cache>(musics_cache_, resource_id,
-                                                                    (musics_path_ / resource_id).string());
+        return resources_manager::load<musics_loader, musics_cache>(musics_cache_, resource_id, (musics_path_ / resource_id).string());
     }
-}
+} // namespace antara::gaming::sfml

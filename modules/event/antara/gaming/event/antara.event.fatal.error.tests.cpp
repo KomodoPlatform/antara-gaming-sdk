@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/event/fatal.error.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::event::tests
 {
@@ -27,4 +27,4 @@ namespace antara::gaming::event::tests
             CHECK_EQ(fatal_error_event.ec_.value(), static_cast<int>(std::errc::result_out_of_range));
         }
     }
-}
+} // namespace antara::gaming::event::tests

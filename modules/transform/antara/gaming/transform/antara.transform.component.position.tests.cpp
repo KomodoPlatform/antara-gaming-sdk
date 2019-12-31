@@ -21,20 +21,20 @@
 
 namespace antara::gaming::transform::tests
 {
-    TEST_SUITE ("test component position")
+    TEST_SUITE("test component position")
     {
-        TEST_CASE ("component position is default constructor")
+        TEST_CASE("component position is default constructor")
         {
             position_2d c_pos{};
             CHECK_EQ(c_pos.x(), 0.0f);
             CHECK_EQ(c_pos.y(), 0.0f);
         }
 
-        TEST_CASE ("component position constructor with value")
+        TEST_CASE("component position constructor with value")
         {
             position_2d c_pos{42.0f, 27.0f};
             CHECK_EQ(c_pos.x(), 42.0f);
             CHECK_EQ(c_pos.y(), 27.0f);
         }
     }
-}
+} // namespace antara::gaming::transform::tests

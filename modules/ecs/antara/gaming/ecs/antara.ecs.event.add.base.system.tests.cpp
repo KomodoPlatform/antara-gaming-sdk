@@ -14,16 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/ecs/event.add.base.system.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::ecs::tests
 {
-    TEST_SUITE ("test event add base system")
+    TEST_SUITE("test event add base system")
     {
-        TEST_CASE ("default constructor")
+        TEST_CASE("default constructor")
         {
             antara::gaming::ecs::event::add_base_system evt{};
         }
     }
-}
+} // namespace antara::gaming::ecs::tests

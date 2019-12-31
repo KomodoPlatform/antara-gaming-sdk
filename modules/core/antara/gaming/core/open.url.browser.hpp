@@ -19,16 +19,19 @@
 //! SDK Headers
 #ifdef _WIN32
 
-#include "antara/gaming/core/details/windows/open.url.browser.hpp"
+#    include "antara/gaming/core/details/windows/open.url.browser.hpp"
 
 #elif __APPLE__ || __linux__
 
-#include "antara/gaming/core/details/posix/open.url.browser.hpp"
+#    include "antara/gaming/core/details/posix/open.url.browser.hpp"
 
 #endif
 
-namespace antara::gaming::core {
-    inline void open_url_browser(const std::string &url) noexcept {
+namespace antara::gaming::core
+{
+    inline void
+    open_url_browser(const std::string& url) noexcept
+    {
         details::open_url_browser(url);
     }
-}
+} // namespace antara::gaming::core

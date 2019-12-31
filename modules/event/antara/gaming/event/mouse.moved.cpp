@@ -17,16 +17,9 @@
 //! SDK Headers
 #include "antara/gaming/event/mouse.moved.hpp"
 
-namespace antara::gaming::event {
-    mouse_moved::mouse_moved(float x_, float y_, float window_x_, float window_y_) noexcept
-            : x(x_), y(y_), window_x(window_x_), window_y(window_y_) {}
-}
-
-
-
-
-
-
-
-
-
+namespace antara::gaming::event
+{
+    mouse_moved::mouse_moved(float x_, float y_, float window_x_, float window_y_) noexcept : x(x_), y(y_), window_x(window_x_), window_y(window_y_)
+    {
+    }
+} // namespace antara::gaming::event

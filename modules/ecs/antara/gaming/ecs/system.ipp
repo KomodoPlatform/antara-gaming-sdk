@@ -16,44 +16,55 @@
 
 #pragma once
 
-namespace antara::gaming::ecs {
-    template<typename TSystemDerived, typename TSystemType>
-    template<typename ... TArgs>
-    system<TSystemDerived, TSystemType>::system(TArgs &&... args) noexcept : base_system(std::forward<TArgs>(args)...) {
+namespace antara::gaming::ecs
+{
+    template <typename TSystemDerived, typename TSystemType>
+    template <typename... TArgs>
+    system<TSystemDerived, TSystemType>::system(TArgs&&... args) noexcept : base_system(std::forward<TArgs>(args)...)
+    {
         LOG_SCOPE_FUNCTION(INFO);
         DVLOG_F(loguru::Verbosity_INFO, "creating system {}", this->get_name());
     }
 
-    template<typename TSystemDerived, typename TSystemType>
-    constexpr system_type system<TSystemDerived, TSystemType>::get_system_type() noexcept {
-        if constexpr (std::is_same_v < TSystemType, st_system_logic_update >)
+    template <typename TSystemDerived, typename TSystemType>
+    constexpr system_type
+    system<TSystemDerived, TSystemType>::get_system_type() noexcept
+    {
+        if constexpr (std::is_same_v<TSystemType, st_system_logic_update>)
             return system_type::logic_update;
-        else if constexpr (std::is_same_v < TSystemType, st_system_pre_update >)
+        else if constexpr (std::is_same_v<TSystemType, st_system_pre_update>)
             return system_type::pre_update;
-        else if constexpr (std::is_same_v < TSystemType, st_system_post_update >)
+        else if constexpr (std::is_same_v<TSystemType, st_system_post_update>)
             return system_type::post_update;
-        return system_type::size; //LCOV_EXCL_LINE
+        return system_type::size; // LCOV_EXCL_LINE
     }
 
 
-    template<typename TSystemDerived, typename TSystemType>
-    system_type system<TSystemDerived, TSystemType>::get_system_type_rtti() const noexcept {
+    template <typename TSystemDerived, typename TSystemType>
+    system_type
+    system<TSystemDerived, TSystemType>::get_system_type_rtti() const noexcept
+    {
         return system::get_system_type();
     }
 
-    template<typename TSystemDerived, typename TSystemType>
-    std::string system<TSystemDerived, TSystemType>::get_name() const noexcept {
+    template <typename TSystemDerived, typename TSystemType>
+    std::string
+    system<TSystemDerived, TSystemType>::get_name() const noexcept
+    {
         return system::get_class_name();
     }
 
-    template<typename TSystemDerived, typename TSystemType>
-    std::string system<TSystemDerived, TSystemType>::get_class_name() noexcept {
+    template <typename TSystemDerived, typename TSystemType>
+    std::string
+    system<TSystemDerived, TSystemType>::get_class_name() noexcept
+    {
         return refl::reflect<TSystemDerived>().name.str();
     }
 
-    template<typename TSystemDerived, typename TSystemType>
-    system<TSystemDerived, TSystemType>::~system() noexcept {
+    template <typename TSystemDerived, typename TSystemType>
+    system<TSystemDerived, TSystemType>::~system() noexcept
+    {
         LOG_SCOPE_FUNCTION(INFO);
         DVLOG_F(loguru::Verbosity_INFO, "destroying system {}", this->get_name());
     }
-}
+} // namespace antara::gaming::ecs

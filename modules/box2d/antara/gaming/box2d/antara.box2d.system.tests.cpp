@@ -14,19 +14,19 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/box2d/box2d.system.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::box2d::tests
 {
-    TEST_SUITE ("box2d system tests suite")
+    TEST_SUITE("box2d system tests suite")
     {
-        entt::registry registry;
+        entt::registry    registry;
         entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
-        box2d_system system{registry};
-        TEST_CASE ("update system")
+        box2d_system      system{registry};
+        TEST_CASE("update system")
         {
             system.update();
         }
     }
-}
+} // namespace antara::gaming::box2d::tests

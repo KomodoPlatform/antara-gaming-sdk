@@ -42,8 +42,9 @@ namespace antara::gaming
            The result of this function can be deduced at compile-time.
        \endverbatim
     */
-    constexpr const char *version() noexcept
+    constexpr const char*
+    version() noexcept
     {
         return "0.0.1";
     }
-}
+} // namespace antara::gaming

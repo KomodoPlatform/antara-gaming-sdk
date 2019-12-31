@@ -17,7 +17,9 @@
 //! SDK Headers
 #include "antara/gaming/event/fatal.error.hpp"
 
-namespace antara::gaming::event {
-    fatal_error::fatal_error(std::error_code ec) noexcept : ec_(ec) {
+namespace antara::gaming::event
+{
+    fatal_error::fatal_error(std::error_code ec) noexcept : ec_(ec)
+    {
     }
-}
+} // namespace antara::gaming::event

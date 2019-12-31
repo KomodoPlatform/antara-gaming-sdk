@@ -14,10 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/event/type.traits.hpp"
 #include "antara/gaming/event/quit.game.hpp"
 #include "antara/gaming/event/start.game.hpp"
+#include "antara/gaming/event/type.traits.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::event::tests
 {
@@ -29,4 +29,4 @@ namespace antara::gaming::event::tests
             static_assert(!has_constructor_arg_type_v<event::start_game>);
         }
     }
-}
+} // namespace antara::gaming::event::tests

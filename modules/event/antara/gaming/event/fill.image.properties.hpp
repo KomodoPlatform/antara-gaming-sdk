@@ -19,30 +19,34 @@
 #pragma once
 
 //! C++ System Headers
-#include <string> ///< std::string
+#include <string>  ///< std::string
 #include <utility> ///< std::move
 
 //! SDK Headers
 #include "antara/gaming/math/vector.hpp" ///< math::vec2u
 
-namespace antara::gaming::event {
-    struct fill_image_properties {
+namespace antara::gaming::event
+{
+    struct fill_image_properties
+    {
         //! Constructors
-        fill_image_properties(std::string appeareance_, math::vec2u &size) noexcept :
-                appearance(std::move(appeareance_)),
-                image_size(size) {}
+        fill_image_properties(std::string appeareance_, math::vec2u& size) noexcept : appearance(std::move(appeareance_)), image_size(size)
+        {
+        }
 
-        fill_image_properties(const fill_image_properties &) = default;
+        fill_image_properties(const fill_image_properties&) = default;
 
         //! Operators
-        fill_image_properties &operator=(const fill_image_properties &other) {
+        fill_image_properties&
+        operator=(const fill_image_properties& other)
+        {
             this->appearance = other.appearance;
             this->image_size = other.image_size;
             return *this;
         }
 
         //! Fields
-        std::string appearance; ///< Texture id
-        math::vec2u &image_size; ///< To fill
+        std::string  appearance; ///< Texture id
+        math::vec2u& image_size; ///< To fill
     };
-}
+} // namespace antara::gaming::event

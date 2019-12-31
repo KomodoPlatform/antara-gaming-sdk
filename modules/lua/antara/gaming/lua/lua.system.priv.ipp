@@ -16,40 +16,48 @@
 
 #pragma once
 
-namespace antara::gaming::lua {
-    template<typename TypeToRegister, typename... Members>
-    void scripting_system::register_type_impl(refl::type_list<Members...>, const char *replace_name) noexcept {
+namespace antara::gaming::lua
+{
+    template <typename TypeToRegister, typename... Members>
+    void
+    scripting_system::register_type_impl(refl::type_list<Members...>, const char* replace_name) noexcept
+    {
         std::string current_name = refl::reflect<TypeToRegister>().name.str();
-        std::string final_name = current_name;
-        if (std::size_t found = current_name.find_last_of(':'); found != std::string::npos) {
+        std::string final_name   = current_name;
+        if (std::size_t found = current_name.find_last_of(':'); found != std::string::npos)
+        {
             //! Skip namespace
             final_name = current_name.substr(found + 1); //! LCOV_EXCL_LINE
         }
 
-        auto apply_functor = [this](auto &&final_table) {
-            try {
+        auto apply_functor = [this](auto&& final_table) {
+            try
+            {
                 std::apply(
-                        [this](auto &&...params) {
-                            //static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is flawed");
-                            this->lua_state_->new_usertype<TypeToRegister>(
-                                    std::forward<decltype(params)>(params)...);
-                        }, final_table);
+                    [this](auto&&... params) {
+                        // static_assert((std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(params)>>, std::nullptr_t> || ...), "system is
+                        // flawed");
+                        this->lua_state_->new_usertype<TypeToRegister>(std::forward<decltype(params)>(params)...);
+                    },
+                    final_table);
             }
-            catch (const std::exception &error) {
+            catch (const std::exception& error)
+            {
                 VLOG_F(loguru::Verbosity_ERROR, "register type error: {}", error.what());
             }
         };
 
         auto name_table = std::make_tuple(replace_name == nullptr ? final_name : replace_name);
-        if constexpr(doom::meta::is_detected_v < member_type_constructors_detector, TypeToRegister >) {
-            using ctor = typename TypeToRegister::constructors;
-            auto final_table = std::tuple_cat(name_table, std::make_tuple(ctor()),
-                                              std::make_tuple(Members::name.c_str(), Members::pointer)...);
+        if constexpr (doom::meta::is_detected_v<member_type_constructors_detector, TypeToRegister>)
+        {
+            using ctor       = typename TypeToRegister::constructors;
+            auto final_table = std::tuple_cat(name_table, std::make_tuple(ctor()), std::make_tuple(Members::name.c_str(), Members::pointer)...);
             apply_functor(final_table);
-        } else {
-            auto final_table = std::tuple_cat(name_table,
-                                              std::make_tuple(Members::name.c_str(), Members::pointer)...);
+        }
+        else
+        {
+            auto final_table = std::tuple_cat(name_table, std::make_tuple(Members::name.c_str(), Members::pointer)...);
             apply_functor(final_table);
         }
     }
-}
+} // namespace antara::gaming::lua

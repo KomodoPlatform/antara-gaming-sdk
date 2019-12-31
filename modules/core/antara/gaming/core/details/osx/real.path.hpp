@@ -16,17 +16,17 @@
 
 #pragma once
 
-#include <mach-o/dyld.h>
+#include <array>
 #include <cassert>
 #include <climits>
-#include <string>
 #include <filesystem>
-#include <array>
+#include <mach-o/dyld.h>
+#include <string>
 
 namespace antara::gaming::core::details
 {
-    static std::string &replace_all_mute(std::string &s,
-                                         const std::string &from, const std::string &to) noexcept
+    static std::string&
+    replace_all_mute(std::string& s, const std::string& from, const std::string& to) noexcept
     {
         if (not from.empty())
             for (std::size_t pos = 0; (pos = s.find(from, pos) + 1); pos += to.size())
@@ -34,25 +34,27 @@ namespace antara::gaming::core::details
         return s;
     }
 
-    static std::string replace_all_copy(std::string s,
-                                        const std::string &from, const std::string &to) noexcept
+    static std::string
+    replace_all_copy(std::string s, const std::string& from, const std::string& to) noexcept
     {
         return replace_all_mute(s, from, to);
     }
 
-    std::filesystem::path binary_real_path() noexcept
+    std::filesystem::path
+    binary_real_path() noexcept
     {
         std::array<char, PATH_MAX + 1> dir_name_buffer{};
-        auto size = static_cast<uint32_t>(dir_name_buffer.size());
-        [[maybe_unused]] int result = _NSGetExecutablePath(dir_name_buffer.data(), &size);
+        auto                           size   = static_cast<uint32_t>(dir_name_buffer.size());
+        [[maybe_unused]] int           result = _NSGetExecutablePath(dir_name_buffer.data(), &size);
         assert(result == 0);
         std::string tmp_path(dir_name_buffer.data());
-        auto final_path = replace_all_copy(tmp_path, "./", "");
+        auto        final_path = replace_all_copy(tmp_path, "./", "");
         return std::filesystem::path(final_path);
     }
 
-    std::filesystem::path assets_real_path() noexcept
+    std::filesystem::path
+    assets_real_path() noexcept
     {
         return binary_real_path().parent_path().parent_path() / "Resources/assets";
     }
-}
+} // namespace antara::gaming::core::details

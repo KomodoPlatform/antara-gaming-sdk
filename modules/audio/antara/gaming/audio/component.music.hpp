@@ -18,21 +18,24 @@
 
 //! C++ System Headers
 #include <functional> ///< std::function
-#include <string> ///< std::string
+#include <string>     ///< std::string
 
 //! SDK Headers
 #include "antara/gaming/audio/audio.status.hpp" ///< audio::status
 
-namespace antara::gaming::audio {
-    struct music {
-        std::string music_id;
-        status music_status{status::wait_for_first_run};
-        float pitch{1.f};
-        float volume{100.f};
-        bool loop{false};
-        std::function<void()> on_finish{[]() {}};
-        float minimum_distance{1.f};
-        float attenuation{1.f};
-        bool relative_to_listener{false};
+namespace antara::gaming::audio
+{
+    struct music
+    {
+        std::string           music_id;
+        status                music_status{status::wait_for_first_run};
+        float                 pitch{1.f};
+        float                 volume{100.f};
+        bool                  loop{false};
+        std::function<void()> on_finish{[]() {
+        }};
+        float                 minimum_distance{1.f};
+        float                 attenuation{1.f};
+        bool                  relative_to_listener{false};
     };
-}
+} // namespace antara::gaming::audio

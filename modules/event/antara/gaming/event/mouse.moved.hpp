@@ -19,8 +19,10 @@
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 
-namespace antara::gaming::event {
-    struct mouse_moved {
+namespace antara::gaming::event
+{
+    struct mouse_moved
+    {
         //! Constructors
         mouse_moved() noexcept = default;
 
@@ -32,5 +34,5 @@ namespace antara::gaming::event {
         float window_x;
         float window_y;
     };
-}
+} // namespace antara::gaming::event
 REFL_AUTO(type(antara::gaming::event::mouse_moved), field(x), field(y), field(window_x), field(window_y));

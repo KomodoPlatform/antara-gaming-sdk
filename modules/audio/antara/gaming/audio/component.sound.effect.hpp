@@ -23,17 +23,20 @@
 //! SDK Headers
 #include "antara/gaming/audio/audio.status.hpp"
 
-namespace antara::gaming::audio {
-    struct sound_effect {
-        std::string sound_id; ///< The id of the sound.
-        status sound_status{status::wait_for_first_run}; ///< The sound status.
-        float pitch{1.f}; ///< The sound pitch;
-        float volume{100.f}; ///< The sound volume.
-        bool loop{false}; ///< Indicates whether the sound is played in a loop.
-        std::function<void()> on_finish{[]() {}}; ///< Callback that will be executed once the sound is finished
-        float minimum_distance{1.f}; ///< The minimum distance of the sound.
-        float attenuation{1.f}; ///< The attenuation factor of the sound.
-        bool relative_to_listener{false}; ///< Indicate if the sound is relative to the listener.
-        bool recycling{false}; ///< Indicate if the sound will be reused (do not destroy the entity)
+namespace antara::gaming::audio
+{
+    struct sound_effect
+    {
+        std::string           sound_id;                                 ///< The id of the sound.
+        status                sound_status{status::wait_for_first_run}; ///< The sound status.
+        float                 pitch{1.f};                               ///< The sound pitch;
+        float                 volume{100.f};                            ///< The sound volume.
+        bool                  loop{false};                              ///< Indicates whether the sound is played in a loop.
+        std::function<void()> on_finish{[]() {
+        }};                                                ///< Callback that will be executed once the sound is finished
+        float                 minimum_distance{1.f};       ///< The minimum distance of the sound.
+        float                 attenuation{1.f};            ///< The attenuation factor of the sound.
+        bool                  relative_to_listener{false}; ///< Indicate if the sound is relative to the listener.
+        bool                  recycling{false};            ///< Indicate if the sound will be reused (do not destroy the entity)
     };
-}
+} // namespace antara::gaming::audio

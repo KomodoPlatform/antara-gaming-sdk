@@ -37,6 +37,6 @@ namespace antara::gaming::input
         horizontal_wheel
     };
 
-    bool is_mouse_button_pressed(mouse_button button) noexcept;
+    bool        is_mouse_button_pressed(mouse_button button) noexcept;
     math::vec2i get_mouse_position(bool relative_to_the_window = false) noexcept;
-}
+} // namespace antara::gaming::input

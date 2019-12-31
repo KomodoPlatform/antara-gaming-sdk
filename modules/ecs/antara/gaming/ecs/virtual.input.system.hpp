@@ -21,14 +21,16 @@
 
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
-#include "antara/gaming/ecs/system.hpp" ///< ecs::system
+#include "antara/gaming/ecs/system.hpp"     ///< ecs::system
 
-namespace antara::gaming::ecs {
-    struct virtual_input_system final : ecs::logic_update_system<virtual_input_system> {
-        virtual_input_system(entt::registry &registry) noexcept;
+namespace antara::gaming::ecs
+{
+    struct virtual_input_system final : ecs::logic_update_system<virtual_input_system>
+    {
+        virtual_input_system(entt::registry& registry) noexcept;
 
         void update() noexcept final;
     };
-}
+} // namespace antara::gaming::ecs
 
-REFL_AUTO (type(antara::gaming::ecs::virtual_input_system));
+REFL_AUTO(type(antara::gaming::ecs::virtual_input_system));

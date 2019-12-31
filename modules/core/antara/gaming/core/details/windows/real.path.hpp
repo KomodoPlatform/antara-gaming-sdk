@@ -17,24 +17,26 @@
 #pragma once
 
 #include <cassert>
-#include <windows.h> //! HMODULE, GetModuleHandleW, GetModuleFileNameW
 #include <filesystem>
 #include <string>
+#include <windows.h> //! HMODULE, GetModuleHandleW, GetModuleFileNameW
 
 namespace antara::gaming::core::details
 {
-    std::filesystem::path binary_real_path() noexcept
+    std::filesystem::path
+    binary_real_path() noexcept
     {
         HMODULE hModule = GetModuleHandleW(nullptr);
         assert(hModule != nullptr);
         WCHAR path[MAX_PATH];
-        auto result = GetModuleFileNameW(hModule, path, MAX_PATH);
+        auto  result = GetModuleFileNameW(hModule, path, MAX_PATH);
         assert(result);
         return std::filesystem::path(path);
     }
 
-    std::filesystem::path assets_real_path() noexcept
+    std::filesystem::path
+    assets_real_path() noexcept
     {
         return binary_real_path().parent_path() / "assets";
     }
-}
+} // namespace antara::gaming::core::details

@@ -14,14 +14,14 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/event/mouse.moved.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::event::tests
 {
-    TEST_SUITE ("mouse moved test suite")
+    TEST_SUITE("mouse moved test suite")
     {
-        TEST_CASE ("default constructor")
+        TEST_CASE("default constructor")
         {
             event::mouse_moved mouse_moved{};
             CHECK_EQ(mouse_moved.x, 0);
@@ -30,7 +30,7 @@ namespace antara::gaming::event::tests
             CHECK_EQ(mouse_moved.window_y, 0);
         }
 
-        TEST_CASE ("can construct from 2 positions")
+        TEST_CASE("can construct from 2 positions")
         {
             event::mouse_moved mouse_moved_event{42, 42, 10, 11};
             CHECK_EQ(mouse_moved_event.x, 42);
@@ -39,4 +39,4 @@ namespace antara::gaming::event::tests
             CHECK_EQ(mouse_moved_event.window_y, 11);
         }
     }
-}
+} // namespace antara::gaming::event::tests

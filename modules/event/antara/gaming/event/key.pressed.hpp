@@ -20,7 +20,8 @@
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 #include "antara/gaming/input/keyboard.hpp" ///< input::key
 
-namespace antara::gaming::event {
+namespace antara::gaming::event
+{
     /**
      * @struct key_pressed
      * @brief triggered when pressing a key on the keyboard.
@@ -30,7 +31,8 @@ namespace antara::gaming::event {
      *         This class is automatically reflected for scripting systems such as lua, python.
      * @endverbatim
      */
-    struct key_pressed {
+    struct key_pressed
+    {
         //! Constructors
 
         /**
@@ -60,10 +62,7 @@ namespace antara::gaming::event {
          *          }
          * @endcode
          */
-        key_pressed(input::key key_, bool alt_,
-                    bool control_,
-                    bool shift_,
-                    bool system_) noexcept;
+        key_pressed(input::key key_, bool alt_, bool control_, bool shift_, bool system_) noexcept;
 
         /**
          * default constructor (for scripting systems convenience)
@@ -71,12 +70,12 @@ namespace antara::gaming::event {
         key_pressed() noexcept;
 
         //! Fields
-        antara::gaming::input::key key; ///< key pressed
-        bool alt{false}; ///< is alt pressed at the same time.
-        bool control{false}; ///< is ctrl pressed at the same time.
-        bool shift{false}; ///< is shift pressed at the same time.
-        bool system{false}; ///< is system pressed at the same time.
+        antara::gaming::input::key key;            ///< key pressed
+        bool                       alt{false};     ///< is alt pressed at the same time.
+        bool                       control{false}; ///< is ctrl pressed at the same time.
+        bool                       shift{false};   ///< is shift pressed at the same time.
+        bool                       system{false};  ///< is system pressed at the same time.
     };
-}
+} // namespace antara::gaming::event
 
 REFL_AUTO(type(antara::gaming::event::key_pressed), field(key), field(alt), field(control), field(shift), field(system))

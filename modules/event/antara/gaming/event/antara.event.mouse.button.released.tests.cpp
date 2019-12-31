@@ -14,14 +14,14 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/event/mouse.button.released.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::event::tests
 {
-    TEST_SUITE ("mouse button released test suite")
+    TEST_SUITE("mouse button released test suite")
     {
-        TEST_CASE ("default constructor")
+        TEST_CASE("default constructor")
         {
             event::mouse_button_released mouse_button_released_evt{};
             CHECK_EQ(mouse_button_released_evt.x, 0);
@@ -30,7 +30,7 @@ namespace antara::gaming::event::tests
             CHECK_EQ(mouse_button_released_evt.window_y, 0);
         }
 
-        TEST_CASE ("can construct from a button and 2 positions")
+        TEST_CASE("can construct from a button and 2 positions")
         {
             event::mouse_button_released mouse_button_released_evt{input::mouse_button::right, 42, 42, 10, 11};
             CHECK_EQ(mouse_button_released_evt.x, 42);
@@ -40,4 +40,4 @@ namespace antara::gaming::event::tests
             CHECK_EQ(mouse_button_released_evt.button, input::mouse_button::right);
         }
     }
-}
+} // namespace antara::gaming::event::tests

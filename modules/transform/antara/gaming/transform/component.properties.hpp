@@ -18,29 +18,31 @@
 
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
-#include "antara/gaming/math/vector.hpp" ///< math::vec2f
+#include "antara/gaming/math/vector.hpp"    ///< math::vec2f
 
-namespace antara::gaming::transform {
-    struct ts_rect {
+namespace antara::gaming::transform
+{
+    struct ts_rect
+    {
         math::vec2f pos;
         math::vec2f size;
     };
 
-    struct properties {
+    struct properties
+    {
         math::vec2f scale{math::vec2f::scalar(1.f)};
-        float rotation{0.f};
-        ts_rect local_bounds{}; //! Will be modified internally but not from the user
-        ts_rect global_bounds{}; //! Will be modified internally but not from the user
+        float       rotation{0.f};
+        ts_rect     local_bounds{};  //! Will be modified internally but not from the user
+        ts_rect     global_bounds{}; //! Will be modified internally but not from the user
 
         properties() noexcept = default;
 
-        properties(const properties &other) noexcept = default;
+        properties(const properties& other) noexcept = default;
 
-        properties &operator=(const properties &other) noexcept = default;
+        properties& operator=(const properties& other) noexcept = default;
     };
-}
+} // namespace antara::gaming::transform
 
 REFL_AUTO(type(antara::gaming::transform::ts_rect), field(pos), field(size))
 
-REFL_AUTO(type(antara::gaming::transform::properties), field(scale), field(rotation), field(local_bounds),
-          field(global_bounds))
+REFL_AUTO(type(antara::gaming::transform::properties), field(scale), field(rotation), field(local_bounds), field(global_bounds))

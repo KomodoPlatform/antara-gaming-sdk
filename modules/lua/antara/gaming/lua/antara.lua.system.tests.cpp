@@ -14,23 +14,24 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/event/key.pressed.hpp"
-#include "antara/gaming/lua/details/lua.scripted.system.hpp"
+#include "antara/gaming/core/version.hpp"
 #include "antara/gaming/ecs/system.manager.hpp"
+#include "antara/gaming/event/event.invoker.hpp"
+#include "antara/gaming/event/key.pressed.hpp"
 #include "antara/gaming/input/keyboard.hpp"
 #include "antara/gaming/input/mouse.hpp"
-#include "antara/gaming/core/version.hpp"
-#include "antara/gaming/lua/lua.system.hpp"
 #include "antara/gaming/lua/component.lua.hpp"
-#include "antara/gaming/event/event.invoker.hpp"
+#include "antara/gaming/lua/details/lua.scripted.system.hpp"
+#include "antara/gaming/lua/lua.system.hpp"
+#include <doctest/doctest.h>
 
 struct dummy_cmp
 {
     float x{0.f};
     float y{0.f};
 
-    void change_x(float value)
+    void
+    change_x(float value)
     {
         x = value;
     }
@@ -47,30 +48,23 @@ struct default_event_with_args
 
     default_event_with_args(int value_) : value(value_)
     {
-
     }
 
-    default_event_with_args() : value{0}
-    {};
+    default_event_with_args() : value{0} {};
 
     int value;
 };
 
 class lua_tests_fixture
 {
-protected:
-    entt::registry entity_registry;
-    entt::dispatcher &dispatcher{entity_registry.set<entt::dispatcher>()};
-    antara::gaming::ecs::system_manager system_mgr{entity_registry, true};
-    antara::gaming::lua::scripting_system &script_sys{system_mgr.create_system<antara::gaming::lua::scripting_system>(
-            std::filesystem::current_path() / "lua_assets" /
-            "scripts",
-            std::filesystem::current_path() / "lua_assets" /
-            "scripts" / "systems",
-            std::filesystem::current_path() / "lua_assets" /
-            "scripts" / "scenes" / "lua",
-            std::filesystem::current_path() / "lua_assets" / "scripts" / "lib")};
-    sol::state &state{script_sys.get_state()};
+  protected:
+    entt::registry                         entity_registry;
+    entt::dispatcher&                      dispatcher{entity_registry.set<entt::dispatcher>()};
+    antara::gaming::ecs::system_manager    system_mgr{entity_registry, true};
+    antara::gaming::lua::scripting_system& script_sys{system_mgr.create_system<antara::gaming::lua::scripting_system>(
+        std::filesystem::current_path() / "lua_assets" / "scripts", std::filesystem::current_path() / "lua_assets" / "scripts" / "systems",
+        std::filesystem::current_path() / "lua_assets" / "scripts" / "scenes" / "lua", std::filesystem::current_path() / "lua_assets" / "scripts" / "lib")};
+    sol::state&                            state{script_sys.get_state()};
 };
 
 REFL_AUTO(type(default_event_without_args));
@@ -80,44 +74,44 @@ REFL_AUTO(type(dummy_cmp), field(x), field(y), func(change_x));
 
 namespace antara::gaming::lua::tests
 {
-    TEST_CASE_FIXTURE (lua_tests_fixture, "register a type")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "register a type")
     {
         this->script_sys.register_type<dummy_cmp>();
         this->state.script("local obj = dummy_cmp.new()\n obj:change_x(1)\n assert(obj.x == 1.0, \"should be equal\")");
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "get version")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "get version")
     {
         const std::string res = state.script("local obj = antara.version\n return obj");
-                CHECK_EQ(res, gaming::version());
+        CHECK_EQ(res, gaming::version());
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "system type")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "system type")
     {
         const ecs::system_type res = state.script("return antara.system_type.pre_update");
-                CHECK_EQ(res, ecs::pre_update);
+        CHECK_EQ(res, ecs::pre_update);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "key input")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "key input")
     {
         input::key res = state.script("return antara.keyboard.f1");
-                CHECK_EQ(res, input::key::f1);
+        CHECK_EQ(res, input::key::f1);
         res = state.script("return antara.keyboard.return_");
-                CHECK_EQ(res, input::key::return_);
+        CHECK_EQ(res, input::key::return_);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "mouse input")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "mouse input")
     {
         input::mouse_button res = state.script("return antara.mouse_button.right");
-                CHECK_EQ(res, input::mouse_button::right);
+        CHECK_EQ(res, input::mouse_button::right);
 
         input::mouse_wheel another_res = state.script("return antara.mouse_wheel.vertical_wheel");
-                CHECK_EQ(another_res, input::mouse_wheel::vertical_wheel);
+        CHECK_EQ(another_res, input::mouse_wheel::vertical_wheel);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "create/destroy/alive/valid entities")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "create/destroy/alive/valid entities")
     {
-        const auto &script = R"lua(
+        const auto& script = R"lua(
             local entity = entt.entity_registry:create()
             assert(entt.entity_registry:valid(entity), "should be valid")
             assert(entt.entity_registry:alive() == 1, "should be one")
@@ -126,13 +120,13 @@ namespace antara::gaming::lua::tests
             assert(entt.entity_registry:alive() == 0, "should be invalid")
             return true
             )lua";
-        bool res = state.script(script);
-                CHECK(res);
+        bool        res    = state.script(script);
+        CHECK(res);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "components function with entities")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "components function with entities")
     {
-        const auto &script = R"lua(
+        const auto& script = R"lua(
             function test_basis()
                 local entity = entt.entity_registry:create()
                 local id = entt.entity_registry:layer_1_id()
@@ -191,60 +185,60 @@ namespace antara::gaming::lua::tests
             test_for_each_runtime()
             return true
             )lua";
-        bool res = state.script(script);
-                CHECK(res);
+        bool        res    = state.script(script);
+        CHECK(res);
     }
 
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "load script")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "load script")
     {
-                CHECK(script_sys.load_script("antara.tests.lua"));
+        CHECK(script_sys.load_script("antara.tests.lua"));
         bool res = state["antara_foo"]();
-                CHECK(res);
+        CHECK(res);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "load scripted entities and update entities")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "load scripted entities and update entities")
     {
         auto entity = entity_registry.create();
         entity_registry.assign<lua::component_script>(entity, "antara.entity.player.lua", "player_table");
-                CHECK(script_sys.load_script_from_entities());
+        CHECK(script_sys.load_script_from_entities());
 
         bool res = script_sys.execute_safe_function("my_get_res", "player_table").value();
-                CHECK_FALSE(res);
+        CHECK_FALSE(res);
         script_sys.update();
         res = script_sys.execute_safe_function("my_get_res", "player_table").value();
-                CHECK(res);
+        CHECK(res);
         entity_registry.reset();
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "register events")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "register events")
     {
         script_sys.register_event<default_event_without_args>();
         script_sys.register_event<default_event_with_args>();
-        const auto &script = R"lua(
+        const auto& script = R"lua(
             entt.dispatcher:trigger_start_game_event()
             entt.dispatcher:trigger_default_event_with_args_event(1)
             return true
             )lua";
-        bool res = state.script(script);
-                CHECK(res);
+        bool        res    = state.script(script);
+        CHECK(res);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "load scripted system")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "load scripted system")
     {
         system_mgr.start();
-                CHECK(not dispatcher.sink<ecs::event::add_base_system>().empty());
-                CHECK(script_sys.load_scripted_system("pre_update_system.lua"));
+        CHECK(not dispatcher.sink<ecs::event::add_base_system>().empty());
+        CHECK(script_sys.load_scripted_system("pre_update_system.lua"));
         system_mgr.update();
-                CHECK(system_mgr.nb_systems() == 3);
+        CHECK(system_mgr.nb_systems() == 3);
         dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
-                CHECK_EQ(system_mgr.update_systems(ecs::system_type::pre_update), 1ull);
-                CHECK(system_mgr.mark_system<details::lua_pre_scripted_system>());
+        CHECK_EQ(system_mgr.update_systems(ecs::system_type::pre_update), 1ull);
+        CHECK(system_mgr.mark_system<details::lua_pre_scripted_system>());
         system_mgr.update();
-                CHECK(system_mgr.nb_systems() == 2u);
+        CHECK(system_mgr.nb_systems() == 2u);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "call function")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "call function")
     {
         script_sys.execute_safe_function("print", "");
         script_sys.execute_safe_function("nonexistent", "");
@@ -252,14 +246,14 @@ namespace antara::gaming::lua::tests
         script_sys.execute_safe_function("my_get_res", "player_table", 1);
     }
 
-    TEST_CASE_FIXTURE (lua_tests_fixture, "scenes system")
+    TEST_CASE_FIXTURE(lua_tests_fixture, "scenes system")
     {
 #ifndef EMSCRIPTEN
-                CHECK(this->script_sys.load_scripted_system("scenes_system.lua"));
-                CHECK(system_mgr.nb_systems() == 3);
+        CHECK(this->script_sys.load_scripted_system("scenes_system.lua"));
+        CHECK(system_mgr.nb_systems() == 3);
         dispatcher.trigger<event::key_pressed>(antara::gaming::input::key::space, false, false, false, false);
-                CHECK_EQ(3u, system_mgr.update_systems(ecs::system_type::logic_update));
+        CHECK_EQ(3u, system_mgr.update_systems(ecs::system_type::logic_update));
 #endif
     }
 
-}
+} // namespace antara::gaming::lua::tests

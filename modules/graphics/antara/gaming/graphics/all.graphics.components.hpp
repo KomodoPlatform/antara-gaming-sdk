@@ -20,30 +20,15 @@
 #include <meta/sequence/list.hpp> ///< doom::meta::list
 
 //! SDK Headers
-#include "antara/gaming/graphics/component.layer.hpp" ///< graphics::layer
-#include "antara/gaming/graphics/component.color.hpp" ///< graphics::color|outline_color|fill_color
 #include "antara/gaming/graphics/component.canvas.hpp" ///< graphics::canvas
-#include "antara/gaming/graphics/component.text.hpp" ///< graphics::text
+#include "antara/gaming/graphics/component.color.hpp"  ///< graphics::color|outline_color|fill_color
+#include "antara/gaming/graphics/component.layer.hpp"  ///< graphics::layer
 #include "antara/gaming/graphics/component.sprite.hpp" ///< graphics::sprite, graphics::rect
+#include "antara/gaming/graphics/component.text.hpp"   ///< graphics::text
 
-namespace antara::gaming::graphics {
-    using components_list = doom::meta::list<layer_0,
-            layer_1,
-            layer_2,
-            layer_3,
-            layer_4,
-            layer_5,
-            layer_6,
-            layer_7,
-            layer_8,
-            layer_9,
-            layer_10,
-            layer_11,
-            color,
-            outline_color,
-            fill_color,
-            rectangle,
-            canvas_2d,
-            rect,
-            sprite>;
+namespace antara::gaming::graphics
+{
+    using components_list = doom::meta::list<
+        layer_0, layer_1, layer_2, layer_3, layer_4, layer_5, layer_6, layer_7, layer_8, layer_9, layer_10, layer_11, color, outline_color, fill_color,
+        rectangle, canvas_2d, rect, sprite>;
 }

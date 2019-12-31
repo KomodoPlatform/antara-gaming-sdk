@@ -20,17 +20,19 @@
 #include <string> ///< std::string
 
 //! Dependencies Headers
-#include <entt/entity/registry.hpp> ///< entt::registry
+#include <entt/entity/registry.hpp>   ///< entt::registry
 #include <entt/signal/dispatcher.hpp> ///< entt::dispatcher
 
 //! SDK Headers
 #include "antara/gaming/ecs/system.type.hpp" ///< ecs::system_type;
 
-namespace antara::gaming::ecs {
-    class base_system {
-    public:
+namespace antara::gaming::ecs
+{
+    class base_system
+    {
+      public:
         //! Constructors
-        base_system(entt::registry &entity_registry, bool im_a_plugin_system = false) noexcept;
+        base_system(entt::registry& entity_registry, bool im_a_plugin_system = false) noexcept;
 
         //! Destructor
         virtual ~base_system() noexcept = default;
@@ -46,8 +48,8 @@ namespace antara::gaming::ecs {
 
 
         /**
-        * \note This function marks the system, it will be destroyed in the next turn of the game loop by the system_manager.
-        */
+         * \note This function marks the system, it will be destroyed in the next turn of the game loop by the system_manager.
+         */
         void mark() noexcept;
 
         /**
@@ -93,7 +95,7 @@ namespace antara::gaming::ecs {
          * \note by default a user_data is a void pointer equal to nullptr.
          * \return user data of a system
          */
-        void *get_user_data() noexcept;
+        void* get_user_data() noexcept;
 
         /**
          * \note This function set a user data for this system
@@ -103,18 +105,18 @@ namespace antara::gaming::ecs {
          * \note user should be aware here, that's manipulating void pointer is as your own risk.
          * \param data a void pointer representing the user data
          */
-        void set_user_data(void *data) noexcept;
+        void set_user_data(void* data) noexcept;
 
-    protected:
+      protected:
         //! Protected data members
-        entt::registry &entity_registry_;
-        entt::dispatcher &dispatcher_;
-        void *user_data_{nullptr};
+        entt::registry&   entity_registry_;
+        entt::dispatcher& dispatcher_;
+        void*             user_data_{nullptr};
 
-    private:
+      private:
         //! Private data members
         bool is_plugin_{false};
         bool marked_{false};
         bool enabled_{true};
     };
-}
+} // namespace antara::gaming::ecs

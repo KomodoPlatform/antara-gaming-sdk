@@ -24,17 +24,20 @@ namespace antara::gaming::resources::tests
 {
     struct fake_concrete_resources_manager
     {
-        std::string load_texture(const char *id) noexcept
+        std::string
+        load_texture(const char* id) noexcept
         {
             return std::string(id);
         }
 
-        std::string load_font(const char *id) noexcept
+        std::string
+        load_font(const char* id) noexcept
         {
             return std::string(id);
         }
 
-        std::string load_sound(const char *id) noexcept
+        std::string
+        load_sound(const char* id) noexcept
         {
             return std::string(id);
         }
@@ -42,16 +45,16 @@ namespace antara::gaming::resources::tests
 
     TEST_CASE("construct resource system")
     {
-        entt::registry entity_registry;
-        [[ maybe_unused ]] entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        entt::registry                      entity_registry;
+        [[maybe_unused]] entt::dispatcher&  dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
 
         using final_resources_system = resources::system<fake_concrete_resources_manager>;
         final_resources_system sys(entity_registry);
-        auto& resources_system = mgr.create_system<final_resources_system>();
+        auto&                  resources_system = mgr.create_system<final_resources_system>();
         CHECK_EQ(resources_system.load_font("sensation.ttf"), "sensation.ttf");
         CHECK_EQ(resources_system.load_sound("sound.wav"), "sound.wav");
         CHECK_EQ(resources_system.load_texture("picture.png"), "picture.png");
         resources_system.update();
     }
-}
+} // namespace antara::gaming::resources::tests

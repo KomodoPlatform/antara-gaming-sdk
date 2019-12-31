@@ -16,8 +16,10 @@
 
 #pragma once
 
-namespace antara::gaming::input {
-    enum key {
+namespace antara::gaming::input
+{
+    enum key
+    {
         a,
         b,
         c,
@@ -122,4 +124,4 @@ namespace antara::gaming::input {
     };
 
     bool is_key_pressed(input::key key) noexcept;
-}
+} // namespace antara::gaming::input

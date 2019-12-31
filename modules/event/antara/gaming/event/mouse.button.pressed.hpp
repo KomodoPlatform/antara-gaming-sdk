@@ -18,24 +18,24 @@
 
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
-#include "antara/gaming/input/mouse.hpp" ///< input::mouse
+#include "antara/gaming/input/mouse.hpp"    ///< input::mouse
 
-namespace antara::gaming::event {
-    struct mouse_button_pressed {
+namespace antara::gaming::event
+{
+    struct mouse_button_pressed
+    {
         //! Constructors
         mouse_button_pressed() noexcept = default;
 
-        mouse_button_pressed(input::mouse_button button_, float x_, float y_, float window_x_,
-                             float window_y_) noexcept;
+        mouse_button_pressed(input::mouse_button button_, float x_, float y_, float window_x_, float window_y_) noexcept;
 
         //! Fields
         input::mouse_button button;
-        float x;
-        float y;
-        float window_x;
-        float window_y;
+        float               x;
+        float               y;
+        float               window_x;
+        float               window_y;
     };
-}
+} // namespace antara::gaming::event
 
-REFL_AUTO(type(antara::gaming::event::mouse_button_pressed), field(button), field(x), field(y), field(window_x),
-          field(window_y));
+REFL_AUTO(type(antara::gaming::event::mouse_button_pressed), field(button), field(x), field(y), field(window_x), field(window_y));

@@ -20,12 +20,14 @@
 //! C++ System Headers
 #include <system_error>
 
-namespace antara::gaming::event {
-    struct fatal_error {
+namespace antara::gaming::event
+{
+    struct fatal_error
+    {
         //! Constructor
         fatal_error(std::error_code ec) noexcept;
 
         //! Fields
         std::error_code ec_;
     };
-}
+} // namespace antara::gaming::event

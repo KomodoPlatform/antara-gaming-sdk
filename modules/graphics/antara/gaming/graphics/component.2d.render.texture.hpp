@@ -17,37 +17,42 @@
 #pragma once
 
 //! C++ System Headers
-#include <string>  ///< std::string
-#include <map> ///< std::map
+#include <map>    ///< std::map
+#include <string> ///< std::string
 
 //! Dependencies Headers
 #include <entt/entity/entity.hpp> ///< entt::entity
+#include <entt/entity/registry.hpp>
 
 //! SDK Headers
-#include "antara/gaming/math/vector.hpp" ///< math::vec2u
 #include "antara/gaming/graphics/component.color.hpp" ///< graphics::color
+#include "antara/gaming/math/vector.hpp"              ///< math::vec2u
 
-namespace antara::gaming::graphics {
-    enum drawable_type {
+namespace antara::gaming::graphics
+{
+    enum drawable_type
+    {
         d_sprite,
         d_vertex_array,
         d_circle,
         d_rectangle
     };
 
-    struct drawable_info {
-        entt::entity entity;
-        drawable_type dt;
+    struct drawable_info
+    {
+        entt::registry::entity_type entity;
+        drawable_type               dt;
     };
 
     using drawable_registry = std::map<std::string, drawable_info>;
 
-    struct render_texture_2d {
-        std::string id;
-        math::vec2u size;
+    struct render_texture_2d
+    {
+        std::string       id;
+        math::vec2u       size;
         drawable_registry to_draw;
-        graphics::color clear_color{graphics::black};
-        bool smooth{true};
-        bool repeated{false};
+        graphics::color   clear_color{graphics::black};
+        bool              smooth{true};
+        bool              repeated{false};
     };
-}
+} // namespace antara::gaming::graphics

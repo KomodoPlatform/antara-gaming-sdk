@@ -16,16 +16,18 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
 #include "antara/gaming/ecs/system.hpp"
 #include "antara/gaming/sdl/sdl.timer.hpp"
+#include <SDL2/SDL.h>
 
-namespace antara::gaming::sdl {
+namespace antara::gaming::sdl
+{
     using st_high_dpi_factor = st::type<float, struct high_dpi_factor>;
 
-    class graphic_system final : public ecs::post_update_system<graphic_system> {
-    public:
-        explicit graphic_system(entt::registry &registry);
+    class graphic_system final : public ecs::post_update_system<graphic_system>
+    {
+      public:
+        explicit graphic_system(entt::registry& registry);
 
         ~graphic_system() noexcept final;
 
@@ -33,16 +35,24 @@ namespace antara::gaming::sdl {
 
         void render() noexcept;
 
-        void set_framerate_limit(int fps) noexcept { fps_cap_ = fps; };
+        void
+        set_framerate_limit(int fps) noexcept
+        {
+            fps_cap_ = fps;
+        };
 
-        [[nodiscard]] SDL_Window *get_window() const noexcept { return window_; }
+        [[nodiscard]] SDL_Window*
+        get_window() const noexcept
+        {
+            return window_;
+        }
 
-    private:
-        SDL_Window *window_{nullptr};
+      private:
+        SDL_Window*   window_{nullptr};
         SDL_GLContext gl_context_;
-        timer timer_;
-        int fps_cap_{60};
+        timer         timer_;
+        int           fps_cap_{60};
     };
-}
+} // namespace antara::gaming::sdl
 
 REFL_AUTO(type(antara::gaming::sdl::graphic_system))

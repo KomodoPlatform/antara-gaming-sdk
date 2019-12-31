@@ -20,7 +20,7 @@
 #include <meta/sequence/list.hpp> ///< doom::meta::list
 
 //! SDK Headers
-#include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d
+#include "antara/gaming/transform/component.position.hpp"   ///< transform::position_2d
 #include "antara/gaming/transform/component.properties.hpp" ///< transform::properties
 
 namespace antara::gaming::transform

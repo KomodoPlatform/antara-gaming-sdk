@@ -19,55 +19,70 @@
 //! Dependencies Headers
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
 
-#include <sol/sol.hpp> ///< sol::constructors
+#    include <sol/sol.hpp> ///< sol::constructors
 
 #endif
 
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
-#include "antara/gaming/math/vector.hpp" ///< math::vec2f
+#include "antara/gaming/math/vector.hpp"    ///< math::vec2f
 
-namespace antara::gaming::transform {
-    struct previous_position_2d : public math::vec2f {
-        template<typename ... Args>
-        previous_position_2d(Args &&...args) noexcept: math::vec2f(std::forward<Args>(args)...) {}
+namespace antara::gaming::transform
+{
+    struct previous_position_2d : public math::vec2f
+    {
+        template <typename... Args>
+        previous_position_2d(Args&&... args) noexcept : math::vec2f(std::forward<Args>(args)...)
+        {
+        }
 
         previous_position_2d() noexcept = default;
 
-        previous_position_2d(const previous_position_2d &other) noexcept = default;
+        previous_position_2d(const previous_position_2d& other) noexcept = default;
 
-        previous_position_2d &operator=(const previous_position_2d &other) noexcept = default;
+        previous_position_2d& operator=(const previous_position_2d& other) noexcept = default;
 
-        previous_position_2d(math::vec2f pos) noexcept : math::vec2f(pos) {}
+        previous_position_2d(math::vec2f pos) noexcept : math::vec2f(pos)
+        {
+        }
 
-        previous_position_2d(float x, float y) noexcept : math::vec2f(x, y) {}
+        previous_position_2d(float x, float y) noexcept : math::vec2f(x, y)
+        {
+        }
     };
 
-    struct position_2d : public math::vec2f {
-        template<typename ... Args>
-        position_2d(Args &&...args) noexcept: math::vec2f(std::forward<Args>(args)...) {}
+    struct position_2d : public math::vec2f
+    {
+        template <typename... Args>
+        position_2d(Args&&... args) noexcept : math::vec2f(std::forward<Args>(args)...)
+        {
+        }
 
         position_2d() noexcept = default;
 
-        position_2d(const position_2d &other) noexcept = default;
+        position_2d(const position_2d& other) noexcept = default;
 
-        position_2d &operator=(const position_2d &other) noexcept = default;
+        position_2d& operator=(const position_2d& other) noexcept = default;
 
-        position_2d(math::vec2f pos) noexcept : math::vec2f(pos) {}
+        position_2d(math::vec2f pos) noexcept : math::vec2f(pos)
+        {
+        }
 
-        position_2d(float x, float y) noexcept : math::vec2f(x, y) {}
+        position_2d(float x, float y) noexcept : math::vec2f(x, y)
+        {
+        }
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<position_2d(),
+        using constructors = sol::constructors<
+            position_2d(),
 
-        position_2d(math::vec2f pos), position_2d(float x,
-                                                  float y)
+            position_2d(math::vec2f pos), position_2d(float x, float y)
 
-        >;
+            >;
 #endif
     };
 
-}
+} // namespace antara::gaming::transform
 
-REFL_AUTO(type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size),
-          func(set_x), func(set_y), func(set_xy), func(make_xy))
+REFL_AUTO(
+    type(antara::gaming::transform::position_2d), func(x), func(y), func(x_ref), func(y_ref), func(size), func(set_x), func(set_y), func(set_xy), func(make_xy))
