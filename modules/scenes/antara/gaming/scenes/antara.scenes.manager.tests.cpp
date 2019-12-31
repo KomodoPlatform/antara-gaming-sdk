@@ -26,27 +26,31 @@ namespace antara::gaming::scenes::tests
 {
     class my_game_scene final : public base_scene
     {
-    public:
-        my_game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+      public:
+        my_game_scene(entt::registry& entity_registry) noexcept : base_scene(entity_registry)
         {
             MESSAGE("game_scene enter");
         }
 
-        void update() noexcept final
+        void
+        update() noexcept final
         {
         }
 
-        bool on_key_pressed([[maybe_unused]] const event::key_pressed &evt) noexcept final
-        {
-            return true;
-        }
-
-        bool on_key_released([[maybe_unused]] const event::key_released &evt) noexcept final
+        bool
+        on_key_pressed([[maybe_unused]] const event::key_pressed& evt) noexcept final
         {
             return true;
         }
 
-        std::string scene_name() noexcept final
+        bool
+        on_key_released([[maybe_unused]] const event::key_released& evt) noexcept final
+        {
+            return true;
+        }
+
+        std::string
+        scene_name() noexcept final
         {
             return "my_game_scene";
         }
@@ -59,30 +63,35 @@ namespace antara::gaming::scenes::tests
 
     class intro_scene final : public base_scene
     {
-    public:
-        intro_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
+      public:
+        intro_scene(entt::registry& entity_registry) noexcept : base_scene(entity_registry)
         {
             MESSAGE("intro_scene enter");
         }
 
-        void update() noexcept final
+        void
+        update() noexcept final
         {
         }
 
-        bool on_key_pressed(const event::key_pressed &evt) noexcept final
+        bool
+        on_key_pressed(const event::key_pressed& evt) noexcept final
         {
-            if (evt.key == input::key::space) {
+            if (evt.key == input::key::space)
+            {
                 this->dispatcher_.trigger<event::change_scene>(std::make_unique<my_game_scene>(this->entity_registry_), false);
             }
             return true;
         }
 
-        bool on_key_released([[maybe_unused]] const event::key_released &evt) noexcept final
+        bool
+        on_key_released([[maybe_unused]] const event::key_released& evt) noexcept final
         {
             return true;
         }
 
-        std::string scene_name() noexcept final
+        std::string
+        scene_name() noexcept final
         {
             return "intro_scene";
         }
@@ -93,57 +102,63 @@ namespace antara::gaming::scenes::tests
         }
     };
 
-}
+} // namespace antara::gaming::scenes::tests
 
 namespace antara::gaming::scenes::tests
 {
-    
-    
     SCENARIO("scene manager scenario")
     {
         GIVEN("a fresh scene manager")
         {
-			//entt::dispatcher dispatcher;
-			entt::registry registry;
-			registry.set<entt::dispatcher>();
-			manager scene_mgr{ registry };
-            auto scene_ptr = std::make_unique<intro_scene>(registry);
-            WHEN("i push my first scene") {
+            // entt::dispatcher dispatcher;
+            entt::registry registry;
+            registry.set<entt::dispatcher>();
+            manager scene_mgr{registry};
+            auto    scene_ptr = std::make_unique<intro_scene>(registry);
+            WHEN("i push my first scene")
+            {
                 scene_mgr.change_scene(std::move(scene_ptr), true);
                 CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
 
-				AND_THEN("i change scene to go to the game scene") {
-					auto game_scene_ptr = std::make_unique<my_game_scene>(registry);
-					scene_mgr.change_scene(std::move(game_scene_ptr), true);
-					CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
-					AND_THEN("i go back to the intro") {
-						CHECK(scene_mgr.previous_scene());
-						CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
-						AND_WHEN("i change scene without keeping the old one") {
-							auto other_game_scene_ptr = std::make_unique<my_game_scene>(registry);
-							scene_mgr.change_scene(std::move(other_game_scene_ptr));
-							CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
-						}
-					}
-				}
+                AND_THEN("i change scene to go to the game scene")
+                {
+                    auto game_scene_ptr = std::make_unique<my_game_scene>(registry);
+                    scene_mgr.change_scene(std::move(game_scene_ptr), true);
+                    CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
+                    AND_THEN("i go back to the intro")
+                    {
+                        CHECK(scene_mgr.previous_scene());
+                        CHECK_EQ(scene_mgr.current_scene().scene_name(), "intro_scene");
+                        AND_WHEN("i change scene without keeping the old one")
+                        {
+                            auto other_game_scene_ptr = std::make_unique<my_game_scene>(registry);
+                            scene_mgr.change_scene(std::move(other_game_scene_ptr));
+                            CHECK_EQ(scene_mgr.current_scene().scene_name(), "my_game_scene");
+                        }
+                    }
+                }
             }
         }
 
-		entt::registry registry;
+        entt::registry    registry;
         entt::dispatcher& dispatcher{registry.set<entt::dispatcher>()};
-        manager another_scene_mgr{ registry };
-        GIVEN("another fresh scene manager") {
+        manager           another_scene_mgr{registry};
+        GIVEN("another fresh scene manager")
+        {
             auto scene_ptr = std::make_unique<intro_scene>(registry);
-            WHEN("i push my first scene") {
+            WHEN("i push my first scene")
+            {
                 another_scene_mgr.change_scene(std::move(scene_ptr), true);
                 CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "intro_scene");
-                AND_THEN("i simulate spacebar pressed") {
+                AND_THEN("i simulate spacebar pressed")
+                {
                     dispatcher.trigger<event::key_pressed>(input::key::space, false, false, false, false);
-                    AND_THEN("i expect the current scene to be the game scene") {
-                                CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "my_game_scene");
+                    AND_THEN("i expect the current scene to be the game scene")
+                    {
+                        CHECK_EQ(another_scene_mgr.current_scene().scene_name(), "my_game_scene");
                     }
                 }
             }
         }
     }
-}
+} // namespace antara::gaming::scenes::tests

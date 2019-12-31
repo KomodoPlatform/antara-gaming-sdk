@@ -22,8 +22,10 @@
 //! SDK Headers
 #include "antara/gaming/ecs/base.system.hpp" ///< ecs::base_system
 
-namespace antara::gaming::ecs::event {
-    struct add_base_system {
+namespace antara::gaming::ecs::event
+{
+    struct add_base_system
+    {
         //! Typedefs
         using base_system_ptr = std::unique_ptr<ecs::base_system>;
 
@@ -33,4 +35,4 @@ namespace antara::gaming::ecs::event {
         //! Fields
         std::unique_ptr<ecs::base_system> system_ptr{nullptr};
     };
-}
+} // namespace antara::gaming::ecs::event

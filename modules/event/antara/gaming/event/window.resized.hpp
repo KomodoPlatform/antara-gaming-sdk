@@ -16,9 +16,11 @@
 
 #pragma once
 
-namespace antara::gaming::event {
-    struct window_resized {
+namespace antara::gaming::event
+{
+    struct window_resized
+    {
         //! Constructors
         window_resized() noexcept = default;
     };
-}
+} // namespace antara::gaming::event

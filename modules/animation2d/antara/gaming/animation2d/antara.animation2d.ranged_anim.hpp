@@ -21,7 +21,7 @@
 
 //! C++ System Headers
 #include <string> ///< std::string
-#include <tuple> ///< std::tuple
+#include <tuple>  ///< std::tuple
 #include <vector> ///< std::vector
 
 //! SDK Headers
@@ -30,11 +30,12 @@
 namespace antara::gaming::animation2d
 {
     using ranged_anim = std::tuple<int, int, std::string>;
-       
+
     using ranged_anim_array = std::vector<ranged_anim>;
 
-    inline ranged_anim make_ranged_anim(int begin_indice, int end_indice, std::string name)
+    inline ranged_anim
+    make_ranged_anim(int begin_indice, int end_indice, std::string name)
     {
         return std::make_tuple(begin_indice, end_indice, std::move(name));
     }
-}
+} // namespace antara::gaming::animation2d

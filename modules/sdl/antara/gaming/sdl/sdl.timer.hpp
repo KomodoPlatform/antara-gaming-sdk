@@ -16,83 +16,102 @@
 
 #pragma once
 
-namespace antara::gaming::sdl {
-    class timer {
-    public:
-        //Initializes variables
-        timer() {
-            //Initialize the variables
-            m_start_ticks = 0;
+namespace antara::gaming::sdl
+{
+    class timer
+    {
+      public:
+        // Initializes variables
+        timer()
+        {
+            // Initialize the variables
+            m_start_ticks  = 0;
             m_paused_ticks = 0;
 
-            m_paused = false;
+            m_paused  = false;
             m_started = false;
         }
 
-        //The various clock actions
-        void start() {
-            //Start the timer
+        // The various clock actions
+        void
+        start()
+        {
+            // Start the timer
             m_started = true;
 
-            //Unpause the timer
+            // Unpause the timer
             m_paused = false;
 
-            //Get the current clock time
-            m_start_ticks = SDL_GetTicks();
+            // Get the current clock time
+            m_start_ticks  = SDL_GetTicks();
             m_paused_ticks = 0;
         }
 
-        void stop() {
-            //Stop the timer
+        void
+        stop()
+        {
+            // Stop the timer
             m_started = false;
 
-            //Unpause the timer
+            // Unpause the timer
             m_paused = false;
 
-            //Clear tick variables
-            m_start_ticks = 0;
+            // Clear tick variables
+            m_start_ticks  = 0;
             m_paused_ticks = 0;
         }
 
-        void pause() {
-            //If the timer is running and isn't already paused
-            if (m_started && !m_paused) {
-                //Pause the timer
+        void
+        pause()
+        {
+            // If the timer is running and isn't already paused
+            if (m_started && !m_paused)
+            {
+                // Pause the timer
                 m_paused = true;
 
-                //Calculate the paused ticks
+                // Calculate the paused ticks
                 m_paused_ticks = SDL_GetTicks() - m_start_ticks;
-                m_start_ticks = 0;
+                m_start_ticks  = 0;
             }
         }
 
-        void unpause() {
-            //If the timer is running and paused
-            if (m_started && m_paused) {
-                //Unpause the timer
+        void
+        unpause()
+        {
+            // If the timer is running and paused
+            if (m_started && m_paused)
+            {
+                // Unpause the timer
                 m_paused = false;
 
-                //Reset the starting ticks
+                // Reset the starting ticks
                 m_start_ticks = SDL_GetTicks() - m_paused_ticks;
 
-                //Reset the paused ticks
+                // Reset the paused ticks
                 m_paused_ticks = 0;
             }
         }
 
-        //Gets the timer's time
-        Uint32 getTicks() {
-            //The actual timer time
+        // Gets the timer's time
+        Uint32
+        getTicks()
+        {
+            // The actual timer time
             Uint32 time = 0;
 
-            //If the timer is running
-            if (m_started) {
-                //If the timer is paused
-                if (m_paused) {
-                    //Return the number of ticks when the timer was paused
+            // If the timer is running
+            if (m_started)
+            {
+                // If the timer is paused
+                if (m_paused)
+                {
+                    // Return the number of ticks when the timer was paused
                     time = m_paused_ticks;
-                } else {
-                    //Return the current time minus the start time
+                }
+                else
+                {
+                    // Return the current time minus the start time
                     time = SDL_GetTicks() - m_start_ticks;
                 }
             }
@@ -100,26 +119,30 @@ namespace antara::gaming::sdl {
             return time;
         }
 
-        //Checks the status of the timer
-        bool isStarted() {
-            //Timer is running and paused or unpaused
+        // Checks the status of the timer
+        bool
+        isStarted()
+        {
+            // Timer is running and paused or unpaused
             return m_started;
         }
 
-        bool isPaused() {
-            //Timer is running and paused
+        bool
+        isPaused()
+        {
+            // Timer is running and paused
             return m_paused && m_started;
         }
 
-    private:
-        //The clock time when the timer started
+      private:
+        // The clock time when the timer started
         Uint32 m_start_ticks;
 
-        //The ticks stored when the timer was paused
+        // The ticks stored when the timer was paused
         Uint32 m_paused_ticks;
 
-        //The timer status
+        // The timer status
         bool m_paused;
         bool m_started;
     };
-}
+} // namespace antara::gaming::sdl

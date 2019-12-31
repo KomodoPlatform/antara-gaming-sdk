@@ -18,29 +18,31 @@
 
 #ifdef _WIN32
 
-#include "antara/gaming/core/details/windows/api.scaling.hpp"
+#    include "antara/gaming/core/details/windows/api.scaling.hpp"
 
 #elif __APPLE__
 
-#include "antara/gaming/core/details/osx/api.scaling.hpp"
+#    include "antara/gaming/core/details/osx/api.scaling.hpp"
 
 #elif __linux__
 
-#include "antara/gaming/core/details/linux/api.scaling.hpp"
+#    include "antara/gaming/core/details/linux/api.scaling.hpp"
 
 #elif EMSCRIPTEN
-#include "antara/gaming/core/details/emscripten/api.scaling.hpp"
+#    include "antara/gaming/core/details/emscripten/api.scaling.hpp"
 #endif
 
 namespace antara::gaming::core
 {
-    bool is_high_dpi_capable() noexcept
+    bool
+    is_high_dpi_capable() noexcept
     {
         return details::is_high_dpi_capable();
     }
 
-    std::pair<float, float> get_scaling_factor() noexcept
+    std::pair<float, float>
+    get_scaling_factor() noexcept
     {
         return details::get_scaling_factor();
     }
-}
+} // namespace antara::gaming::core

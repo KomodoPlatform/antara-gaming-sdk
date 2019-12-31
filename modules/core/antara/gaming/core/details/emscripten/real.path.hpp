@@ -20,13 +20,15 @@
 
 namespace antara::gaming::core::details
 {
-    std::filesystem::path binary_real_path() noexcept
+    std::filesystem::path
+    binary_real_path() noexcept
     {
         return std::filesystem::current_path();
     }
 
-    std::filesystem::path assets_real_path() noexcept
+    std::filesystem::path
+    assets_real_path() noexcept
     {
         return binary_real_path() / "assets";
     }
-}
+} // namespace antara::gaming::core::details

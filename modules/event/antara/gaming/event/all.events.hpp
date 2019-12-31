@@ -20,21 +20,15 @@
 #include <meta/sequence/list.hpp> ///< doom::meta::list
 
 //! SDK Headers
-#include "antara/gaming/event/key.pressed.hpp" ///< event::key_pressed
-#include "antara/gaming/event/key.released.hpp" ///< event::key_released
-#include "antara/gaming/event/mouse.button.pressed.hpp" ///< event::mouse_button_pressed
+#include "antara/gaming/event/key.pressed.hpp"           ///< event::key_pressed
+#include "antara/gaming/event/key.released.hpp"          ///< event::key_released
+#include "antara/gaming/event/mouse.button.pressed.hpp"  ///< event::mouse_button_pressed
 #include "antara/gaming/event/mouse.button.released.hpp" ///< event::mouse_button_released
-#include "antara/gaming/event/mouse.moved.hpp" ///< event::mouse_moved
-#include "antara/gaming/event/quit.game.hpp" ///< event::quit_game
-#include "antara/gaming/event/start.game.hpp" ///< event::start_game
+#include "antara/gaming/event/mouse.moved.hpp"           ///< event::mouse_moved
+#include "antara/gaming/event/quit.game.hpp"             ///< event::quit_game
+#include "antara/gaming/event/start.game.hpp"            ///< event::start_game
 
-namespace antara::gaming::event {
-    using events_list = doom::meta::list<
-            quit_game,
-            key_pressed,
-            key_released,
-            start_game,
-            mouse_moved,
-            mouse_button_pressed,
-            mouse_button_released>;
+namespace antara::gaming::event
+{
+    using events_list = doom::meta::list<quit_game, key_pressed, key_released, start_game, mouse_moved, mouse_button_pressed, mouse_button_released>;
 }

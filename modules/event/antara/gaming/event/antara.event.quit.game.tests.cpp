@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/event/quit.game.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::event::tests
 {
@@ -33,4 +33,4 @@ namespace antara::gaming::event::tests
             CHECK_EQ(q_event.return_value_, -1);
         }
     }
-}
+} // namespace antara::gaming::event::tests

@@ -14,17 +14,17 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/event/key.released.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::event::tests
 {
-    TEST_SUITE ("key released test suite")
+    TEST_SUITE("key released test suite")
     {
-        TEST_CASE ("can construct from a key")
+        TEST_CASE("can construct from a key")
         {
             event::key_released key_released_event{input::key::a, false, false, false, false};
             CHECK_EQ(key_released_event.key, input::key::a);
         }
     }
-}
+} // namespace antara::gaming::event::tests

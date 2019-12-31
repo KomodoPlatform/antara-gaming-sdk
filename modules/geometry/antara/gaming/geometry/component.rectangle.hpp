@@ -17,34 +17,36 @@
 #pragma once
 
 //! Dependencies Headers
-#include <entt/entity/entity.hpp> ///< entt::entity
+#include <entt/entity/entity.hpp>   ///< entt::entity
 #include <entt/entity/registry.hpp> ///< entt::registry
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-#include <sol/sol.hpp> ///< sol::constructors
+#    include <sol/sol.hpp> ///< sol::constructors
 #endif
 
 //! SDK Headers
-#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
-#include "antara/gaming/graphics/component.color.hpp" ///< graphics::fill_color, graphics::outline_color
-#include "antara/gaming/math/vector.hpp" ///< math::vec2f
-#include "antara/gaming/transform/component.position.hpp" ///< transform::position2d
+#include "antara/gaming/core/safe.refl.hpp"                 ///< REFL_AUTO
+#include "antara/gaming/graphics/component.color.hpp"       ///< graphics::fill_color, graphics::outline_color
+#include "antara/gaming/math/vector.hpp"                    ///< math::vec2f
+#include "antara/gaming/transform/component.position.hpp"   ///< transform::position2d
 #include "antara/gaming/transform/component.properties.hpp" ///< transform::properties
 
-namespace antara::gaming::geometry {
-    struct rectangle {
+namespace antara::gaming::geometry
+{
+    struct rectangle
+    {
         //! Constructors
         rectangle() noexcept = default;
 
-        rectangle(const rectangle &other) noexcept = default;
+        rectangle(const rectangle& other) noexcept = default;
 
         rectangle(math::vec2f size_) noexcept;
 
         //! Operators
-        rectangle &operator=(const rectangle &other) noexcept = default;
+        rectangle& operator=(const rectangle& other) noexcept = default;
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<rectangle(), rectangle(const rectangle &other), rectangle(math::vec2f)>;
+        using constructors = sol::constructors<rectangle(), rectangle(const rectangle& other), rectangle(math::vec2f)>;
 #endif
 
         //! Fields
@@ -52,12 +54,8 @@ namespace antara::gaming::geometry {
     };
 
     entt::entity blueprint_rectangle(
-            entt::registry &registry,
-            math::vec2f size,
-            graphics::fill_color fill_color = graphics::white,
-            transform::position_2d pos = math::vec2f::scalar(0.f),
-            graphics::outline_color out_color = graphics::transparent,
-            const transform::properties &prop = {}) noexcept;
-}
+        entt::registry& registry, math::vec2f size, graphics::fill_color fill_color = graphics::white, transform::position_2d pos = math::vec2f::scalar(0.f),
+        graphics::outline_color out_color = graphics::transparent, const transform::properties& prop = {}) noexcept;
+} // namespace antara::gaming::geometry
 
 REFL_AUTO(type(antara::gaming::geometry::rectangle), field(size));

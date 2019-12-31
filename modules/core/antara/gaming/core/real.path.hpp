@@ -23,4 +23,4 @@ namespace antara::gaming::core
 {
     std::filesystem::path binary_real_path() noexcept;
     std::filesystem::path assets_real_path() noexcept;
-}
+} // namespace antara::gaming::core

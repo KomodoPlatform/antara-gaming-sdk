@@ -14,16 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/graphics/component.text.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::graphics::tests
 {
-    TEST_CASE ("blueprint text")
+    TEST_CASE("blueprint text")
     {
         entt::registry entity_registry;
-        text txt{""};
-        auto entity = graphics::blueprint_text(entity_registry, txt);
+        text           txt{""};
+        auto           entity = graphics::blueprint_text(entity_registry, txt);
         CHECK(entity_registry.valid(entity));
     }
-}
+} // namespace antara::gaming::graphics::tests

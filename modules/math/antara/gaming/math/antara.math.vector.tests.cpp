@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/math/vector.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::math::tests
 {
@@ -113,7 +113,7 @@ namespace antara::gaming::math::tests
 
     TEST_CASE("access")
     {
-        math::vec3f vec3_float{42.f, 42.f, 42.f};
+        math::vec3f       vec3_float{42.f, 42.f, 42.f};
         const math::vec3f c_vec3_float{42.f, 42.f, 42.f};
 
         CHECK_EQ(vec3_float.x(), 42.f);
@@ -160,8 +160,7 @@ namespace antara::gaming::math::tests
     TEST_CASE("reflection")
     {
         math::vec2f vec_float{42.f, 42.f};
-        refl::util::for_each(refl::reflect(vec_float).members, [&](auto member)
-        {
+        refl::util::for_each(refl::reflect(vec_float).members, [&](auto member) {
             MESSAGE(member.name);
         });
     }
@@ -201,4 +200,4 @@ namespace antara::gaming::math::tests
         float magnitude = res.magnitude();
         CHECK_EQ(magnitude, 1.f);
     }
-}
+} // namespace antara::gaming::math::tests

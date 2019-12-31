@@ -14,31 +14,38 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <antara/gaming/glfw/input.system.hpp>
 #include <antara/gaming/event/quit.game.hpp>
+#include <antara/gaming/glfw/input.system.hpp>
 
 #if defined(IMGUI_AND_GLFW_ENABLED)
 
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#    include <imgui.h>
+#    include <imgui_impl_glfw.h>
+#    include <imgui_impl_opengl3.h>
 
 #endif
 
-namespace {
-    void window_close_callback(GLFWwindow* window) {
-        auto &entity_registry = *static_cast<entt::registry *>(glfwGetWindowUserPointer(window));
-        auto& dispatcher = entity_registry.ctx<entt::dispatcher>();
+namespace
+{
+    void
+    window_close_callback(GLFWwindow* window)
+    {
+        auto& entity_registry = *static_cast<entt::registry*>(glfwGetWindowUserPointer(window));
+        auto& dispatcher      = entity_registry.ctx<entt::dispatcher>();
         dispatcher.trigger<antara::gaming::event::quit_game>(0);
     }
-}
+} // namespace
 
-namespace antara::gaming::glfw {
-    input_system::input_system(entt::registry &registry, GLFWwindow *window) : system(registry), window_(window) {
+namespace antara::gaming::glfw
+{
+    input_system::input_system(entt::registry& registry, GLFWwindow* window) : system(registry), window_(window)
+    {
         glfwSetWindowCloseCallback(window, window_close_callback);
     }
 
-    void input_system::update() noexcept {
+    void
+    input_system::update() noexcept
+    {
         glfwPollEvents();
 #if defined(IMGUI_AND_GLFW_ENABLED)
         ImGui_ImplOpenGL3_NewFrame();
@@ -46,4 +53,4 @@ namespace antara::gaming::glfw {
         ImGui::NewFrame();
 #endif
     }
-}
+} // namespace antara::gaming::glfw

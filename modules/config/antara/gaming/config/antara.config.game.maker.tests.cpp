@@ -14,15 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
-#include "antara/gaming/config/config.loading.hpp"
 #include "antara/gaming/config/config.game.maker.hpp"
+#include "antara/gaming/config/config.loading.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::config::tests
 {
-    TEST_CASE ("game maker config from json")
+    TEST_CASE("game maker config from json")
     {
-        auto json_game_cfg = R"(
+        auto                json_game_cfg = R"(
         {
   "native_desktop_mode": false,
   "canvas_width": 1920.0,
@@ -41,26 +41,26 @@ namespace antara::gaming::config::tests
   ]
 })"_json;
         graphics::canvas_2d game_maker_config{};
-                CHECK_NOTHROW(from_json(json_game_cfg, game_maker_config));
-                CHECK_EQ(game_maker_config.is_fullscreen, false);
-                CHECK_NE(game_maker_config, graphics::canvas_2d{});
-                CHECK_EQ(game_maker_config, graphics::canvas_2d{
-                .window = {.position = math::vec2f::scalar(0.f), .size = {1921.f, 1081.f}},
-                .canvas = {.position = math::vec2f::scalar(0.f), .size = {1920.f, 1080.f}},
-                .canvas_texture = {.position = math::vec2f::scalar(0.f), .size = math::vec2f::scalar(0.f)},
-                .custom_canvas_height = true,
-                .custom_canvas_width = true,
-                .is_fullscreen = false,
-                .native_desktop_mode = false,
-                .current_scaling_mode = graphics::canvas_2d::crop,
-                .canvas_texture_scaling = math::vec2f::scalar(1.f),
-                .window_title = "tic-tac-toe",
-                .background_color = graphics::black});
+        CHECK_NOTHROW(from_json(json_game_cfg, game_maker_config));
+        CHECK_EQ(game_maker_config.is_fullscreen, false);
+        CHECK_NE(game_maker_config, graphics::canvas_2d{});
+        CHECK_EQ(
+            game_maker_config, graphics::canvas_2d{.window                 = {.position = math::vec2f::scalar(0.f), .size = {1921.f, 1081.f}},
+                                                   .canvas                 = {.position = math::vec2f::scalar(0.f), .size = {1920.f, 1080.f}},
+                                                   .canvas_texture         = {.position = math::vec2f::scalar(0.f), .size = math::vec2f::scalar(0.f)},
+                                                   .custom_canvas_height   = true,
+                                                   .custom_canvas_width    = true,
+                                                   .is_fullscreen          = false,
+                                                   .native_desktop_mode    = false,
+                                                   .current_scaling_mode   = graphics::canvas_2d::crop,
+                                                   .canvas_texture_scaling = math::vec2f::scalar(1.f),
+                                                   .window_title           = "tic-tac-toe",
+                                                   .background_color       = graphics::black});
     }
 
-    TEST_CASE ("game maker config to json")
+    TEST_CASE("game maker config to json")
     {
-        auto json_game_cfg = R"(
+        auto                json_game_cfg = R"(
         {
   "native_desktop_mode": false,
   "canvas_width": 1920.0,
@@ -83,16 +83,16 @@ namespace antara::gaming::config::tests
   ]
 })"_json;
         graphics::canvas_2d game_maker_config;
-        game_maker_config.native_desktop_mode = false;
-        game_maker_config.canvas.size = math::vec2f{1920.f, 1080.f};
-        game_maker_config.window.size = math::vec2f{1921.f, 1081.f};
-        game_maker_config.window_title = "tic-tac-toe";
-        game_maker_config.background_color = graphics::black;
-        game_maker_config.custom_canvas_width = false;
+        game_maker_config.native_desktop_mode  = false;
+        game_maker_config.canvas.size          = math::vec2f{1920.f, 1080.f};
+        game_maker_config.window.size          = math::vec2f{1921.f, 1081.f};
+        game_maker_config.window_title         = "tic-tac-toe";
+        game_maker_config.background_color     = graphics::black;
+        game_maker_config.custom_canvas_width  = false;
         game_maker_config.custom_canvas_height = false;
         game_maker_config.current_scaling_mode = graphics::canvas_2d::crop;
         nlohmann::json json_data;
-                CHECK_NOTHROW(to_json(json_data, game_maker_config));
-                CHECK_EQ(json_game_cfg, json_data);
+        CHECK_NOTHROW(to_json(json_data, game_maker_config));
+        CHECK_EQ(json_game_cfg, json_data);
     }
-}
+} // namespace antara::gaming::config::tests

@@ -14,49 +14,53 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <unordered_map>
-#include <doctest/doctest.h>
-#include <antara/gaming/ecs/system.manager.hpp>
 #include "nspv.system.hpp"
+#include <antara/gaming/ecs/system.manager.hpp>
+#include <doctest/doctest.h>
+#include <unordered_map>
 
-namespace antara::gaming::blockchain::integration {
-    class shop {
-    public:
-        struct item {
+namespace antara::gaming::blockchain::integration
+{
+    class shop
+    {
+      public:
+        struct item
+        {
             std::size_t quantity;
-            double price;
+            double      price;
         };
 
-        struct bill {
+        struct bill
+        {
             std::string address;
-            double final_amount;
+            double      final_amount;
         };
 
-        shop() noexcept {
-                    CHECK(nspv_system_.spawn_nspv_instance("RICK", false, 7777));
-                    CHECK(nspv_system_.load_from_env("RICK", "SHOP_WIF_WALLET"));
+        shop() noexcept
+        {
+            CHECK(nspv_system_.spawn_nspv_instance("RICK", false, 7777));
+            CHECK(nspv_system_.load_from_env("RICK", "SHOP_WIF_WALLET"));
         }
 
 
-        bill prepare_item_buy(std::string item_name, std::size_t quantity) noexcept {
+        bill
+        prepare_item_buy(std::string item_name, std::size_t quantity) noexcept
+        {
             CHECK_LT(quantity, contents_.at(item_name).quantity);
             auto final_price = contents_.at(item_name).price * quantity;
             return bill{nspv_system_.get_address("RICK"), final_price};
         }
 
-    private:
-        entt::registry entity_registry_;
-        [[maybe_unused]] entt::dispatcher &dispatcher_{entity_registry_.set<entt::dispatcher>()};
-        antara::gaming::ecs::system_manager mgr_{entity_registry_};
-        nspv nspv_system_{entity_registry_, std::filesystem::current_path() / "nspv/assets/tools"};
-        std::unordered_map<std::string, item> contents_{
-                {"beer", {.quantity=10, .price=0.001}},
-                {"cake", {.quantity=5, .price=5.0}}
-        };
+      private:
+        entt::registry                        entity_registry_;
+        [[maybe_unused]] entt::dispatcher&    dispatcher_{entity_registry_.set<entt::dispatcher>()};
+        antara::gaming::ecs::system_manager   mgr_{entity_registry_};
+        nspv                                  nspv_system_{entity_registry_, std::filesystem::current_path() / "nspv/assets/tools"};
+        std::unordered_map<std::string, item> contents_{{"beer", {.quantity = 10, .price = 0.001}}, {"cake", {.quantity = 5, .price = 5.0}}};
     };
 
-    SCENARIO ("simulating a ingame shop with nspv") {
-
+    SCENARIO("simulating a ingame shop with nspv")
+    {
         MESSAGE("Spawning nspv shop on port 7777");
         //! we create a shop
         shop ingame_shop; // here we simulate an external shop from an external program with another system manager
@@ -64,27 +68,30 @@ namespace antara::gaming::blockchain::integration {
 
         MESSAGE("Creating game env");
         //! we create a game env
-        entt::registry entity_registry;
-        [[maybe_unused]] entt::dispatcher &dispatcher{entity_registry.set<entt::dispatcher>()};
+        entt::registry                      entity_registry;
+        [[maybe_unused]] entt::dispatcher&  dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
-        auto &nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
+        auto&                               nspv_system = mgr.create_system<blockchain::nspv>(std::filesystem::current_path() / "nspv/assets/tools");
 
         MESSAGE("Spawning nspv instance from the client on port 25435");
         CHECK(nspv_system.spawn_nspv_instance("RICK", true)); // we use auto login from env
 
         //! Here both nspv instance are lunch, we will simulate a buy from the client in the shop
-        GIVEN("Two instances nspv: a client (who is the player) and a shop (which simulates the instance of a store in game)") {
-            WHEN ("I want to buy a beer from the shop with my client for 1 rick") {
-                THEN("I ask for a bill (1 beer)") {
+        GIVEN("Two instances nspv: a client (who is the player) and a shop (which simulates the instance of a store in game)")
+        {
+            WHEN("I want to buy a beer from the shop with my client for 1 rick")
+            {
+                THEN("I ask for a bill (1 beer)")
+                {
                     auto bill = ingame_shop.prepare_item_buy("beer", 1);
                     CHECK_EQ(bill.final_amount, 0.001);
                     CHECK_LT(bill.final_amount, nspv_system.get_balance("RICK"));
-                    AND_THEN("If the bill seem's correct to me i send the money and retrieve my transaction") {
+                    AND_THEN("If the bill seem's correct to me i send the money and retrieve my transaction")
+                    {
                         auto result = nspv_system.send("RICK", bill.address, bill.final_amount);
                     }
                 }
-
             }
         }
     }
-}
+} // namespace antara::gaming::blockchain::integration

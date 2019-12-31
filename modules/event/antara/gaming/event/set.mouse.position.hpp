@@ -19,10 +19,12 @@
 //! SDK Headers
 #include "antara/gaming/math/vector.hpp" ///< math::vec2i
 
-namespace antara::gaming::event {
-    struct set_mouse_position {
+namespace antara::gaming::event
+{
+    struct set_mouse_position
+    {
         //! Fields
         math::vec2i to;
-        bool relative_to_the_window{false};
+        bool        relative_to_the_window{false};
     };
-}
+} // namespace antara::gaming::event

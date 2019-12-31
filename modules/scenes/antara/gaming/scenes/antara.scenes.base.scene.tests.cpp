@@ -26,75 +26,80 @@ namespace antara::gaming::scenes::tests
 {
     class game_scene final : public base_scene
     {
-    public:
-        game_scene(entt::registry &entity_registry) noexcept : base_scene(entity_registry)
-        {
-
-        }
-
-        void update() noexcept final
+      public:
+        game_scene(entt::registry& entity_registry) noexcept : base_scene(entity_registry)
         {
         }
 
-        bool on_key_pressed(const event::key_pressed &evt) noexcept final
+        void
+        update() noexcept final
+        {
+        }
+
+        bool
+        on_key_pressed(const event::key_pressed& evt) noexcept final
         {
             CHECK_EQ(evt.key, input::key::a);
             return base_scene::on_key_pressed(evt);
         }
 
-        bool on_key_released(const event::key_released &evt) noexcept final
+        bool
+        on_key_released(const event::key_released& evt) noexcept final
         {
             CHECK_EQ(evt.key, input::key::a);
             return base_scene::on_key_released(evt);
         }
 
-        bool on_mouse_moved(const event::mouse_moved &moved) noexcept final
+        bool
+        on_mouse_moved(const event::mouse_moved& moved) noexcept final
         {
             bool res = base_scene::on_mouse_moved(moved);
             CHECK(res);
             return res;
         }
 
-        bool on_mouse_button_pressed(const event::mouse_button_pressed &pressed) noexcept final
+        bool
+        on_mouse_button_pressed(const event::mouse_button_pressed& pressed) noexcept final
         {
             bool res = base_scene::on_mouse_button_pressed(pressed);
             CHECK(res);
             return res;
         }
 
-        bool on_mouse_button_released(const event::mouse_button_released &released) noexcept final
+        bool
+        on_mouse_button_released(const event::mouse_button_released& released) noexcept final
         {
             bool res = base_scene::on_mouse_button_released(released);
             CHECK(res);
             return res;
         }
 
-        std::string scene_name() noexcept final
+        std::string
+        scene_name() noexcept final
         {
             return "game_scene";
         }
 
         ~game_scene() noexcept final = default;
-
     };
 
-    TEST_SUITE ("base scene tests suite")
+    TEST_SUITE("base scene tests suite")
     {
-        entt::registry entity_registry;
-        entt::dispatcher& dispatcher{entity_registry.set<entt::dispatcher>()};
+        entt::registry              entity_registry;
+        entt::dispatcher&           dispatcher{entity_registry.set<entt::dispatcher>()};
         std::unique_ptr<base_scene> scene_ptr = std::make_unique<game_scene>(entity_registry);
-        TEST_CASE ("update")
+        TEST_CASE("update")
         {
             scene_ptr->update();
         }
 
-        TEST_CASE ("on key pressed")
+        TEST_CASE("on key pressed")
         {
             event::key_pressed key{input::key::a, false, false, false, false};
             CHECK(scene_ptr->on_key_pressed(key));
         }
 
-        TEST_CASE ("on key released")
+        TEST_CASE("on key released")
         {
             event::key_released key{input::key::a, false, false, false, false};
             CHECK(scene_ptr->on_key_released(key));
@@ -120,4 +125,4 @@ namespace antara::gaming::scenes::tests
             CHECK_EQ(scene_ptr->scene_name(), "game_scene");
         }
     }
-}
+} // namespace antara::gaming::scenes::tests

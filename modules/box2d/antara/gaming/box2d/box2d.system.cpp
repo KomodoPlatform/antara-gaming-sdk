@@ -18,11 +18,15 @@
 #include "antara/gaming/box2d/box2d.system.hpp"
 #include "antara/gaming/timer/time.step.hpp" ///< timer::time_step
 
-namespace antara::gaming::box2d {
-    box2d_system::box2d_system(entt::registry &registry) noexcept : system(registry) {
+namespace antara::gaming::box2d
+{
+    box2d_system::box2d_system(entt::registry& registry) noexcept : system(registry)
+    {
     }
 
-    void box2d_system::update() noexcept {
+    void
+    box2d_system::update() noexcept
+    {
         world_.Step(antara::gaming::timer::time_step::get_fixed_delta_time(), 8, 3);
     }
-}
+} // namespace antara::gaming::box2d

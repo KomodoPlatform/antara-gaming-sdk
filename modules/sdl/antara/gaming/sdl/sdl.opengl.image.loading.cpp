@@ -21,13 +21,16 @@
 #include "stb_image.h"
 #include <glad/glad.h>
 
-namespace {
-// Simple helper function to load an image into a OpenGL texture with common settings
-    bool LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height) {
+namespace
+{
+    // Simple helper function to load an image into a OpenGL texture with common settings
+    bool
+    LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_width, int* out_height)
+    {
         // Load from file
-        int image_width = 0;
-        int image_height = 0;
-        unsigned char *image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+        int            image_width  = 0;
+        int            image_height = 0;
+        unsigned char* image_data   = stbi_load(filename, &image_width, &image_height, NULL, 4);
         if (image_data == NULL)
             return false;
 
@@ -46,15 +49,18 @@ namespace {
         stbi_image_free(image_data);
 
         *out_texture = image_texture;
-        *out_width = image_width;
-        *out_height = image_height;
+        *out_width   = image_width;
+        *out_height  = image_height;
 
         return true;
     }
-}
+} // namespace
 
-namespace antara::gaming::sdl {
-    bool load_image(const std::filesystem::path &path, opengl_image &image) {
+namespace antara::gaming::sdl
+{
+    bool
+    load_image(const std::filesystem::path& path, opengl_image& image)
+    {
         return LoadTextureFromFile(path.string().c_str(), &image.id, &image.width, &image.height);
     }
-}
+} // namespace antara::gaming::sdl

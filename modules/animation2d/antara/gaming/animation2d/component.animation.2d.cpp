@@ -16,11 +16,13 @@
 
 #include "antara/gaming/animation2d/component.animation.2d.hpp"
 
-namespace antara::gaming::animation2d {
-    entt::entity blueprint_animation(entt::registry &registry,
-                                     const anim_component &anim, transform::position_2d pos,
-                                     graphics::fill_color spr_color,
-                                     const transform::properties &prop) noexcept {
+namespace antara::gaming::animation2d
+{
+    entt::entity
+    blueprint_animation(
+        entt::registry& registry, const anim_component& anim, transform::position_2d pos, graphics::fill_color spr_color,
+        const transform::properties& prop) noexcept
+    {
         auto entity = registry.create();
         registry.assign<transform::position_2d>(entity, pos);
         registry.assign<graphics::fill_color>(entity, spr_color);
@@ -28,4 +30,4 @@ namespace antara::gaming::animation2d {
         registry.assign<anim_component>(entity, anim);
         return entity;
     }
-}
+} // namespace antara::gaming::animation2d

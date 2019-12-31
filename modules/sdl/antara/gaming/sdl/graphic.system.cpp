@@ -14,21 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <iostream>
-#include <glad/glad.h>
 #include <antara/gaming/graphics/component.canvas.hpp>
+#include <glad/glad.h>
+#include <iostream>
 
 #if defined(IMGUI_AND_SDL_ENABLED)
 
-#include <imgui.h>
-#include <imgui_impl_sdl.h>
-#include <imgui_impl_opengl3.h>
+#    include <imgui.h>
+#    include <imgui_impl_opengl3.h>
+#    include <imgui_impl_sdl.h>
 
-#ifdef _WIN32
+#    ifdef _WIN32
 
-#include <imgui_impl_win32.h>
+#        include <imgui_impl_win32.h>
 
-#endif
+#    endif
 
 #endif
 
@@ -37,42 +37,48 @@
 #include "antara/gaming/sdl/graphic.system.hpp"
 #include "antara/gaming/sdl/sdl.timer.hpp"
 
-namespace {
-
+namespace
+{
 }
 
-namespace antara::gaming::sdl {
-
-//The application time based timer
-    void graphic_system::update() noexcept {
-        //The frames per second timer
+namespace antara::gaming::sdl
+{
+    // The application time based timer
+    void
+    graphic_system::update() noexcept
+    {
+        // The frames per second timer
 
         render();
-        //If frame finished early
+        // If frame finished early
         int frame_ticks = timer_.getTicks();
-        int fps_cap_ms = 1000 / fps_cap_;
-        if (frame_ticks < fps_cap_ms) {
-            //Wait remaining time
+        int fps_cap_ms  = 1000 / fps_cap_;
+        if (frame_ticks < fps_cap_ms)
+        {
+            // Wait remaining time
             SDL_Delay(fps_cap_ms - frame_ticks);
         }
 
-        //Start cap timer
+        // Start cap timer
         timer_.start();
     }
 
-    void graphic_system::render() noexcept {
+    void
+    graphic_system::render() noexcept
+    {
 #if defined(IMGUI_AND_SDL_ENABLED)
         ImGui::Render();
-        ImGuiIO &io = ImGui::GetIO();
-        glViewport(0, 0, (int) io.DisplaySize.x, (int) io.DisplaySize.y);
+        ImGuiIO& io = ImGui::GetIO();
+        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 #endif
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 #if defined(IMGUI_AND_SDL_ENABLED)
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            SDL_Window*   backup_current_window  = SDL_GL_GetCurrentWindow();
             SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
@@ -84,11 +90,13 @@ namespace antara::gaming::sdl {
         SDL_GL_SwapWindow(window_);
     }
 
-    graphic_system::graphic_system(entt::registry &registry) : system(registry) {
+    graphic_system::graphic_system(entt::registry& registry) : system(registry)
+    {
 #if _WIN32
         ImGui_ImplWin32_EnableDpiAwareness();
 #endif
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+        {
             std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
             this->dispatcher_.trigger<event::quit_game>(-1);
             return;
@@ -96,7 +104,7 @@ namespace antara::gaming::sdl {
 
 #if __APPLE__
         // GL 3.2 Core + GLSL 150
-        const char *glsl_version = "#version 150";
+        const char* glsl_version = "#version 150";
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -109,30 +117,27 @@ namespace antara::gaming::sdl {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 #else
         // GL 3.0 + GLSL 130
-        const char *glsl_version = "#version 130";
+        const char* glsl_version = "#version 130";
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
 
-        auto &canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
+        auto& canvas_2d = this->entity_registry_.ctx<graphics::canvas_2d>();
         // Create window with graphics context
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-        SDL_WindowFlags window_flags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-                                                          SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN);
-        auto[real_width, real_height] = canvas_2d.window.size.to<math::vec2i>() /
-                                        math::vec2f{core::get_scaling_factor().first,
-                                                    core::get_scaling_factor().second}.to<math::vec2i>();
+        SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN);
+        auto [real_width, real_height] =
+            canvas_2d.window.size.to<math::vec2i>() / math::vec2f{core::get_scaling_factor().first, core::get_scaling_factor().second}.to<math::vec2i>();
         canvas_2d.window.size.set_xy(real_width, real_height);
-        window_ = SDL_CreateWindow(canvas_2d.window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   1,
-                                   1, window_flags);
+        window_     = SDL_CreateWindow(canvas_2d.window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1, 1, window_flags);
         gl_context_ = SDL_GL_CreateContext(window_);
         SDL_GL_MakeCurrent(window_, gl_context_);
-        if (canvas_2d.vsync) {
+        if (canvas_2d.vsync)
+        {
             SDL_GL_SetSwapInterval(1); // Enable vsync
         }
 
@@ -141,19 +146,20 @@ namespace antara::gaming::sdl {
 
 #if defined(IMGUI_AND_SDL_ENABLED)
         ImGui::CreateContext();
-        ImGuiIO &io = ImGui::GetIO();
-        (void) io;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+        // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
         io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
-        io.ConfigViewportsNoAutoMerge = true;
+        io.ConfigViewportsNoAutoMerge     = true;
         io.ConfigViewportsNoDefaultParent = true;
         ImGui::StyleColorsDark();
-        ImGuiStyle &style = ImGui::GetStyle();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            style.WindowRounding = 0.0f;
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding              = 0.0f;
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
         ImGui_ImplSDL2_InitForOpenGL(window_, gl_context_);
@@ -161,7 +167,8 @@ namespace antara::gaming::sdl {
 #endif
     }
 
-    graphic_system::~graphic_system() noexcept {
+    graphic_system::~graphic_system() noexcept
+    {
 #if defined(IMGUI_AND_SDL_ENABLED)
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
@@ -172,5 +179,4 @@ namespace antara::gaming::sdl {
         SDL_DestroyWindow(window_);
         SDL_Quit();
     }
-}
-
+} // namespace antara::gaming::sdl

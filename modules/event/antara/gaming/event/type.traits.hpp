@@ -22,12 +22,13 @@
 //! Dependencies Headers
 #include <meta/detection/detection.hpp> ///< doom::meta::is_detected
 
-namespace antara::gaming::event {
+namespace antara::gaming::event
+{
     //! Typedefs
-    template<typename T>
-    using constructor_arg_t = decltype(std::declval<T &>().invoker);
+    template <typename T>
+    using constructor_arg_t = decltype(std::declval<T&>().invoker);
 
     //! Meta-functions
-    template<typename T>
+    template <typename T>
     inline constexpr bool has_constructor_arg_type_v = doom::meta::is_detected_v<constructor_arg_t, T>;
-}
+} // namespace antara::gaming::event

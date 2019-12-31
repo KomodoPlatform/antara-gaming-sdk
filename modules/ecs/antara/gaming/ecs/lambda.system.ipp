@@ -14,35 +14,44 @@
  *                                                                            *
  ******************************************************************************/
 
-namespace antara::gaming::ecs {
-    template<typename SystemType>
-    lambda_system<SystemType>::lambda_system(entt::registry &registry,
-                                             ftor lambda_contents,
-                                             std::string lambda_name) noexcept :
-            TSystem::system(registry),
-            lambda_contents_(std::move(lambda_contents)),
-            lambda_name_(std::move(lambda_name)) {
-        if (lambda_contents_.on_create != nullptr) { lambda_contents_.on_create(); }
+namespace antara::gaming::ecs
+{
+    template <typename SystemType>
+    lambda_system<SystemType>::lambda_system(entt::registry& registry, ftor lambda_contents, std::string lambda_name) noexcept :
+        TSystem::system(registry), lambda_contents_(std::move(lambda_contents)), lambda_name_(std::move(lambda_name))
+    {
+        if (lambda_contents_.on_create != nullptr)
+        {
+            lambda_contents_.on_create();
+        }
     }
 
-    template<typename SystemType>
-    lambda_system<SystemType>::~lambda_system() noexcept {
-        if (lambda_contents_.on_destruct != nullptr) {
+    template <typename SystemType>
+    lambda_system<SystemType>::~lambda_system() noexcept
+    {
+        if (lambda_contents_.on_destruct != nullptr)
+        {
             lambda_contents_.on_destruct();
         }
     }
 
-    template<typename SystemType>
-    void lambda_system<SystemType>::update() noexcept {
-        if (lambda_contents_.on_update != nullptr) {
+    template <typename SystemType>
+    void
+    lambda_system<SystemType>::update() noexcept
+    {
+        if (lambda_contents_.on_update != nullptr)
+        {
             lambda_contents_.on_update();
         }
     }
 
-    template<typename SystemType>
-    void lambda_system<SystemType>::post_update() noexcept {
-        if (lambda_contents_.on_post_update != nullptr) {
+    template <typename SystemType>
+    void
+    lambda_system<SystemType>::post_update() noexcept
+    {
+        if (lambda_contents_.on_post_update != nullptr)
+        {
             lambda_contents_.on_post_update();
         }
     }
-}
+} // namespace antara::gaming::ecs

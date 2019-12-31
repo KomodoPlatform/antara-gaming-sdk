@@ -21,12 +21,19 @@
 #include "antara/gaming/ecs/interpolation.system.hpp"
 #include "antara/gaming/transform/component.position.hpp" ///< transform::position_2d,previous_position2d
 
-namespace antara::gaming::ecs {
-    void interpolation_system::update() noexcept {
+namespace antara::gaming::ecs
+{
+    void
+    interpolation_system::update() noexcept
+    {
         using namespace transform;
-        auto func = [](position_2d &pos, previous_position_2d &previous_pos) { previous_pos = pos; };
+        auto func = [](position_2d& pos, previous_position_2d& previous_pos) {
+            previous_pos = pos;
+        };
         entity_registry_.view<entt::tag<"dynamic"_hs>, position_2d, previous_position_2d>().less(func);
     }
 
-    interpolation_system::interpolation_system(entt::registry &registry) noexcept : system(registry) {}
-}
+    interpolation_system::interpolation_system(entt::registry& registry) noexcept : system(registry)
+    {
+    }
+} // namespace antara::gaming::ecs

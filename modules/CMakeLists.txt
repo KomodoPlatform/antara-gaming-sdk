@@ -33,8 +33,8 @@ endif ()
 
 if (USE_GLFW_ANTARA_WRAPPER)
     add_subdirectory(glfw)
-endif()
+endif ()
 
 if (USE_SDL_ANTARA_WRAPPER)
     add_subdirectory(sdl)
-endif()
+endif ()

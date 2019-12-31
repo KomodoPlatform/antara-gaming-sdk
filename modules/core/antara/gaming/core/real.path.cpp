@@ -19,29 +19,31 @@
 
 #ifdef _WIN32
 
-#include "antara/gaming/core/details/windows/real.path.hpp"
+#    include "antara/gaming/core/details/windows/real.path.hpp"
 
 #elif __APPLE__
 
-#include "antara/gaming/core/details/osx/real.path.hpp"
+#    include "antara/gaming/core/details/osx/real.path.hpp"
 
 #elif __linux__
 
-#include "antara/gaming/core/details/linux/real.path.hpp"
+#    include "antara/gaming/core/details/linux/real.path.hpp"
 
 #elif EMSCRIPTEN
-#include "antara/gaming/core/details/emscripten/real.path.hpp"
+#    include "antara/gaming/core/details/emscripten/real.path.hpp"
 #endif
 
 namespace antara::gaming::core
 {
-    std::filesystem::path binary_real_path() noexcept
+    std::filesystem::path
+    binary_real_path() noexcept
     {
         return details::binary_real_path();
     }
 
-    std::filesystem::path assets_real_path() noexcept
+    std::filesystem::path
+    assets_real_path() noexcept
     {
         return details::assets_real_path();
     }
-}
+} // namespace antara::gaming::core

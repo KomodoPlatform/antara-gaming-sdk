@@ -19,4 +19,3 @@
 namespace antara::gaming::transform
 {
 }
-

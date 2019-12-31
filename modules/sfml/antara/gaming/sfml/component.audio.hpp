@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <functional>
 #include <SFML/Audio/Sound.hpp>
+#include <functional>
 
 namespace antara::gaming::sfml
 {
@@ -29,4 +29,4 @@ namespace antara::gaming::sfml
     {
         sf::Sound sound; ///< This object is SFML's Sound instance which contains the sound data.
     };
-}
+} // namespace antara::gaming::sfml

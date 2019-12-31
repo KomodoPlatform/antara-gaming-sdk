@@ -14,33 +14,36 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <antara/gaming/sdl/input.system.hpp>
 #include <antara/gaming/event/quit.game.hpp>
+#include <antara/gaming/sdl/input.system.hpp>
 
 #if defined(IMGUI_AND_SDL_ENABLED)
 
-#include <imgui.h>
-#include <imgui_impl_sdl.h>
-#include <imgui_impl_opengl3.h>
+#    include <imgui.h>
+#    include <imgui_impl_opengl3.h>
+#    include <imgui_impl_sdl.h>
 
 #endif
 
 
-namespace antara::gaming::sdl {
-    input_system::input_system(entt::registry &registry, SDL_Window *window) : system(registry), window_(window) {
-
+namespace antara::gaming::sdl
+{
+    input_system::input_system(entt::registry& registry, SDL_Window* window) : system(registry), window_(window)
+    {
     }
 
-    void input_system::update() noexcept {
+    void
+    input_system::update() noexcept
+    {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
+        while (SDL_PollEvent(&event))
+        {
 #if defined(IMGUI_AND_SDL_ENABLED)
             ImGui_ImplSDL2_ProcessEvent(&event);
 #endif
             if (event.type == SDL_QUIT)
                 this->dispatcher_.trigger<event::quit_game>(0);
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
-                event.window.windowID == SDL_GetWindowID(window_))
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window_))
                 this->dispatcher_.trigger<event::quit_game>(0);
         }
 #if defined(IMGUI_AND_SDL_ENABLED)
@@ -49,4 +52,4 @@ namespace antara::gaming::sdl {
         ImGui::NewFrame();
 #endif
     }
-}
+} // namespace antara::gaming::sdl

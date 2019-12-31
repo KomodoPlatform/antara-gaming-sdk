@@ -24,6 +24,6 @@
 
 namespace antara::gaming::graphics
 {
-    void from_json(const nlohmann::json &json_data, canvas_2d &game_maker_cfg);
-    void to_json(nlohmann::json &json_data, const canvas_2d &game_maker_cfg);
-}
+    void from_json(const nlohmann::json& json_data, canvas_2d& game_maker_cfg);
+    void to_json(nlohmann::json& json_data, const canvas_2d& game_maker_cfg);
+} // namespace antara::gaming::graphics

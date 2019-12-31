@@ -20,7 +20,8 @@
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 #include "antara/gaming/input/keyboard.hpp" ///< input::key
 
-namespace antara::gaming::event {
+namespace antara::gaming::event
+{
     /**
      * @struct key_released
      * @brief triggered when releasing a key on the keyboard.
@@ -30,7 +31,8 @@ namespace antara::gaming::event {
      *         This class is automatically reflected for scripting systems such as lua, python.
      * @endverbatim
      */
-    struct key_released {
+    struct key_released
+    {
         //! Constructors
 
         /**
@@ -60,10 +62,7 @@ namespace antara::gaming::event {
          *          }
          * @endcode
          */
-        key_released(input::key key_, bool alt_,
-                     bool control_,
-                     bool shift_,
-                     bool system_) noexcept;
+        key_released(input::key key_, bool alt_, bool control_, bool shift_, bool system_) noexcept;
 
         /**
          * default constructor (for scripting systems convenience)
@@ -71,13 +70,12 @@ namespace antara::gaming::event {
         key_released() noexcept;
 
         //! Fields
-        input::key key; ///< key released
-        bool alt{false}; ///< is alt released at the same time.
-        bool control{false}; ///< is ctrl released at the same time.
-        bool shift{false}; ///< is shift released at the same time.
-        bool system{false}; ///< is system released at the same time.
+        input::key key;            ///< key released
+        bool       alt{false};     ///< is alt released at the same time.
+        bool       control{false}; ///< is ctrl released at the same time.
+        bool       shift{false};   ///< is shift released at the same time.
+        bool       system{false};  ///< is system released at the same time.
     };
-}
+} // namespace antara::gaming::event
 
-REFL_AUTO(type(antara::gaming::event::key_released), field(key), field(alt), field(control), field(shift),
-          field(system))
+REFL_AUTO(type(antara::gaming::event::key_released), field(key), field(alt), field(control), field(shift), field(system))

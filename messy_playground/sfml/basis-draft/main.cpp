@@ -163,6 +163,7 @@ public:
                         anim.animation_id = "Character_1_Up_Cast";
                 });
         }
+        return true;
     }
 
     std::string scene_name() noexcept final

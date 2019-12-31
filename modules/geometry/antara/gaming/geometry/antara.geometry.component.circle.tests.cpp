@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/geometry/component.circle.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::geometry::tests
 {
@@ -35,9 +35,8 @@ namespace antara::gaming::geometry::tests
 
         TEST_CASE("blueprint circle")
         {
-
             entt::registry entity_registry;
             CHECK(entity_registry.valid(geometry::blueprint_circle(entity_registry, 30.f)));
         }
     }
-}
+} // namespace antara::gaming::geometry::tests

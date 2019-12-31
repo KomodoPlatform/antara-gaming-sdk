@@ -14,8 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <doctest/doctest.h>
 #include "antara/gaming/core/real.path.hpp"
+#include <doctest/doctest.h>
 
 namespace antara::gaming::core::tests
 {
@@ -32,4 +32,4 @@ namespace antara::gaming::core::tests
         MESSAGE("assets real path " << result);
         CHECK_FALSE(result.empty());
     }
-}
+} // namespace antara::gaming::core::tests

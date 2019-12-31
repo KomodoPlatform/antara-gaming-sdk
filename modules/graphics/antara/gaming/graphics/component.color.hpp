@@ -20,60 +20,68 @@
 #include <cstdint> ///< std::uint8_t
 
 //! C++ System Headers
-#include <utility> ///< std::forward
 #include <ostream> ///< std::ostream
+#include <utility> ///< std::forward
 
 //! Dependencies Headers
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
 
-#include <sol/sol.hpp>  ///< sol::constructors
+#    include <sol/sol.hpp> ///< sol::constructors
 
 #endif
 
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 
-namespace antara::gaming::graphics {
-    struct color {
-        constexpr color() noexcept : r(0), g(0), b(0), a(255) {
-
+namespace antara::gaming::graphics
+{
+    struct color
+    {
+        constexpr color() noexcept : r(0), g(0), b(0), a(255)
+        {
         }
 
-        constexpr color(std::uint8_t r_, std::uint8_t g_, std::uint8_t b_, std::uint8_t a_ = 255) noexcept : r(r_),
-                                                                                                             g(g_),
-                                                                                                             b(b_),
-                                                                                                             a(a_) {
-
+        constexpr color(std::uint8_t r_, std::uint8_t g_, std::uint8_t b_, std::uint8_t a_ = 255) noexcept : r(r_), g(g_), b(b_), a(a_)
+        {
         }
 
-        void set_color(const color &to) noexcept {
-            auto[_r, _g, _b, _a] = to;
-            this->r = _r;
-            this->g = _g;
-            this->b = _b;
-            this->a = _a;
+        void
+        set_color(const color& to) noexcept
+        {
+            auto [_r, _g, _b, _a] = to;
+            this->r               = _r;
+            this->g               = _g;
+            this->b               = _b;
+            this->a               = _a;
         }
 
-        void set_unique_color(std::uint8_t value) noexcept { r = g = b = value; }
+        void
+        set_unique_color(std::uint8_t value) noexcept
+        {
+            r = g = b = value;
+        }
 
 
-        void set_unique_color(std::uint8_t value, std::uint8_t alpha) noexcept {
+        void
+        set_unique_color(std::uint8_t value, std::uint8_t alpha) noexcept
+        {
             set_unique_color(value);
             a = alpha;
         }
 
-        constexpr color &operator=(const color &other) noexcept = default;
+        constexpr color& operator=(const color& other) noexcept = default;
 
-        constexpr color(const color &other) noexcept = default;
+        constexpr color(const color& other) noexcept = default;
 
-        constexpr bool operator==(const color &rhs) const noexcept {
-            return r == rhs.r &&
-                   g == rhs.g &&
-                   b == rhs.b &&
-                   a == rhs.a;
+        constexpr bool
+        operator==(const color& rhs) const noexcept
+        {
+            return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
         }
 
-        constexpr bool operator!=(const color &rhs) const noexcept {
+        constexpr bool
+        operator!=(const color& rhs) const noexcept
+        {
             return !(rhs == *this);
         }
 
@@ -82,7 +90,9 @@ namespace antara::gaming::graphics {
         std::uint8_t b{0};
         std::uint8_t a{255};
 
-        friend std::ostream &operator<<(std::ostream &os, const color &color) {
+        friend std::ostream&
+        operator<<(std::ostream& os, const color& color)
+        {
             os << "r: " << int(color.r) << " g: " << int(color.g) << " b: " << int(color.b) << " a: " << int(color.a);
             return os;
         }
@@ -99,47 +109,46 @@ namespace antara::gaming::graphics {
     inline constexpr color transparent{0, 0, 0, 0};
 
 
-    struct outline_color : color {
+    struct outline_color : color
+    {
         constexpr outline_color() noexcept = default;
 
-        constexpr outline_color(const graphics::color &other) noexcept : graphics::color(other) {
-            *this = static_cast<const graphics::outline_color &>(other);
+        constexpr outline_color(const graphics::color& other) noexcept : graphics::color(other)
+        {
+            *this           = static_cast<const graphics::outline_color&>(other);
             this->thickness = 0.f;
         }
 
-        template<typename ... TArgs>
-        constexpr
-        outline_color(float thickness, TArgs &&...args) noexcept : graphics::color(std::forward<TArgs>(args)...),
-                                                                   thickness(thickness) {
-
+        template <typename... TArgs>
+        constexpr outline_color(float thickness, TArgs&&... args) noexcept : graphics::color(std::forward<TArgs>(args)...), thickness(thickness)
+        {
         }
 
-        constexpr outline_color &operator=(const outline_color &other) noexcept = default;
+        constexpr outline_color& operator=(const outline_color& other) noexcept = default;
 
-        constexpr outline_color(const outline_color &other) noexcept = default;
+        constexpr outline_color(const outline_color& other) noexcept = default;
 
         float thickness{0.f};
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<outline_color(), outline_color(float, graphics::color), outline_color(
-                float thickness, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
+        using constructors = sol::constructors<
+            outline_color(), outline_color(float, graphics::color), outline_color(float thickness, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
 #endif
     };
 
-    struct fill_color : color {
-        template<typename ... TArgs>
-        constexpr fill_color(TArgs &&...args) noexcept : graphics::color(std::forward<TArgs>(args)...) {
-
+    struct fill_color : color
+    {
+        template <typename... TArgs>
+        constexpr fill_color(TArgs&&... args) noexcept : graphics::color(std::forward<TArgs>(args)...)
+        {
         }
 
 #ifdef ANTARA_LUA_SCRIPTING_ENABLED
-        using constructors = sol::constructors<fill_color(), fill_color(graphics::color),
-                fill_color(std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
+        using constructors = sol::constructors<fill_color(), fill_color(graphics::color), fill_color(std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t)>;
 #endif
     };
-}
+} // namespace antara::gaming::graphics
 
 REFL_AUTO(type(antara::gaming::graphics::color), field(r), field(g), field(b), field(a), func(set_color))
-REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a), field(thickness),
-          func(set_color))
+REFL_AUTO(type(antara::gaming::graphics::outline_color), field(r), field(g), field(b), field(a), field(thickness), func(set_color))
 REFL_AUTO(type(antara::gaming::graphics::fill_color), field(r), field(g), field(b), field(a), func(set_color))

@@ -16,6 +16,7 @@
 
 #pragma once
 
-namespace antara::gaming::math {
+namespace antara::gaming::math
+{
     inline constexpr float RAD2DEG = 57.295779513082320876798154814105f;
 }

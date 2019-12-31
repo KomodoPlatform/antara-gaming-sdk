@@ -16,19 +16,21 @@
 
 #pragma once
 
-#include <GLFW/glfw3.h>
 #include "antara/gaming/ecs/system.hpp"
+#include <GLFW/glfw3.h>
 
-namespace antara::gaming::glfw {
-    
-    class input_system final : public ecs::pre_update_system<input_system> {
-    public:
-        explicit input_system(entt::registry &registry, GLFWwindow* window);
+namespace antara::gaming::glfw
+{
+    class input_system final : public ecs::pre_update_system<input_system>
+    {
+      public:
+        explicit input_system(entt::registry& registry, GLFWwindow* window);
         ~input_system() noexcept final = default;
         void update() noexcept final;
-    private:
-        GLFWwindow *window_;
+
+      private:
+        GLFWwindow* window_;
     };
-}
+} // namespace antara::gaming::glfw
 
 REFL_AUTO(type(antara::gaming::glfw::input_system))

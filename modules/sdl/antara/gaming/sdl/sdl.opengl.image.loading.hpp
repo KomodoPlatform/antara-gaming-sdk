@@ -23,9 +23,9 @@ namespace antara::gaming::sdl
     struct opengl_image
     {
         unsigned int id;
-        int width;
-        int height;
+        int          width;
+        int          height;
     };
 
     bool load_image(const std::filesystem::path& path, opengl_image& image);
-}
+} // namespace antara::gaming::sdl

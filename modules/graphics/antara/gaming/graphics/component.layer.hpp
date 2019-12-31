@@ -22,26 +22,28 @@
 //! SDK Headers
 #include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
 
-namespace antara::gaming::graphics {
+namespace antara::gaming::graphics
+{
     inline constexpr std::size_t max_layer = 12ull;
 
-    template<std::size_t N>
-    struct layer {
+    template <std::size_t N>
+    struct layer
+    {
     };
 
-    using layer_0 = layer<0>;
-    using layer_1 = layer<1>;
-    using layer_2 = layer<2>;
-    using layer_3 = layer<3>;
-    using layer_4 = layer<4>;
-    using layer_5 = layer<5>;
-    using layer_6 = layer<6>;
-    using layer_7 = layer<7>;
-    using layer_8 = layer<8>;
-    using layer_9 = layer<9>;
+    using layer_0  = layer<0>;
+    using layer_1  = layer<1>;
+    using layer_2  = layer<2>;
+    using layer_3  = layer<3>;
+    using layer_4  = layer<4>;
+    using layer_5  = layer<5>;
+    using layer_6  = layer<6>;
+    using layer_7  = layer<7>;
+    using layer_8  = layer<8>;
+    using layer_9  = layer<9>;
     using layer_10 = layer<10>;
     using layer_11 = layer<11>;
-}
+} // namespace antara::gaming::graphics
 
 REFL_AUTO(type(antara::gaming::graphics::layer_0))
 REFL_AUTO(type(antara::gaming::graphics::layer_1))

@@ -16,25 +16,31 @@
 
 #pragma once
 
-#include <GLFW/glfw3.h>
 #include "antara/gaming/ecs/system.hpp"
+#include <GLFW/glfw3.h>
 
-namespace antara::gaming::glfw {
+namespace antara::gaming::glfw
+{
     using st_high_dpi_factor = st::type<float, struct high_dpi_factor>;
 
-    class graphic_system final : public ecs::post_update_system<graphic_system> {
-    public:
-        explicit graphic_system(entt::registry &registry);
+    class graphic_system final : public ecs::post_update_system<graphic_system>
+    {
+      public:
+        explicit graphic_system(entt::registry& registry);
 
         ~graphic_system() noexcept final;
 
         void update() noexcept final;
 
-        [[nodiscard]] GLFWwindow *get_window() const noexcept { return window_; }
+        [[nodiscard]] GLFWwindow*
+        get_window() const noexcept
+        {
+            return window_;
+        }
 
-    private:
-        GLFWwindow *window_{nullptr};
+      private:
+        GLFWwindow* window_{nullptr};
     };
-}
+} // namespace antara::gaming::glfw
 
 REFL_AUTO(type(antara::gaming::glfw::graphic_system))

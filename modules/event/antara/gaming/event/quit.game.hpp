@@ -17,10 +17,11 @@
 #pragma once
 
 //! SDK Headers
-#include "antara/gaming/core/safe.refl.hpp" ///< REFL_AUTO
+#include "antara/gaming/core/safe.refl.hpp"      ///< REFL_AUTO
 #include "antara/gaming/event/event.invoker.hpp" ///< event::invoker_dispatcher
 
-namespace antara::gaming::event {
+namespace antara::gaming::event
+{
     /**
      * @struct quit_game
      * @brief Event that allows us to leave a game with a return value
@@ -30,7 +31,8 @@ namespace antara::gaming::event {
      *         This class is automatically reflected for scripting systems such as lua, python.
      * @endverbatim
      */
-    struct quit_game {
+    struct quit_game
+    {
         //! Static fields
         static constexpr const event::invoker_dispatcher<quit_game, int> invoker{};
 
@@ -69,6 +71,6 @@ namespace antara::gaming::event {
         //! Fields
         int return_value_; ///< the return value of the program when leaving the game
     };
-}
+} // namespace antara::gaming::event
 
 REFL_AUTO(type(antara::gaming::event::quit_game));
