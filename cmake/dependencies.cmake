@@ -189,6 +189,9 @@ if (NOT ANTARA_USE_VCPKG)
 else()
     add_library(EnTT INTERFACE)
     target_link_libraries(EnTT INTERFACE EnTT::EnTT)
+
+    add_library(doctest INTERFACE)
+    target_link_libraries(doctest INTERFACE doctest::doctest)
 endif ()
 
 FetchContent_MakeAvailable(doom_st expected refl-cpp doom_meta joboccara-pipes loguru reproc)
@@ -243,9 +246,10 @@ if (USE_SDL_ANTARA_WRAPPER)
                 ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp
                 ${imgui_SOURCE_DIR}/imgui_widgets.cpp
                 ${imgui_SOURCE_DIR}/imgui.cpp
+                ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
                 $<$<PLATFORM_ID:Darwin>:${imgui_SOURCE_DIR}/examples/imgui_impl_osx.mm>
                 $<$<PLATFORM_ID:Windows>:${imgui_SOURCE_DIR}/examples/imgui_impl_win32.cpp>)
-        target_include_directories(imgui_sdl PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/examples/)
+        target_include_directories(imgui_sdl PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/examples/ ${imgui_SOURCE_DIR}/misc/cpp)
         target_link_libraries(imgui_sdl PUBLIC glad::glad
                 SDL2::SDL2main
                 $<$<PLATFORM_ID:Darwin>:SDL2::SDL2-static>
