@@ -31,7 +31,7 @@ namespace antara::gaming::sfml
         template<typename TLoader, typename TCache, typename ... TArgs>
         static auto load(TCache &cache, const char *id, TArgs &&...args)
         {
-            const auto identifier = entt::hashed_string::to_value(id);
+            const auto identifier = entt::hashed_string::value(id);
             if (contains<TCache>(cache, id)) {
                 return get<TCache>(cache, id);
             }
@@ -41,14 +41,14 @@ namespace antara::gaming::sfml
         template<typename TCache>
         static auto get(TCache &cache, const char *id)
         {
-            const auto identifier = entt::hashed_string::to_value(id);
+            const auto identifier = entt::hashed_string::value(id);
             return cache.handle(identifier);
         }
 
         template<typename TCache>
         static auto contains(TCache &cache, const char *id) noexcept
         {
-            const auto identifier = entt::hashed_string::to_value(id);
+            const auto identifier = entt::hashed_string::value(id);
             return cache.contains(identifier);
         }
 
