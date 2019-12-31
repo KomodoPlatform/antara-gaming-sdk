@@ -60,7 +60,8 @@ namespace antara::gaming::lua {
         }
 
         (*this->lua_state_)["entity_registry"][final_name + "_id"] = [](entt::registry &self) {
-            return self.type<TComponent>();
+            return entt::type_info<TComponent>::id();
+            //return self.type<TComponent>();
         };
 
         (*this->lua_state_)["entity_registry"]["has_"s + final_name + "_component"s] = [](
