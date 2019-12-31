@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 
+#include <atomic>
 #include <thread>
 #include <mutex>
 #include <chrono>
