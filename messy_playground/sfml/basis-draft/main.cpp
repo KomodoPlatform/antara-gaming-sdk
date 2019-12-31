@@ -103,6 +103,21 @@ public:
         entity_registry.assign<entt::tag<"game_scene"_hs>>(animated2_entity);
         entity_registry.assign<graphics::layer<5>>(animated2_entity);
 
+        animation2d_system.add_animations("Character_1_Up.png", 8, 8,
+            animation2d::ranged_anim_array
+            {
+                animation2d::ranged_anim(0, 6, "Character_1_Up_Bow"),
+                animation2d::ranged_anim(7, 12, "Character_1_Up_Cast")
+            });
+        auto animated3_entity = animation2d::blueprint_animation(entity_registry,
+                                                                 animation2d::anim_component{"Character_1_Up_Bow",
+                                                                                             animation2d::anim_component::status::playing,
+                                                                                             animation2d::anim_component::seconds(0.3f), 1, true},
+                                                                 transform::position_2d(400.f, 100.f));
+        entity_registry.assign<entt::tag<"game_scene"_hs>>(animated3_entity);
+        entity_registry.assign<entt::tag<"player"_hs>>(animated3_entity);
+        entity_registry.assign<graphics::layer<5>>(animated3_entity);
+
         math::vec2i out;
         math::vec2i out_relative;
         this->dispatcher_.trigger<event::get_mouse_position>(out);
@@ -135,9 +150,19 @@ public:
         return false;
     }
 
-    bool on_key_released(const antara::gaming::event::key_released &) noexcept final
+    bool on_key_released(const antara::gaming::event::key_released &key) noexcept final
     {
-        return false;
+        if (key.key == input::key::space)
+        {
+            entity_registry_.view<entt::tag<"player"_hs>, animation2d::anim_component>().each(
+                [](const auto, const auto, animation2d::anim_component& anim)
+                {
+                    if (anim.animation_id == "Character_1_Up_Cast")
+                        anim.animation_id = "Character_1_Up_Bow";
+                    else
+                        anim.animation_id = "Character_1_Up_Cast";
+                });
+        }
     }
 
     std::string scene_name() noexcept final
