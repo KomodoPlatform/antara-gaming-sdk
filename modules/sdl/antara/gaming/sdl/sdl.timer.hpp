@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_timer.h>
+
 namespace antara::gaming::sdl
 {
     class timer
