@@ -8,6 +8,7 @@ Antara Gaming Tutorials
 
    getting_started
    quick_and_dirty
+   animation2d
    ecs
    event
    tic-tac-toe
