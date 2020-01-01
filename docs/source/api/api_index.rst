@@ -6,6 +6,7 @@ Antara Gaming API documentation
    :name: apitoc
    :maxdepth: 2
 
+   animation2d
    config
    core
    ecs

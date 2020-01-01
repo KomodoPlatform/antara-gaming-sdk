@@ -61,6 +61,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         # Other docs files you want to track should go here (or in some variable)
         ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/api_index.rst
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/api/animation2d.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/core.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/config.rst
         ${CMAKE_CURRENT_SOURCE_DIR}/source/api/ecs.rst

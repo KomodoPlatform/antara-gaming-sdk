@@ -20,3 +20,8 @@ Tutorial Related to Animations
 ------------------------------
 
 :doc:`Click here to access animations tutorials<../tutorials/animation2d>`
+
+API antara::animation2d
+-------------------------
+
+:doc:`Click here to access antara::animation2d API<../api/animation2d>`
