@@ -33,6 +33,7 @@ namespace antara::gaming::blockchain::tests
 
     TEST_CASE("nspv system spawn")
     {
+        CHECK_EQ(42, 42);
         /*entt::registry                      entity_registry;
         [[maybe_unused]] entt::dispatcher&  dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
