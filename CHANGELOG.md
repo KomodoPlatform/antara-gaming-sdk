@@ -12,7 +12,7 @@
 * **compilation:** miss chrono include ([b4efe03](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/b4efe03f0bff40e70a42b60cb18d1c2c677cd709))
 * **doc:** flappy ([4b1ac46](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/4b1ac46a172c6b2bb212710d3e25f96a47b955ef))
 * **game_loop:** fix the accumulating big lag at start ([804beb1](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/804beb127cdf04899e2ac030f01a69dcef67a86f))
-* **graphics:** on_circle_construct and on_rectangle_construct were missing setPosition ([f4cbca8](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/f4cbca8cc069e9a18d1606fea441512be475d697))
+* **graphics:** on_circle_replace and on_rectangle_replace were missing setPosition ([f4cbca8](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/f4cbca8cc069e9a18d1606fea441512be475d697))
 * **nspv:** fix download link ([7b173c1](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/7b173c1568306efc7aefccbab128188629a3e743))
 * **sfml:** fix a missing check for vertex array ([b549aa5](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/b549aa51f63ab69d5200cd3b7dc561019f373809))
 * **unit tests:** windows ([4937c0d](https://github.com/KomodoPlatform/antara-gaming-sdk/commit/4937c0db8c2f317155b1dc93a1c217c9c9a3bfc7))
