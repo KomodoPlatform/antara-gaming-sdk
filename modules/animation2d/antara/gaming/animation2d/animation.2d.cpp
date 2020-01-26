@@ -65,15 +65,21 @@ namespace antara::gaming::animation2d
     anim_system::anim_system(entt::registry& registry) noexcept : system(registry)
     {
         registry.on_construct<anim_component>().connect<&anim_system::on_anim_cmp_create>(*this);
-        registry.on_replace<anim_component>().connect<&anim_system::on_anim_cmp_create>(*this);
+        registry.on_replace<anim_component>().connect<&anim_system::on_anim_cmp_replace>(*this);
     }
 
     void
-    anim_system::on_anim_cmp_create(entt::entity entity, entt::registry& registry, const anim_component& anim_cmp) noexcept
+    anim_system::on_anim_cmp_replace(entt::registry& registry, entt::entity entity, const anim_component& anim_cmp) noexcept
     {
         auto&& [frames, appearance] = animations_.at(anim_cmp.animation_id);
         auto rect                   = frames[anim_cmp.current_frame];
         registry.assign_or_replace<graphics::sprite>(entity, appearance, false, rect);
+    }
+
+    void anim_system::on_anim_cmp_create(entt::registry &registry, entt::entity entity) noexcept
+    {
+        const auto& cmp = registry.get<anim_component>(entity);
+        on_anim_cmp_replace( registry, entity, cmp);
     }
 
     void
@@ -145,4 +151,6 @@ namespace antara::gaming::animation2d
         for (const auto& ranged_animation: ranged_animations)
             add_animation(texture_appearance, nb_columns, nb_lines, ranged_animation);
     }
+
+
 } // namespace antara::gaming::animation2d
