@@ -208,7 +208,7 @@ namespace antara::gaming::lua::tests
         script_sys.update();
         res = script_sys.execute_safe_function("my_get_res", "player_table").value();
         CHECK(res);
-        entity_registry.reset();
+        entity_registry.clear();
     }
 
     TEST_CASE_FIXTURE(lua_tests_fixture, "register events")
