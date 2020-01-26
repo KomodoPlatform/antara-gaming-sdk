@@ -32,8 +32,9 @@ namespace
     using namespace entt;
 
     void
-    on_position_build(entity ett, registry& reg, position_2d& pos)
+    on_position_build(registry& reg, entity ett)
     {
+        const auto& pos = reg.get<position_2d>(ett);
         reg.assign<previous_position_2d>(ett, pos);
     }
 } // namespace
