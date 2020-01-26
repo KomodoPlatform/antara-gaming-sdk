@@ -33,7 +33,7 @@ namespace antara::gaming::blockchain::tests
 
     TEST_CASE("nspv system spawn")
     {
-        entt::registry                      entity_registry;
+        /*entt::registry                      entity_registry;
         [[maybe_unused]] entt::dispatcher&  dispatcher{entity_registry.set<entt::dispatcher>()};
         antara::gaming::ecs::system_manager mgr{entity_registry};
 
@@ -63,6 +63,6 @@ namespace antara::gaming::blockchain::tests
         auto                      txproof_answer = blockchain::nspv_api::txproof(endpoint, rq);
         CHECK_EQ(txproof_answer.rpc_result_code, -1);
 
-        CHECK(nspv_system.is_transaction_pending("RICK", "1", 1));
+        CHECK(nspv_system.is_transaction_pending("RICK", "1", 1));*/
     }
 } // namespace antara::gaming::blockchain::tests
