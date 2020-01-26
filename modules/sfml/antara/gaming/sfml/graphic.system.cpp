@@ -86,20 +86,20 @@ namespace antara::gaming::sfml
         dispatcher_.sink<event::key_pressed>().connect<&graphic_system::on_key_pressed>(*this);
         dispatcher_.sink<event::fill_image_properties>().connect<&graphic_system::on_fill_image_properties>(*this);
         registry.on_construct<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
-        registry.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_construct>(*this);
+        registry.on_replace<transform::position_2d>().connect<&graphic_system::on_position_2d_replace>(*this);
         registry.on_replace<transform::properties>().connect<&graphic_system::on_properties_replaced>(*this);
         registry.on_construct<graphics::render_texture_2d>().connect<&graphic_system::on_rt_construct>(*this);
-        registry.on_replace<graphics::render_texture_2d>().connect<&graphic_system::on_rt_construct>(*this);
+        registry.on_replace<graphics::render_texture_2d>().connect<&graphic_system::on_rt_replace>(*this);
         registry.on_construct<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
-        registry.on_replace<graphics::sprite>().connect<&graphic_system::on_sprite_construct>(*this);
+        registry.on_replace<graphics::sprite>().connect<&graphic_system::on_sprite_replace>(*this);
         registry.on_construct<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
-        registry.on_replace<graphics::text>().connect<&graphic_system::on_text_construct>(*this);
+        registry.on_replace<graphics::text>().connect<&graphic_system::on_text_replace>(*this);
         registry.on_construct<geometry::vertex_array>().connect<&graphic_system::on_vertex_array_construct>(*this);
-        registry.on_replace<geometry::vertex_array>().connect<&graphic_system::on_vertex_array_construct>(*this);
+        registry.on_replace<geometry::vertex_array>().connect<&graphic_system::on_vertex_array_replace>(*this);
         registry.on_construct<geometry::circle>().connect<&graphic_system::on_circle_construct>(*this);
-        registry.on_replace<geometry::circle>().connect<&graphic_system::on_circle_construct>(*this);
+        registry.on_replace<geometry::circle>().connect<&graphic_system::on_circle_replace>(*this);
         registry.on_construct<geometry::rectangle>().connect<&graphic_system::on_rectangle_construct>(*this);
-        registry.on_replace<geometry::rectangle>().connect<&graphic_system::on_rectangle_construct>(*this);
+        registry.on_replace<geometry::rectangle>().connect<&graphic_system::on_rectangle_replace>(*this);
         refresh_render_texture();
     }
 
@@ -345,7 +345,13 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_circle_construct(entt::entity entity, entt::registry& registry, geometry::circle& circle) noexcept
+    graphic_system::on_circle_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+        on_circle_replace(registry, entity, registry.get<geometry::circle>(entity));
+    }
+
+    void
+    graphic_system::on_circle_replace(entt::registry& registry, entt::entity entity, geometry::circle& circle) noexcept
     {
         auto& sfml_circle = registry.assign_or_replace<sfml::circle>(entity, sf::CircleShape(circle.radius));
         if (auto out_color = registry.try_get<graphics::outline_color>(entity); out_color != nullptr)
@@ -389,7 +395,13 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_rectangle_construct(entt::entity entity, entt::registry& registry, geometry::rectangle& rectangle) noexcept
+    graphic_system::on_rectangle_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+      on_rectangle_replace(registry, entity, registry.get<geometry::rectangle>(entity));
+    }
+
+    void
+    graphic_system::on_rectangle_replace(entt::registry& registry, entt::entity entity, geometry::rectangle& rectangle) noexcept
     {
         auto [width, height]               = rectangle.size;
         sf::RectangleShape& sfml_rectangle = registry.assign_or_replace<sfml::rectangle>(entity, sf::RectangleShape()).drawable;
@@ -418,7 +430,13 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_vertex_array_construct(entt::entity entity, entt::registry& registry, geometry::vertex_array& cmp_vertex_array) noexcept
+    graphic_system::on_vertex_array_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+      on_vertex_array_replace(registry, entity, registry.get<geometry::vertex_array>(entity));
+    }
+
+    void
+    graphic_system::on_vertex_array_replace(entt::registry& registry, entt::entity entity, geometry::vertex_array& cmp_vertex_array) noexcept
     {
         auto& sf_vertex_array =
             registry
@@ -446,9 +464,14 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_position_2d_construct(entt::entity entity, entt::registry&, transform::position_2d& pos) noexcept
+    graphic_system::on_position_2d_replace(entt::registry&, entt::entity entity, transform::position_2d& pos) noexcept
     {
         set_position(entity, pos, drawable_list_transformable{});
+    }
+
+    void graphic_system::on_position_2d_construct(entt::registry &reg, entt::entity entity) noexcept
+    {
+        on_position_2d_replace(reg, entity, reg.get<transform::position_2d>(entity));
     }
 
     template <typename... DrawableType>
@@ -472,7 +495,13 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_text_construct(entt::entity entity, entt::registry& registry, graphics::text& text) noexcept
+    graphic_system::on_text_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+      on_text_replace(registry, entity, registry.get<graphics::text>(entity));
+    }
+
+    void
+    graphic_system::on_text_replace(entt::registry& registry, entt::entity entity, graphics::text& text) noexcept
     {
         auto&     resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto      handle           = resources_system.load_font(text.appearance);
@@ -516,7 +545,7 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_rt_construct(entt::entity entity, entt::registry& registry, graphics::render_texture_2d& rt) noexcept
+    graphic_system::on_rt_replace(entt::registry& registry, entt::entity entity, graphics::render_texture_2d& rt) noexcept
     {
         std::unique_ptr<sf::RenderTexture>& sfml_rt = registry.assign_or_replace<sfml::render_texture>(entity).drawable;
         sfml_rt->create(rt.size.x(), rt.size.y());
@@ -525,7 +554,19 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_sprite_construct(entt::entity entity, entt::registry& registry, graphics::sprite& spr) noexcept
+    graphic_system::on_rt_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+      on_rt_replace(registry, entity, registry.get<graphics::render_texture_2d>(entity));
+    }
+
+    void
+    graphic_system::on_sprite_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+      on_sprite_replace(registry, entity, registry.get<graphics::sprite>(entity));
+    }
+
+    void
+    graphic_system::on_sprite_replace(entt::registry& registry, entt::entity entity, graphics::sprite& spr) noexcept
     {
         auto&       resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto        handle           = resources_system.load_texture(spr.appearance.c_str());
@@ -563,7 +604,7 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_properties_replaced(entt::entity entity, entt::registry&, transform::properties& props) noexcept
+    graphic_system::on_properties_replaced(entt::registry&, entt::entity entity, transform::properties& props) noexcept
     {
         set_properties(entity, props, drawable_list_transformable{});
     }

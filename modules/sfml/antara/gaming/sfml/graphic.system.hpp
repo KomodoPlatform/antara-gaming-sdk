@@ -49,7 +49,6 @@ namespace antara::gaming::sfml
         graphic_system(entt::registry& registry) noexcept;
 
         ~graphic_system() noexcept;
-        ;
 
         void refresh_render_texture() noexcept;
 
@@ -88,21 +87,28 @@ namespace antara::gaming::sfml
 
         void on_window_resized_event(const event::window_resized& evt) noexcept;
 
-        void on_circle_construct(entt::entity entity, entt::registry& registry, geometry::circle& circle) noexcept;
+        void on_circle_replace(entt::registry& registry, entt::entity entity, geometry::circle& circle) noexcept;
+        void on_circle_construct(entt::registry& registry, entt::entity entity) noexcept;
 
-        void on_rectangle_construct(entt::entity entity, entt::registry& registry, geometry::rectangle& rectangle) noexcept;
+        void on_rectangle_replace(entt::registry& registry, entt::entity entity, geometry::rectangle& rectangle) noexcept;
+        void on_rectangle_construct(entt::registry& registry, entt::entity entity) noexcept;
 
-        void on_position_2d_construct(entt::entity entity, entt::registry& registry, transform::position_2d& pos) noexcept;
+        void on_position_2d_replace(entt::registry&, entt::entity entity, transform::position_2d& pos) noexcept;
+        void on_position_2d_construct(entt::registry& reg, entt::entity entity) noexcept;
 
-        void on_text_construct(entt::entity entity, entt::registry& registry, graphics::text& text) noexcept;
+        void on_text_replace(entt::registry& registry, entt::entity entity, graphics::text& text) noexcept;
+        void on_text_construct(entt::registry& registry, entt::entity entity) noexcept;
 
-        void on_sprite_construct(entt::entity entity, entt::registry& registry, graphics::sprite& spr) noexcept;
+        void on_sprite_replace(entt::registry& registry, entt::entity entity, graphics::sprite& spr) noexcept;
+        void on_sprite_construct(entt::registry& registry, entt::entity entity) noexcept;
 
-        void on_rt_construct(entt::entity entity, entt::registry& registry, graphics::render_texture_2d& rt) noexcept;
+        void on_rt_replace(entt::registry& registry, entt::entity entity, graphics::render_texture_2d& rt) noexcept;
+        void on_rt_construct(entt::registry& registry, entt::entity entity) noexcept;
 
-        void on_vertex_array_construct(entt::entity entity, entt::registry& registry, geometry::vertex_array& cmp_vertex_array) noexcept;
+        void on_vertex_array_replace(entt::registry& registry, entt::entity entity, geometry::vertex_array& cmp_vertex_array) noexcept;
+        void on_vertex_array_construct(entt::registry& registry, entt::entity entity) noexcept;
 
-        void on_properties_replaced(entt::entity entity, entt::registry& registry, transform::properties& props) noexcept;
+        void on_properties_replaced(entt::registry& registry, entt::entity entity, transform::properties& props) noexcept;
 
       private:
         bool                 debug_mode_{false};

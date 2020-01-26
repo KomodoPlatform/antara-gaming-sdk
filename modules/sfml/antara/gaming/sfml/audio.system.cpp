@@ -25,7 +25,7 @@ namespace
     using namespace antara::gaming;
 
     void
-    on_music_construct([[maybe_unused]] entt::entity entity, entt::registry& registry, audio::music& music) noexcept
+    on_music_replace(entt::registry& registry, [[maybe_unused]] entt::entity entity, audio::music& music) noexcept
     {
         auto& resources_system = registry.ctx<sfml::resources_system>();
         auto  handle           = resources_system.load_music(music.music_id.c_str());
@@ -55,7 +55,14 @@ namespace
     }
 
     void
-    on_sound_effect_construct(entt::entity entity, entt::registry& registry, audio::sound_effect& snd) noexcept
+    on_music_construct(entt::registry& registry, [[maybe_unused]] entt::entity entity) noexcept
+    {
+      auto& cmp = registry.get<audio::music>(entity);
+      on_music_replace(registry, entity, cmp);
+    }
+
+    void
+    on_sound_effect_replace(entt::registry& registry, entt::entity entity, audio::sound_effect& snd) noexcept
     {
         auto&      resources_system = registry.ctx<sfml::resources_system>();
         auto       handle           = resources_system.load_sound(snd.sound_id.c_str());
@@ -83,16 +90,23 @@ namespace
             break;
         }
     }
+
+    void
+    on_sound_effect_construct(entt::registry& registry, entt::entity entity) noexcept
+    {
+      auto& cmp = registry.get<audio::sound_effect>(entity);
+      on_sound_effect_replace(registry, entity, cmp);
+    }
 } // namespace
 
 namespace antara::gaming::sfml
 {
     audio_system::audio_system(entt::registry& registry) noexcept : system(registry)
     {
-        this->entity_registry_.on_construct<audio::sound_effect>().connect<on_sound_effect_construct>();
-        this->entity_registry_.on_replace<audio::sound_effect>().connect<on_sound_effect_construct>();
-        this->entity_registry_.on_construct<audio::music>().connect<on_music_construct>();
-        this->entity_registry_.on_replace<audio::music>().connect<on_music_construct>();
+      this->entity_registry_.on_construct<audio::sound_effect>().connect<on_sound_effect_construct>();
+      this->entity_registry_.on_replace<audio::sound_effect>().connect<on_sound_effect_replace>();
+      this->entity_registry_.on_construct<audio::music>().connect<on_music_construct>();
+      this->entity_registry_.on_replace<audio::music>().connect<on_music_replace>();
     }
 
     void
