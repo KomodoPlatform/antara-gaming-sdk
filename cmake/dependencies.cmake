@@ -98,7 +98,7 @@ endif ()
 if (USE_LUA_ANTARA_WRAPPER)
     FetchContent_Declare(
             lua
-            URL https://github.com/lua/lua/archive/master.zip
+            URL https://github.com/lua/lua/archive/v5.3.5.zip
     )
 
     FetchContent_Declare(
