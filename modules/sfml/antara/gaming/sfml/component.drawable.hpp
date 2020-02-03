@@ -34,7 +34,7 @@ namespace antara::gaming::sfml
     {
         rectangle() = default;
 
-        sf::RectangleShape drawable;
+        sf::RectangleShape drawable{};
     };
 
     struct circle

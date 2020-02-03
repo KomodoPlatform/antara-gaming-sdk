@@ -30,7 +30,7 @@ namespace tictactoe::example
 
     struct board_component
     {
-        board_component(std::size_t nb_cells) noexcept : board(nb_cells * nb_cells, cell_state::empty)
+        board_component(std::size_t nb_cells = 0) noexcept : board(nb_cells * nb_cells, cell_state::empty)
         {
 
         }
