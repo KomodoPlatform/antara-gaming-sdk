@@ -53,7 +53,7 @@ namespace antara::gaming::animation2d
         };
 
         //! Private member functions
-        void on_anim_cmp_replace(entt::registry& registry, entt::entity entity, const anim_component& anim_cmp) noexcept;
+        void on_anim_cmp_replace(entt::registry& registry, entt::entity entity) noexcept;
         void on_anim_cmp_create(entt::registry& registry, entt::entity entity) noexcept;
 
         //! Private field

@@ -347,12 +347,13 @@ namespace antara::gaming::sfml
     void
     graphic_system::on_circle_construct(entt::registry& registry, entt::entity entity) noexcept
     {
-        on_circle_replace(registry, entity, registry.get<geometry::circle>(entity));
+        on_circle_replace(registry, entity);
     }
 
     void
-    graphic_system::on_circle_replace(entt::registry& registry, entt::entity entity, geometry::circle& circle) noexcept
+    graphic_system::on_circle_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto& circle      = registry.get<geometry::circle>(entity);
         auto& sfml_circle = registry.assign_or_replace<sfml::circle>(entity, sf::CircleShape(circle.radius));
         if (auto out_color = registry.try_get<graphics::outline_color>(entity); out_color != nullptr)
         {
@@ -397,12 +398,13 @@ namespace antara::gaming::sfml
     void
     graphic_system::on_rectangle_construct(entt::registry& registry, entt::entity entity) noexcept
     {
-      on_rectangle_replace(registry, entity, registry.get<geometry::rectangle>(entity));
+        on_rectangle_replace(registry, entity);
     }
 
     void
-    graphic_system::on_rectangle_replace(entt::registry& registry, entt::entity entity, geometry::rectangle& rectangle) noexcept
+    graphic_system::on_rectangle_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto& rectangle                    = registry.get<geometry::rectangle>(entity);
         auto [width, height]               = rectangle.size;
         sf::RectangleShape& sfml_rectangle = registry.assign_or_replace<sfml::rectangle>(entity, sf::RectangleShape()).drawable;
 
@@ -432,12 +434,13 @@ namespace antara::gaming::sfml
     void
     graphic_system::on_vertex_array_construct(entt::registry& registry, entt::entity entity) noexcept
     {
-      on_vertex_array_replace(registry, entity, registry.get<geometry::vertex_array>(entity));
+        on_vertex_array_replace(registry, entity);
     }
 
     void
-    graphic_system::on_vertex_array_replace(entt::registry& registry, entt::entity entity, geometry::vertex_array& cmp_vertex_array) noexcept
+    graphic_system::on_vertex_array_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto& cmp_vertex_array = registry.get<geometry::vertex_array>(entity);
         auto& sf_vertex_array =
             registry
                 .assign_or_replace<sfml::vertex_array>(
@@ -464,14 +467,16 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_position_2d_replace(entt::registry&, entt::entity entity, transform::position_2d& pos) noexcept
+    graphic_system::on_position_2d_replace(entt::registry& reg, entt::entity entity) noexcept
     {
+        auto& pos = reg.get<transform::position_2d>(entity);
         set_position(entity, pos, drawable_list_transformable{});
     }
 
-    void graphic_system::on_position_2d_construct(entt::registry &reg, entt::entity entity) noexcept
+    void
+    graphic_system::on_position_2d_construct(entt::registry& reg, entt::entity entity) noexcept
     {
-        on_position_2d_replace(reg, entity, reg.get<transform::position_2d>(entity));
+        on_position_2d_replace(reg, entity);
     }
 
     template <typename... DrawableType>
@@ -497,12 +502,13 @@ namespace antara::gaming::sfml
     void
     graphic_system::on_text_construct(entt::registry& registry, entt::entity entity) noexcept
     {
-      on_text_replace(registry, entity, registry.get<graphics::text>(entity));
+        on_text_replace(registry, entity);
     }
 
     void
-    graphic_system::on_text_replace(entt::registry& registry, entt::entity entity, graphics::text& text) noexcept
+    graphic_system::on_text_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto&     text             = registry.get<graphics::text>(entity);
         auto&     resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto      handle           = resources_system.load_font(text.appearance);
         sf::Text& sf_text          = registry.assign_or_replace<sfml::text>(entity, sf::Text(text.contents, handle.get(), text.character_size)).drawable;
@@ -545,8 +551,9 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_rt_replace(entt::registry& registry, entt::entity entity, graphics::render_texture_2d& rt) noexcept
+    graphic_system::on_rt_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto&                               rt      = registry.get<graphics::render_texture_2d>(entity);
         std::unique_ptr<sf::RenderTexture>& sfml_rt = registry.assign_or_replace<sfml::render_texture>(entity).drawable;
         sfml_rt->create(rt.size.x(), rt.size.y());
         sfml_rt->setSmooth(rt.smooth);
@@ -556,18 +563,19 @@ namespace antara::gaming::sfml
     void
     graphic_system::on_rt_construct(entt::registry& registry, entt::entity entity) noexcept
     {
-      on_rt_replace(registry, entity, registry.get<graphics::render_texture_2d>(entity));
+        on_rt_replace(registry, entity);
     }
 
     void
     graphic_system::on_sprite_construct(entt::registry& registry, entt::entity entity) noexcept
     {
-      on_sprite_replace(registry, entity, registry.get<graphics::sprite>(entity));
+        on_sprite_replace(registry, entity);
     }
 
     void
-    graphic_system::on_sprite_replace(entt::registry& registry, entt::entity entity, graphics::sprite& spr) noexcept
+    graphic_system::on_sprite_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto&       spr              = registry.get<graphics::sprite>(entity);
         auto&       resources_system = this->entity_registry_.ctx<sfml::resources_system>();
         auto        handle           = resources_system.load_texture(spr.appearance.c_str());
         sf::Sprite& native_sprite    = registry.assign_or_replace<sfml::sprite>(entity, sf::Sprite(handle.get())).drawable;
@@ -604,8 +612,9 @@ namespace antara::gaming::sfml
     }
 
     void
-    graphic_system::on_properties_replaced(entt::registry&, entt::entity entity, transform::properties& props) noexcept
+    graphic_system::on_properties_replaced(entt::registry& reg, entt::entity entity) noexcept
     {
+        auto& props = reg.get<transform::properties>(entity);
         set_properties(entity, props, drawable_list_transformable{});
     }
 

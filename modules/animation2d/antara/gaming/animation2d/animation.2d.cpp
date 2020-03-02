@@ -69,8 +69,9 @@ namespace antara::gaming::animation2d
     }
 
     void
-    anim_system::on_anim_cmp_replace(entt::registry& registry, entt::entity entity, const anim_component& anim_cmp) noexcept
+    anim_system::on_anim_cmp_replace(entt::registry& registry, entt::entity entity) noexcept
     {
+        auto& anim_cmp = registry.get<anim_component>(entity);
         auto&& [frames, appearance] = animations_.at(anim_cmp.animation_id);
         auto rect                   = frames[anim_cmp.current_frame];
         registry.assign_or_replace<graphics::sprite>(entity, appearance, false, rect);
@@ -78,8 +79,7 @@ namespace antara::gaming::animation2d
 
     void anim_system::on_anim_cmp_create(entt::registry &registry, entt::entity entity) noexcept
     {
-        const auto& cmp = registry.get<anim_component>(entity);
-        on_anim_cmp_replace( registry, entity, cmp);
+        on_anim_cmp_replace( registry, entity);
     }
 
     void
