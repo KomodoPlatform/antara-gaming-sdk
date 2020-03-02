@@ -141,7 +141,9 @@ namespace antara::gaming::lua
                         self.assign<TComponent>(entity, cmp);
                     }
                     else
-                        return std::ref(self.replace<TComponent>(entity, cmp));
+                    {
+                        return std::ref(self.assign_or_replace<TComponent>(entity, cmp));
+                    }
                 };
         }
     }
