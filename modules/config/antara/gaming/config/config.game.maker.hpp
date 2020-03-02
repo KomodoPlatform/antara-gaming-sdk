@@ -16,6 +16,11 @@
 
 #pragma once
 
+#if defined(_WIN32) || defined(WIN32)
+#    define and &&
+#    define or ||
+#    define not !
+#endif
 //! Dependencies Headers
 #include <nlohmann/json.hpp> ///< nlohmann::json
 
