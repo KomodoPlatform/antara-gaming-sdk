@@ -204,9 +204,9 @@ jobs:
         if: matrix.name == 'ubuntu-18-04-clang-8-debug-ubsan'
         run: cmake build -DUSE_UBSAN=ON -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld-${{ matrix.version }}
 
-      - name: Coverage (OSX)
-        if: runner.os == 'macOS' && matrix.cmake_build_type == 'Debug'
-        run: cmake build -DENABLE_COVERAGE=ON
+      #- name: Coverage (OSX)
+      #  if: runner.os == 'macOS' && matrix.cmake_build_type == 'Debug'
+      #  run: cmake build -DENABLE_COVERAGE=ON
 
       - name: Build
         run: cmake --build build --config ${{matrix.cmake_build_type}}
@@ -237,27 +237,27 @@ jobs:
             & cmd /c "$var --reporters=xml --out=$var-result.xml -s 2>&1"
           }
 
-      - name: Upload coverage (OSX)
-        working-directory: build
-        if: runner.os == 'macOS' && matrix.cmake_build_type == 'Debug'
-        env: # Or as an environment variable
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          echo "workspace is: ${GITHUB_WORKSPACE}"
-          lcov -d . -c -o coverage.info
-          lcov -r coverage.info "/usr*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/*.test.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/config/antara/gaming/config/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/core/antara/gaming/core/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/ecs/antara/gaming/ecs/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/lua/antara/gaming/lua/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/timer/antara/gaming/timer/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/world/antara/gaming/world/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/event/antara/gaming/event/*.tests.*" -o coverage.info
-          lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/scenes/antara/gaming/scenes/*.tests.*" -o coverage.info
-          lcov -r coverage.info "_deps/*" -o coverage.info
-          lcov -l coverage.info
-          bash <(curl -s https://codecov.io/bash) -v -g ${GITHUB_WORKSPACE}/build/_deps/* -f coverage.info || echo "Codecov did not collect coverage reports"
+      #- name: Upload coverage (OSX)
+      #  working-directory: build
+      #  if: runner.os == 'macOS' && matrix.cmake_build_type == 'Debug'
+      #  env: # Or as an environment variable
+      #    CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      #  run: |
+      #    echo "workspace is: ${GITHUB_WORKSPACE}"
+      #    lcov -d . -c -o coverage.info
+      #    lcov -r coverage.info "/usr*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/*.test.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/config/antara/gaming/config/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/core/antara/gaming/core/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/ecs/antara/gaming/ecs/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/lua/antara/gaming/lua/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/timer/antara/gaming/timer/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/world/antara/gaming/world/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/event/antara/gaming/event/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "${GITHUB_WORKSPACE}/modules/scenes/antara/gaming/scenes/*.tests.*" -o coverage.info
+      #    lcov -r coverage.info "_deps/*" -o coverage.info
+      #    lcov -l coverage.info
+      #    bash <(curl -s https://codecov.io/bash) -v -g ${GITHUB_WORKSPACE}/build/_deps/* -f coverage.info || echo "Codecov did not collect coverage reports"
 
 
       - name: Upload Test (Unix)
