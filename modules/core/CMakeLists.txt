@@ -11,7 +11,7 @@ endif ()
 target_include_directories(antara_core_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR}>)
 target_link_libraries(antara_core_shared_sources PUBLIC
         antara::default_settings
-        EnTT
+        antara::entt
         antara::refl-cpp
         PRIVATE
         $<$<PLATFORM_ID:Darwin>:${APPLE_FOUNDATION_FRAMEWORK_LIBRARY}>)

@@ -7,7 +7,7 @@ target_sources(antara_ecs_shared_sources PRIVATE
         antara/gaming/ecs/virtual.input.system.cpp
         antara/gaming/ecs/interpolation.system.cpp)
 target_include_directories(antara_ecs_shared_sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(antara_ecs_shared_sources PUBLIC antara::log antara::core antara::input antara::math antara::transform antara::geometry antara::graphics EnTT strong_type expected range-v3 antara::default_settings antara::timer antara::event doom::meta)
+target_link_libraries(antara_ecs_shared_sources PUBLIC antara::log antara::core antara::input antara::math antara::transform antara::geometry antara::graphics antara::entt strong_type expected range-v3 antara::default_settings antara::timer antara::event doom::meta)
 add_library(antara::ecs ALIAS antara_ecs_shared_sources)
 
 if (ANTARA_BUILD_UNIT_TESTS)
