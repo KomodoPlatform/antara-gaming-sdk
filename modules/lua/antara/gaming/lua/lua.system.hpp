@@ -36,7 +36,7 @@
 #include "antara/gaming/ecs/system.hpp"        ///< ecs::system
 #include "antara/gaming/event/type.traits.hpp" ///< event::invoker
 
-namespace fs = std::filesystem;
+namespace fs = boost::filesystem;
 
 namespace antara::gaming::lua
 {
