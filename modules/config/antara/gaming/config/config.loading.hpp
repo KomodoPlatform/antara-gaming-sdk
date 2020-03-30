@@ -26,6 +26,8 @@
 #include <system_error> ///< std::error_code
 
 //! Dependencies Headers
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <nlohmann/json.hpp> ///< nlohmann::json
 
 namespace antara::gaming::config
@@ -34,16 +36,16 @@ namespace antara::gaming::config
     {
         template <typename TConfig>
         TConfig
-        create_configuration(const std::filesystem::path& config_path, const std::filesystem::path& full_path) noexcept
+        create_configuration(const boost::filesystem::path& config_path, const boost::filesystem::path& full_path) noexcept
         {
             TConfig         config_to_export{};
-            std::error_code ec;
-            std::filesystem::create_directories(config_path, ec);
+            boost::system::error_code ec;
+            boost::filesystem::create_directories(config_path, ec);
             if (ec)
             {
                 return config_to_export;
             }
-            std::ofstream ofs(full_path);
+            std::ofstream ofs(full_path.c_str());
             assert(ofs.is_open());
             nlohmann::json config_json_data;
             config_json_data = config_to_export;
@@ -53,10 +55,10 @@ namespace antara::gaming::config
 
         template <typename TConfig>
         TConfig
-        load_config(const std::filesystem::path& full_path) noexcept
+        load_config(const boost::filesystem::path& full_path) noexcept
         {
             TConfig       config_to_fill{};
-            std::ifstream ifs(full_path);
+            std::ifstream ifs(full_path.c_str());
             assert(ifs.is_open());
             nlohmann::json config_json_data;
             ifs >> config_json_data;
@@ -84,10 +86,10 @@ namespace antara::gaming::config
      */
     template <typename TConfig>
     TConfig
-    load_configuration(std::filesystem::path&& config_path, std::string filename) noexcept
+    load_configuration(boost::filesystem::path&& config_path, std::string filename) noexcept
     {
         const auto& full_path = config_path / std::move(filename);
-        if (!std::filesystem::exists(config_path) || !std::filesystem::exists(full_path))
+        if (!boost::filesystem::exists(config_path) || !boost::filesystem::exists(full_path))
         {
             return details::create_configuration<TConfig>(config_path, full_path);
         }

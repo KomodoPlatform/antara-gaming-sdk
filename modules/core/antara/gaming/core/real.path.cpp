@@ -35,13 +35,13 @@
 
 namespace antara::gaming::core
 {
-    std::filesystem::path
+    boost::filesystem::path
     binary_real_path() noexcept
     {
         return details::binary_real_path();
     }
 
-    std::filesystem::path
+    boost::filesystem::path
     assets_real_path() noexcept
     {
         return details::assets_real_path();

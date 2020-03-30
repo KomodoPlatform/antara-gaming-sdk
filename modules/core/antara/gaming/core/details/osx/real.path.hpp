@@ -40,7 +40,7 @@ namespace antara::gaming::core::details
         return replace_all_mute(s, from, to);
     }
 
-    std::filesystem::path
+    boost::filesystem::path
     binary_real_path() noexcept
     {
         std::array<char, PATH_MAX + 1> dir_name_buffer{};
@@ -49,10 +49,10 @@ namespace antara::gaming::core::details
         assert(result == 0);
         std::string tmp_path(dir_name_buffer.data());
         auto        final_path = replace_all_copy(tmp_path, "./", "");
-        return std::filesystem::path(final_path);
+        return boost::filesystem::path(final_path);
     }
 
-    std::filesystem::path
+    boost::filesystem::path
     assets_real_path() noexcept
     {
         return binary_real_path().parent_path().parent_path() / "Resources/assets";

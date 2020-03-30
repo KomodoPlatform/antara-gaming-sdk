@@ -189,7 +189,7 @@ namespace antara::gaming::lua
             std::vector<std::string> filename_scenes;
             for (auto&& p: fs::directory_iterator(scenes_directory_path_))
             {
-                if (p.is_regular_file())
+                if (boost::filesystem::is_regular_file(p))
                 {
                     path_scenes_entries.push_back(p.path().string());
                     filename_scenes.push_back(p.path().filename().string());
