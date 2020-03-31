@@ -14,9 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-#import <CoreGraphics/CoreGraphics.h>
+//#import <CoreGraphics/CoreGraphics.h>
 //#import <NSGeometry.h>
-#import <AppKit/AppKit.h>
+//#import <AppKit/AppKit.h>
 
 #include "antara/gaming/core/details/osx/api.scaling.hpp"
 
