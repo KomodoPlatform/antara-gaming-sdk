@@ -17,13 +17,13 @@
 #pragma once
 
 #include <cassert>
-#include <filesystem>
+#include <boost/filesystem.hpp>
 #include <string>
 #include <windows.h> //! HMODULE, GetModuleHandleW, GetModuleFileNameW
 
 namespace antara::gaming::core::details
 {
-    std::filesystem::path
+    boost::filesystem::path
     binary_real_path() noexcept
     {
         HMODULE hModule = GetModuleHandleW(nullptr);
@@ -31,10 +31,10 @@ namespace antara::gaming::core::details
         WCHAR path[MAX_PATH];
         auto  result = GetModuleFileNameW(hModule, path, MAX_PATH);
         assert(result);
-        return std::filesystem::path(path);
+        return boost::filesystem::path(path);
     }
 
-    std::filesystem::path
+    boost::filesystem::path
     assets_real_path() noexcept
     {
         return binary_real_path().parent_path() / "assets";
