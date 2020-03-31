@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #import <CoreGraphics/CoreGraphics.h>
-#import <NSGeometry.h>
+//#import <NSGeometry.h>
 #import <AppKit/AppKit.h>
 
 #include "antara/gaming/core/details/osx/api.scaling.hpp"
@@ -24,15 +24,17 @@ namespace antara::gaming::core::details
 {
     bool is_high_dpi_capable() noexcept
     {
-        NSBundle *bundle = [NSBundle mainBundle];
+  /*      NSBundle *bundle = [NSBundle mainBundle];
         if (!bundle)
             return false;
-        return bool([bundle objectForInfoDictionaryKey:@"NSHighResolutionCapable"]);
+        return bool([bundle objectForInfoDictionaryKey:@"NSHighResolutionCapable"]);*/
+  return true;
     }
 
     std::pair<float, float> get_scaling_factor() noexcept
     {
-        auto factor = static_cast<float>([[NSScreen mainScreen] backingScaleFactor]);
-        return {factor, factor};
+        /*auto factor = static_cast<float>([[NSScreen mainScreen] backingScaleFactor]);
+        return {factor, factor};*/
+        return {0.0, 0.0};
     }
 }
