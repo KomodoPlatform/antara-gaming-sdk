@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 file(STRINGS "VERSION.md" VERSION_NB)
+add_compile_definitions(LOGURU_WITH_FILEABS=1)
 
 project(antara-gaming-sdk
         VERSION ${VERSION_NB}
