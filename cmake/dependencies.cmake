@@ -61,7 +61,7 @@ endif ()
 
 FetchContent_Declare(
         reproc
-        URL https://github.com/DaanDeMeyer/reproc/archive/ebfcd6ca700e26845a3a27c21c6d704788ee77b7.zip
+        URL https://github.com/DaanDeMeyer/reproc/archive/v13.0.1.zip
 )
 
 set(EXPECTED_ENABLE_TESTS OFF CACHE BOOL "Override option" FORCE)
