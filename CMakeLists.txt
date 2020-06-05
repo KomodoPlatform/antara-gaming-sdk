@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+if (UNIX AND NOT APPLE)
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+endif()
+
 file(STRINGS "VERSION.md" VERSION_NB)
 add_compile_definitions(LOGURU_WITH_FILEABS=1)
 
