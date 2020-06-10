@@ -23,7 +23,7 @@ namespace antara::gaming::ecs
     system<TSystemDerived, TSystemType>::system(TArgs&&... args) noexcept : base_system(std::forward<TArgs>(args)...)
     {
         LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "creating system {}", this->get_name());
+        //DVLOG_F(loguru::Verbosity_INFO, "creating system {}", this->get_name());
     }
 
     template <typename TSystemDerived, typename TSystemType>
@@ -65,6 +65,6 @@ namespace antara::gaming::ecs
     system<TSystemDerived, TSystemType>::~system() noexcept
     {
         LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "destroying system {}", this->get_name());
+        //DVLOG_F(loguru::Verbosity_INFO, "destroying system {}", this->get_name());
     }
 } // namespace antara::gaming::ecs

@@ -96,6 +96,6 @@ namespace antara::gaming::world
     app::~app() noexcept
     {
         LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "Quitting game with value: {}", game_return_value_);
+        //DVLOG_F(loguru::Verbosity_INFO, "Quitting game with value: {}", game_return_value_);
     }
 } // namespace antara::gaming::world

@@ -46,7 +46,7 @@ namespace antara::gaming::ecs
     system_manager::add_system_(system_ptr&& system, system_type sys_type) noexcept
     {
         LOG_SCOPE_FUNCTION(INFO);
-        DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
+        //DVLOG_F(loguru::Verbosity_INFO, "adding system {} in the system manager.", system->get_name());
         return *systems_[sys_type].emplace_back(std::move(system));
     }
 
